@@ -1,0 +1,46 @@
+{%- doc -%}
+  Loading placeholder for the product-listing layout. Figma "PLP skeleton"
+  7930:102108 and "Search results skeleton" 7930:106276.
+
+  One snippet for both pages, because they are one layout: search reuses the
+  PLP's rail, chips and grid wholesale (see sections/search.liquid), and its
+  skeleton frame differs from the PLP's only by the heading above it.
+
+  The grid underneath is already server-rendered, so this covers it rather than
+  standing in for it - what it hides is the stretch before collection.js
+  upgrades <collection-page> and the filters, sort and paging become live. It
+  clears on `:defined`, with assets/skeleton.css's timeout behind that.
+
+  @param {boolean} [heading] - draw a heading tile above the body (search only)
+{%- enddoc -%}
+
+<div class="plp-skeleton skeleton" data-skeleton aria-hidden="true">
+  {%- if heading -%}
+    <span class="skeleton_tile plp-skeleton_heading"></span>
+  {%- endif -%}
+
+  <div class="plp-skeleton_body">
+    <div class="plp-skeleton_body_filters">
+      {%- for group in (1..5) -%}
+        <span class="skeleton_tile" style="height: 20px; width: 55%"></span>
+        {%- for row in (1..4) -%}
+          <span class="skeleton_tile" style="height: 14px; width: 85%"></span>
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="plp-skeleton_body_main">
+      <div class="plp-skeleton_body_main_chips">
+        {%- for chip in (1..6) -%}
+          <span class="skeleton_tile" style="height: 38px; width: 88px"></span>
+        {%- endfor -%}
+      </div>
+
+      <div class="plp-skeleton_body_main_grid">
+        {%- for card in (1..9) -%}
+          <span class="skeleton_tile skeleton_tile--card plp-skeleton_body_main_grid_card"></span>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>

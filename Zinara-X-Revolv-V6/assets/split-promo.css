@@ -1,0 +1,319 @@
+/* Figma: Home page 827:24395 > Frame 1116601888 (915:44712).
+   832 / 448 columns on the 1280 page, which is a 748 and a 362 card either
+   side of a 26px gutter once the 72px page margins come off. Both 320 tall. */
+.split-promo {
+  display: flex;
+  gap: 26px;
+  width: 100%;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+/* The cards divide the row's 1136 content width between them: 748 + 26 + 362.
+   Sizing off that split rather than a round 65/35 keeps the ratio exact as the
+   row narrows, which is what holds the headings on their authored line counts. */
+.split-promo_left {
+  flex: 0 1 calc((100% - 26px) * 748 / 1110);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.split-promo_right {
+  flex: 0 1 calc((100% - 26px) * 362 / 1110);
+  min-width: 0;
+  container-type: inline-size;
+  box-sizing: border-box;
+}
+
+.split-promo_left_card {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 320px;
+  padding: 8px 40px 16px;
+  border-radius: 12px;
+  background-color: #333;
+  background-size: cover;
+  background-position: center;
+  box-sizing: border-box;
+}
+
+.split-promo_left_card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.88) 100%);
+}
+
+.split-promo_left_card_content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.split-promo_left_card_content_text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.split-promo_left_card_content_text_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #fff;
+}
+
+.split-promo_left_card_content_text_subheading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.307;
+  color: #fff;
+}
+
+.split-promo_right_card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 320px;
+  padding: 8px 40px 16px;
+  border-radius: 12px;
+  background-color: var(--color-brand, #712242);
+  box-sizing: border-box;
+}
+
+/* Two 120px squares, tilted. Figma reports their rotated bounding boxes
+   (124.1 and 137.3); the squares themselves are both 120. */
+.split-promo_right_card_images {
+  position: relative;
+  width: 231px;
+  max-width: 100%;
+  aspect-ratio: 231 / 153;
+}
+
+.split-promo_right_card_images_img {
+  position: absolute;
+  display: block;
+  border: 4px solid #f2f2f2;
+  border-radius: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.split-promo_right_card_images_img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Positions and sizes as ratios of the 231x153 cluster, so the pair scales
+   together instead of the squares staying 120px while the box shrinks. */
+.split-promo_right_card_images_img--back {
+  top: 20.26%;
+  left: 0.87%;
+  width: 51.95%;
+  aspect-ratio: 1;
+  z-index: 1;
+  transform: rotate(-2deg);
+}
+
+.split-promo_right_card_images_img--front {
+  top: 5.88%;
+  left: 44.59%;
+  width: 51.95%;
+  aspect-ratio: 1;
+  z-index: 2;
+  transform: rotate(9deg);
+}
+
+.split-promo_right_card_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.split-promo_right_card_content_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #fff;
+  white-space: pre-line;
+}
+
+/* Figma's 28px only fits this card at its full 362px. Scaling with the card
+   keeps the heading on its two authored lines instead of wrapping each one. */
+@supports (container-type: inline-size) {
+  .split-promo_right_card_content_heading {
+    font-size: clamp(20px, 7.8cqw, 28px);
+  }
+
+  /* Figma's 40px gutters eat too much of a narrow card for the heading to hold
+     its two lines, so they narrow with it. */
+  .split-promo_right_card {
+    padding-inline: clamp(16px, 11.05cqw, 40px);
+  }
+}
+
+.split-promo_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--color-brand, #712242);
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.219;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.split-promo_button_icon {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.split-promo_button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.split-promo_button:hover {
+  background-color: #f7f3f5;
+  transform: translateY(-1px);
+}
+
+.split-promo_right_card_mobile-image {
+  display: none;
+}
+
+@media screen and (max-width: 989px) {
+  .split-promo {
+    flex-direction: column;
+    gap: 32px;
+    padding: 16px var(--page-margin);
+  }
+
+  .split-promo_left,
+  .split-promo_right {
+    flex-basis: auto;
+  }
+}
+
+/* Figma Mobile 7930:106898 + 7930:106904: the brand band comes first and runs
+   edge to edge - serif heading and button on the left, one landscape photo
+   bleeding off the right - then the design card sits in the gutter below. */
+@media screen and (max-width: 749px) {
+  .split-promo {
+    gap: 0;
+    padding: 0;
+  }
+
+  .split-promo_right {
+    order: -1;
+  }
+
+  .split-promo_left {
+    padding: 24px var(--page-margin);
+  }
+
+  .split-promo_left_card {
+    min-height: 262px;
+  }
+
+  .split-promo_left_card_content_text_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .split-promo_left_card_content_text_subheading {
+    font-size: 12px;
+    line-height: 22px;
+  }
+
+  .split-promo_right_card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 0;
+    padding: 24px 0 24px var(--page-margin);
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .split-promo_right_card_content {
+    align-items: flex-start;
+    flex: 0 0 auto;
+  }
+
+  .split-promo_right_card_content_heading {
+    text-align: left;
+    font-family: var(--font-tertiary--family);
+    font-style: italic;
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .split-promo_right_card_images {
+    order: 1;
+    flex: 0 0 150px;
+    margin-right: var(--page-margin);
+  }
+
+  .split-promo_right_card--mobile-image .split-promo_right_card_images {
+    display: none;
+  }
+
+  .split-promo_right_card_mobile-image {
+    order: 1;
+    display: block;
+    flex: 0 0 216px;
+    height: 113px;
+  }
+
+  .split-promo_right_card_mobile-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .split-promo_button {
+    gap: 6px;
+    padding: 12px 16px;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .split-promo_button svg {
+    width: 16px;
+    height: 16px;
+  }
+}

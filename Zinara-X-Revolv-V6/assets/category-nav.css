@@ -1,0 +1,108 @@
+.category-nav {
+  display: block;
+  width: 100%;
+  background-color: var(--color-background, #fff);
+  border-bottom: 1px solid var(--color-border, #f2f2f2);
+}
+
+.category-nav_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 16px var(--page-margin) 0;
+  box-sizing: border-box;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.category-nav_wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.category-nav_wrapper_primary,
+.category-nav_wrapper_secondary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.category-nav_wrapper_item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.category-nav_wrapper_item_content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.category-nav_wrapper_item_content_link {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.category-nav_wrapper_item_content_link:hover,
+.category-nav_wrapper_item.is-active .category-nav_wrapper_item_content_link {
+  color: var(--color-brand, #712242);
+}
+
+.category-nav_wrapper_item_content_badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--color-brand, #712242);
+  box-shadow: inset 0 2px 3px 0 var(--color-accent, #f0166e);
+  color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 8px;
+  line-height: 2;
+  white-space: nowrap;
+}
+
+.category-nav_wrapper_item_underline {
+  display: block;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background-color: var(--color-brand, #712242);
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+
+.category-nav_wrapper_item:hover .category-nav_wrapper_item_underline,
+.category-nav_wrapper_item.is-active .category-nav_wrapper_item_underline {
+  transform: scaleX(1);
+}
+
+@media screen and (max-width: 989px) {
+  .category-nav_wrapper_secondary {
+    display: none;
+  }
+}
+
+/* Figma Mobile / Home page 7930:106661 has no category strip under the navbar;
+   the same links live in the side menu instead. */
+@media screen and (max-width: 749px) {
+  .category-nav {
+    display: none;
+  }
+}

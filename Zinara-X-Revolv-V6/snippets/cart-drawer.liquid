@@ -1,0 +1,31 @@
+{%- doc -%}
+  The cart drawer shell, rendered once per page in the layout.
+
+  It ships with the current cart already inside it so the first open needs no
+  round trip; every change after that swaps the contents from the Section
+  Rendering API. The <dialog> is what gives Esc, focus trapping and the theme's
+  scroll-lock rule for free - the same basis as the PDP sheets.
+{%- enddoc -%}
+
+<dialog class="cart-drawer" data-cart-drawer scroll-lock aria-labelledby="CartDrawerTitle">
+  <div class="cart-drawer_panel">
+    <div class="cart-drawer_panel_head">
+      <h2 class="cart-drawer_panel_head_title" id="CartDrawerTitle">
+        {{- 'cart.drawer_title' | t -}}
+        <span class="cart-drawer_panel_head_title_count" data-cart-title-count>{{ cart.item_count }}</span>
+      </h2>
+      <button
+        type="button"
+        class="cart-drawer_panel_head_close"
+        data-cart-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <div class="cart-drawer_panel_content" data-cart-content>
+      {%- section 'cart-drawer' -%}
+    </div>
+  </div>
+</dialog>

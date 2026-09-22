@@ -1,0 +1,75 @@
+{%- doc -%}
+  Renders one article card. Figma "Blog card" (7930:93537 featured,
+  7930:93808 grid).
+
+  Two shapes, from the same data. Both carry the tag pill 12px in from the left
+  of the media; what differs is how it meets the image:
+  - grid (default) - 404px tall, media 270px, the pill laid over the top of the
+    image. Used by the "More articles" grid and the article page's related row.
+  - featured - 412px tall, media 278px, the pill in flow above the image with
+    the image pulled 12px back over it. Used by the "Featured" row at the top of
+    the blog listing.
+
+  The pill shows the article's first tag, so a card without tags simply has no
+  pill and the media keeps its height either way.
+
+  @param {object} article - a Shopify article object
+  @param {string} [variant] - 'grid' (default) or 'featured'
+  @param {string} [tag_label] - overrides the pill copy
+  @param {string} [heading_level] - wraps the title in this tag instead of a span
+{%- enddoc -%}
+
+{%- liquid
+  assign card_variant = variant | default: 'grid'
+  assign card_image_alt = article.image.alt | default: article.title
+  assign pill = tag_label | default: article.tags.first
+-%}
+
+<article class="blog-card blog-card--{{ card_variant }}">
+  <a class="blog-card_link" href="{{ article.url }}">
+    <span class="blog-card_media">
+      {%- if pill != blank -%}
+        <span class="blog-card_media_tags">
+          <span class="blog-card_media_tags_pill">{{ pill }}</span>
+        </span>
+      {%- endif -%}
+
+      <span class="blog-card_media_image">
+        {%- if article.image -%}
+          {{
+            article.image
+            | image_url: width: 722
+            | image_tag:
+              loading: 'lazy',
+              widths: '361,542,722',
+              sizes: '(max-width: 749px) 100vw, 361px',
+              alt: card_image_alt
+          }}
+        {%- endif -%}
+      </span>
+    </span>
+
+    <span class="blog-card_body">
+      <time class="blog-card_body_date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{- article.published_at | date: '%-d %B, %Y' -}}
+      </time>
+
+      <span class="blog-card_body_text">
+        {%- if heading_level -%}
+          <{{ heading_level }} class="blog-card_body_text_title">{{ article.title }}</{{ heading_level }}>
+        {%- else -%}
+          <span class="blog-card_body_text_title">{{ article.title }}</span>
+        {%- endif -%}
+
+        <span class="blog-card_body_text_excerpt">
+          {{- article.excerpt_or_content | strip_html | truncate: 110 -}}
+        </span>
+      </span>
+
+      <span class="blog-card_body_readmore">
+        {{ 'accessibility.read_more' | t }}
+        {{ 'icon-caret-right.svg' | inline_asset_content }}
+      </span>
+    </span>
+  </a>
+</article>

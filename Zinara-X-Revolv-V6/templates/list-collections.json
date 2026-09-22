@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "home_label": "Home",
+        "current_label": "All collections"
+      }
+    },
+    "main": {
+      "type": "collections",
+      "settings": {
+        "heading": "All collections",
+        "sort_by": "alphabetical",
+        "hide_empty": true
+      }
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "main"
+  ]
+}

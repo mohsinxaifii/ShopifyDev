@@ -1,0 +1,491 @@
+/* Figma: Get your own design 7930:95121.
+
+   Three bands, one stylesheet, because they are only ever used together on the
+   one page: Frame 1116601466 (steps), Frame 1116601738 (options) and
+   Frame 1116601739 (gallery). All three are 32/72 with a 24px card gutter; the
+   gallery is the only one on a colour. */
+
+/* ----------------------------------------------------------------- steps -- */
+.custom-design-steps {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.custom-design-steps_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.custom-design-steps_wrapper_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.custom-design-steps_wrapper_head_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.custom-design-steps_wrapper_head_cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.custom-design-steps_wrapper_head_cta:hover {
+  background-color: #5a1b34;
+}
+
+.custom-design-steps_wrapper_grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+/* Sideways card: the image holds its 108px and the text takes the rest. */
+.custom-design-steps_wrapper_grid_item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+.custom-design-steps_wrapper_grid_item_image {
+  display: block;
+  flex: 0 0 108px;
+  width: 108px;
+  height: 108px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.custom-design-steps_wrapper_grid_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.custom-design-steps_wrapper_grid_item_body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.custom-design-steps_wrapper_grid_item_body_head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-design-steps_wrapper_grid_item_body_head_number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #999;
+  border-radius: 50%;
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.custom-design-steps_wrapper_grid_item_body_head_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-brand, #712242);
+}
+
+.custom-design-steps_wrapper_grid_item_body_text {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.429;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* --------------------------------------------------------------- options -- */
+.custom-design-options {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.custom-design-options_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.custom-design-options_wrapper_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.custom-design-options_wrapper_body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.custom-design-options_wrapper_body_subheading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.111;
+  color: var(--color-text-secondary, #494949);
+}
+
+.custom-design-options_wrapper_body_grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.custom-design-options_wrapper_body_grid_item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.custom-design-options_wrapper_body_grid_item_image {
+  display: block;
+  aspect-ratio: 363 / 181;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.custom-design-options_wrapper_body_grid_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.custom-design-options_wrapper_body_grid_item_label {
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* --------------------------------------------------------------- gallery -- */
+.custom-design-gallery {
+  display: block;
+  width: 100%;
+}
+
+.custom-design-gallery_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.custom-design-gallery_wrapper_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-brand, #712242);
+}
+
+.custom-design-gallery_wrapper_stage {
+  position: relative;
+}
+
+.custom-design-gallery_wrapper_stage_track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.custom-design-gallery_wrapper_stage_track::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-design-gallery_wrapper_stage_track_item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 0 237px;
+  width: 237px;
+  margin: 0;
+  scroll-snap-align: start;
+}
+
+.custom-design-gallery_wrapper_stage_track_item_image {
+  display: block;
+  aspect-ratio: 237 / 331;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.custom-design-gallery_wrapper_stage_track_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.custom-design-gallery_wrapper_stage_track_item_caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.custom-design-gallery_wrapper_stage_track_item_caption_title {
+  color: var(--color-brand, #712242);
+}
+
+.custom-design-gallery_wrapper_stage_track_item_caption_customer {
+  color: var(--color-text-secondary, #494949);
+}
+
+/* Hung off both edges of the row, clear of the cards. */
+.custom-design-gallery_wrapper_stage_arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+}
+
+.custom-design-gallery_wrapper_stage_arrow--prev {
+  left: -20px;
+}
+
+.custom-design-gallery_wrapper_stage_arrow--next {
+  right: -20px;
+}
+
+.custom-design-gallery_wrapper_stage_arrow:hover {
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* -------------------------------------------------------------- skeleton --
+   Figma "Get your own design skeleton" 7930:95299. Covers the first band only;
+   the bands below it are images and text that arrive with the document. */
+.custom-design-skeleton_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.custom-design-skeleton_wrapper_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.custom-design-skeleton_wrapper_head_heading {
+  width: 195px;
+  height: 34px;
+}
+
+.custom-design-skeleton_wrapper_head_cta {
+  width: 164px;
+  height: 44px;
+}
+
+.custom-design-skeleton_wrapper_grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.custom-design-skeleton_wrapper_grid_item {
+  height: 138px;
+}
+
+@media screen and (max-width: 989px) {
+  .custom-design-steps_wrapper_grid,
+  .custom-design-options_wrapper_body_grid,
+  .custom-design-skeleton_wrapper_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Figma Mobile Get your own design 7930:119557.
+   Steps (119598): 12/24 padding, the button stays beside a 20px heading, and the
+   cards stack 16px apart with 140px photos. Options (119627): three portrait
+   tiles share one row. Gallery (119641): 170x237 cards on a 12px gap run off the
+   right edge. */
+@media screen and (max-width: 749px) {
+  .custom-design-steps_wrapper,
+  .custom-design-skeleton_wrapper {
+    gap: 16px;
+    padding-block: 12px 24px;
+  }
+
+  .custom-design-options_wrapper,
+  .custom-design-gallery_wrapper {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .custom-design-steps_wrapper_head_heading,
+  .custom-design-options_wrapper_heading,
+  .custom-design-gallery_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .custom-design-options_wrapper_heading {
+    color: var(--color-text-secondary, #494949);
+  }
+
+  .custom-design-steps_wrapper_head_cta {
+    padding: 12px 16px;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .custom-design-steps_wrapper_grid,
+  .custom-design-skeleton_wrapper_grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .custom-design-steps_wrapper_grid_item {
+    align-items: center;
+  }
+
+  .custom-design-steps_wrapper_grid_item_image {
+    flex-basis: 140px;
+    width: 140px;
+    height: 140px;
+  }
+
+  .custom-design-steps_wrapper_grid_item_body_head_title {
+    line-height: 24px;
+  }
+
+  .custom-design-steps_wrapper_grid_item_body_text {
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  .custom-design-options_wrapper_body_subheading {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .custom-design-options_wrapper_body_grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .custom-design-options_wrapper_body_grid_item_image {
+    aspect-ratio: 168 / 237;
+  }
+
+  .custom-design-options_wrapper_body_grid_item_label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .custom-design-gallery_wrapper_stage_track {
+    gap: 12px;
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline-start: var(--page-margin);
+  }
+
+  .custom-design-gallery_wrapper_stage_track_item {
+    flex-basis: 170px;
+    width: 170px;
+    gap: 8px;
+  }
+
+  .custom-design-gallery_wrapper_stage_track_item_image {
+    aspect-ratio: 170 / 237;
+  }
+
+  .custom-design-gallery_wrapper_stage_track_item_caption {
+    gap: 1px;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .custom-design-gallery_wrapper_stage_track_item_caption_title {
+    font-weight: 600;
+  }
+
+  .custom-design-gallery_wrapper_stage_arrow {
+    display: none;
+  }
+}

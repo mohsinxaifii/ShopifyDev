@@ -1,0 +1,371 @@
+/* Figma: PLP 7930:102851 - a 435 wide panel on the right, sitting under the
+   announcement strip, with its own scroll and a pinned footer. */
+.variant-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: block;
+}
+
+.variant-drawer[hidden] {
+  display: none;
+}
+
+.variant-drawer_scrim {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.variant-drawer.is-open .variant-drawer_scrim {
+  opacity: 1;
+}
+
+.variant-drawer_panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(435px, 100%);
+  background-color: #fff;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.variant-drawer.is-open .variant-drawer_panel {
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .variant-drawer_scrim,
+  .variant-drawer_panel {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* ------------------------------------------------------------------- head */
+
+.variant-drawer_panel_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  min-height: 24px;
+  padding: 16px 16px 0;
+}
+
+.variant-drawer_panel_head_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.variant-drawer_panel_head_close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: #000;
+  cursor: pointer;
+}
+
+.variant-drawer_panel_head_close svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ---------------------------------------------------------------- content */
+
+.variant-drawer_panel_content {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 16px 0;
+  overflow-y: auto;
+}
+
+.variant-drawer_panel_body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* The preview reuses the card's badge, rating and price classes; only the
+   geometry differs, so just the frame is restated here. */
+.variant-drawer_panel_body_card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.variant-drawer_panel_body_card_media {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 310px;
+  background-color: #f2f2f2;
+}
+
+.variant-drawer_panel_body_card_media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.variant-drawer_panel_body_card_media_top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  padding: 4px;
+}
+
+.variant-drawer_panel_body_card_info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px 8px;
+}
+
+.variant-drawer_panel_body_card_info_price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.variant-drawer_panel_body_card_info_title {
+  overflow: hidden;
+  font-family: var(--font-tertiary--family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.429;
+  color: #000;
+  text-transform: capitalize;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------------------- options */
+
+/* The --variant-swatch-* fallbacks cover metal names the shop has no swatch
+   configured for, so the drawer still shows the finishes the design does
+   rather than three grey dots. */
+.variant-drawer_panel_body_options {
+  --variant-swatch-yellow: linear-gradient(135deg, #f9d496, #d5a95d 50%, #b17e25);
+  --variant-swatch-gold: linear-gradient(135deg, #f9d496, #d5a95d 50%, #b17e25);
+  --variant-swatch-rose: linear-gradient(135deg, #efc9d3, #d8989e 50%, #c06769);
+  --variant-swatch-rose-gold: linear-gradient(135deg, #efc9d3, #d8989e 50%, #c06769);
+  --variant-swatch-silver: linear-gradient(135deg, #fff, #c4c4c4 50%, #8a8a8a);
+  --variant-swatch-white: linear-gradient(135deg, #fff, #c4c4c4 50%, #8a8a8a);
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.variant-drawer_panel_body_options_group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.variant-drawer_panel_body_options_group_head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0;
+  font-family: var(--font-secondary--family);
+  color: var(--color-text-secondary, #494949);
+}
+
+.variant-drawer_panel_body_options_group_head_name {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.375;
+}
+
+.variant-drawer_panel_body_options_group_head_value {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.571;
+}
+
+.variant-drawer_panel_body_options_group_guide {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: end;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.375;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+.variant-drawer_panel_body_options_group_guide_icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+}
+
+.variant-drawer_panel_body_options_group_guide_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.variant-drawer_panel_body_options_group_values {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+}
+
+.variant-drawer_panel_body_options_group_values_value input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* Size chips: 40px pills, brand-filled once chosen. */
+.variant-drawer_panel_body_options_group_values_value_chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  background-color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-icon, #666);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.variant-drawer_panel_body_options_group_values_value
+  input:checked
+  + .variant-drawer_panel_body_options_group_values_value_chip {
+  border-color: var(--color-brand, #712242);
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+}
+
+.variant-drawer_panel_body_options_group_values_value
+  input:focus-visible
+  + .variant-drawer_panel_body_options_group_values_value_chip,
+.variant-drawer_panel_body_options_group_values_value
+  input:focus-visible
+  + .variant-drawer_panel_body_options_group_values_value_swatch {
+  outline: 2px solid var(--color-brand, #712242);
+  outline-offset: 2px;
+}
+
+/* Swatches: a 32px dot inside a 40px ring that turns brand when chosen. */
+.variant-drawer_panel_body_options_group_values_value_swatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.variant-drawer_panel_body_options_group_values_value
+  input:checked
+  + .variant-drawer_panel_body_options_group_values_value_swatch {
+  border-width: 1.5px;
+  border-color: var(--color-brand, #712242);
+}
+
+.variant-drawer_panel_body_options_group_values_value_swatch_dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--variant-swatch, #ddd) center / cover no-repeat;
+}
+
+/* ----------------------------------------------------------------- footer */
+
+.variant-drawer_panel_footer {
+  flex: 0 0 auto;
+  display: flex;
+  padding: 16px 16px 24px;
+  background-color: #fff;
+}
+
+.variant-drawer_panel_footer_done {
+  flex: 1 1 auto;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: var(--color-brand, #712242);
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.variant-drawer_panel_footer_done:disabled {
+  border-color: #c4c4c4;
+  background-color: #c4c4c4;
+  cursor: default;
+}
+
+.variant-drawer_panel_footer_done:not(:disabled):hover {
+  background-color: #5a1b34;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 479px) {
+  .variant-drawer_panel_body_card_media {
+    height: 260px;
+  }
+}

@@ -1,0 +1,213 @@
+/**
+ * The header's search field in its focused state, and the suggestion panel that
+ * drops from it. Figma: "Search active" 7930:105820, "Results found"
+ * 7930:106038, "Results not found" 7930:106256.
+ *
+ * Separate from search.css because the field is in the header on every page,
+ * while search.css is only loaded by the results template.
+ */
+
+.search-suggest {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 800px;
+}
+
+.search-suggest .header_wrapper_search {
+  max-width: none;
+}
+
+/* Chrome draws its own clear affordance inside type=search, which would sit
+   beside the one the design specifies. */
+.search-suggest .header_wrapper_search_input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* Both of these set a `display`, which beats the user agent's
+   `[hidden] { display: none }` unless it is restated. */
+.search-suggest_clear[hidden] {
+  display: none;
+}
+
+.search-suggest_clear {
+  display: flex;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-icon, #666);
+  cursor: pointer;
+}
+
+.search-suggest_clear svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Figma dims the page behind the open field. The scrim sits on the root so it
+   covers the header's siblings without the header having to contain them. */
+.search-suggest-open body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.header.is-searching {
+  position: relative;
+  z-index: 50;
+}
+
+/* The design leaves the announcement strip lit above the open field - it sits in
+   its own section, so it has to be raised alongside the header rather than with
+   it. */
+.search-suggest-open .shopify-section--announcement-bar {
+  position: relative;
+  z-index: 50;
+}
+
+/* The focused field grows to the 762px the design centres in the bar, and the
+   clusters either side stand down to make room. */
+.header.is-searching .header_wrapper_brand,
+.header.is-searching .header_wrapper_actions {
+  display: none;
+}
+
+.header.is-searching .header_wrapper {
+  justify-content: center;
+}
+
+.header.is-searching .search-suggest {
+  flex: 0 0 auto;
+  width: min(762px, 100%);
+}
+
+.header.is-searching .header_wrapper_search {
+  height: 46px;
+  border-color: var(--color-border-dark, #999);
+  box-shadow: none;
+}
+
+/* The panel sets its own `display`, which would otherwise beat the user agent's
+   `[hidden] { display: none }` and leave an empty white box under the header. */
+.search-suggest_panel[hidden] {
+  display: none;
+}
+
+.search-suggest_panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  left: 0;
+  z-index: 51;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: center;
+  max-height: min(70vh, 560px);
+  padding: 12px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.search-suggest_panel_group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-suggest_panel_group_label {
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--color-icon, #666);
+}
+
+.search-suggest_panel_group_rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.search-suggest_panel_row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--color-foreground, #000);
+  text-decoration: none;
+}
+
+.search-suggest_panel_row:hover .search-suggest_panel_row_title,
+.search-suggest_panel_row--query:hover {
+  text-decoration: underline;
+}
+
+.search-suggest_panel_row_media {
+  display: flex;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #f7f3f5;
+}
+
+.search-suggest_panel_row_media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-suggest_panel_row_title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.search-suggest_panel_all {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border, #e0e0e0);
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--color-foreground, #000);
+  text-decoration: none;
+}
+
+/* The panel's only child in the no-results state, where the design drops the
+   rule that would otherwise float above nothing. */
+.search-suggest_panel_all:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.search-suggest_panel_all_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.search-suggest_panel_all_icon svg {
+  width: 100%;
+  height: 100%;
+}

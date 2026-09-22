@@ -1,0 +1,69 @@
+{{ 'about-founder.css' | asset_url | stylesheet_tag }}
+
+<section class="about-founder full-width">
+  <div class="about-founder_wrapper">
+    <div class="about-founder_wrapper_row">
+      <span class="about-founder_wrapper_row_image" data-animate>
+        {%- if section.settings.image -%}
+          {{
+            section.settings.image
+            | image_url: width: 722
+            | image_tag: loading: 'lazy', widths: '361,542,722', sizes: '361px', alt: section.settings.name
+          }}
+        {%- endif -%}
+      </span>
+
+      <div class="about-founder_wrapper_row_text" data-animate>
+        {%- if section.settings.heading != blank -%}
+          <h2 class="about-founder_wrapper_row_text_heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.quote != blank -%}
+          <p class="about-founder_wrapper_row_text_quote">{{ section.settings.quote }}</p>
+        {%- endif -%}
+
+        <div class="about-founder_wrapper_row_text_block">
+          {%- if section.settings.body != blank -%}
+            <div class="about-founder_wrapper_row_text_block_body">{{ section.settings.body | newline_to_br }}</div>
+          {%- endif -%}
+          {%- if section.settings.name != blank -%}
+            <p class="about-founder_wrapper_row_text_block_attribution">
+              {{- section.settings.name -}}
+              {%- if section.settings.role != blank -%}
+                <br>
+                {{ section.settings.role }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About founder",
+  "tag": "section",
+  "class": "shopify-section--about-founder",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Portrait" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Founder" },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Pull quote",
+      "default": "“We wanted diamonds to feel less like an occasion, and more like a part of life.”"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "info": "Leave a blank line between paragraphs.",
+      "default": "“Zinara started with a simple question: why should beautiful jewellery spend most of its life in a box? We wanted to create pieces that women could genuinely live in—pieces that feel special, but never too precious to wear.\n\nLab-grown diamonds gave us the opportunity to bring that vision to life in a way that felt modern, considered, and accessible.”"
+    },
+    { "type": "text", "id": "name", "label": "Name", "default": "— Harshit Abrol" },
+    { "type": "text", "id": "role", "label": "Role", "default": "Founder, Zinara" }
+  ],
+  "presets": [{ "name": "About founder" }]
+}
+{% endschema %}

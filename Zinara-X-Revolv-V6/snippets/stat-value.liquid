@@ -1,0 +1,16 @@
+{%- doc -%}
+  Renders a comparison stat value, splitting "160kg / carat" so the amount and
+  the unit can be sized separately (the Figma design uses 14/600 and 12/500).
+
+  @param {string} value - the full value, e.g. "160kg / carat"
+{%- enddoc -%}
+
+{%- assign parts = value | split: ' / ' -%}
+<span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value">
+  <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value_amount">{{ parts[0] }}</span>
+  {%- if parts.size > 1 -%}
+    <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value_unit">
+      / {{ parts[1] }}
+    </span>
+  {%- endif -%}
+</span>

@@ -1,0 +1,234 @@
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'collection.css' | asset_url | stylesheet_tag }}
+{{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  Figma: PLP 7930:101927 > Frame 1116601646 (7930:101938).
+
+  The filter rail is driven by Shopify's storefront filters (`collection.filters`),
+  so the groups, their values and the counts are whatever Search & Discovery is
+  configured to expose - the design's Product type / Colour / Diamond shape /
+  Occassion / Collection / Shipping groups are all `list` filters, and Price is
+  the one `price_range`. The category chips above the grid are navigational
+  rather than filters, so they come from section blocks.
+{%- endcomment -%}
+
+{%- liquid
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+  assign category_blocks = section.blocks | where: 'type', 'category'
+-%}
+
+<collection-page class="collection full-width" data-collection-url="{{ collection.url }}">
+  {%- render 'plp-skeleton' -%}
+
+  <form
+    id="CollectionFilterForm"
+    class="collection_wrapper"
+    data-filter-form
+  >
+    {%- comment -%} Keep the chosen sort with the filter params on submit. {%- endcomment -%}
+    <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
+
+    <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
+      <div class="collection_wrapper_filters_head">
+        <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
+        <a href="{{ collection.url }}?sort_by={{ sort_by }}" class="collection_wrapper_filters_head_clear">
+          {{- 'collection.clear_all' | t -}}
+        </a>
+        <button
+          type="button"
+          class="collection_wrapper_filters_head_close"
+          data-filters-close
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
+      </div>
+
+      <div class="collection_wrapper_filters_groups">
+        {%- for filter in collection.filters -%}
+          <details class="collection_wrapper_filters_groups_group" open>
+            <summary class="collection_wrapper_filters_groups_group_head">
+              <span class="collection_wrapper_filters_groups_group_head_label">{{ filter.label }}</span>
+              <span class="collection_wrapper_filters_groups_group_head_icon" aria-hidden="true">
+                <span data-icon-plus>{{ 'icon-faq-plus.svg' | inline_asset_content }}</span>
+                <span data-icon-minus>{{ 'icon-faq-minus.svg' | inline_asset_content }}</span>
+              </span>
+            </summary>
+
+            <div class="collection_wrapper_filters_groups_group_body">
+              {%- case filter.type -%}
+                {%- when 'price_range' -%}
+                  {%- render 'filter-price', filter: filter -%}
+                {%- else -%}
+                  {%- render 'filter-list', filter: filter -%}
+              {%- endcase -%}
+            </div>
+          </details>
+        {%- else -%}
+          <p class="collection_wrapper_filters_groups_none">
+            {{- 'collection.empty' | t -}}
+          </p>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%}
+        Phones only (Figma Mobile Filters 7930:118227): the rail opens as a sheet
+        whose footer clears everything or closes it - filters already apply live.
+      {%- endcomment -%}
+      <div class="collection_wrapper_filters_footer">
+        <a href="{{ collection.url }}?sort_by={{ sort_by }}" class="collection_wrapper_filters_footer_clear">
+          {{- 'collection.clear_all' | t -}}
+        </a>
+        <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-close>
+          {{- 'collection.apply' | t -}}
+        </button>
+      </div>
+    </aside>
+
+    <div class="collection_wrapper_main">
+      <div class="collection_wrapper_main_toolbar">
+        <p class="collection_wrapper_main_toolbar_count">
+          {{- 'collection.product_count' | t: count: collection.products_count -}}
+        </p>
+
+        {%- if collection.sort_options.size > 0 -%}
+          <div class="collection_wrapper_main_toolbar_sort" data-sort>
+            <button
+              type="button"
+              class="collection_wrapper_main_toolbar_sort_trigger"
+              data-sort-trigger
+              aria-expanded="false"
+            >
+              <span class="collection_wrapper_main_toolbar_sort_trigger_label">
+                {{ 'collection.sort_by' | t }}
+                <strong data-sort-current>
+                  {%- for option in collection.sort_options -%}
+                    {%- if option.value == sort_by -%}{{ option.name }}{%- endif -%}
+                  {%- endfor -%}
+                </strong>
+              </span>
+              <span class="collection_wrapper_main_toolbar_sort_trigger_icon" aria-hidden="true">
+                {{- 'icon-caret-down.svg' | inline_asset_content -}}
+              </span>
+            </button>
+
+            <div class="collection_wrapper_main_toolbar_sort_menu" data-sort-menu hidden>
+              <div class="collection_wrapper_main_toolbar_sort_menu_head">
+                {{- 'collection.sort_by_heading' | t -}}
+                <button
+                  type="button"
+                  class="collection_wrapper_main_toolbar_sort_menu_head_close"
+                  data-sort-close
+                  aria-label="{{ 'accessibility.close' | t }}"
+                >
+                  {{- 'icon-close.svg' | inline_asset_content -}}
+                </button>
+              </div>
+              {%- for option in collection.sort_options -%}
+                <button
+                  type="button"
+                  class="collection_wrapper_main_toolbar_sort_menu_item{% if option.value == sort_by %} is-active{% endif %}"
+                  data-sort-option
+                  value="{{ option.value }}"
+                >
+                  {{- option.name -}}
+                </button>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if category_blocks.size > 0 -%}
+        <nav class="collection_wrapper_main_chips" aria-label="{{ 'collection.filters' | t }}">
+          {%- for block in category_blocks -%}
+            {%- liquid
+              assign chip_url = block.settings.url
+              assign is_active = false
+              if chip_url == blank
+                comment
+                  The catch-all chip: current whenever no other chip's path is.
+                endcomment
+                assign chip_url = collection.url
+                if forloop.first and request.path == collection.url
+                  assign is_active = true
+                endif
+              elsif chip_url == request.path
+                assign is_active = true
+              endif
+            -%}
+            <a
+              href="{{ chip_url }}"
+              class="collection_wrapper_main_chips_chip{% if is_active %} is-active{% endif %}"
+              {% if is_active %}
+                aria-current="page"
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
+              {{- block.settings.label -}}
+            </a>
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+
+      {%- paginate collection.products by section.settings.products_per_page -%}
+        <div class="collection_wrapper_main_grid" data-grid data-animate-group data-animate-stagger="0.05">
+          {%- for product in collection.products -%}
+            {%- render 'product-card', product: product, variant: 'grid' -%}
+          {%- else -%}
+            <p class="collection_wrapper_main_grid_empty">{{ 'collection.empty' | t }}</p>
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.next -%}
+          <div class="collection_wrapper_main_more" data-more>
+            <a href="{{ paginate.next.url }}" class="collection_wrapper_main_more_button" data-more-link>
+              <span data-more-label>{{ 'collection.load_more' | t }}</span>
+              <span class="collection_wrapper_main_more_button_spinner" aria-hidden="true">
+                {{- 'icon-spinner.svg' | inline_asset_content -}}
+              </span>
+            </a>
+          </div>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+  </form>
+
+  {%- render 'plp-mobile-bar', filters: collection.filters -%}
+</collection-page>
+
+{%- render 'variant-drawer' -%}
+
+<script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
+
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "t:general.collection",
+  "tag": "section",
+  "class": "shopify-section--collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 9,
+      "max": 48,
+      "step": 3,
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category chip",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "All" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ]
+}
+{% endschema %}

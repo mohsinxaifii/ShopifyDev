@@ -1,0 +1,162 @@
+/* Figma: Home page 827:24395 > Frame 1116601720 (827:24746).
+   Section 32/72 padding, 20px rows, 240x309 cards on a 24px gap. */
+.occasion-showcase {
+  position: relative;
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.occasion-showcase_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.occasion-showcase_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.occasion-showcase_wrapper_stage {
+  /* Figma fits 1136 / 264 = 4.303 card slots across the content width. The 264
+     ceiling stops cards growing past the design and the floor keeps them usable
+     once the section is too narrow to hold that many. */
+  --occasion-visible: 4.303;
+  --occasion-step: 264px;
+  --occasion-gap: 24px;
+  --occasion-card: 240px;
+
+  position: relative;
+  width: 100%;
+}
+
+@supports (container-type: inline-size) {
+  .occasion-showcase_wrapper_stage {
+    --occasion-step: clamp(170px, calc(100cqw / var(--occasion-visible)), 264px);
+    --occasion-gap: calc(var(--occasion-step) * 0.0909);
+    --occasion-card: calc(var(--occasion-step) - var(--occasion-gap));
+  }
+}
+
+/* Figma 7930:104536 clips the row at the content edge: the last card is cut at
+   1208px, not at the viewport. */
+.occasion-showcase_wrapper_track {
+  display: flex;
+  gap: var(--occasion-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.occasion-showcase_wrapper_track::-webkit-scrollbar {
+  display: none;
+}
+
+.occasion-showcase_wrapper_track_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 var(--occasion-card);
+  width: var(--occasion-card);
+  scroll-snap-align: start;
+  text-decoration: none;
+}
+
+.occasion-showcase_wrapper_track_item_image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 240 / 309;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+  transition: transform 0.3s ease;
+}
+
+.occasion-showcase_wrapper_track_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.occasion-showcase_wrapper_track_item:hover .occasion-showcase_wrapper_track_item_image {
+  transform: translateY(-4px);
+}
+
+.occasion-showcase_wrapper_track_item_label {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+  text-align: center;
+}
+
+/* Centred on the image rather than the whole card, and 20px outside the track.
+   Offset with `top` rather than translateY so the shared :hover transform in
+   scroll-carousel.css cannot displace them. */
+.occasion-showcase_wrapper_stage_prev,
+.occasion-showcase_wrapper_stage_next {
+  position: absolute;
+  top: calc(var(--occasion-card) * 0.6438 - 20px);
+  z-index: 2;
+}
+
+.occasion-showcase_wrapper_stage_prev {
+  left: -20px;
+}
+
+.occasion-showcase_wrapper_stage_next {
+  right: -20px;
+}
+
+/* Figma Mobile 7930:106862: 24/16 padding, a 20px heading, 168x237 cards on a
+   16px gap running off both screen edges, 12px labels on a 20px line. */
+@media screen and (max-width: 749px) {
+  .occasion-showcase_wrapper {
+    padding-block: 24px;
+  }
+
+  .occasion-showcase_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .occasion-showcase_wrapper_stage {
+    --occasion-card: 168px;
+    --occasion-gap: 16px;
+  }
+
+  .occasion-showcase_wrapper_track {
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline-start: var(--page-margin);
+  }
+
+  .occasion-showcase_wrapper_track_item_image {
+    aspect-ratio: 168 / 237;
+  }
+
+  .occasion-showcase_wrapper_track_item_label {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .occasion-showcase_wrapper_stage_prev,
+  .occasion-showcase_wrapper_stage_next {
+    display: none;
+  }
+}

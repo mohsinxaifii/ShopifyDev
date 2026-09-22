@@ -1,0 +1,269 @@
+/* Figma: Wishlist 7930:94300 > Frame 1116601589.
+
+   A white 32/72 band on a 24px stack: the heading and count, the circular
+   category filters, then the grid. Four 266px cards to a row on the 24px
+   gutter - 1136 - 3*24 = 1064, which is 4 x 266, so the PLP card's grid variant
+   fits without being resized. */
+.wishlist {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.wishlist_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.wishlist_wrapper_head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wishlist_wrapper_head_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.wishlist_wrapper_head_count {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-icon, #666);
+}
+
+/* ------------------------------------------------------------ filter chips --
+   An 80px circle inside a 2px ring, so selecting one can draw the accent
+   outline in the gap without moving the image or the label. */
+.wishlist_wrapper_filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.wishlist_wrapper_filters_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.wishlist_wrapper_filters_item_image {
+  display: block;
+  box-sizing: border-box;
+  width: 84px;
+  height: 84px;
+  padding: 2px;
+  border: 1.5px solid transparent;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f2f2f2;
+  transition: border-color 0.2s ease;
+}
+
+.wishlist_wrapper_filters_item.is-active .wishlist_wrapper_filters_item_image {
+  border-color: var(--color-accent, #f0166e);
+}
+
+.wishlist_wrapper_filters_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.wishlist_wrapper_filters_item_label {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.214;
+  color: var(--color-text-secondary, #494949);
+}
+
+.wishlist_wrapper_filters_item.is-active .wishlist_wrapper_filters_item_label {
+  color: var(--color-brand, #712242);
+}
+
+/* -------------------------------------------------------------------- grid */
+.wishlist_wrapper_grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.wishlist_wrapper_grid_item {
+  display: flex;
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------ empty states */
+.wishlist_wrapper_empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-block: 40px;
+  font-family: var(--font-secondary--family);
+}
+
+.wishlist_wrapper_empty_title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.wishlist_wrapper_empty_body {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+}
+
+.wishlist_wrapper_empty_action {
+  margin-top: 8px;
+  padding: 12px 20px;
+  border-radius: var(--style-border-radius-inputs, 8px);
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.wishlist_wrapper_nomatch {
+  margin: 0;
+  padding-block: 24px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "Wishlist page skeleton" 7930:94446. In the flow, not over the page:
+   there is nothing behind it to cover until the fetch returns. */
+.wishlist-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: skeleton-timeout 0s linear 2.5s forwards;
+}
+
+.wishlist-skeleton_filters {
+  display: flex;
+  gap: 24px;
+}
+
+.wishlist-skeleton_filters_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.wishlist-skeleton_filters_item_circle {
+  width: 84px;
+  height: 84px;
+}
+
+.wishlist-skeleton_grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.wishlist-skeleton_grid_item {
+  aspect-ratio: 266 / 386;
+}
+
+@media screen and (max-width: 989px) {
+  .wishlist_wrapper_grid,
+  .wishlist-skeleton_grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Figma Mobile Wishlist 7930:118605: 24/16 padding on a 16px stack, a 20px black
+   title over a 14px count, 66px category circles in a 1.5px ring with 10px labels,
+   and a two-up grid on an 8px gutter. */
+@media screen and (max-width: 749px) {
+  .wishlist_wrapper {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .wishlist_wrapper_head_title {
+    font-size: 20px;
+    line-height: normal;
+    color: #000;
+  }
+
+  .wishlist_wrapper_head_count {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .wishlist_wrapper_filters,
+  .wishlist-skeleton_filters {
+    flex-wrap: nowrap;
+    gap: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .wishlist_wrapper_filters_item_image,
+  .wishlist-skeleton_filters_item_circle {
+    width: 73px;
+    height: 73px;
+  }
+
+  .wishlist_wrapper_filters_item_label {
+    font-size: 10px;
+    line-height: 18px;
+    color: #808080;
+  }
+
+  .wishlist_wrapper_filters_item.is-active .wishlist_wrapper_filters_item_label {
+    font-weight: 600;
+    color: var(--color-accent, #f0166e);
+  }
+
+  .wishlist_wrapper_filters::-webkit-scrollbar,
+  .wishlist-skeleton_filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wishlist_wrapper_filters_item,
+  .wishlist-skeleton_filters_item {
+    flex: 0 0 auto;
+  }
+
+  .wishlist_wrapper_grid,
+  .wishlist-skeleton_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}

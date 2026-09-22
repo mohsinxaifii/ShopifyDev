@@ -1,0 +1,50 @@
+{%- doc -%}
+  Loading placeholder for the blog listing. Figma "Blogs page skeleton"
+  7930:93523.
+
+  Traces the two bands of the real page - a centred heading over a row of cards,
+  twice - and ends on the load-more pill. Every card is the same shape: a
+  12px-radius media tile over four bars standing in for the date, title,
+  standfirst and read-more link.
+
+  See assets/skeleton.css for how this clears.
+
+  @param {number} [featured_count] - cards in the featured row, to match the section
+{%- enddoc -%}
+
+{%- liquid
+  assign featured = featured_count | default: 3
+  if featured < 1
+    assign featured = 1
+  endif
+-%}
+
+<div class="blog-skeleton skeleton" data-skeleton aria-hidden="true">
+  {%- for band in (1..2) -%}
+    {%- liquid
+      assign cards = featured
+      if band == 2
+        assign cards = 9
+      endif
+    -%}
+    <div class="blog-skeleton_band">
+      <span class="skeleton_tile blog-skeleton_band_heading"></span>
+
+      <div class="blog-skeleton_band_row">
+        {%- for card in (1..cards) -%}
+          <div class="blog-skeleton_band_row_card">
+            <span class="skeleton_tile skeleton_tile--card blog-skeleton_band_row_card_media"></span>
+            <span class="skeleton_tile" style="height: 18px; width: 38%"></span>
+            <span class="skeleton_tile" style="height: 20px; width: 78%"></span>
+            <span class="skeleton_tile" style="height: 44px"></span>
+            <span class="skeleton_tile" style="height: 20px; width: 96px"></span>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if band == 2 -%}
+        <span class="skeleton_tile skeleton_tile--pill blog-skeleton_band_more"></span>
+      {%- endif -%}
+    </div>
+  {%- endfor -%}
+</div>

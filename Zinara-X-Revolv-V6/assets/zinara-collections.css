@@ -1,0 +1,206 @@
+/* Figma: Home page 827:24395 > Frame 1116601721 (827:24625).
+   Section 32/72 padding, 20px between every row, 240x309 cards on a 24px gap. */
+.zinara-collections {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* The exported vector already carries its 0.3 stroke opacity, and it sits
+   flush with the bottom of the section. */
+.zinara-collections_wave {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.zinara-collections_wave svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.zinara-collections_wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.zinara-collections_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.zinara-collections_wrapper_stage {
+  /* Figma fits 1136 / 264 = 4.303 card slots across the content width. Deriving
+     the card from the container keeps that count identical at every width. */
+  --zinara-collections-visible: 4.303;
+  --zinara-collections-step: 264px;
+  --zinara-collections-gap: 24px;
+  --zinara-collections-card: 240px;
+
+  position: relative;
+  width: 100%;
+}
+
+@supports (container-type: inline-size) {
+  .zinara-collections_wrapper_stage {
+    /* Figma's 264px step is the ceiling, so cards never grow past the design.
+       Below the floor the count drops off on its own, with no breakpoint to
+       jump at - stepping the count instead made cards *larger* as the section
+       narrowed. */
+    --zinara-collections-step: clamp(
+      170px,
+      calc(100cqw / var(--zinara-collections-visible)),
+      264px
+    );
+    --zinara-collections-gap: calc(var(--zinara-collections-step) * 0.0909);
+    --zinara-collections-card: calc(var(--zinara-collections-step) - var(--zinara-collections-gap));
+  }
+}
+
+/* Figma 7930:104412 clips the row at the content edge: the last card is cut at
+   1208px, not at the viewport. */
+.zinara-collections_wrapper_track {
+  display: flex;
+  gap: var(--zinara-collections-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.zinara-collections_wrapper_track::-webkit-scrollbar {
+  display: none;
+}
+
+.zinara-collections_wrapper_track_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 var(--zinara-collections-card);
+  width: var(--zinara-collections-card);
+  scroll-snap-align: start;
+  text-decoration: none;
+}
+
+.zinara-collections_wrapper_track_item_image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 240 / 309;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.zinara-collections_wrapper_track_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zinara-collections_wrapper_track_item:hover .zinara-collections_wrapper_track_item_image {
+  transform: translateY(-4px);
+}
+
+.zinara-collections_wrapper_track_item_label {
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.24;
+  color: var(--color-brand, #712242);
+  text-align: center;
+}
+
+/* Arrows are centred on the image, not the whole card, and sit 20px outside
+   the track the way the other carousels on this page do. */
+.zinara-collections_wrapper_stage_prev,
+.zinara-collections_wrapper_stage_next {
+  position: absolute;
+
+  /* Offset by half the 40px button rather than translateY(-50%): later sections
+     link scroll-carousel.css again, so its :hover transform wins the cascade and
+     would drop the button by half its height. */
+  top: calc(var(--zinara-collections-card) * 0.6438 - 20px);
+  z-index: 2;
+}
+
+.zinara-collections_wrapper_stage_prev {
+  left: -20px;
+}
+
+.zinara-collections_wrapper_stage_next {
+  right: -20px;
+}
+
+.zinara-collections_wrapper_link {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.219;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+/* Figma Mobile 7930:106829: 24/16 padding, a 20px heading, 168x237 cards on a
+   16px gap running off both screen edges, 16px serif labels on a 24px line. */
+@media screen and (max-width: 749px) {
+  .zinara-collections_wrapper {
+    padding-block: 24px;
+  }
+
+  .zinara-collections_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .zinara-collections_wrapper_stage {
+    --zinara-collections-card: 168px;
+    --zinara-collections-gap: 16px;
+  }
+
+  .zinara-collections_wrapper_track {
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline-start: var(--page-margin);
+  }
+
+  .zinara-collections_wrapper_track_item_image {
+    aspect-ratio: 168 / 237;
+  }
+
+  .zinara-collections_wrapper_track_item_label {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .zinara-collections_wrapper_link {
+    font-size: 16px;
+  }
+
+  .zinara-collections_wrapper_stage_prev,
+  .zinara-collections_wrapper_stage_next {
+    display: none;
+  }
+}

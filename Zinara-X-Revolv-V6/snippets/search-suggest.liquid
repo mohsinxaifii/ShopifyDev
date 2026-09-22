@@ -1,0 +1,58 @@
+{%- doc -%}
+  The header's search field plus its suggestion panel. Figma states "Search
+  active" (7930:105820), "Results found" (7930:106038) and "Results not found"
+  (7930:106256).
+
+  The panel ships empty: its contents come from Shopify's predictive search
+  endpoint, which is the only source that can rank a partial query. The three
+  Figma states are the panel's three shapes - no query, hits, no hits - rather
+  than three separate components.
+{%- enddoc -%}
+
+<search-suggest class="search-suggest">
+  <form
+    action="{{ routes.search_url }}"
+    method="get"
+    role="search"
+    class="header_wrapper_search"
+    data-suggest-form
+  >
+    <button type="submit" class="header_wrapper_search_icon" aria-label="{{ 'accessibility.search' | t }}">
+      {{ 'icon-search.svg' | inline_asset_content }}
+    </button>
+
+    <input
+      type="search"
+      name="q"
+      class="header_wrapper_search_input"
+      placeholder="{{ 'search.placeholder_short' | t }}"
+      autocomplete="off"
+      value="{{ search.terms | escape }}"
+      role="combobox"
+      aria-expanded="false"
+      aria-controls="SearchSuggestPanel"
+      aria-autocomplete="list"
+      data-suggest-input
+    >
+
+    <button
+      type="button"
+      class="search-suggest_clear"
+      data-suggest-clear
+      aria-label="{{ 'collection.clear_all' | t }}"
+      hidden
+    >
+      {{ 'icon-close.svg' | inline_asset_content }}
+    </button>
+
+    <input type="hidden" name="type" value="product">
+  </form>
+
+  <div
+    class="search-suggest_panel"
+    id="SearchSuggestPanel"
+    role="listbox"
+    data-suggest-panel
+    hidden
+  ></div>
+</search-suggest>

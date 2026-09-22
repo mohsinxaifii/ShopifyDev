@@ -1,0 +1,201 @@
+/* Figma: All collections 7930:94873 > Frame 1116601467.
+
+   A cream band with the decorative wave run along its bottom edge, 32/72
+   padded, on a 16px stack. Four 266px cards to a row on the 24px gutter.
+
+   The heading is left-set and the card titles are centred - the opposite of the
+   centred-heading bands elsewhere in the theme, so nothing here is shared with
+   them. */
+.collections-page {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  background-color: #fef4e2;
+}
+
+.collections-page_wave {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.collections-page_wave svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.collections-page_wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.collections-page_wrapper_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.collections-page_wrapper_empty {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-text-secondary, #494949);
+}
+
+.collections-page_wrapper_grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.collections-page_wrapper_grid_item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.collections-page_wrapper_grid_item_image {
+  display: block;
+  aspect-ratio: 266 / 357;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.collections-page_wrapper_grid_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.collections-page_wrapper_grid_item:hover .collections-page_wrapper_grid_item_image img {
+  transform: scale(1.03);
+}
+
+.collections-page_wrapper_grid_item_body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+/* The serif italic, at the one weight the layout loads from Google as a real
+   600. Figma 7930:94891: Libre Baskerville SemiBold Italic. */
+.collections-page_wrapper_grid_item_body_title {
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.25;
+  color: var(--color-brand, #712242);
+}
+
+.collections-page_wrapper_grid_item_body_count {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "All collections skeleton" 7930:94998. */
+.collections-skeleton_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.collections-skeleton_wrapper_heading {
+  width: 205px;
+  height: 34px;
+}
+
+.collections-skeleton_wrapper_grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.collections-skeleton_wrapper_grid_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.collections-skeleton_wrapper_grid_item_media {
+  aspect-ratio: 266 / 357;
+}
+
+@media screen and (max-width: 989px) {
+  .collections-page_wrapper_grid,
+  .collections-skeleton_wrapper_grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Figma Mobile All collections 7930:119276: 12/24 padding, a 20px heading, and two
+   237px-tall cards to a row on a 20px gutter with 16px bold-italic titles. */
+@media screen and (max-width: 749px) {
+  .collections-page_wrapper,
+  .collections-skeleton_wrapper {
+    padding-block: 12px 24px;
+  }
+
+  .collections-page_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .collections-page_wrapper_grid,
+  .collections-skeleton_wrapper_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .collections-page_wrapper_grid_item_image,
+  .collections-skeleton_wrapper_grid_item_media {
+    aspect-ratio: 170.5 / 237;
+  }
+
+  .collections-page_wrapper_grid_item_body {
+    gap: 4px;
+  }
+
+  .collections-page_wrapper_grid_item_body_title {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: normal;
+  }
+
+  .collections-page_wrapper_grid_item_body_count {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}

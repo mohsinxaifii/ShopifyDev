@@ -1,0 +1,36 @@
+{%- doc -%}
+  Loading placeholder for the contact band. Figma "Contact us skeleton"
+  7930:94604.
+
+  Used by both pages this band appears on - the contact page (7930:94717) and
+  About (7930:95474) - so it traces the band, not the page.
+
+  Figma's skeleton also shows a large hero tile above the cards. Neither page
+  has an image there, so reproducing it would promise something that never
+  arrives and jump the layout when the cover lifts. The heading, subcopy and
+  three cards are what this actually resolves to.
+
+  See assets/skeleton.css for how this clears.
+
+  @param {number} [cards] - cards in the row, to match the section's blocks
+{%- enddoc -%}
+
+{%- liquid
+  assign card_count = cards | default: 3
+  if card_count < 1
+    assign card_count = 1
+  endif
+-%}
+
+<div class="contact-skeleton skeleton" data-skeleton aria-hidden="true">
+  <div class="contact-skeleton_wrapper">
+    <span class="skeleton_tile" style="height: 34px; width: 280px"></span>
+    <span class="skeleton_tile" style="height: 22px; width: 58%"></span>
+
+    <div class="contact-skeleton_wrapper_cards">
+      {%- for card in (1..card_count) -%}
+        <span class="skeleton_tile skeleton_tile--card contact-skeleton_wrapper_cards_item"></span>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

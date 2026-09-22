@@ -1,0 +1,400 @@
+/* Figma: Home page 827:24395 > Frame 1116601659 (827:24657).
+   Section 64/72/32 padding, 20px rows, 332x194 cards on a 24px gap. */
+.testimonial-carousel {
+  position: relative;
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.testimonial-carousel_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 64px var(--page-margin) 32px;
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.testimonial-carousel_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.testimonial-carousel_wrapper_stage {
+  /* Figma fits 1136 / 356 = 3.191 card slots across the content width, so the
+     same three-and-a-sliver shows at every width. */
+  --testimonial-visible: 3.191;
+  --testimonial-step: 356px;
+  --testimonial-gap: 24px;
+  --testimonial-card: 332px;
+
+  position: relative;
+  width: 100%;
+}
+
+@supports (container-type: inline-size) {
+  .testimonial-carousel_wrapper_stage {
+    /* Figma's 356px step is the ceiling, so cards never grow past the design.
+       The 240px floor keeps the text column readable once the section is too
+       narrow to fit 3.191 of them - the count then falls off on its own, with
+       no breakpoint to jump at. */
+    --testimonial-step: clamp(240px, calc(100cqw / var(--testimonial-visible)), 356px);
+    --testimonial-gap: calc(var(--testimonial-step) * 0.0674);
+    --testimonial-card: calc(var(--testimonial-step) - var(--testimonial-gap));
+  }
+}
+
+/* Figma 7930:104446 clips the row at the content edge: the last card is cut at
+   1208px, not at the viewport. */
+.testimonial-carousel_wrapper_track {
+  display: flex;
+  gap: var(--testimonial-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.testimonial-carousel_wrapper_track::-webkit-scrollbar {
+  display: none;
+}
+
+.testimonial-carousel_wrapper_track_card {
+  display: block;
+  flex: 0 0 var(--testimonial-card);
+  width: var(--testimonial-card);
+  scroll-snap-align: start;
+  padding: 8px;
+  background-color: #fff;
+
+  /* Inset outline rather than a border: Figma's stroke does not consume layout
+     space, so a border would eat 2px off the 178px content column. */
+  outline: 1px solid #e0e0e0;
+  outline-offset: -1px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+/* Figma's 332px card holds a 316px content box split 126 / 12 / 178. Those are
+   kept as ratios, not pixels: the card width tracks the container, so a fixed
+   image would swallow the text column as the card narrows. */
+.testimonial-carousel_wrapper_track_card_row {
+  display: flex;
+  gap: 3.797%;
+  align-items: stretch;
+}
+
+/* Height comes from the text beside it, which is what keeps the two columns
+   level at 178px on the Figma card and still level once the card narrows and
+   the quote wraps onto more lines. */
+.testimonial-carousel_wrapper_track_card_row_image {
+  position: relative;
+  display: block;
+  flex: 0 0 39.873%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.testimonial-carousel_wrapper_track_card_row_image img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testimonial-carousel_wrapper_track_card_row_content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 178px;
+  flex: 1 1 auto;
+}
+
+/* Stars: five 16px marks on a 3.56px gap. */
+.testimonial-stars {
+  display: flex;
+  gap: 3.56px;
+}
+
+.testimonial-stars_star {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  color: #d38a0d;
+}
+
+.testimonial-stars_star.is-empty {
+  color: #e0e0e0;
+}
+
+.testimonial-stars_star svg {
+  width: 100%;
+  height: 100%;
+}
+
+.testimonial-carousel_wrapper_track_card_row_content_name {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.testimonial-carousel_wrapper_track_card_row_content_quote {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+/* Four lines then an ellipsis; the rest lives in the pop-up. */
+.testimonial-carousel_wrapper_track_card_row_content_quote_text {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.286;
+  color: var(--color-text-secondary, #494949);
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.testimonial-carousel_wrapper_track_card_row_content_quote_more {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.219;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.testimonial-carousel_wrapper_track_card_row_content_product {
+  display: block;
+  margin-top: auto;
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.428;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Arrows: centred on the card, 20px outside the track. Offset with `top`
+   rather than translateY so the shared :hover transform cannot displace them. */
+.testimonial-carousel_wrapper_stage_prev,
+.testimonial-carousel_wrapper_stage_next {
+  position: absolute;
+  top: calc(50% - 20px);
+  z-index: 2;
+}
+
+.testimonial-carousel_wrapper_stage_prev {
+  left: -20px;
+}
+
+.testimonial-carousel_wrapper_stage_next {
+  right: -20px;
+}
+
+/* ---------------------------------------------------------------- pop-up */
+
+.review-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+
+  /* The theme's `* { margin: 0 }` reset kills the dialog's default auto margin,
+     which is what centres it in the viewport. */
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  overflow: visible;
+}
+
+.review-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.review-dialog_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 12px;
+}
+
+.review-dialog_panel_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.review-dialog_panel_head_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.review-dialog_panel_head_close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #494949;
+  cursor: pointer;
+}
+
+.review-dialog_panel_body {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* Sized by the text beside it rather than a fixed crop, so the panel has no
+   dead space under a short review. */
+.review-dialog_panel_body_image {
+  position: relative;
+  display: block;
+  flex: 0 0 160px;
+  width: 160px;
+  min-height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.review-dialog_panel_body_image img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-dialog_panel_body_content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.review-dialog_panel_body_content .testimonial-carousel_wrapper_track_card_row_content_product {
+  overflow: visible;
+  white-space: normal;
+}
+
+.review-dialog_panel_body_content_quote {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.286;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* Figma Mobile 7930:106851: 24/16 padding, a 20px heading, and fixed 332px cards
+   (126px photo beside the text) on a 16px gap running off both screen edges. */
+@media screen and (max-width: 749px) {
+  .testimonial-carousel_wrapper {
+    padding-block: 24px;
+  }
+
+  .testimonial-carousel_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .testimonial-carousel_wrapper_stage {
+    --testimonial-card: 332px;
+    --testimonial-gap: 16px;
+  }
+
+  .testimonial-carousel_wrapper_track {
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline-start: var(--page-margin);
+  }
+
+  .testimonial-carousel_wrapper_track_card {
+    border-radius: 16px;
+  }
+
+  .testimonial-carousel_wrapper_track_card_row {
+    gap: 12px;
+  }
+
+  .testimonial-carousel_wrapper_track_card_row_image {
+    flex: 0 0 126px;
+  }
+
+  .testimonial-carousel_wrapper_track_card_row_content_name {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .testimonial-carousel_wrapper_track_card_row_content_quote_text {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .testimonial-carousel_wrapper_track_card_row_content_product {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .testimonial-carousel_wrapper_stage_prev,
+  .testimonial-carousel_wrapper_stage_next {
+    display: none;
+  }
+
+  .review-dialog_panel_body {
+    flex-direction: column;
+  }
+
+  .review-dialog_panel_body_image {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 200px;
+  }
+}

@@ -1,0 +1,119 @@
+{%- comment -%}
+  "Here's what others have designed". Figma: Get your own design 7930:95121 >
+  Frame 1116601739.
+
+  A mauve band carrying a row of 237px cards - an 8px-radius 331px image over
+  the piece and who it was made for - with dot progress and the theme's 40px
+  arrows. Five fit the content width exactly (5 x 237 + 4 x 24 = 1281), so the
+  row scrolls rather than wraps and uses the shared <scroll-carousel>.
+{%- endcomment -%}
+
+{{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'custom-design.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .custom-design-gallery {
+    background-color: {{ section.settings.background_color }};
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <scroll-carousel class="custom-design-gallery full-width">
+    <div class="custom-design-gallery_wrapper">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="custom-design-gallery_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      <div class="custom-design-gallery_wrapper_stage">
+        <button
+          type="button"
+          class="scroll-carousel_arrow custom-design-gallery_wrapper_stage_arrow custom-design-gallery_wrapper_stage_arrow--prev"
+          data-prev
+          aria-label="{{ 'accessibility.previous' | t }}"
+        >
+          {{- 'icon-caret-left.svg' | inline_asset_content -}}
+        </button>
+
+        <div class="custom-design-gallery_wrapper_stage_track" data-track data-animate>
+          {%- for block in section.blocks -%}
+            <figure class="custom-design-gallery_wrapper_stage_track_item" {{ block.shopify_attributes }}>
+              <span class="custom-design-gallery_wrapper_stage_track_item_image">
+                {%- if block.settings.image -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 474
+                    | image_tag: loading: 'lazy', widths: '237,356,474', sizes: '237px', alt: block.settings.title
+                  }}
+                {%- endif -%}
+              </span>
+
+              <figcaption class="custom-design-gallery_wrapper_stage_track_item_caption">
+                <span class="custom-design-gallery_wrapper_stage_track_item_caption_title">
+                  {{- block.settings.title -}}
+                </span>
+                {%- if block.settings.customer != blank -%}
+                  <span class="custom-design-gallery_wrapper_stage_track_item_caption_customer">
+                    {{- 'custom_design.designed_for' | t: name: block.settings.customer -}}
+                  </span>
+                {%- endif -%}
+              </figcaption>
+            </figure>
+          {%- endfor -%}
+        </div>
+
+        <button
+          type="button"
+          class="scroll-carousel_arrow custom-design-gallery_wrapper_stage_arrow custom-design-gallery_wrapper_stage_arrow--next"
+          data-next
+          aria-label="{{ 'accessibility.next' | t }}"
+        >
+          {{- 'icon-caret-right.svg' | inline_asset_content -}}
+        </button>
+      </div>
+
+      <div class="scroll-carousel_dots" data-dots></div>
+    </div>
+  </scroll-carousel>
+
+  <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Custom design gallery",
+  "tag": "section",
+  "class": "shopify-section--custom-design-gallery",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Here’s what others have designed"
+    },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#efe6ea" }
+  ],
+  "blocks": [
+    {
+      "type": "design",
+      "name": "Design",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "title", "label": "Piece", "default": "Ring" },
+        { "type": "text", "id": "customer", "label": "Customer", "default": "Anita Sharma, Jaipur" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom design gallery",
+      "blocks": [
+        { "type": "design" },
+        { "type": "design" },
+        { "type": "design" },
+        { "type": "design" },
+        { "type": "design" }
+      ]
+    }
+  ]
+}
+{% endschema %}

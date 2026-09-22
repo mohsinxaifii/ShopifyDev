@@ -1,0 +1,111 @@
+{%- comment -%}
+  Cart drawer contents.
+
+  Rendered on its own through the Section Rendering API - cart-drawer.js fetches
+  `?section_id=cart-drawer` after every change - rather than being built in JS.
+  That keeps line pricing, discounts and this shop's symbol-less money format in
+  Liquid, none of which /cart.js carries.
+{%- endcomment -%}
+
+<div class="cart-drawer_panel_body" data-cart-body data-cart-count="{{ cart.item_count }}">
+  {%- if cart.item_count == 0 -%}
+    <div class="cart-drawer_panel_body_empty">
+      <span class="cart-drawer_panel_body_empty_icon" aria-hidden="true">
+        {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+      </span>
+      <p class="cart-drawer_panel_body_empty_text">{{ 'cart.empty' | t }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="pdp_button pdp_button--primary pdp_button--compact">
+        {{- 'cart.continue_shopping' | t -}}
+      </a>
+    </div>
+  {%- else -%}
+    <ul class="cart-drawer_lines">
+      {%- for item in cart.items -%}
+        <li class="cart-drawer_lines_line" data-cart-line data-line-key="{{ item.key }}">
+          <a href="{{ item.url }}" class="cart-drawer_lines_line_media">
+            {%- if item.image -%}
+              {{
+                item.image
+                | image_url: width: 176
+                | image_tag: loading: 'lazy', widths: '88,176', sizes: '88px', alt: item.product.title
+              }}
+            {%- endif -%}
+          </a>
+
+          <div class="cart-drawer_lines_line_info">
+            <a href="{{ item.url }}" class="cart-drawer_lines_line_info_title">{{ item.product.title }}</a>
+
+            {%- unless item.product.has_only_default_variant -%}
+              <p class="cart-drawer_lines_line_info_variant">{{ item.variant.title }}</p>
+            {%- endunless -%}
+
+            <div class="cart-drawer_lines_line_info_row">
+              <div class="cart-drawer_qty" data-cart-qty>
+                <button
+                  type="button"
+                  class="cart-drawer_qty_step"
+                  data-qty-down
+                  aria-label="{{ 'cart.decrease' | t }}"
+                >
+                  {{- 'icon-minus.svg' | inline_asset_content -}}
+                </button>
+                <input
+                  type="number"
+                  class="cart-drawer_qty_value"
+                  value="{{ item.quantity }}"
+                  min="0"
+                  inputmode="numeric"
+                  aria-label="{{ 'cart.quantity' | t }}"
+                  data-qty-input
+                >
+                <button
+                  type="button"
+                  class="cart-drawer_qty_step"
+                  data-qty-up
+                  aria-label="{{ 'cart.increase' | t }}"
+                >
+                  {{- 'icon-plus.svg' | inline_asset_content -}}
+                </button>
+              </div>
+
+              <span class="cart-drawer_lines_line_info_row_price">
+                {%- render 'money', amount: item.final_line_price -%}
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="cart-drawer_lines_line_remove"
+            data-cart-remove
+            aria-label="{{ 'cart.remove' | t }}"
+          >
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </button>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>
+
+{%- if cart.item_count > 0 -%}
+  <div class="cart-drawer_panel_footer" data-cart-footer>
+    <div class="cart-drawer_panel_footer_row">
+      <span class="cart-drawer_panel_footer_row_label">{{ 'cart.subtotal' | t }}</span>
+      <span class="cart-drawer_panel_footer_row_value">{%- render 'money', amount: cart.total_price -%}</span>
+    </div>
+    <p class="cart-drawer_panel_footer_note">{{ 'cart.taxes_note' | t }}</p>
+    <form action="{{ routes.cart_url }}" method="post">
+      <button type="submit" name="checkout" class="pdp_button pdp_button--primary cart-drawer_panel_footer_cta">
+        {{- 'cart.checkout' | t -}}
+      </button>
+    </form>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "settings": []
+}
+{% endschema %}

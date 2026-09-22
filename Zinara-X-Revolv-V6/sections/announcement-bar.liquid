@@ -1,0 +1,149 @@
+{{ 'announcement-bar.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .announcement-bar {
+    --announcement-bar-bg: {{ section.settings.background_color }};
+    --announcement-bar-text: {{ section.settings.text_color }};
+    --announcement-bar-icon: {{ section.settings.icon_color }};
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <announcement-bar-carousel
+    class="announcement-bar full-width"
+    data-autoplay="{{ section.settings.autoplay }}"
+    data-autoplay-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+  >
+    <div class="announcement-bar_wrapper">
+      <button
+        type="button"
+        class="announcement-bar_wrapper_prev"
+        aria-label="{{ 'accessibility.previous_announcement' | t }}"
+        {% if section.blocks.size < 2 %}
+          hidden
+        {% endif %}
+      >
+        {{ 'icon-caret-left.svg' | inline_asset_content }}
+      </button>
+
+      <div class="announcement-bar_wrapper_track" aria-live="polite">
+        {%- for block in section.blocks -%}
+          <div
+            class="announcement-bar_wrapper_track_slide{% if forloop.first %} is-active{% endif %}"
+            data-slide-index="{{ forloop.index0 }}"
+            {% if forloop.first == false %}
+              hidden
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if section.settings.show_icon -%}
+              <span class="announcement-bar_wrapper_track_slide_icon">
+                {{ 'icon-sparkle.svg' | inline_asset_content }}
+              </span>
+            {%- endif -%}
+
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="announcement-bar_wrapper_track_slide_text">
+                {{ block.settings.text }}
+              </a>
+            {%- else -%}
+              <p class="announcement-bar_wrapper_track_slide_text">{{ block.settings.text }}</p>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <button
+        type="button"
+        class="announcement-bar_wrapper_next"
+        aria-label="{{ 'accessibility.next_announcement' | t }}"
+        {% if section.blocks.size < 2 %}
+          hidden
+        {% endif %}
+      >
+        {{ 'icon-caret-right.svg' | inline_asset_content }}
+      </button>
+    </div>
+  </announcement-bar-carousel>
+
+  <script src="{{ 'announcement-bar.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "tag": "section",
+  "class": "shopify-section--announcement-bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show sparkle icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate messages",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Change messages every",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#F9D79F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#712242"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#712242"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Message",
+          "default": "Sign up to avail <strong>10% OFF</strong> on your first order!"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar",
+      "blocks": [
+        {
+          "type": "message"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

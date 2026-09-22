@@ -1,0 +1,124 @@
+{{ 'logo-marquee.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .logo-marquee {
+    background-color: {{ section.settings.background_color }};
+    --logo-marquee-speed: {{ section.settings.speed }}s;
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <section class="logo-marquee full-width">
+    <div class="logo-marquee_wrapper">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="logo-marquee_wrapper_heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      <div class="logo-marquee_wrapper_track">
+        <div class="logo-marquee_wrapper_track_set">
+          {%- for block in section.blocks -%}
+            <span
+              class="logo-marquee_wrapper_track_set_logo"
+              style="--logo-marquee-logo-height: {{ block.settings.height }}px;"
+            >
+              {%- if block.settings.image -%}
+                {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: '' }}
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        </div>
+        <div class="logo-marquee_wrapper_track_set" aria-hidden="true">
+          {%- for block in section.blocks -%}
+            <span
+              class="logo-marquee_wrapper_track_set_logo"
+              style="--logo-marquee-logo-height: {{ block.settings.height }}px;"
+            >
+              {%- if block.settings.image -%}
+                {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: '' }}
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- comment -%}
+        Figma Mobile 7930:106967 stacks a second row of the same marks in reverse
+        order. Hidden on desktop, where the single row already spans the page.
+      {%- endcomment -%}
+      <div class="logo-marquee_wrapper_track logo-marquee_wrapper_track--second" aria-hidden="true">
+        {%- assign reversed_blocks = section.blocks | reverse -%}
+        {%- for n in (1..2) -%}
+          <div class="logo-marquee_wrapper_track_set">
+            {%- for block in reversed_blocks -%}
+              <span
+                class="logo-marquee_wrapper_track_set_logo"
+                style="--logo-marquee-logo-height: {{ block.settings.height }}px;"
+              >
+                {%- if block.settings.image -%}
+                  {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: '' }}
+                {%- endif -%}
+              </span>
+            {%- endfor -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Logo marquee",
+  "tag": "section",
+  "class": "shopify-section--logo-marquee",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured in"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FEF4E2"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll duration (seconds)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 25
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Logo" },
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Logo height",
+          "info": "Each mark is drawn at its own height in the design (35, 23 and 29px).",
+          "min": 16,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "default": 35
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo marquee",
+      "blocks": [{ "type": "logo" }, { "type": "logo" }, { "type": "logo" }]
+    }
+  ]
+}
+{% endschema %}

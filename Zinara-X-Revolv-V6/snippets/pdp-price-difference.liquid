@@ -1,0 +1,150 @@
+{%- doc -%}
+  "See the price difference" sidesheet. Figma 7930:101066.
+
+  The mined-diamond comparison price is a per-product metafield rather than a
+  multiple of the selling price: the gap between mined and lab-grown widens with
+  carat weight, so a flat factor would overstate the saving on small stones.
+
+  @param {object} product - a Shopify product object
+  @param {object} current_variant - the variant the page opened on
+  @param {object} [certificate] - sample SGL certificate
+  @param {object} [vermeil_image] - cutaway render for the explainer
+  @param {object} [diamond_image] - diamond render for the explainer
+  @param {object} [sgl_logo] - SGL mark
+{%- enddoc -%}
+
+{%- liquid
+  comment
+    A `money` metafield resolves in Liquid to the amount already in cents - the
+    same unit `variant.price` uses - so it needs no scaling. `.amount` is nil
+    here, which is why the guard reads the value itself.
+  endcomment
+  assign mined_cents = product.metafields.custom.pdp_mined_price.value
+  assign has_mined = false
+  if mined_cents > 0
+    assign has_mined = true
+    assign saved = mined_cents | minus: current_variant.price
+  endif
+-%}
+
+<dialog class="pdp-sheet" data-sheet="price-difference" scroll-lock aria-labelledby="PdpPriceDiffTitle">
+  <div class="pdp-sheet_panel">
+    <div class="pdp-sheet_panel_head">
+      <h2 class="pdp-sheet_panel_head_title" id="PdpPriceDiffTitle">See the price difference</h2>
+      <button
+        type="button"
+        class="pdp-sheet_panel_head_close"
+        data-sheet-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <div class="pdp-sheet_panel_body pdp-sheet_panel_body--padded">
+      {%- if has_mined -%}
+        <div class="pdp-diff">
+          <p class="pdp-diff_banner">
+            <span class="pdp-diff_banner_icon" aria-hidden="true">
+              {{- 'icon-receipt-rupee.svg' | inline_asset_content -}}
+            </span>
+            You save {% render 'money', amount: saved %} vs mined diamond
+          </p>
+
+          <div class="pdp-diff_compare">
+            <div class="pdp-diff_compare_cell">
+              <span class="pdp-diff_compare_cell_label">Mined diamond</span>
+              <span class="pdp-diff_compare_cell_price">
+                {%- render 'money', amount: mined_cents -%}
+              </span>
+            </div>
+            <span class="pdp-diff_compare_arrow" aria-hidden="true">&rarr;</span>
+            <div class="pdp-diff_compare_cell pdp-diff_compare_cell--ours">
+              <span class="pdp-diff_compare_cell_label">Your Zinara piece</span>
+              <span class="pdp-diff_compare_cell_price" data-diff-price>
+                {%- render 'money', amount: current_variant.price -%}
+              </span>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      <ul class="pdp-diff_facts">
+        <li class="pdp-diff_facts_item">
+          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
+            {{- 'icon-certificate.svg' | inline_asset_content -}}
+          </span>
+          SGL certified
+        </li>
+        <li class="pdp-diff_facts_item">
+          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
+            {{- 'icon-alms.svg' | inline_asset_content -}}
+          </span>
+          Lifetime buyback
+        </li>
+        <li class="pdp-diff_facts_item">
+          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
+            {{- 'icon-eco-energy.svg' | inline_asset_content -}}
+          </span>
+          Environment friendly
+        </li>
+        <li class="pdp-diff_facts_item">
+          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
+            {{- 'icon-percent-circle.svg' | inline_asset_content -}}
+          </span>
+          Save upto 40-60% with gold vermeil
+        </li>
+      </ul>
+
+      {%- if certificate != blank -%}
+        <scroll-carousel class="pdp-diff_certs">
+          <div class="pdp-diff_certs_track" data-track>
+            <span class="pdp-diff_certs_track_item">
+              {{
+                certificate
+                | image_url: width: 656
+                | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Sample SGL diamond certificate'
+              }}
+            </span>
+            {%- if product.metafields.custom.pdp_certificate.value != blank
+              and certificate != product.metafields.custom.pdp_certificate.value
+            -%}
+              <span class="pdp-diff_certs_track_item">
+                {{
+                  product.metafields.custom.pdp_certificate.value
+                  | image_url: width: 656
+                  | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Your SGL diamond certificate'
+                }}
+              </span>
+            {%- endif -%}
+          </div>
+          <div class="pdp-diff_certs_dots scroll-carousel_dots" data-dots></div>
+        </scroll-carousel>
+      {%- endif -%}
+
+      <div class="pdp-diff_explainer">
+        <div class="pdp-diff_explainer_head">
+          <p class="pdp-diff_explainer_head_title">Know your jewellery</p>
+          <p class="pdp-diff_explainer_head_sub">Learn about Gold Vermeil &amp; Lab-Grown Diamonds</p>
+        </div>
+        {%- render 'pdp-know-jewellery',
+          product: product,
+          vermeil_image: vermeil_image,
+          mined_image: diamond_image,
+          sgl_logo: sgl_logo,
+          compact: true
+        -%}
+      </div>
+    </div>
+
+    <div class="pdp-sheet_panel_footer">
+      <button type="button" class="pdp_button pdp_button--primary pdp-diff_cta" data-diff-add>
+        <span>Add to Cart</span>
+        <span class="pdp-diff_cta_dot" aria-hidden="true"></span>
+        <span class="pdp-diff_cta_price" data-diff-cta-price>
+          {%- render 'money', amount: current_variant.price -%}
+        </span>
+      </button>
+    </div>
+  </div>
+</dialog>

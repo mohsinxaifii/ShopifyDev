@@ -1,0 +1,103 @@
+{%- comment -%}
+  Every weight and style the theme's CSS asks for has to be loaded here, or the
+  browser fakes it: faux bold thickens the outline evenly, which flattens the
+  thick/thin contrast of a serif like Libre Baskerville and reads far heavier
+  than a real SemiBold, and faux italic just slants the upright glyphs.
+
+  Libre Baskerville is a variable family (wght 400-700), so the 600 the designs
+  use is a real instance - worth asking for rather than settling for 700.
+
+  font_modify returns nil when a family has no such variant, and passing nil to
+  font_face writes a Liquid error straight into the stylesheet - so each one is
+  resolved to a variable first and only emitted if it exists.
+{%- endcomment -%}
+
+{%- liquid
+  assign primary = settings.type_primary_font
+  assign secondary = settings.type_secondary_font
+  assign tertiary = settings.type_tertiary_font
+
+  assign primary_bold = primary | font_modify: 'weight', 'bold'
+  assign primary_italic = primary | font_modify: 'style', 'italic'
+  assign primary_bold_italic = primary_bold | font_modify: 'style', 'italic'
+
+  assign secondary_regular = secondary | font_modify: 'weight', '400'
+  assign secondary_semibold = secondary | font_modify: 'weight', '600'
+  assign secondary_bold = secondary | font_modify: 'weight', 'bold'
+  assign secondary_italic = secondary | font_modify: 'style', 'italic'
+  assign secondary_regular_italic = secondary_regular | font_modify: 'style', 'italic'
+
+  assign tertiary_semibold = tertiary | font_modify: 'weight', '600'
+  assign tertiary_bold = tertiary | font_modify: 'weight', 'bold'
+  assign tertiary_italic = tertiary | font_modify: 'style', 'italic'
+  assign tertiary_semibold_italic = tertiary_semibold | font_modify: 'style', 'italic'
+  assign tertiary_bold_italic = tertiary_bold | font_modify: 'style', 'italic'
+-%}
+
+{% style %}
+  {% # Loads all font variantions with display: swap %}
+  {{ primary | font_face: font_display: 'swap' }}
+  {%- if primary_bold %}{{ primary_bold | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if primary_bold_italic %}{{ primary_bold_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if primary_italic %}{{ primary_italic | font_face: font_display: 'swap' }}{% endif -%}
+
+  {{ secondary | font_face: font_display: 'swap' }}
+  {%- if secondary_regular %}{{ secondary_regular | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if secondary_semibold %}{{ secondary_semibold | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if secondary_bold %}{{ secondary_bold | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if secondary_italic %}{{ secondary_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if secondary_regular_italic %}{{ secondary_regular_italic | font_face: font_display: 'swap' }}{% endif -%}
+
+  {%- comment -%}
+    Skipped for Libre Baskerville: the layout loads that one from Google as a
+    variable face so the 600 the designs use is a real instance. Declaring
+    Shopify's static 400/700 under the same family name as well would leave two
+    sources competing, and the static pair would win back the weights it has.
+    Matched with `contains`: Shopify quotes any family name that has a space in
+    it, so `.family` here is `"Libre Baskerville"` - quotes and all - and `==`
+    against the bare name silently never matches.
+  {%- endcomment -%}
+  {%- unless tertiary.family contains 'Libre Baskerville' -%}
+    {{ tertiary | font_face: font_display: 'swap' }}
+    {%- if tertiary_semibold %}{{ tertiary_semibold | font_face: font_display: 'swap' }}{% endif -%}
+    {%- if tertiary_bold %}{{ tertiary_bold | font_face: font_display: 'swap' }}{% endif -%}
+    {%- if tertiary_italic %}{{ tertiary_italic | font_face: font_display: 'swap' }}{% endif -%}
+    {%- if tertiary_semibold_italic %}{{ tertiary_semibold_italic | font_face: font_display: 'swap' }}{% endif -%}
+    {%- if tertiary_bold_italic %}{{ tertiary_bold_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {%- endunless -%}
+
+  :root {
+    --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
+    --font-primary--style: {{ settings.type_primary_font.style }};
+    --font-primary--weight: {{ settings.type_primary_font.weight }};
+    --font-secondary--family: {{ settings.type_secondary_font.family }}, {{ settings.type_secondary_font.fallback_families }};
+    --font-secondary--style: {{ settings.type_secondary_font.style }};
+    --font-secondary--weight: {{ settings.type_secondary_font.weight }};
+    --font-tertiary--family: {{ settings.type_tertiary_font.family }}, {{ settings.type_tertiary_font.fallback_families }};
+    --page-width: {{ settings.max_page_width }};
+    --page-margin: {{ settings.min_page_margin }}px;
+    --color-background: {{ settings.background_color }};
+    --color-foreground: {{ settings.foreground_color }};
+    --color-text-secondary: {{ settings.text_secondary_color }};
+    --color-icon: {{ settings.icon_color }};
+    --color-border: {{ settings.border_color }};
+    --color-brand: {{ settings.brand_color }};
+    --color-accent: {{ settings.accent_color }};
+    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+  }
+
+  /* The page margin setting is the desktop gutter (72px in Figma). Figma Mobile
+     (7930:106659) runs a 16px gutter on its 393px frames; tablets take a middle
+     value so a 72px gutter never eats a third of the screen. */
+  @media screen and (max-width: 989px) {
+    :root {
+      --page-margin: min({{ settings.min_page_margin }}px, 32px);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    :root {
+      --page-margin: min({{ settings.min_page_margin }}px, 16px);
+    }
+  }
+{% endstyle %}

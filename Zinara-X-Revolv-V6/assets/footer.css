@@ -1,0 +1,329 @@
+.footer {
+  display: block;
+  width: 100%;
+  background-color: #efe6ea;
+}
+
+.footer_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin) 72px;
+  box-sizing: border-box;
+}
+
+.footer_wrapper_top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer_wrapper_top_brand {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 0 1 335px;
+  min-width: 0;
+}
+
+/* Figma 7930:104703 - the Z monogram at 54 wide, not the wordmark. */
+.footer_wrapper_top_brand_mark {
+  display: block;
+  color: var(--color-brand, #712242);
+}
+
+.footer_wrapper_top_brand_mark svg {
+  display: block;
+  width: 54px;
+  height: auto;
+}
+
+.footer_wrapper_top_brand_tagline {
+  margin: 0;
+  max-width: 261px;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.25;
+  color: var(--color-brand, #712242);
+}
+
+.footer_wrapper_top_columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  flex: 0 1 auto;
+}
+
+.footer_wrapper_top_columns_col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 0 174.5px;
+  width: 174.5px;
+}
+
+.footer_wrapper_top_columns_col_title {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.375;
+  color: var(--color-brand, #712242);
+}
+
+.footer_wrapper_top_columns_col_list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A block <li> wraps the inline-block link in its own 16px line box and comes
+   out 23px tall; as a flex item it is exactly the link's 22px, giving Figma's
+   34px row pitch (7930:104732). */
+.footer_wrapper_top_columns_col_list > li {
+  display: flex;
+}
+
+.footer_wrapper_top_columns_col_list_link {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer_wrapper_top_columns_col_list_link:hover {
+  color: var(--color-brand, #712242);
+}
+
+/* Menu titles arrive in whatever case the merchant typed; Figma sets them in
+   sentence case. `inline-block` is load-bearing - ::first-letter only applies to
+   block containers, so on a plain inline <a> the rule below is silently ignored
+   and every link renders lowercase. */
+.footer_wrapper_top_columns_col_list_link:not(.footer_wrapper_top_columns_col_list_link--icon) {
+  display: inline-block;
+  text-transform: lowercase;
+}
+
+.footer_wrapper_top_columns_col_list_link:not(
+    .footer_wrapper_top_columns_col_list_link--icon
+  )::first-letter {
+  text-transform: uppercase;
+}
+
+.footer_wrapper_top_columns_col_list_link--icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-brand, #712242);
+  font-weight: 500;
+}
+
+.footer_wrapper_top_columns_col_list_link--icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-accent, #f0166e);
+}
+
+.footer_wrapper_divider {
+  border: 0;
+  border-top: 1px solid #999;
+  margin: 0;
+}
+
+.footer_wrapper_legal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer_wrapper_legal_company {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-brand, #712242);
+}
+
+/* Figma 7930:104760 runs the address on one line across the full width. */
+.footer_wrapper_legal_address {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.714;
+  color: var(--color-text-secondary, #494949);
+}
+
+.footer_wrapper_legal_social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer_wrapper_legal_social a {
+  display: flex;
+  color: var(--color-brand, #712242);
+}
+
+.footer_wrapper_legal_social svg {
+  width: 24px;
+  height: 24px;
+}
+
+.footer_wrapper_apps,
+.footer_wrapper_payment {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer_wrapper_apps_title,
+.footer_wrapper_payment_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.714;
+  color: var(--color-brand, #712242);
+}
+
+.footer_wrapper_apps_badges,
+.footer_wrapper_payment_icons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Figma 7930:104766 / 104772 - the badges sit on 16px, the payment row on 13px. */
+.footer_wrapper_apps_badges {
+  gap: 16px;
+}
+
+.footer_wrapper_payment_icons {
+  gap: 13px;
+}
+
+/* Each mark is drawn at its own size in Figma (66x19.8, 108x42.12, 86x33 and a
+   payment row from 20.7 to 35.2 tall), so every block carries its own height -
+   a single height would stretch every logo to the same band. */
+.footer_wrapper_apps_badges_badge img {
+  display: block;
+  width: auto;
+  height: var(--footer-mark-height, 42px);
+}
+
+.footer_wrapper_payment_icons_icon {
+  display: flex;
+  align-items: center;
+}
+
+.footer_wrapper_payment_icons_icon img {
+  display: block;
+  width: auto;
+  height: var(--footer-mark-height, 30px);
+}
+
+.footer_wrapper_payment_icons_fallback {
+  height: 32px;
+  width: auto;
+}
+
+/* Figma Mobile 7930:106980. The monogram and tagline share a row, the phone and
+   email sit straight under it without their "Contact Us" title, and Quick links /
+   Policies pair up in two columns. The columns wrapper dissolves into the grid so
+   the contact column can be moved above the other two without new markup. */
+@media screen and (max-width: 749px) {
+  .footer_wrapper {
+    gap: 20px;
+    padding: 24px var(--page-margin);
+  }
+
+  .footer_wrapper_top {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 12px;
+  }
+
+  .footer_wrapper_top_brand {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .footer_wrapper_top_brand_mark svg {
+    width: 24px;
+  }
+
+  .footer_wrapper_top_brand_tagline {
+    max-width: none;
+    font-size: 20px;
+    line-height: normal;
+    white-space: nowrap;
+  }
+
+  .footer_wrapper_top_columns {
+    display: contents;
+  }
+
+  .footer_wrapper_top_columns_col {
+    order: 2;
+    width: auto;
+    min-width: 0;
+  }
+
+  .footer_wrapper_top_columns_col:last-child {
+    grid-column: 1 / -1;
+    order: 1;
+  }
+
+  .footer_wrapper_top_columns_col:last-child .footer_wrapper_top_columns_col_title {
+    display: none;
+  }
+
+  .footer_wrapper_top_columns_col:last-child .footer_wrapper_top_columns_col_list {
+    gap: 8px;
+  }
+
+  .footer_wrapper_top_columns_col_title,
+  .footer_wrapper_legal_company {
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  .footer_wrapper_top_columns_col_list {
+    gap: 16px;
+  }
+
+  .footer_wrapper_top_columns_col_list_link {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .footer_wrapper_top_columns_col_list_link--icon {
+    line-height: 22px;
+  }
+
+  .footer_wrapper_legal_address,
+  .footer_wrapper_apps_title,
+  .footer_wrapper_payment_title {
+    line-height: 22px;
+  }
+
+  .footer_wrapper_legal_social {
+    margin-top: 8px;
+  }
+}

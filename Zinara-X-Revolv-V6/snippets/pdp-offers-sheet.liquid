@@ -1,0 +1,34 @@
+{%- doc -%}
+  All offers sidesheet. Figma 7930:98936 - the same coupon card as the inline
+  rail, laid out two per row instead of scrolling sideways.
+
+  @param {object} offer_handles - handles of the `discount_offer` metaobjects that apply to this product, in display order
+{%- enddoc -%}
+
+<dialog class="pdp-sheet" data-sheet="offers" scroll-lock aria-labelledby="PdpOffersTitle">
+  <div class="pdp-sheet_panel">
+    <div class="pdp-sheet_panel_head">
+      <h2 class="pdp-sheet_panel_head_title" id="PdpOffersTitle">All offers</h2>
+      <button
+        type="button"
+        class="pdp-sheet_panel_head_close"
+        data-sheet-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <div class="pdp-sheet_panel_body">
+      <p class="pdp-sheet_panel_body_label">Coupons</p>
+      <div class="pdp-sheet_panel_body_offers">
+        {%- for handle in offer_handles -%}
+          {%- assign offer = shop.metaobjects.discount_offer[handle] -%}
+          {%- if offer != blank -%}
+            {%- render 'pdp-offer-card', offer: offer -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</dialog>

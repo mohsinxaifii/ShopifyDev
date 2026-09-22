@@ -1,0 +1,147 @@
+{%- comment -%}
+  Blog listing. Figma: Desktop / Blogs 7930:93522 > Blogs page (7930:93788),
+  with the skeleton state from 7930:93523.
+
+  The design splits the page in two - a "Featured" row of three cards over a
+  "More articles" grid - but both are drawn from the one article list, so this
+  renders them together rather than as two sections. That way the three cards at
+  the top can be held out of the grid below instead of appearing twice, and one
+  `paginate` covers the whole page.
+
+  The featured row only exists on the first page: once the visitor has paged or
+  loaded more, everything that follows belongs in the grid.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
+{%- endcomment -%}
+
+{{ 'blog-card.css' | asset_url | stylesheet_tag }}
+{{ 'blog.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign per_page = section.settings.articles_per_page
+  assign featured_count = section.settings.featured_count
+
+  comment
+    Read through `default` so the section placed outside a blog template - which
+    its preset allows - falls to the empty state instead of paginating nil.
+  endcomment
+  assign article_count = blog.articles_count | default: 0
+-%}
+
+<blog-list class="blog full-width skeleton-host" data-blog>
+  {%- render 'blog-skeleton', featured_count: featured_count -%}
+
+  {%- if article_count == 0 -%}
+    <div class="blog_empty">
+      <p class="blog_empty_text">{{ 'blog.empty' | t }}</p>
+    </div>
+  {%- else -%}
+    {%- paginate blog.articles by per_page -%}
+      {%- liquid
+        assign is_first_page = false
+        if paginate.current_page == 1
+          assign is_first_page = true
+        endif
+
+        comment
+          On the first page the grid starts after the featured row; every page
+          after it shows the whole page of articles.
+        endcomment
+        assign grid_offset = 0
+        if is_first_page
+          assign grid_offset = featured_count
+        endif
+
+        assign remaining = paginate.items | minus: paginate.current_offset | minus: per_page
+      -%}
+
+      {%- if is_first_page and section.settings.featured_heading != blank -%}
+        <section class="blog_band">
+          <div class="blog_band_wrapper">
+            <h2 class="blog_band_wrapper_heading" data-animate>
+              {{- section.settings.featured_heading -}}
+            </h2>
+
+            <div class="blog_band_wrapper_featured" data-animate>
+              {%- for article in blog.articles limit: featured_count -%}
+                {%- render 'blog-card', article: article, variant: 'featured', heading_level: 'h3' -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        </section>
+      {%- endif -%}
+
+      <section class="blog_band">
+        <div class="blog_band_wrapper">
+          {%- if is_first_page and section.settings.grid_heading != blank -%}
+            <h2 class="blog_band_wrapper_heading" data-animate>{{ section.settings.grid_heading }}</h2>
+          {%- endif -%}
+
+          <div class="blog_band_wrapper_grid" data-grid>
+            {%- for article in blog.articles offset: grid_offset -%}
+              {%- render 'blog-card', article: article, heading_level: 'h3' -%}
+            {%- endfor -%}
+          </div>
+
+          {%- if paginate.next and remaining > 0 -%}
+            <div class="blog_band_wrapper_more" data-more>
+              <a href="{{ paginate.next.url }}" class="blog_band_wrapper_more_button" data-more-link>
+                <span>{{ 'blog.load_more' | t: count: remaining }}</span>
+                <span class="blog_band_wrapper_more_button_caret" aria-hidden="true">
+                  {{- 'icon-caret-down.svg' | inline_asset_content -}}
+                </span>
+                <span class="blog_band_wrapper_more_button_spinner" aria-hidden="true">
+                  {{- 'icon-spinner.svg' | inline_asset_content -}}
+                </span>
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      </section>
+    {%- endpaginate -%}
+  {%- endif -%}
+</blog-list>
+
+<script src="{{ 'blog.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "tag": "section",
+  "class": "shopify-section--blog",
+  "settings": [
+    {
+      "type": "text",
+      "id": "featured_heading",
+      "label": "Featured heading",
+      "default": "Featured"
+    },
+    {
+      "type": "range",
+      "id": "featured_count",
+      "label": "Featured articles",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "grid_heading",
+      "label": "Grid heading",
+      "default": "More articles"
+    },
+    {
+      "type": "range",
+      "id": "articles_per_page",
+      "label": "Articles per page",
+      "info": "Includes the featured articles on the first page.",
+      "min": 6,
+      "max": 24,
+      "step": 3,
+      "default": 12
+    }
+  ],
+  "presets": [{ "name": "Blog posts" }]
+}
+{% endschema %}

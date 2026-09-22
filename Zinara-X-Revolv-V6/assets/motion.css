@@ -1,0 +1,410 @@
+/**
+ * Theme-wide motion layer.
+ *
+ * Two jobs, split by what each tool is actually good at:
+ *
+ * - CSS (this file) owns *state* transitions - hover, focus, press, checked.
+ *   These fire on hundreds of cards and chips at once, so they belong on the
+ *   compositor rather than in a script that would have to bind a listener per
+ *   element.
+ * - GSAP (animations.js) owns *choreography* - scroll reveals, dialogs opening,
+ *   accordions measuring themselves open. Those need sequencing and interruption
+ *   handling that CSS cannot express.
+ *
+ * The reveal's hidden state is scoped to `html.motion`, which an inline script in
+ * the layout sets before first paint and animations.js clears if GSAP never
+ * arrives. Nothing here can hide content permanently on its own.
+ */
+
+:root {
+  --motion-fast: 0.18s;
+  --motion-base: 0.28s;
+  --motion-slow: 0.45s;
+
+  /* A gentle overshoot-free curve; matches the carousel tween's easeOutCubic so
+     scripted and CSS motion read as one system. */
+  --motion-ease: cubic-bezier(0.33, 1, 0.68, 1);
+  --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* --------------------------------------------------------- scroll reveal */
+
+/* Only hidden once the layout confirms motion is on, so a blocked script or a
+   reduced-motion preference leaves every section visible from the start. */
+html.motion [data-animate] {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+[data-animate].is-visible {
+  opacity: 1;
+  will-change: auto;
+}
+
+/* ------------------------------------------------------- interactive base */
+
+/**
+ * One transition declaration covering every control the four page types share.
+ * Grouped rather than repeated per component so the timing cannot drift between
+ * a button on the PLP and the same button on the PDP.
+ */
+a,
+button,
+summary,
+label,
+input,
+select,
+textarea,
+.product-card,
+.pdp-mini,
+.pdp-ugc-card,
+.search-suggest_panel_row {
+  transition:
+    color var(--motion-fast) var(--motion-ease),
+    background-color var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease),
+    opacity var(--motion-fast) var(--motion-ease),
+    transform var(--motion-base) var(--motion-ease);
+}
+
+/* Anything clickable dips slightly on press - the cheapest possible signal that
+   the tap registered, and the one thing every surface here was missing. */
+button:active,
+a:active,
+label:active,
+summary:active {
+  transform: scale(0.985);
+}
+
+/* Keyboard focus should be as visible as hover, and arrive just as smoothly. */
+:where(a, button, summary, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-brand, #712242);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------ product card */
+
+.product-card_media {
+  overflow: hidden;
+}
+
+.product-card_media_image,
+.pdp-mini_media img,
+.shop-by-category_card img,
+.occasion-showcase_card img,
+.journal_card img {
+  transition: transform var(--motion-slow) var(--motion-ease);
+}
+
+.product-card:hover .product-card_media_image,
+.pdp-mini:hover .pdp-mini_media img {
+  transform: scale(1.045);
+}
+
+.product-card:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+}
+
+.product-card_info_add:hover,
+.pdp-mini_add:hover {
+  transform: translateY(-1px);
+}
+
+.product-card_media_top_wishlist:hover,
+.product-card_info_price_wishlist:hover,
+.pdp_gallery_stage_top_wishlist:hover {
+  transform: scale(1.12);
+}
+
+/* A wishlist toggle is a state change with no layout consequence, so it gets a
+   one-shot pop to confirm it landed. */
+[data-wishlist-toggle][aria-pressed='true'] svg {
+  animation: motion-pop var(--motion-base) var(--motion-ease);
+}
+
+@keyframes motion-pop {
+  50% {
+    transform: scale(1.28);
+  }
+}
+
+/* ------------------------------------------------------------- buttons */
+
+.pdp_button:hover,
+.collection_wrapper_main_more_button:hover,
+.search_empty_form_submit:hover,
+.variant-drawer_panel_footer_done:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(113, 34, 66, 0.22);
+}
+
+.pdp_button:active,
+.collection_wrapper_main_more_button:active,
+.search_empty_form_submit:active {
+  transform: translateY(0) scale(0.985);
+  box-shadow: none;
+}
+
+.pdp_button[disabled]:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Underlined text links grow their rule from the origin rather than blinking. */
+.pdp_link,
+.search_empty_link,
+.collection_wrapper_filters_head_clear {
+  background-image: linear-gradient(currentcolor, currentcolor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  text-decoration: none;
+  transition: background-size var(--motion-base) var(--motion-ease);
+}
+
+.pdp_link:hover,
+.search_empty_link:hover,
+.collection_wrapper_filters_head_clear:hover {
+  background-size: 100% 1px;
+}
+
+/* --------------------------------------------------- chips, swatches, tabs */
+
+.collection_wrapper_main_chips_chip:hover,
+.pdp_option_values_value_chip:hover,
+.category-nav_list_item_link:hover {
+  border-color: var(--color-brand, #712242);
+  transform: translateY(-2px);
+}
+
+.pdp_option_values_value_swatch:hover {
+  transform: scale(1.08);
+}
+
+.pdp_option_values_value input:checked + .pdp_option_values_value_swatch,
+.pdp_option_values_value input:checked + .pdp_option_values_value_chip {
+  animation: motion-pop var(--motion-base) var(--motion-ease);
+}
+
+.pdp_related_tabs_tab {
+  transition:
+    color var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-base) var(--motion-ease);
+}
+
+.pdp_related_tabs_tab:hover {
+  color: var(--color-text-secondary, #494949);
+}
+
+/* ----------------------------------------------------- gallery + carousels */
+
+.pdp_gallery_thumbs_track_item,
+.pdp_ugc_carousel_track_item {
+  transition:
+    outline-color var(--motion-fast) var(--motion-ease),
+    transform var(--motion-base) var(--motion-ease);
+}
+
+.pdp_gallery_thumbs_track_item:hover,
+.pdp_ugc_carousel_track_item:hover {
+  transform: translateY(-3px);
+}
+
+.pdp_gallery_stage_slide img {
+  transition: transform var(--motion-slow) var(--motion-ease);
+}
+
+.pdp_gallery_stage:hover .pdp_gallery_stage_slide.is-active img {
+  transform: scale(1.04);
+}
+
+.scroll-carousel_arrow:active,
+.pdp_gallery_thumbs_arrow:active,
+.pdp-lightbox_body_arrow:active,
+.pdp-ugc-box_reel_arrow:active {
+  transform: scale(0.92);
+}
+
+.pdp-lightbox_body_arrow:hover,
+.pdp-ugc-box_reel_arrow:hover {
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+}
+
+/* The reel's flanking clips slide and rescale as the active one changes. */
+.pdp-ugc-box_reel_stage_slide {
+  transition:
+    width var(--motion-slow) var(--motion-ease),
+    opacity var(--motion-base) var(--motion-ease);
+}
+
+/* ------------------------------------------------------------- PDP cards */
+
+.pdp_trust_grid_item_inner:hover,
+.pdp-offer:hover,
+.pdp-addons_grid_card:hover {
+  border-color: var(--color-brand, #712242);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.pdp-offer_code:hover,
+.pdp_headline_calculator_button:hover,
+.pdp_headline_addons:hover,
+.pdp_explainer:hover {
+  background-color: color-mix(in srgb, var(--color-brand, #712242) 6%, #fff);
+}
+
+.pdp-offer_code.is-copied {
+  animation: motion-pop var(--motion-base) var(--motion-ease);
+}
+
+.pdp-addons_grid_card_toggle:hover {
+  transform: scale(1.1);
+}
+
+/* --------------------------------------------------------------- filters */
+
+.collection_wrapper_filters_groups_group_head:hover,
+.pdp_accordion_summary:hover {
+  color: var(--color-brand, #712242);
+}
+
+/* These swap a plus glyph for a minus rather than rotating one, so the open
+   state gets a short pop on the glyph that replaced it - rotating as well would
+   signal the same change twice. */
+.collection_wrapper_filters_groups_group_head_icon svg,
+.pdp_accordion_summary_sign svg,
+.faq_wrapper_list_item_summary_icon svg {
+  transition: transform var(--motion-base) var(--motion-ease);
+}
+
+details[open] > summary .collection_wrapper_filters_groups_group_head_icon svg,
+details[open] > summary .pdp_accordion_summary_sign svg,
+details[open] > summary .faq_wrapper_list_item_summary_icon svg {
+  animation: motion-pop var(--motion-base) var(--motion-ease);
+}
+
+.filter-list_item:hover,
+.collection_wrapper_filters_groups_group_body label:hover {
+  color: var(--color-brand, #712242);
+}
+
+/* ------------------------------------------------------- dialogs + panels */
+
+/**
+ * Enter states only. GSAP drives open and close so it can run the exit before
+ * `close()` actually removes the dialog from the top layer; these keyframes are
+ * the fallback for when GSAP is unavailable, so a sheet still arrives smoothly.
+ */
+dialog::backdrop {
+  animation: motion-fade var(--motion-base) var(--motion-ease);
+}
+
+/* A pseudo-element cannot be tweened, so animations.js flags the exit and the
+   backdrop fades out here in step with the panel leaving. */
+dialog.is-closing::backdrop {
+  animation: motion-fade var(--motion-base) var(--motion-ease) reverse forwards;
+}
+
+@keyframes motion-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Travels the panel's own width, so it begins genuinely off-viewport. */
+@keyframes motion-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes motion-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/**
+ * Gated on `motion-dialogs`, which animations.js sets only once it has actually
+ * taken the dialogs over. `.motion` cannot be used here: it is cleared as soon
+ * as the reveals run, so it is absent in the normal case too and both this and
+ * the GSAP tween would fire on the same panel.
+ */
+html:not(.motion-dialogs) .cart-drawer[open] .cart-drawer_panel,
+html:not(.motion-dialogs) .pdp-sheet[open] .pdp-sheet_panel,
+html:not(.motion-dialogs) .variant-drawer[open] .variant-drawer_panel {
+  animation: motion-slide-in var(--motion-slow) var(--motion-ease);
+}
+
+html:not(.motion-dialogs) .pdp-modal[open] .pdp-modal_panel,
+html:not(.motion-dialogs) .pdp-lightbox[open] .pdp-lightbox_body,
+html:not(.motion-dialogs) .pdp-ugc-box[open] .pdp-ugc-box_reel {
+  animation: motion-scale-in var(--motion-base) var(--motion-ease);
+}
+
+.search-suggest_panel_row:hover {
+  background-color: #faf7f8;
+}
+
+.pdp-sheet_panel_head_close:hover,
+.pdp-modal_panel_head_close:hover,
+.pdp-lightbox_close:hover,
+.search-suggest_clear:hover {
+  transform: rotate(90deg);
+}
+
+/* ---------------------------------------------------------------- header */
+
+.header_wrapper_actions_link:hover,
+.header_wrapper_brand_menu-toggle:hover {
+  transform: translateY(-2px);
+  color: var(--color-brand, #712242);
+}
+
+.header_wrapper_actions_cart_badge {
+  transition: transform var(--motion-base) var(--motion-ease);
+}
+
+.header_wrapper_search,
+.header.is-searching .header_wrapper_search {
+  transition:
+    height var(--motion-base) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease);
+}
+
+/* ------------------------------------------------------------ reduced motion */
+
+/**
+ * A full stop rather than a trim: everything that moves here is decoration, and
+ * a shopper who has asked the OS for stillness should get stillness.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html.motion [data-animate] {
+    opacity: 1;
+  }
+
+  a:active,
+  button:active,
+  label:active,
+  summary:active,
+  .product-card:hover,
+  .pdp_button:hover,
+  .pdp_trust_grid_item_inner:hover {
+    transform: none;
+  }
+}

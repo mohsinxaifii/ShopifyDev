@@ -1,0 +1,155 @@
+{
+  "type": "header",
+  "name": "t:general.header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "message-1": {
+          "type": "message",
+          "settings": {
+            "text": "Sign up to avail <strong>10% OFF<\/strong> on your first order!",
+            "link": ""
+          }
+        },
+        "message_3Mt9UH": {
+          "type": "message",
+          "settings": {
+            "text": "Sign up to avail <strong>10% OFF<\/strong> on your first order!",
+            "link": ""
+          }
+        },
+        "message_RXiUML": {
+          "type": "message",
+          "settings": {
+            "text": "Sign up to avail <strong>10% OFF<\/strong> on your first order!",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "message-1",
+        "message_3Mt9UH",
+        "message_RXiUML"
+      ],
+      "settings": {
+        "show_icon": true,
+        "autoplay": true,
+        "autoplay_speed": 4,
+        "background_color": "#f9d79f",
+        "text_color": "#712242",
+        "icon_color": "#712242"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "wishlist_url": "\/pages\/wishlist"
+      }
+    },
+    "category-nav": {
+      "type": "category-nav",
+      "blocks": {
+        "link-1": {
+          "type": "link",
+          "settings": {
+            "label": "Shop all",
+            "url": "\/collections\/all",
+            "show_new_badge": false,
+            "align_end": false
+          }
+        },
+        "link-2": {
+          "type": "link",
+          "settings": {
+            "label": "New arrivals",
+            "url": "\/collections\/new-arrivals-18kt-gold-vermeil-and-lab-grown-diamond-jewellery",
+            "show_new_badge": false,
+            "align_end": false
+          }
+        },
+        "link-3": {
+          "type": "link",
+          "settings": {
+            "label": "Rakhi collection",
+            "url": "\/collections\/925-silver-rakhi-18kt-gold-vermeil-rakhi-with-lab-grown-diamonds",
+            "show_new_badge": true,
+            "align_end": false
+          }
+        },
+        "link-4": {
+          "type": "link",
+          "settings": {
+            "label": "Rings",
+            "url": "\/collections\/all-rings",
+            "show_new_badge": false,
+            "align_end": false
+          }
+        },
+        "link-5": {
+          "type": "link",
+          "settings": {
+            "label": "Earrings",
+            "url": "\/collections\/all-earrings",
+            "show_new_badge": false,
+            "align_end": false
+          }
+        },
+        "link-6": {
+          "type": "link",
+          "settings": {
+            "label": "Pendants\/Necklaces",
+            "url": "\/collections\/all-pendants",
+            "show_new_badge": false,
+            "align_end": false
+          }
+        },
+        "link-7": {
+          "type": "link",
+          "settings": {
+            "label": "Bracelets",
+            "url": "\/collections\/all-bracelets",
+            "show_new_badge": false,
+            "align_end": false
+          }
+        },
+        "link-8": {
+          "type": "link",
+          "settings": {
+            "label": "About us",
+            "url": "\/pages\/about-us",
+            "show_new_badge": false,
+            "align_end": true
+          }
+        },
+        "link-9": {
+          "type": "link",
+          "settings": {
+            "label": "Contact us",
+            "url": "\/pages\/contact",
+            "show_new_badge": false,
+            "align_end": true
+          }
+        }
+      },
+      "block_order": [
+        "link-1",
+        "link-2",
+        "link-3",
+        "link-4",
+        "link-5",
+        "link-6",
+        "link-7",
+        "link-8",
+        "link-9"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header",
+    "category-nav"
+  ]
+}

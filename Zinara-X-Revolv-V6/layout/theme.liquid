@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {% # Inlined CSS Variables %}
+    {% render 'css-variables' %}
+
+    {% comment %}
+      Font preloading:
+      1. Preconnect to font CDN for faster connection
+      2. Preload only the critical font variant (base weight)
+      3. Additional variants load on-demand via @font-face
+    {% endcomment %}
+    {% unless settings.type_primary_font.system? %}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+
+      {% comment %} Preload the base font variant for initial page render {% endcomment %}
+      {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {% endunless %}
+
+    {% comment %}
+      Libre Baskerville is a variable family (wght 400-700) but Shopify's library
+      only carries static 400 and 700 instances. The designs set every display
+      serif at 600, which against those two can only resolve to 700 - visibly
+      heavier than the artwork. Google serves the real 600, so the serif is
+      loaded from there for as long as it stays Libre Baskerville; pick any other
+      serif in theme settings and this drops out, leaving Shopify's own faces
+      (emitted by css-variables) to take over.
+    {% endcomment %}
+    {% if settings.type_tertiary_font.family contains 'Libre Baskerville' %}
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap"
+      >
+    {% endif %}
+
+    {% # Load and preload the critical CSS %}
+    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'motion.css' | asset_url | stylesheet_tag }}
+    {{ 'cart-drawer.css' | asset_url | stylesheet_tag }}
+    {{ 'skeleton.css' | asset_url | stylesheet_tag }}
+
+    {% comment %}
+      Set before first paint so the reveal's hidden state applies to the very
+      first frame - added by script rather than written into the markup so that
+      a visitor with JS off, or with reduced motion asked for, never gets a
+      stylesheet that hides content with nothing left to reveal it.
+    {% endcomment %}
+    <script>
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion');
+      }
+    </script>
+
+    {% # Social, title, etc. %}
+    {% render 'meta-tags' %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body>
+    {% sections 'header-group' %}
+
+    {{ content_for_layout }}
+
+    {% sections 'footer-group' %}
+
+    {% # Cart drawer: one per page, opened by every add-to-cart in the theme %}
+    {% render 'cart-drawer' %}
+
+    <script>
+      window.themeStrings = {
+        adding: {{ 'cart.adding' | t | json }},
+        added: {{ 'cart.added' | t | json }},
+        failed: {{ 'cart.failed' | t | json }},
+        wishlistRemove: {{ 'accessibility.wishlist_remove' | t | json }},
+        {% comment %}
+          A sentinel rather than the locale's own {{ count }} placeholder:
+          nested output tags do not survive the Liquid lexer, and the count is
+          only known once wishlist.js has read the store.
+        {% endcomment %}
+        wishlistCount: {{ 'wishlist.item_count' | t: count: '__COUNT__' | json }},
+        wishlistCountOne: {{ 'wishlist.item_count_one' | t | json }},
+        contactCopied: {{ 'contact.copied' | t | json }},
+      };
+    </script>
+    <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+
+    {% comment %}
+      Animation engine. animations.js waits for these and falls back to showing
+      everything outright if the CDN is blocked, so the order matters but the
+      arrival does not.
+    {% endcomment %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer="defer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer="defer"></script>
+    <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'wishlist.js' | asset_url }}" defer="defer"></script>
+
+    {% comment %}
+      Lifts the loading placeholders once the page has settled. Loaded for every
+      page because most templates carry one; skeleton.css keeps a CSS timeout
+      behind it either way.
+    {% endcomment %}
+    <script src="{{ 'skeleton.js' | asset_url }}" defer="defer"></script>
+  </body>
+</html>

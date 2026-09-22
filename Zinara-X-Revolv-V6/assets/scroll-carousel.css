@@ -1,0 +1,68 @@
+.scroll-carousel_dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.scroll-carousel_dot {
+  width: 5px;
+  height: 5px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background-color: #c4c4c4;
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.scroll-carousel_dot.is-active {
+  width: 18px;
+  background-color: var(--color-brand, #712242);
+}
+
+.scroll-carousel_arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.scroll-carousel_arrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+.scroll-carousel_arrow:hover {
+  background-color: #5a1b34;
+  transform: scale(1.05);
+}
+
+/* Figma Mobile draws no carousel arrows - rows are swiped. Hidden here rather than
+   per section because this sheet is linked after the sections' own and would
+   otherwise win back `display: flex`. */
+@media screen and (max-width: 749px) {
+  .scroll-carousel_arrow {
+    display: none;
+  }
+}
+
+/* Snapping fights a scripted scroll animation: every scrollLeft write gets
+   re-snapped, so the tween collapses into a jump. Suspended while animating,
+   which leaves touch swiping snapped as before. */
+[data-track].is-scrolling {
+  scroll-snap-type: none;
+}

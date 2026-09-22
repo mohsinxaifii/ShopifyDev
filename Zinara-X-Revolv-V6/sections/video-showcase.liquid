@@ -1,0 +1,182 @@
+{{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'video-showcase.css' | asset_url | stylesheet_tag }}
+
+{%- if section.blocks.size > 0 -%}
+  <video-showcase
+    class="video-showcase full-width"
+    data-fallback-duration="{{ section.settings.fallback_duration | default: 6 }}"
+  >
+    <div class="video-showcase_wrapper">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="video-showcase_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      <div class="video-showcase_wrapper_stage">
+        <div class="video-showcase_wrapper_viewport" data-viewport>
+          <div
+            class="video-showcase_wrapper_track"
+            data-track
+            style="--video-showcase-ratio: {{ section.settings.card_ratio | default: '282 / 400' }};"
+          >
+            {%- for block in section.blocks -%}
+              <div
+                class="video-showcase_wrapper_track_item"
+                data-slide
+                data-index="{{ forloop.index0 }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="video-showcase_wrapper_track_item_media">
+                  {%- if block.settings.cover_image != blank -%}
+                    <span class="video-showcase_wrapper_track_item_poster" data-poster>
+                      {{
+                        block.settings.cover_image
+                        | image_url: width: 600
+                        | image_tag: loading: 'lazy', widths: '300,450,600', sizes: '282px', alt: ''
+                      }}
+                    </span>
+                  {%- endif -%}
+
+                  {%- if block.settings.video_url != blank -%}
+                    <video
+                      class="video-showcase_wrapper_track_item_video"
+                      data-video
+                      src="{{ block.settings.video_url }}#t=0.1"
+                      preload="metadata"
+                      muted
+                      playsinline
+                      disableremoteplayback
+                      {% if block.settings.cover_image != blank %}
+                        poster="{{ block.settings.cover_image | image_url: width: 600 }}"
+                      {% endif %}
+                    ></video>
+                  {%- elsif block.settings.video != blank -%}
+                    <span class="video-showcase_wrapper_track_item_video-wrap">
+                      {{
+                        block.settings.video
+                        | video_tag:
+                          controls: false,
+                          muted: true,
+                          autoplay: false,
+                          preload: 'metadata',
+                          image_size: '600x'
+                      }}
+                    </span>
+                  {%- endif -%}
+                </div>
+
+                <span class="video-showcase_wrapper_track_item_scrim" aria-hidden="true"></span>
+
+                <div class="video-showcase_wrapper_track_item_progress" aria-hidden="true">
+                  <span class="video-showcase_wrapper_track_item_progress_bar" data-progress></span>
+                </div>
+
+                {%- if block.settings.link != blank -%}
+                  <a
+                    href="{{ block.settings.link }}"
+                    class="video-showcase_wrapper_track_item_link"
+                    aria-label="{{ section.settings.heading | default: 'View' | escape }}"
+                  ></a>
+                {%- endif -%}
+
+                <span class="video-showcase_wrapper_track_item_play" data-play-icon>
+                  {{ 'icon-play.svg' | inline_asset_content }}
+                </span>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="video-showcase_wrapper_stage_prev"
+          data-prev
+          aria-label="{{ 'accessibility.previous_page' | t }}"
+        >
+          {{ 'icon-caret-left.svg' | inline_asset_content }}
+        </button>
+
+        <button
+          type="button"
+          class="video-showcase_wrapper_stage_next"
+          data-next
+          aria-label="{{ 'accessibility.next_page' | t }}"
+        >
+          {{ 'icon-caret-right.svg' | inline_asset_content }}
+        </button>
+      </div>
+
+      <div class="scroll-carousel_dots" data-dots></div>
+    </div>
+  </video-showcase>
+
+  <script src="{{ 'video-showcase.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Video showcase",
+  "tag": "section",
+  "class": "shopify-section--video-showcase",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Curated trends for you"
+    },
+    {
+      "type": "select",
+      "id": "card_ratio",
+      "label": "Card shape",
+      "info": "Match the aspect ratio of your videos so they are not cropped.",
+      "options": [
+        { "value": "282 / 400", "label": "Showcase (as designed)" },
+        { "value": "9 / 16", "label": "Vertical (9:16)" },
+        { "value": "4 / 5", "label": "Portrait (4:5)" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "1 / 1", "label": "Square (1:1)" }
+      ],
+      "default": "282 / 400"
+    },
+    {
+      "type": "range",
+      "id": "fallback_duration",
+      "label": "Fallback slide duration",
+      "info": "Used when a block has no video, or when the video duration cannot be read.",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video_card",
+      "name": "Video card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "Video URL (.mp4)",
+          "info": "Paste a hosted MP4 URL. Takes priority over the video picker below."
+        },
+        { "type": "video", "id": "video", "label": "Video (from library)" },
+        {
+          "type": "image_picker",
+          "id": "cover_image",
+          "label": "Cover image (optional)",
+          "info": "Leave empty to use the first frame of the video."
+        },
+        { "type": "url", "id": "link", "label": "Link (optional)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video showcase",
+      "blocks": [{ "type": "video_card" }, { "type": "video_card" }, { "type": "video_card" }]
+    }
+  ]
+}
+{% endschema %}

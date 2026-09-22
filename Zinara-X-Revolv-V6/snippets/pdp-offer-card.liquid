@@ -1,0 +1,31 @@
+{%- doc -%}
+  One coupon card: a white head with the offer copy and a tinted foot carrying
+  the code, split by a dashed rule. Figma 7930:96041 (rail) and 7930:98947
+  (All offers sidesheet) - the same card, only the grid around it changes.
+
+  @param {object} offer - a `discount_offer` metaobject
+{%- enddoc -%}
+
+<div class="pdp-offer">
+  <div class="pdp-offer_head">
+    <span class="pdp-offer_head_icon" aria-hidden="true">{{ 'icon-seal-percent.svg' | inline_asset_content }}</span>
+    <span class="pdp-offer_head_text">
+      <span class="pdp-offer_head_text_title">{{ offer.heading }}</span>
+      {%- if offer.description != blank -%}
+        <span class="pdp-offer_head_text_sub">{{ offer.description }}</span>
+      {%- endif -%}
+    </span>
+  </div>
+
+  {%- if offer.discount_code != blank -%}
+    <button
+      type="button"
+      class="pdp-offer_code"
+      data-copy-code="{{ offer.discount_code | escape }}"
+      aria-label="Copy code {{ offer.discount_code | escape }}"
+    >
+      <span class="pdp-offer_code_icon" aria-hidden="true">{{ 'icon-copy.svg' | inline_asset_content }}</span>
+      <span class="pdp-offer_code_value">{{ offer.discount_code }}</span>
+    </button>
+  {%- endif -%}
+</div>

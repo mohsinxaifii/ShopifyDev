@@ -1,0 +1,140 @@
+{{ 'header.css' | asset_url | stylesheet_tag }}
+{{ 'search-suggest.css' | asset_url | stylesheet_tag }}
+
+<header-component class="header full-width" data-drawer-open="false" data-search-open="false">
+  <div class="header_wrapper">
+    <div class="header_wrapper_brand">
+      <button
+        type="button"
+        class="header_wrapper_brand_menu-toggle"
+        aria-label="{{ 'accessibility.menu' | t }}"
+        aria-expanded="false"
+        aria-controls="header-drawer-{{ section.id }}"
+      >
+        {{ 'icon-menu.svg' | inline_asset_content }}
+      </button>
+
+      <a href="{{ routes.root_url }}" class="header_wrapper_brand_logo">
+        {%- if settings.logo -%}
+          {{
+            settings.logo
+            | image_url: width: 400
+            | image_tag: loading: 'eager', width: settings.logo_width, alt: shop.name
+          }}
+        {%- else -%}
+          {{ 'logo.svg' | inline_asset_content }}
+        {%- endif -%}
+      </a>
+    </div>
+
+    {%- render 'search-suggest' -%}
+
+    <div class="header_wrapper_actions">
+      {%- comment -%}
+        Figma Mobile navbar 7930:106697 swaps the search field for an icon; it is
+        hidden on desktop, where the field itself is always shown.
+      {%- endcomment -%}
+      <button
+        type="button"
+        class="header_wrapper_actions_link header_wrapper_actions_search-toggle"
+        aria-label="{{ 'accessibility.search' | t }}"
+        aria-expanded="false"
+      >
+        {{ 'icon-search.svg' | inline_asset_content }}
+      </button>
+
+      <a
+        href="{{ routes.account_url }}"
+        class="header_wrapper_actions_link"
+        aria-label="{{ 'accessibility.account' | t }}"
+      >
+        {{ 'icon-user.svg' | inline_asset_content }}
+      </a>
+
+      <a
+        href="{{ section.settings.wishlist_url | default: '#' }}"
+        class="header_wrapper_actions_link"
+        aria-label="{{ 'accessibility.wishlist' | t }}"
+      >
+        {{ 'icon-heart.svg' | inline_asset_content }}
+      </a>
+
+      <a href="{{ routes.cart_url }}" class="header_wrapper_actions_link" aria-label="{{ 'accessibility.cart' | t }}">
+        {{ 'icon-cart.svg' | inline_asset_content }}
+        {%- if cart.item_count > 0 -%}
+          <span class="header_wrapper_actions_cart_badge">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+  </div>
+
+  <div class="header_drawer_overlay" inert></div>
+  <div
+    class="header_drawer"
+    id="header-drawer-{{ section.id }}"
+    role="dialog"
+    aria-modal="true"
+    inert
+    aria-label="{{ 'accessibility.menu' | t }}"
+  >
+    <div class="header_drawer_header">
+      <a href="{{ routes.root_url }}" class="header_wrapper_brand_logo">
+        {%- if settings.logo -%}
+          {{
+            settings.logo
+            | image_url: width: 300
+            | image_tag: loading: 'lazy', width: settings.logo_width, alt: shop.name
+          }}
+        {%- else -%}
+          {{ 'logo.svg' | inline_asset_content }}
+        {%- endif -%}
+      </a>
+      <button type="button" class="header_drawer_header_close" aria-label="{{ 'accessibility.close_menu' | t }}">
+        {{ 'icon-menu.svg' | inline_asset_content }}
+      </button>
+    </div>
+
+    <nav class="header_drawer_nav">
+      <ul class="header_drawer_nav_list">
+        {%- for link in section.settings.menu.links -%}
+          <li class="header_drawer_nav_list_item">
+            <a href="{{ link.url }}" class="header_drawer_nav_list_item_link">{{ link.title }}</a>
+            {%- if link.links != blank -%}
+              <ul class="header_drawer_nav_sublist">
+                {%- for childlink in link.links -%}
+                  <li>
+                    <a href="{{ childlink.url }}" class="header_drawer_nav_list_item_link">{{ childlink.title }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  </div>
+</header-component>
+
+<script src="{{ 'header.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'search-suggest.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Header",
+  "tag": "header",
+  "class": "shopify-section--header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:labels.menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "url",
+      "id": "wishlist_url",
+      "label": "Wishlist page URL"
+    }
+  ]
+}
+{% endschema %}

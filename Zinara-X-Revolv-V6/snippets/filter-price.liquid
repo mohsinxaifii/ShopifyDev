@@ -1,0 +1,117 @@
+{%- doc -%}
+  The one `price_range` filter. Figma 7930:16734.
+
+  A dual-handle range built from two overlaid inputs, the selected span read out
+  above it, and the design's preset brackets underneath - each preset just writes
+  both bounds and submits.
+
+  @param {object} filter - a Shopify storefront price_range filter
+{%- enddoc -%}
+
+{%- liquid
+  comment
+    money_without_currency keeps the decimals this design does not show, and the
+    shop's money_format carries no symbol - so format whole rupees and add the
+    symbol here.
+  endcomment
+  assign currency_symbol = cart.currency.symbol
+  assign range_max = filter.range_max | divided_by: 100
+  assign min_value = filter.min_value.value | default: 0 | divided_by: 100
+  assign max_value = filter.max_value.value | default: filter.range_max | divided_by: 100
+
+  assign preset_stops = '10000,20000,50000,100000' | split: ','
+-%}
+
+<div
+  class="filter-price"
+  data-price-filter
+  data-range-max="{{ range_max }}"
+  data-symbol="{{ currency_symbol }}"
+>
+  <p class="filter-price_caption">{{ 'collection.selected_price_range' | t }}</p>
+  <p class="filter-price_value" data-price-readout>
+    {{- currency_symbol -}}
+    {{- min_value | times: 100 | money_without_trailing_zeros | strip_html }} - {{ currency_symbol -}}
+    {{- max_value | times: 100 | money_without_trailing_zeros | strip_html -}}
+  </p>
+
+  <div class="filter-price_slider">
+    <span class="filter-price_slider_track" aria-hidden="true"></span>
+    <span class="filter-price_slider_fill" data-price-fill aria-hidden="true"></span>
+    <input
+      type="range"
+      class="filter-price_slider_input filter-price_slider_input--min"
+      min="0"
+      max="{{ range_max }}"
+      value="{{ min_value }}"
+      data-price-min
+      aria-label="{{ filter.min_value.label }}"
+    >
+    <input
+      type="range"
+      class="filter-price_slider_input filter-price_slider_input--max"
+      min="0"
+      max="{{ range_max }}"
+      value="{{ max_value }}"
+      data-price-max
+      aria-label="{{ filter.max_value.label }}"
+    >
+  </div>
+
+  {%- comment -%}
+    The values Shopify actually submits. The range inputs above drive these so
+    the form can post plain currency amounts.
+  {%- endcomment -%}
+  <input
+    type="hidden"
+    name="{{ filter.min_value.param_name }}"
+    value="{% if filter.min_value.value %}{{ min_value }}{% endif %}"
+    data-price-min-input
+  >
+  <input
+    type="hidden"
+    name="{{ filter.max_value.param_name }}"
+    value="{% if filter.max_value.value %}{{ max_value }}{% endif %}"
+    data-price-max-input
+  >
+
+  <div class="filter-price_presets">
+    {%- assign lower = 0 -%}
+    {%- for stop in preset_stops -%}
+      {%- liquid
+        assign upper = stop | plus: 0
+        assign is_active = false
+        if min_value == lower and max_value == upper
+          assign is_active = true
+        endif
+      -%}
+      {%- if lower < range_max -%}
+        <button
+          type="button"
+          class="filter-price_presets_preset{% if is_active %} is-active{% endif %}"
+          data-price-preset
+          data-min="{{ lower }}"
+          data-max="{{ upper }}"
+        >
+          {{ currency_symbol -}}
+          {{- lower | times: 100 | money_without_trailing_zeros | strip_html }} - {{ currency_symbol -}}
+          {{- upper | times: 100 | money_without_trailing_zeros | strip_html }}
+        </button>
+      {%- endif -%}
+      {%- assign lower = upper -%}
+    {%- endfor -%}
+
+    {%- if lower < range_max -%}
+      <button
+        type="button"
+        class="filter-price_presets_preset{% if min_value == lower and max_value == range_max %} is-active{% endif %}"
+        data-price-preset
+        data-min="{{ lower }}"
+        data-max="{{ range_max }}"
+      >
+        {{ currency_symbol -}}
+        {{- lower | times: 100 | money_without_trailing_zeros | strip_html }}+
+      </button>
+    {%- endif -%}
+  </div>
+</div>

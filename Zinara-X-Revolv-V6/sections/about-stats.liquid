@@ -1,0 +1,66 @@
+{{ 'about-stats.css' | asset_url | stylesheet_tag }}
+
+{%- if section.blocks.size > 0 -%}
+  <section class="about-stats full-width">
+    <div class="about-stats_wrapper" data-animate>
+      {%- for block in section.blocks -%}
+        <div class="about-stats_wrapper_stat" {{ block.shopify_attributes }}>
+          {%- if block.settings.icon != blank -%}
+            <span class="about-stats_wrapper_stat_icon" aria-hidden="true">
+              {%- case block.settings.icon -%}
+                {%- when 'customers' -%}
+                  {{ 'icon-users-three.svg' | inline_asset_content }}
+                {%- when 'rating' -%}
+                  {{ 'icon-shooting-star.svg' | inline_asset_content }}
+                {%- when 'designs' -%}
+                  {{ 'icon-diamond.svg' | inline_asset_content }}
+              {%- endcase -%}
+            </span>
+          {%- endif -%}
+          <span class="about-stats_wrapper_stat_value">{{ block.settings.value }}</span>
+          <span class="about-stats_wrapper_stat_label">{{ block.settings.label }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "About stats",
+  "tag": "section",
+  "class": "shopify-section--about-stats",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "customers", "label": "Customers" },
+            { "value": "rating", "label": "Rating" },
+            { "value": "designs", "label": "Designs" }
+          ],
+          "default": "customers"
+        },
+        { "type": "text", "id": "value", "label": "Value", "default": "5000+" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Customers" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About stats",
+      "blocks": [
+        { "type": "stat", "settings": { "icon": "customers", "value": "5000+", "label": "Customers" } },
+        { "type": "stat", "settings": { "icon": "rating", "value": "4.8/5", "label": "Customer rating" } },
+        { "type": "stat", "settings": { "icon": "designs", "value": "2100+", "label": "Designs" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

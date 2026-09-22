@@ -1,0 +1,885 @@
+/* Figma: PLP 7930:101927 > Frame 1116601646 (7930:101938).
+   A 266 filter rail and an 846 product column, 24 apart, on the 1136 content
+   width; 32 above, 32 below. */
+.collection {
+  /* Anchors the loading placeholder, which covers the whole listing. */
+  position: relative;
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.collection_wrapper {
+  display: grid;
+  grid-template-columns: 266px 846fr;
+  gap: 24px;
+  align-items: start;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------------ filters */
+
+.collection_wrapper_filters {
+  min-width: 0;
+}
+
+.collection_wrapper_filters_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+}
+
+.collection_wrapper_filters_head_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.collection_wrapper_filters_head_clear {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.429;
+  color: var(--color-accent, #f0166e);
+  text-decoration: underline;
+}
+
+/* Figma draws the rail 249 wide inside the 266 column. */
+.collection_wrapper_filters_groups {
+  width: 249px;
+  max-width: 100%;
+  margin-top: 8px;
+}
+
+.collection_wrapper_filters_groups_group {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.collection_wrapper_filters_groups_group_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.collection_wrapper_filters_groups_group_head::-webkit-details-marker {
+  display: none;
+}
+
+.collection_wrapper_filters_groups_group_head_label {
+  flex: 1 1 auto;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: #000;
+}
+
+.collection_wrapper_filters_groups_group_head_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: #000;
+}
+
+.collection_wrapper_filters_groups_group_head_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.collection_wrapper_filters_groups_group_head_icon [data-icon-minus] {
+  display: none;
+}
+
+.collection_wrapper_filters_groups_group[open]
+  .collection_wrapper_filters_groups_group_head_icon
+  [data-icon-plus] {
+  display: none;
+}
+
+.collection_wrapper_filters_groups_group[open]
+  .collection_wrapper_filters_groups_group_head_icon
+  [data-icon-minus] {
+  display: block;
+}
+
+/* The head already carries the group's 16px bottom inset, so the body only owes
+   the 8px that separates it from the title. */
+.collection_wrapper_filters_groups_group_body {
+  margin-top: -8px;
+  padding-bottom: 16px;
+}
+
+.collection_wrapper_filters_groups_none {
+  margin: 16px 0 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* --------------------------------------------------------------- list filter */
+
+.filter-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter-list_item_label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-block: 8px;
+  cursor: pointer;
+}
+
+.filter-list_item_label_input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 24px box, brand fill once checked - the tick is the exported Check glyph. */
+.filter-list_item_label_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid #999;
+  border-radius: 4px;
+  background-color: #fff;
+  color: transparent;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.filter-list_item_label_box svg {
+  width: 16px;
+  height: 16px;
+}
+
+.filter-list_item_label_input:checked + .filter-list_item_label_box {
+  border-color: var(--color-brand, #712242);
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+}
+
+.filter-list_item_label_input:focus-visible + .filter-list_item_label_box {
+  outline: 2px solid var(--color-brand, #712242);
+  outline-offset: 2px;
+}
+
+.filter-list_item_label_swatch {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--filter-swatch, #ddd) center / cover no-repeat;
+}
+
+.filter-list_item_label_text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+}
+
+.filter-list_item_label.is-active .filter-list_item_label_text {
+  font-weight: 600;
+  color: #000;
+}
+
+.filter-list_item_label:has(.filter-list_item_label_input:disabled) {
+  cursor: default;
+  opacity: 0.45;
+}
+
+/* -------------------------------------------------------------- price filter */
+
+.filter-price {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-price_caption {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.833;
+  color: var(--color-text-secondary, #494949);
+}
+
+.filter-price_value {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.692;
+  color: #000;
+}
+
+/* Two range inputs stacked on one track: the track and fill are drawn here and
+   the inputs contribute only their thumbs. */
+.filter-price_slider {
+  position: relative;
+  height: 24px;
+  margin-block: 12px;
+  margin-left: 12px;
+  margin-right: 24px;
+}
+
+.filter-price_slider_track,
+.filter-price_slider_fill {
+  position: absolute;
+  top: 50%;
+  height: 3px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.filter-price_slider_track {
+  right: 0;
+  left: 0;
+  background-color: #e0e0e0;
+}
+
+.filter-price_slider_fill {
+  background-color: var(--color-brand, #712242);
+}
+
+.filter-price_slider_input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: none;
+  appearance: none;
+  pointer-events: none;
+}
+
+.filter-price_slider_input::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--color-brand, #712242);
+  cursor: pointer;
+  appearance: none;
+  pointer-events: auto;
+}
+
+.filter-price_slider_input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--color-brand, #712242);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.filter-price_presets {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.filter-price_presets_preset {
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.833;
+  color: var(--color-text-secondary, #494949);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.filter-price_presets_preset.is-active {
+  border-color: var(--color-brand, #712242);
+  background-color: #f7f3f5;
+  color: var(--color-brand, #712242);
+}
+
+/* --------------------------------------------------------------------- main */
+
+.collection_wrapper_main {
+  min-width: 0;
+}
+
+.collection_wrapper_main_toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 38px;
+}
+
+.collection_wrapper_main_toolbar_count {
+  margin: 0;
+  align-self: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.collection_wrapper_main_toolbar_sort {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.collection_wrapper_main_toolbar_sort_trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.collection_wrapper_main_toolbar_sort_trigger_label {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+  white-space: nowrap;
+}
+
+.collection_wrapper_main_toolbar_sort_trigger_label strong {
+  font-weight: 600;
+  color: #000;
+}
+
+.collection_wrapper_main_toolbar_sort_trigger_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: #000;
+  transition: transform 0.2s ease;
+}
+
+.collection_wrapper_main_toolbar_sort_trigger[aria-expanded='true']
+  .collection_wrapper_main_toolbar_sort_trigger_icon {
+  transform: rotate(180deg);
+}
+
+/* Figma floats the menu 11px under the trigger. */
+.collection_wrapper_main_toolbar_sort_menu {
+  position: absolute;
+  top: calc(100% + 11px);
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.1));
+}
+
+/* The rule above sets display, which outranks the UA sheet's [hidden]. */
+.collection_wrapper_main_toolbar_sort_menu[hidden] {
+  display: none;
+}
+
+.collection_wrapper_main_toolbar_sort_menu_item {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.collection_wrapper_main_toolbar_sort_menu_item.is-active {
+  font-weight: 600;
+  color: var(--color-accent, #f0166e);
+}
+
+/* -------------------------------------------------------------------- chips */
+
+.collection_wrapper_main_chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.collection_wrapper_main_chips_chip {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.collection_wrapper_main_chips_chip.is-active {
+  border-color: var(--color-brand, #712242);
+  background-color: #f7f3f5;
+  color: var(--color-brand, #712242);
+}
+
+/* --------------------------------------------------------------------- grid */
+
+.collection_wrapper_main_grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.collection_wrapper_main_grid_empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-text-secondary, #494949);
+}
+
+.collection_wrapper_main_more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.collection_wrapper_main_more_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.429;
+  color: var(--color-text-secondary, #494949);
+  text-decoration: none;
+}
+
+.collection_wrapper_main_more_button_spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+}
+
+.collection_wrapper_main_more_button_spinner svg {
+  width: 100%;
+  height: 100%;
+  animation: collection-spin 0.9s linear infinite;
+}
+
+.collection_wrapper_main_more.is-loading .collection_wrapper_main_more_button_spinner {
+  display: block;
+}
+
+@keyframes collection-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection_wrapper_main_more_button_spinner svg {
+    animation-duration: 3s;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .collection_wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .collection_wrapper_filters_groups {
+    width: 100%;
+  }
+
+  .collection_wrapper_main_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .collection_wrapper_main_grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "PLP skeleton" 7930:102108 and "Search results skeleton" 7930:106276 -
+   one layout, so one placeholder, shared with the search page which reuses this
+   whole stylesheet. The cover and the shimmering tiles come from skeleton.css;
+   only the arrangement is here. */
+.plp-skeleton {
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+/* <collection-page> upgrades as soon as collection.js runs, which is also when
+   the filters, sort and paging become live - so nothing else has to clear it. */
+collection-page:defined .plp-skeleton {
+  display: none;
+}
+
+.plp-skeleton_heading {
+  width: 174px;
+  height: 29px;
+  margin-inline: auto;
+}
+
+.plp-skeleton_body {
+  display: grid;
+  grid-template-columns: 266px 846fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+
+.plp-skeleton_body_filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plp-skeleton_body_main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.plp-skeleton_body_main_chips {
+  display: flex;
+  gap: 12px;
+}
+
+.plp-skeleton_body_main_grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.plp-skeleton_body_main_grid_card {
+  height: 386px;
+}
+
+@media screen and (max-width: 989px) {
+  .plp-skeleton_body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plp-skeleton_body_filters {
+    display: none;
+  }
+
+  .plp-skeleton_body_main_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .plp-skeleton_body_main_grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------ mobile sheets --
+   Figma Mobile PLP 7930:116781, its bottom bar 7930:117035, Sort by 7930:117649
+   and Filters 7930:118227. On phones the rail and the sort menu leave the page:
+   a sticky Sort | Filters bar opens each as a bottom sheet over a scrim, and the
+   grid goes two-up on an 8px gutter. Search reuses all of it. */
+.plp-mobile-bar,
+.plp-sheet-scrim,
+.collection_wrapper_filters_head_close,
+.collection_wrapper_filters_footer,
+.collection_wrapper_main_toolbar_sort_menu_head {
+  display: none;
+}
+
+@media screen and (max-width: 749px) {
+  .collection_wrapper {
+    padding-block: 12px 24px;
+  }
+
+  .collection_wrapper_filters {
+    display: none;
+  }
+
+  collection-page[data-filters-open] .collection_wrapper_filters {
+    position: fixed;
+    inset: 56px 0 0;
+    z-index: 101;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px 12px 0 0;
+    background-color: #fff;
+    overflow: hidden;
+  }
+
+  .collection_wrapper_filters_head {
+    padding: 16px var(--page-margin);
+  }
+
+  .collection_wrapper_filters_head_clear {
+    display: none;
+  }
+
+  .collection_wrapper_filters_head_close,
+  .collection_wrapper_main_toolbar_sort_menu_head_close {
+    display: flex;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #000;
+    cursor: pointer;
+  }
+
+  .collection_wrapper_filters_head_close svg,
+  .collection_wrapper_main_toolbar_sort_menu_head_close svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .collection_wrapper_filters_groups {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .collection_wrapper_filters_footer {
+    display: flex;
+    gap: 12px;
+    padding: 12px var(--page-margin) 20px;
+    border-top: 1px solid #f2f2f2;
+  }
+
+  .collection_wrapper_filters_footer_clear,
+  .collection_wrapper_filters_footer_apply {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border: 1px solid var(--color-brand, #712242);
+    border-radius: 8px;
+    font-family: var(--font-secondary--family);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .collection_wrapper_filters_footer_clear {
+    background-color: #fff;
+    color: var(--color-brand, #712242);
+  }
+
+  .collection_wrapper_filters_footer_apply {
+    background-color: var(--color-brand, #712242);
+    color: #fff;
+  }
+
+  .plp-sheet-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  collection-page[data-filters-open] .plp-sheet-scrim,
+  collection-page:has([data-sort-menu]:not([hidden])) .plp-sheet-scrim {
+    display: block;
+  }
+
+  /* Only the sort menu survives from the toolbar, as a sheet of its own. */
+  .collection_wrapper_main_toolbar {
+    min-height: 0;
+  }
+
+  .collection_wrapper_main_toolbar_count,
+  .collection_wrapper_main_toolbar_sort_trigger {
+    display: none;
+  }
+
+  .collection_wrapper_main_toolbar_sort_menu {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 101;
+    gap: 16px;
+    min-width: 0;
+    padding: 16px var(--page-margin) 24px;
+    border: 0;
+    border-radius: 12px 12px 0 0;
+    filter: none;
+  }
+
+  .collection_wrapper_main_toolbar_sort_menu_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-family: var(--font-secondary--family);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000;
+  }
+
+  .collection_wrapper_main_toolbar_sort_menu_item {
+    line-height: 22px;
+  }
+
+  .collection_wrapper_main_chips {
+    flex-wrap: nowrap;
+    margin: 0 calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .collection_wrapper_main_chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collection_wrapper_main_chips_chip {
+    flex: 0 0 auto;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .collection_wrapper_main_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .collection_wrapper_main_more {
+    margin-top: 16px;
+  }
+
+  .collection_wrapper_main_more_button {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--color-brand, #712242);
+    text-decoration: underline;
+  }
+
+  .plp-mobile-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px var(--page-margin);
+    background-color: #fff;
+    box-shadow: 0 -1px 0 #e0e0e0;
+  }
+
+  .plp-mobile-bar_button {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 16px;
+    border: 0;
+    background: none;
+    font-family: var(--font-secondary--family);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #4d4d4d;
+    cursor: pointer;
+  }
+
+  .plp-mobile-bar_button_icon {
+    display: flex;
+    width: 20px;
+    height: 20px;
+  }
+
+  .plp-mobile-bar_button_icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .plp-mobile-bar_divider {
+    align-self: stretch;
+    width: 1px;
+    background-color: #e0e0e0;
+  }
+}

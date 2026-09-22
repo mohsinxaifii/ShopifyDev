@@ -1,0 +1,118 @@
+{%- comment -%}
+  All collections. Figma: Desktop / All collections 7930:94864 >
+  All collections (7930:94873), with the skeleton state from 7930:94998.
+
+  A cream band carrying the decorative wave along its bottom edge, a left-set
+  heading, then a four-up grid of 266x418 cards - a 12px-radius 266x357 image
+  over a centred serif title and item count.
+
+  Unlike the rest of the theme's bands the heading here is left-aligned and the
+  card titles are centred, which is why neither borrows the centred band
+  heading used elsewhere.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
+{%- endcomment -%}
+
+{{ 'collections.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  comment
+    Figma shows a hand-picked set, so a curated list wins when one is chosen;
+    otherwise every collection is listed in the chosen order.
+  endcomment
+  assign shown = collections
+  if section.settings.sort_by == 'products_high'
+    assign shown = collections | sort: 'all_products_count' | reverse
+  endif
+  if section.settings.collection_list != blank
+    assign shown = section.settings.collection_list
+  endif
+-%}
+
+<section class="collections-page full-width skeleton-host">
+  {%- render 'collections-skeleton' -%}
+
+  <span class="collections-page_wave" aria-hidden="true">
+    {{- 'decorative-wave.svg' | inline_asset_content -}}
+  </span>
+
+  <div class="collections-page_wrapper">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="collections-page_wrapper_heading" data-animate>{{ section.settings.heading }}</h1>
+    {%- endif -%}
+
+    {%- if shown.size == 0 -%}
+      <p class="collections-page_wrapper_empty">{{ 'collections.empty' | t }}</p>
+    {%- else -%}
+      <div class="collections-page_wrapper_grid" data-animate>
+        {%- for collection in shown -%}
+          {%- if section.settings.hide_empty and collection.all_products_count == 0 -%}
+            {%- continue -%}
+          {%- endif -%}
+
+          <a href="{{ collection.url }}" class="collections-page_wrapper_grid_item">
+            <span class="collections-page_wrapper_grid_item_image">
+              {%- if collection.featured_image -%}
+                {{
+                  collection.featured_image
+                  | image_url: width: 532
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '266,399,532',
+                    sizes: '(max-width: 749px) 50vw, 266px',
+                    alt: collection.title
+                }}
+              {%- endif -%}
+            </span>
+
+            <span class="collections-page_wrapper_grid_item_body">
+              <span class="collections-page_wrapper_grid_item_body_title">{{ collection.title }}</span>
+              <span class="collections-page_wrapper_grid_item_body_count">
+                {{- 'collections.product_count' | t: count: collection.all_products_count -}}
+              </span>
+            </span>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collections grid",
+  "tag": "section",
+  "class": "shopify-section--collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "All collections"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Collections to show",
+      "info": "Leave empty to list every collection."
+    },
+    {
+      "type": "select",
+      "id": "sort_by",
+      "label": "Sort collections",
+      "options": [
+        { "value": "alphabetical", "label": "Alphabetically" },
+        { "value": "products_high", "label": "Most products first" }
+      ],
+      "default": "alphabetical"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_empty",
+      "label": "Hide empty collections",
+      "default": true
+    }
+  ],
+  "presets": [{ "name": "Collections grid" }]
+}
+{% endschema %}

@@ -1,0 +1,41 @@
+{%- doc -%}
+  The phone-only Sort | Filters bar under the PLP and search grids, plus the scrim
+  their bottom sheets open over. Figma Mobile PLP bottom bar 7930:117035.
+
+  The count beside Filters is the number of values currently applied, so the
+  bar is swapped with the grid on every filter request (see collection.js).
+
+  @param {object} filters - collection.filters or search.filters
+{%- enddoc -%}
+
+{%- liquid
+  assign active_filters = 0
+  for filter in filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank or filter.max_value.value != blank
+        assign active_filters = active_filters | plus: 1
+      endif
+    else
+      assign active_filters = active_filters | plus: filter.active_values.size
+    endif
+  endfor
+-%}
+
+<div class="plp-sheet-scrim" data-sheet-scrim aria-hidden="true"></div>
+
+<div class="plp-mobile-bar" data-mobile-bar>
+  <button type="button" class="plp-mobile-bar_button" data-mobile-sort>
+    <span class="plp-mobile-bar_button_icon" aria-hidden="true">
+      {{- 'icon-arrows-down-up.svg' | inline_asset_content -}}
+    </span>
+    {{- 'collection.sort' | t -}}
+  </button>
+  <span class="plp-mobile-bar_divider" aria-hidden="true"></span>
+  <button type="button" class="plp-mobile-bar_button" data-mobile-filters>
+    <span class="plp-mobile-bar_button_icon" aria-hidden="true">
+      {{- 'icon-funnel.svg' | inline_asset_content -}}
+    </span>
+    {{- 'collection.filters' | t -}}
+    {%- if active_filters > 0 %} ({{ active_filters }}){% endif -%}
+  </button>
+</div>

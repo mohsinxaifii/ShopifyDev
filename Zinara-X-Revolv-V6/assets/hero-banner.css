@@ -1,0 +1,221 @@
+.hero-banner {
+  display: block;
+  width: 100%;
+}
+
+/* The height comes from --hero-ratio, which the section sets from the slide
+   images, so the band grows and shrinks with the viewport at the image's own
+   proportions. There is deliberately no max-height: capping the height while
+   the full-bleed width keeps growing is exactly what cropped the top and bottom
+   on screens wider than 1280px. */
+.hero-banner_wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--hero-ratio, 1280 / 576);
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.hero-banner_wrapper_track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-banner_wrapper_track_slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease;
+}
+
+.hero-banner_wrapper_track_slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 1;
+}
+
+/* contain, not cover: a slide whose shape matches the band fills it exactly
+   either way, and one that doesn't is shown whole instead of trimmed. The slow
+   zoom that used to run here is gone for the same reason - scaling past 1
+   pushes every edge of the image outside the band. */
+/* The <picture> only swaps the source on phones; the img keeps sizing itself. */
+.hero-banner_wrapper_track_slide_picture {
+  display: contents;
+}
+
+.hero-banner_wrapper_track_slide_image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.hero-banner_wrapper_track_slide_content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px var(--page-margin);
+  max-width: var(--page-width);
+  margin-inline: auto;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 60%);
+}
+
+.hero-banner_wrapper_track_slide_content_heading {
+  margin: 0;
+  max-width: 20ch;
+  font-family: var(--font-primary--family);
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.1;
+  color: #fff;
+}
+
+.hero-banner_wrapper_track_slide_content_subheading {
+  margin: 0;
+  max-width: 45ch;
+  font-family: var(--font-primary--family);
+  font-size: 16px;
+  line-height: 1.5;
+  color: #fff;
+}
+
+.hero-banner_wrapper_track_slide_content_button {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 12px 28px;
+  border-radius: var(--style-border-radius-inputs, 4px);
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.hero-banner_wrapper_track_slide_content_button:hover {
+  background-color: #5a1b34;
+  transform: translateY(-1px);
+}
+
+/* Prev / next controls */
+.hero-banner_wrapper_prev,
+.hero-banner_wrapper_next {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-brand, #712242);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.hero-banner_wrapper_prev {
+  left: 28px;
+}
+
+.hero-banner_wrapper_next {
+  right: 28px;
+}
+
+.hero-banner_wrapper_prev svg,
+.hero-banner_wrapper_next svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-banner_wrapper_prev:hover,
+.hero-banner_wrapper_next:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* Dot indicators */
+.hero-banner_wrapper_dots {
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.hero-banner_wrapper_dots_dot {
+  width: 5px;
+  height: 5px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background-color: #c4c4c4;
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.hero-banner_wrapper_dots_dot.is-active {
+  width: 18px;
+  background-color: var(--color-brand, #712242);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner_wrapper_track_slide {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Figma Mobile 7930:106698: the band takes the mobile images' ratio and drops the
+   side arrows; the dots stay as the only control. */
+@media screen and (max-width: 749px) {
+  .hero-banner_wrapper {
+    aspect-ratio: var(--hero-ratio-mobile, var(--hero-ratio, 1280 / 576));
+  }
+
+  .hero-banner_wrapper_prev,
+  .hero-banner_wrapper_next {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "Home page skeleton" 7930:103276. The cover is absolutely positioned
+   over the band (skeleton.css), so it is already exactly the band's size; the
+   tile just fills it. Restating a ratio or a max-height here would let the
+   placeholder and the real band disagree the moment --hero-ratio changes, and
+   the page would jump when the cover lifts. */
+.hero-skeleton {
+  padding: 0;
+}
+
+hero-banner-slideshow:defined .hero-skeleton {
+  display: none;
+}
+
+.hero-skeleton_stage {
+  height: 100%;
+  border-radius: 0;
+}

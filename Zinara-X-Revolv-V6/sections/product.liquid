@@ -1,0 +1,1149 @@
+{%- comment -%}
+  Product detail page. Figma: Desktop / PDP 7930:95962 - main frame 7930:95967,
+  plus the seven overlay states (image lightbox, size guide, all offers, UGC
+  lightbox, SGL certificate, add-ons, price difference) which live in
+  snippets/pdp-*.liquid and are rendered at the end of this file.
+
+  Layout is a 1136px content column split 556 / 24 / 556. The left column is
+  sticky and only as tall as the gallery; every other block stacks in the right
+  column, which is why the Figma right column is ~5000px tall.
+{%- endcomment -%}
+
+{{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'product.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+
+  assign has_compare = false
+  if current_variant.compare_at_price > current_variant.price
+    assign has_compare = true
+    assign saving = current_variant.compare_at_price | minus: current_variant.price | times: 100.0
+    assign saving_percent = saving | divided_by: current_variant.compare_at_price | round
+  endif
+
+  comment
+    A `rating` metafield hands back its value as a string, and comparing that to
+    0 raises "comparison of String with 0 failed" - so it is coerced first.
+  endcomment
+  assign average_rating = product.metafields.reviews.rating.value.rating | plus: 0
+  assign rating_count = product.metafields.reviews.rating_count.value | plus: 0
+
+  comment
+    Liquid has no decimal formatter, so "5" would print where the design shows
+    "5.00". The fraction is padded to two digits by hand.
+  endcomment
+  assign rating_whole = average_rating | floor
+  assign rating_frac = average_rating | minus: rating_whole | times: 100 | round
+  assign rating_frac = rating_frac | prepend: '00' | slice: -2, 2
+  assign rating_text = rating_whole | append: '.' | append: rating_frac
+
+  assign material_name = product.metafields.custom.pdp_material_name.value | default: 'Gold Vermeil'
+  comment
+    The explainer accordion and the link that opens it both disappear when a
+    product carries none of the content they would show.
+  endcomment
+  assign has_explainer = false
+  if product.metafields.custom.pdp_material_callouts.value != blank
+    assign has_explainer = true
+  endif
+  if product.metafields.custom.pdp_stone_compare_labels.value != blank
+    assign has_explainer = true
+  endif
+  assign material_tags = product.metafields.custom.pdp_material_tags.value
+  assign media_badges = product.metafields.custom.pdp_media_badges.value
+  assign highlights = product.metafields.custom.pdp_highlights.value
+  assign addons = product.metafields.custom.pdp_addons.value
+  assign ugc_videos = product.metafields.custom.pdp_ugc_videos.value
+  assign reviews = product.metafields.custom.pdp_reviews.value
+  if reviews.size > 0
+    assign rating_count = reviews.size
+  endif
+  comment
+    Read the PDP-specific keys first and fall back to the shared ones. The live
+    theme reads content.product_details_list and custom.size_chart, so this
+    theme writes its own custom.pdp_* copies and never has to edit those.
+  endcomment
+  assign size_chart = product.metafields.custom.pdp_size_chart.value | default: product.metafields.custom.size_chart.value
+  assign detail_lists = product.metafields.custom.pdp_detail_lists.value | default: product.metafields.content.product_details_list.value
+
+  assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
+  assign pair_products = product.metafields.custom.pdp_pair_products.value | default: shopify_recs.complementary_products.value
+  assign related_products = product.metafields.custom.pdp_related.value | default: shopify_recs.related_products.value
+
+  comment
+    Offers are a shop-level list and each entry may pin itself to particular
+    products or collections, so anything scoped elsewhere is dropped here.
+    Liquid's `concat` only joins arrays, so the matches are gathered as a handle
+    string and resolved back to metaobjects at render time.
+  endcomment
+  assign all_offers = shop.metafields.custom.pdp_offers.value
+  assign offer_handles = ''
+  for offer in all_offers
+    assign is_match = false
+    if offer.products.value == blank and offer.collections.value == blank
+      assign is_match = true
+    endif
+    for pinned in offer.products.value
+      if pinned.id == product.id
+        assign is_match = true
+      endif
+    endfor
+    for pinned in offer.collections.value
+      if product.collections contains pinned
+        assign is_match = true
+      endif
+    endfor
+    if is_match
+      assign offer_handles = offer_handles | append: offer.system.handle | append: ','
+    endif
+  endfor
+  assign offer_handles = offer_handles | split: ','
+-%}
+
+<product-page
+  class="pdp"
+  data-product-url="{{ product.url }}"
+  data-product-handle="{{ product.handle }}"
+  data-delivery-days="{{ product.metafields.custom.pdp_delivery_days.value | default: 5 }}"
+>
+  {%- render 'pdp-skeleton' -%}
+
+  <div class="pdp_layout">
+    {%- comment -%} ---------------------------------------------- gallery {%- endcomment -%}
+    <div class="pdp_gallery" data-animate data-animate-from="left">
+      <product-gallery class="pdp_gallery_inner">
+        <div class="pdp_gallery_stage">
+          {%- for media in product.media -%}
+            {%- liquid
+              comment
+                The first frame is the LCP image, so it is fetched eagerly while
+                the rest wait. Both of these have to be resolved before the tag:
+                a filter written inline in image_tag's argument list binds to the
+                tag's output, not to the argument.
+              endcomment
+              assign media_loading = 'lazy'
+              if forloop.first
+                assign media_loading = 'eager'
+              endif
+              assign media_alt = media.alt | default: product.title
+            -%}
+            <button
+              type="button"
+              class="pdp_gallery_stage_slide{% if forloop.first %} is-active{% endif %}"
+              data-stage-slide
+              data-index="{{ forloop.index0 }}"
+              aria-label="{{ 'products.open_image' | t: index: forloop.index }}"
+            >
+              {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+                {{
+                  media.preview_image
+                  | image_url: width: 1112
+                  | image_tag: loading: 'lazy', widths: '556,834,1112', sizes: '556px', alt: product.title
+                }}
+                <span class="pdp_gallery_stage_slide_play" aria-hidden="true">
+                  {{- 'icon-play.svg' | inline_asset_content -}}
+                </span>
+              {%- else -%}
+                {{
+                  media
+                  | image_url: width: 1112
+                  | image_tag: loading: media_loading, widths: '556,834,1112', sizes: '556px', alt: media_alt
+                }}
+              {%- endif -%}
+            </button>
+          {%- endfor -%}
+
+          <div class="pdp_gallery_stage_top">
+            {%- if has_compare -%}
+              <span class="pdp_gallery_stage_top_badge">{{ 'products.price_drop' | t }}</span>
+            {%- else -%}
+              <span></span>
+            {%- endif -%}
+
+            <button
+              type="button"
+              class="pdp_gallery_stage_top_wishlist"
+              data-wishlist-toggle
+              data-product-id="{{ product.id }}"
+              data-product-handle="{{ product.handle }}"
+              aria-label="{{ 'accessibility.wishlist_add' | t }}"
+              aria-pressed="false"
+            >
+              {{- 'icon-heart.svg' | inline_asset_content -}}
+            </button>
+          </div>
+
+          {%- if media_badges != blank -%}
+            <div class="pdp_gallery_stage_bottom">
+              {%- for badge in media_badges -%}
+                <span class="pdp_gallery_stage_bottom_pill">{{ badge }}</span>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%}
+          Figma Mobile PDP 7930:112281 swaps the thumbnail rail for dots under a
+          swipeable image; desktop keeps the thumbnails.
+        {%- endcomment -%}
+        {%- if product.media.size > 1 -%}
+          <div class="pdp_gallery_dots" aria-hidden="true">
+            {%- for media in product.media -%}
+              <span class="pdp_gallery_dots_dot{% if forloop.first %} is-active{% endif %}" data-gallery-dot></span>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <scroll-carousel class="pdp_gallery_thumbs">
+          <button
+            type="button"
+            class="pdp_gallery_thumbs_arrow"
+            data-prev
+            aria-label="{{ 'accessibility.previous' | t }}"
+          >
+            {{- 'icon-caret-left.svg' | inline_asset_content -}}
+          </button>
+
+          <div class="pdp_gallery_thumbs_track" data-track>
+            {%- for media in product.media -%}
+              <button
+                type="button"
+                class="pdp_gallery_thumbs_track_item{% if forloop.first %} is-active{% endif %}"
+                data-thumb
+                data-index="{{ forloop.index0 }}"
+                aria-label="{{ 'products.show_image' | t: index: forloop.index }}"
+              >
+                {{
+                  media.preview_image
+                  | image_url: width: 266
+                  | image_tag: loading: 'lazy', widths: '133,266', sizes: '133px', alt: ''
+                }}
+                {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+                  <span class="pdp_gallery_thumbs_track_item_play" aria-hidden="true">
+                    {{- 'icon-play.svg' | inline_asset_content -}}
+                  </span>
+                {%- endif -%}
+              </button>
+            {%- endfor -%}
+          </div>
+
+          <button
+            type="button"
+            class="pdp_gallery_thumbs_arrow"
+            data-next
+            aria-label="{{ 'accessibility.next' | t }}"
+          >
+            {{- 'icon-caret-right.svg' | inline_asset_content -}}
+          </button>
+        </scroll-carousel>
+      </product-gallery>
+    </div>
+
+    {%- comment -%} ------------------------------------------------- info {%- endcomment -%}
+    <div class="pdp_info" data-animate data-animate-from="right">
+      {%- form 'product', product, class: 'pdp_info_form', novalidate: 'novalidate' -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+        {%- comment -%} Title / price card - Figma 7930:96004 {%- endcomment -%}
+        <div class="pdp_headline">
+          <div class="pdp_headline_top">
+            <h1 class="pdp_headline_top_title">{{ product.title }}</h1>
+            {%- if average_rating > 0 -%}
+              <a href="#pdp-reviews" class="pdp_headline_top_rating">
+                {{ 'icon-star.svg' | inline_asset_content }}
+                <span>{{ average_rating | round: 1 }}</span>
+              </a>
+            {%- endif -%}
+          </div>
+
+          <div class="pdp_headline_price">
+            <span class="pdp_headline_price_current" data-price>
+              {%- render 'money', amount: current_variant.price -%}
+            </span>
+            <span
+              class="pdp_headline_price_compare"
+              data-compare
+              {% unless has_compare %}
+                hidden
+              {% endunless %}
+            >
+              {%- render 'money', amount: current_variant.compare_at_price -%}
+            </span>
+            <span
+              class="pdp_headline_price_save"
+              data-save
+              {% unless has_compare %}
+                hidden
+              {% endunless %}
+            >
+              Save {{ saving_percent }}%
+            </span>
+          </div>
+
+          <p class="pdp_headline_tax">{{ section.settings.tax_note }}</p>
+
+          {%- if section.settings.show_savings_calculator -%}
+            <div class="pdp_headline_calculator">
+              <button type="button" class="pdp_headline_calculator_button" data-open="price-difference">
+                <span>Your savings calculator</span>
+                {{ 'icon-caret-right.svg' | inline_asset_content }}
+              </button>
+            </div>
+          {%- endif -%}
+
+          {%- if material_tags != blank -%}
+            <ul class="pdp_headline_tags">
+              {%- for tag in material_tags -%}
+                <li class="pdp_headline_tags_item">{{ tag }}</li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          {%- if addons != blank -%}
+            <button type="button" class="pdp_headline_addons" data-open="addons">
+              <span>Add-ons available</span>
+              {{ 'icon-caret-right.svg' | inline_asset_content }}
+            </button>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Offers rail - Figma 7930:96033 {%- endcomment -%}
+        {%- if offer_handles.size > 0 -%}
+          <section class="pdp_offers">
+            <div class="pdp_offers_head">
+              <h2 class="pdp_offers_head_title">
+                Offers
+                <span class="pdp_offers_head_title_dot" aria-hidden="true"></span>
+                <span class="pdp_offers_head_title_count">{{ offer_handles.size }} available</span>
+              </h2>
+              <button type="button" class="pdp_link" data-open="offers">View all</button>
+            </div>
+
+            <div class="pdp_offers_rail">
+              {%- for handle in offer_handles -%}
+                {%- assign offer = shop.metaobjects.discount_offer[handle] -%}
+                {%- if offer != blank -%}
+                  {%- render 'pdp-offer-card', offer: offer -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </section>
+        {%- endif -%}
+
+        {%- comment -%} Variant options - Figma 7930:96080 (swatches) / 7930:96094 (chips) {%- endcomment -%}
+        {%- for option in product.options_with_values -%}
+          {%- liquid
+            assign is_swatch = false
+            if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
+              assign is_swatch = true
+            endif
+            assign is_size = false
+            if option.name contains 'Size'
+              assign is_size = true
+            endif
+          -%}
+          <fieldset
+            class="pdp_option{% if is_swatch %} pdp_option--swatch{% endif %}"
+            data-option-group
+            data-option-position="{{ option.position }}"
+          >
+            <legend class="pdp_option_head">
+              <span class="pdp_option_head_name">
+                {{- option.name -}}
+                {%- if is_swatch %}:{% endif -%}
+              </span>
+              {%- if is_swatch -%}
+                <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
+              {%- endif -%}
+            </legend>
+
+            {%- if is_size and size_chart != blank -%}
+              {%- assign size_guide_inline = true -%}
+              <button type="button" class="pdp_link pdp_option_guide" data-open="size-guide">
+                <span class="pdp_option_guide_icon" aria-hidden="true">
+                  {{- 'icon-ruler.svg' | inline_asset_content -}}
+                </span>
+                Size guide
+              </button>
+            {%- endif -%}
+
+            <div class="pdp_option_values">
+              {%- for value in option.values -%}
+                <label class="pdp_option_values_value">
+                  <input
+                    type="radio"
+                    name="option-{{ option.position }}"
+                    value="{{ value | escape }}"
+                    data-option-input
+                    {% if value == option.selected_value %}
+                      checked
+                    {% endif %}
+                  >
+                  {%- if is_swatch -%}
+                    <span
+                      class="pdp_option_values_value_swatch"
+                      style="--pdp-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--pdp-swatch-{{ value | handle }}, #ddd){% endif %};"
+                    >
+                      <span class="visually-hidden">{{ value }}</span>
+                    </span>
+                  {%- else -%}
+                    <span class="pdp_option_values_value_chip">{{ value }}</span>
+                  {%- endif -%}
+                </label>
+              {%- endfor -%}
+            </div>
+          </fieldset>
+        {%- endfor -%}
+
+        {%- comment -%}
+          A product can carry a size chart without carrying a size option - a
+          chain length, say - and the sidesheet would then be unreachable, so the
+          link falls back to a row of its own.
+        {%- endcomment -%}
+        {%- if size_chart != blank and size_guide_inline != true -%}
+          <div class="pdp_option pdp_option--guide-only">
+            <button type="button" class="pdp_link" data-open="size-guide">
+              <span class="pdp_option_guide_icon" aria-hidden="true">
+                {{- 'icon-ruler.svg' | inline_asset_content -}}
+              </span>
+              Size guide
+            </button>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Material explainer link - Figma 7930:96109 {%- endcomment -%}
+        <button
+          type="button"
+          class="pdp_explainer"
+          data-open="know-jewellery"
+          {% unless has_explainer %}
+            hidden
+          {% endunless %}
+        >
+          <span class="pdp_explainer_dot" aria-hidden="true"></span>
+          <span class="pdp_explainer_text">
+            {{- 'products.what_is' | t: material: material_name -}}
+          </span>
+          {{ 'icon-caret-right.svg' | inline_asset_content }}
+        </button>
+
+        {%- comment -%} Buy buttons - Figma 7930:96117 {%- endcomment -%}
+        <div class="pdp_buy">
+          <button
+            type="submit"
+            name="add"
+            class="pdp_button pdp_button--secondary"
+            data-add-to-cart
+            {% unless current_variant.available %}
+              disabled
+            {% endunless %}
+          >
+            <span class="pdp_button_icon" aria-hidden="true">
+              {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+            </span>
+            <span data-add-label>
+              {%- if current_variant.available -%}
+                {{ 'products.add_to_cart' | t }}
+              {%- else -%}
+                {{ 'products.sold_out' | t }}
+              {%- endif -%}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            class="pdp_button pdp_button--primary"
+            data-buy-now
+            {% unless current_variant.available %}
+              disabled
+            {% endunless %}
+          >
+            <span class="pdp_button_icon" aria-hidden="true">
+              {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+            </span>
+            <span>Buy now</span>
+          </button>
+        </div>
+      {%- endform -%}
+
+      {%- comment -%} Shop with confidence - Figma 7930:96120 {%- endcomment -%}
+      {%- assign trust_blocks = section.blocks | where: 'type', 'trust' -%}
+      {%- if trust_blocks.size > 0 -%}
+        <section class="pdp_trust" data-animate>
+          <h2 class="pdp_section_title">{{ section.settings.trust_heading }}</h2>
+          <ul class="pdp_trust_grid">
+            {%- for block in trust_blocks -%}
+              <li class="pdp_trust_grid_item" {{ block.shopify_attributes }}>
+                {%- if block.settings.action == 'sgl' -%}
+                  <button type="button" class="pdp_trust_grid_item_inner" data-open="sgl">
+                    <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
+                      {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
+                    </span>
+                    <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
+                    <span class="pdp_trust_grid_item_inner_out" aria-hidden="true">
+                      {{- 'icon-arrow-square-out.svg' | inline_asset_content -}}
+                    </span>
+                  </button>
+                {%- else -%}
+                  <span class="pdp_trust_grid_item_inner">
+                    <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
+                      {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
+                    </span>
+                    <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
+                  </span>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </section>
+      {%- endif -%}
+
+      {%- comment -%} Delivery estimate - Figma 7930:96136 {%- endcomment -%}
+      <section class="pdp_delivery" data-animate>
+        <h2 class="pdp_section_title">Delivery Estimate</h2>
+        <div class="pdp_delivery_row">
+          <input
+            type="text"
+            class="pdp_delivery_row_input"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="Enter pincode"
+            aria-label="Enter pincode"
+            data-pincode
+          >
+          <button type="button" class="pdp_button pdp_button--primary pdp_button--compact" data-pincode-check>
+            Check
+          </button>
+        </div>
+        <p class="pdp_delivery_result" data-pincode-result hidden></p>
+      </section>
+
+      {%- comment -%} Gift sleeve add-on - Figma 7930:96141 {%- endcomment -%}
+      {%- if section.settings.gift_product != blank -%}
+        {%- assign gift = section.settings.gift_product -%}
+        <div class="pdp_gift">
+          <label class="pdp_gift_row">
+            <input
+              type="checkbox"
+              class="pdp_gift_row_check"
+              data-gift-toggle
+              data-variant-id="{{ gift.selected_or_first_available_variant.id }}"
+            >
+            <span class="pdp_gift_row_box" aria-hidden="true">{{ 'icon-tick.svg' | inline_asset_content }}</span>
+            {%- if gift.featured_image -%}
+              <span class="pdp_gift_row_media">
+                {{ gift.featured_image | image_url: width: 56 | image_tag: loading: 'lazy', alt: '' }}
+              </span>
+            {%- endif -%}
+            <span class="pdp_gift_row_label">{{ section.settings.gift_label | default: gift.title }}</span>
+            <span class="pdp_gift_row_price">{%- render 'money', amount: gift.price -%}</span>
+          </label>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Need help choosing? - Figma 7930:96150 {%- endcomment -%}
+      <section class="pdp_help" data-animate>
+        <div class="pdp_help_copy">
+          <h2 class="pdp_section_title">{{ section.settings.help_heading }}</h2>
+          <p class="pdp_help_copy_body">{{ section.settings.help_body }}</p>
+        </div>
+        <div class="pdp_help_actions">
+          {%- if section.settings.whatsapp_url != blank -%}
+            <a
+              href="{{ section.settings.whatsapp_url }}"
+              class="pdp_button pdp_button--outline"
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="pdp_button_icon" aria-hidden="true">
+                {{- 'icon-whatsapp.svg' | inline_asset_content -}}
+              </span>
+              <span>Chat with us</span>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.video_call_url != blank -%}
+            <a
+              href="{{ section.settings.video_call_url }}"
+              class="pdp_button pdp_button--outline"
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="pdp_button_icon" aria-hidden="true">
+                {{- 'icon-video-call.svg' | inline_asset_content -}}
+              </span>
+              <span>Book video call</span>
+            </a>
+          {%- endif -%}
+        </div>
+      </section>
+
+      {%- comment -%} Accordions - Figma 7930:96179 / 7930:96225-96229 / 7930:96276 {%- endcomment -%}
+      <div class="pdp_accordions" data-animate>
+        {%- if highlights != blank -%}
+          <details class="pdp_accordion" open>
+            <summary class="pdp_accordion_summary">
+              <span>Why you&rsquo;ll love it</span>
+              <span class="pdp_accordion_summary_sign" aria-hidden="true">
+                <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+                <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+              </span>
+            </summary>
+            <div class="pdp_accordion_body">
+              <ul class="pdp_highlights">
+                {%- for item in highlights -%}
+                  {%- assign icon_index = forloop.index0 | modulo: 5 -%}
+                  {%- case icon_index -%}
+                    {%- when 0 -%}
+                      {%- assign icon_name = 'icon-leaf.svg' -%}
+                    {%- when 1 -%}
+                      {%- assign icon_name = 'icon-sparkles.svg' -%}
+                    {%- when 2 -%}
+                      {%- assign icon_name = 'icon-zap.svg' -%}
+                    {%- when 3 -%}
+                      {%- assign icon_name = 'icon-bacteria.svg' -%}
+                    {%- else -%}
+                      {%- assign icon_name = 'icon-honour-star.svg' -%}
+                  {%- endcase -%}
+                  <li class="pdp_highlights_item">
+                    <span class="pdp_highlights_item_icon" aria-hidden="true">
+                      {{- icon_name | inline_asset_content -}}
+                    </span>
+                    <span class="pdp_highlights_item_text">{{ item.bullet }}</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </details>
+        {%- endif -%}
+
+        {%- for list in detail_lists -%}
+          <details class="pdp_accordion">
+            <summary class="pdp_accordion_summary">
+              <span>{{ list.heading }}</span>
+              <span class="pdp_accordion_summary_sign" aria-hidden="true">
+                <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+                <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+              </span>
+            </summary>
+            <div class="pdp_accordion_body">
+              <dl class="pdp_specs">
+                {%- for item in list.product_details_item.value -%}
+                  <div class="pdp_specs_row">
+                    <dt class="pdp_specs_row_key">{{ item.title }}</dt>
+                    <dd class="pdp_specs_row_value">{{ item.content }}</dd>
+                  </div>
+                {%- endfor -%}
+              </dl>
+            </div>
+          </details>
+        {%- endfor -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'accordion' -%}
+            <details class="pdp_accordion" {{ block.shopify_attributes }}>
+              <summary class="pdp_accordion_summary">
+                <span>{{ block.settings.heading }}</span>
+                <span class="pdp_accordion_summary_sign" aria-hidden="true">
+                  <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+                  <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+                </span>
+              </summary>
+              <div class="pdp_accordion_body pdp_accordion_body--rte">{{ block.settings.content }}</div>
+            </details>
+          {%- endif -%}
+        {%- endfor -%}
+
+        <details
+          class="pdp_accordion pdp_accordion--flush"
+          id="pdp-know-jewellery"
+          open
+          {% unless has_explainer %}
+            hidden
+          {% endunless %}
+        >
+          <summary class="pdp_accordion_summary">
+            <span>Know your jewellery</span>
+            <span class="pdp_accordion_summary_sign" aria-hidden="true">
+              <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+              <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+            </span>
+          </summary>
+          <div class="pdp_accordion_body">
+            {%- render 'pdp-know-jewellery',
+              product: product,
+              vermeil_image: section.settings.vermeil_image,
+              mined_image: section.settings.diamond_image
+            -%}
+          </div>
+        </details>
+      </div>
+
+      {%- comment -%} You may also like / Recently viewed - Figma 7930:96277 {%- endcomment -%}
+      <section class="pdp_related" data-related data-animate>
+        <div class="pdp_related_tabs" role="tablist">
+          <button
+            type="button"
+            class="pdp_related_tabs_tab is-active"
+            role="tab"
+            aria-selected="true"
+            data-tab="also-like"
+          >
+            You may also like
+          </button>
+          <button
+            type="button"
+            class="pdp_related_tabs_tab"
+            role="tab"
+            aria-selected="false"
+            data-tab="recent"
+          >
+            Recently viewed
+          </button>
+        </div>
+
+        <scroll-carousel class="pdp_related_panel" data-panel="also-like">
+          <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
+            {%- if related_products != blank -%}
+              {%- for item in related_products limit: 12 -%}
+                {%- render 'product-card', product: item, variant: 'grid' -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- assign fallback = product.collections.first -%}
+              {%- for item in fallback.products limit: 12 -%}
+                {%- unless item.id == product.id -%}
+                  {%- render 'product-card', product: item, variant: 'grid' -%}
+                {%- endunless -%}
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+          <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
+        </scroll-carousel>
+
+        <div class="pdp_related_panel" data-panel="recent" hidden>
+          <div class="pdp_related_panel_track" data-recent-track></div>
+          <p class="pdp_related_panel_empty" data-recent-empty>Nothing here yet &mdash; browse a few pieces first.</p>
+        </div>
+      </section>
+
+      {%- comment -%} The Zinara Difference - Figma 7930:96294 {%- endcomment -%}
+      {%- assign difference_rows = section.blocks | where: 'type', 'difference' -%}
+      {%- if difference_rows.size > 0 -%}
+        {%- comment -%}
+          The heading mixes two colours mid-sentence ("The *Zinara* Difference"),
+          so the accented run is marked with [brackets] in the setting and swapped
+          for a span here - a second text setting would let the two halves drift
+          apart in the editor.
+        {%- endcomment -%}
+        {%- assign heading_html = section.settings.difference_heading
+          | replace: '[', '<span class="pdp_difference_title_accent">'
+          | replace: ']', '</span>'
+        -%}
+        <section class="pdp_difference" data-animate data-animate-from="scale">
+          <h2 class="pdp_difference_title">{{ heading_html }}</h2>
+          <table class="pdp_difference_table">
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Zinara</th>
+                <th scope="col">Typical Brands</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for block in difference_rows -%}
+                <tr {{ block.shopify_attributes }}>
+                  <th scope="row">{{ block.settings.label }}</th>
+                  <td>
+                    <span class="pdp_difference_table_yes" aria-label="Yes">
+                      {{- 'icon-seal-check.svg' | inline_asset_content -}}
+                      {%- if block.settings.show_sgl and section.settings.sgl_logo != blank -%}
+                        {{ section.settings.sgl_logo | image_url: width: 76 | image_tag: loading: 'lazy', alt: 'SGL' }}
+                      {%- endif -%}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="pdp_difference_table_no" aria-label="No">
+                      {{- 'icon-x-circle.svg' | inline_asset_content -}}
+                    </span>
+                  </td>
+                </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        </section>
+      {%- endif -%}
+
+      {%- comment -%} Pair beautifully with - Figma 7930:96345 {%- endcomment -%}
+      {%- if pair_products != blank -%}
+        <section class="pdp_pair" data-pair data-animate>
+          <div class="pdp_pair_card">
+            <h2 class="pdp_pair_card_title">
+              <span class="pdp_pair_card_title_icon" aria-hidden="true">
+                {{- 'icon-sparkle.svg' | inline_asset_content -}}
+              </span>
+              {{ section.settings.pair_heading }}
+            </h2>
+
+            <div class="pdp_pair_card_items">
+              {%- for item in pair_products limit: 3 -%}
+                {%- unless forloop.first -%}
+                  <span class="pdp_pair_card_items_plus" aria-hidden="true">
+                    {{- 'icon-plus.svg' | inline_asset_content -}}
+                  </span>
+                {%- endunless -%}
+                <article
+                  class="pdp-mini"
+                  data-pair-item
+                  data-variant-id="{{ item.selected_or_first_available_variant.id }}"
+                >
+                  <a href="{{ item.url }}" class="pdp-mini_media">
+                    {%- if item.featured_image -%}
+                      {{
+                        item.featured_image
+                        | image_url: width: 340
+                        | image_tag: loading: 'lazy', widths: '170,340', sizes: '170px', alt: item.title
+                      }}
+                    {%- endif -%}
+                  </a>
+                  <button
+                    type="button"
+                    class="pdp-mini_add"
+                    data-pair-toggle
+                    aria-pressed="false"
+                    aria-label="{{ 'products.add_to_cart' | t }} {{ item.title | escape }}"
+                  >
+                    {{- 'icon-bag.svg' | inline_asset_content -}}
+                  </button>
+                  <div class="pdp-mini_info">
+                    <span class="pdp-mini_info_price">
+                      <span class="pdp-mini_info_price_current">{%- render 'money', amount: item.price -%}</span>
+                      {%- if item.compare_at_price > item.price -%}
+                        <span class="pdp-mini_info_price_compare">
+                          {%- render 'money', amount: item.compare_at_price -%}
+                        </span>
+                      {%- endif -%}
+                    </span>
+                    <a href="{{ item.url }}" class="pdp-mini_info_title">{{ item.title }}</a>
+                  </div>
+                </article>
+              {%- endfor -%}
+            </div>
+
+            <button type="button" class="pdp_button pdp_button--primary pdp_pair_card_cta" data-pair-add>
+              <span class="pdp_button_icon" aria-hidden="true">
+                {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+              </span>
+              <span>Add set to cart</span>
+            </button>
+          </div>
+        </section>
+      {%- endif -%}
+
+      {%- comment -%} Curated trends (UGC) - Figma 7930:96394 {%- endcomment -%}
+      {%- if ugc_videos != blank -%}
+        <section class="pdp_ugc" data-animate>
+          <h2 class="pdp_section_title pdp_section_title--lg">{{ section.settings.ugc_heading }}</h2>
+          <scroll-carousel class="pdp_ugc_carousel">
+            <div class="pdp_ugc_carousel_track" data-track>
+              {%- for video in ugc_videos -%}
+                <button
+                  type="button"
+                  class="pdp_ugc_carousel_track_item"
+                  data-open="ugc"
+                  data-index="{{ forloop.index0 }}"
+                  aria-label="Play video {{ forloop.index }}"
+                >
+                  {%- if video.preview_image -%}
+                    {{
+                      video.preview_image
+                      | image_url: width: 430
+                      | image_tag: loading: 'lazy', widths: '215,430', sizes: '215px', alt: ''
+                    }}
+                  {%- endif -%}
+                  <span class="pdp_ugc_carousel_track_item_play" aria-hidden="true">
+                    {{- 'icon-play.svg' | inline_asset_content -}}
+                  </span>
+                </button>
+              {%- endfor -%}
+            </div>
+            <div class="pdp_ugc_carousel_dots scroll-carousel_dots" data-dots></div>
+          </scroll-carousel>
+        </section>
+      {%- endif -%}
+
+      {%- comment -%} Customer reviews - Figma 7930:96415 {%- endcomment -%}
+      <section class="pdp_reviews" id="pdp-reviews" data-animate>
+        <div class="pdp_reviews_head">
+          <h2 class="pdp_section_title">Customer reviews</h2>
+          <a
+            href="{{ section.settings.review_url | default: routes.root_url }}"
+            class="pdp_button pdp_button--primary pdp_button--compact"
+          >
+            Write a review
+          </a>
+        </div>
+
+        {%- if average_rating > 0 -%}
+          <div class="pdp_reviews_summary">
+            <span class="pdp_reviews_summary_score">{{ rating_text }}</span>
+            <span class="pdp_reviews_summary_rule" aria-hidden="true"></span>
+            {%- render 'testimonial-stars', rating: average_rating -%}
+            <span class="pdp_reviews_summary_count">{{ rating_count }} reviews</span>
+          </div>
+        {%- endif -%}
+
+        {%- if reviews != blank -%}
+          <ul class="pdp_reviews_list" data-reviews-list>
+            {%- for review in reviews -%}
+              <li
+                class="pdp_reviews_list_item"
+                {% if forloop.index > section.settings.reviews_shown %}
+                  data-review-extra
+                  hidden
+                {% endif %}
+              >
+                {%- render 'testimonial-stars', rating: review.rating -%}
+
+                <p class="pdp_reviews_list_item_author">
+                  <span class="pdp_reviews_list_item_author_name">{{ review.author }}</span>
+                  {%- if review.verified_buyer -%}
+                    <span class="pdp_reviews_list_item_author_dot" aria-hidden="true"></span>
+                    <span class="pdp_reviews_list_item_author_badge">Verified buyer</span>
+                  {%- endif -%}
+                </p>
+
+                {%- if review.images.value.size > 0 -%}
+                  <div class="pdp_reviews_list_item_media">
+                    {%- for image in review.images.value -%}
+                      {{
+                        image
+                        | image_url: width: 288
+                        | image_tag: loading: 'lazy', widths: '144,288', sizes: '144px', alt: ''
+                      }}
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+
+                <p class="pdp_reviews_list_item_body">&ldquo;{{ review.body }}&rdquo;</p>
+                <p class="pdp_reviews_list_item_date">
+                  {{- review.review_date | date: '%B %-d, %Y' -}}
+                </p>
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          {%- if reviews.size > section.settings.reviews_shown -%}
+            <div class="pdp_reviews_more">
+              <button type="button" class="pdp_button pdp_button--outline pdp_button--compact" data-reviews-more>
+                Show more reviews
+              </button>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      </section>
+    </div>
+  </div>
+
+  {%- comment -%} ------------------------------------------------- overlays {%- endcomment -%}
+  {%- render 'pdp-lightbox', product: product -%}
+  {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
+  {%- render 'pdp-offers-sheet', offer_handles: offer_handles -%}
+  {%- render 'pdp-addons-sheet',
+    addons: addons,
+    hero: section.settings.addons_image,
+    whatsapp_url: section.settings.whatsapp_url
+  -%}
+  {%- render 'pdp-sgl-modal', product: product, fallback: section.settings.certificate_image -%}
+  {%- render 'pdp-price-difference',
+    product: product,
+    current_variant: current_variant,
+    certificate: section.settings.certificate_image,
+    vermeil_image: section.settings.vermeil_image,
+    diamond_image: section.settings.diamond_image,
+    sgl_logo: section.settings.sgl_logo
+  -%}
+  {%- render 'pdp-ugc-lightbox', product: product, videos: ugc_videos -%}
+
+  {%- comment -%}
+    Variant lookup for the JS. `/products/x.js` carries none of the money
+    formatting this shop needs, so the table is built in Liquid instead.
+  {%- endcomment -%}
+  <script type="application/json" data-pdp-variants>
+    {
+      "variants": [
+        {%- for variant in product.variants -%}
+          {
+            "id": {{ variant.id }},
+            "options": {{ variant.options | json }},
+            "available": {{ variant.available | json }},
+            "price": {{ variant.price | json }},
+            "priceText": {{ variant.price | money_without_trailing_zeros | json }},
+            "compareAt": {{ variant.compare_at_price | json }},
+            "compareText": {{ variant.compare_at_price | money_without_trailing_zeros | json }},
+            "featuredMediaPosition": {{ variant.featured_media.position | default: 0 | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ],
+      "symbol": {{ cart.currency.symbol | json }},
+      "current": {{ current_variant.id | default: 0 }},
+      "card": {
+        "handle": {{ product.handle | json }},
+        "title": {{ product.title | json }},
+        "url": {{ product.url | json }},
+        "image": {{ product.featured_image | image_url: width: 532 | json }}
+      }
+    }
+  </script>
+</product-page>
+
+{% # carousel-scroll defines window.carouselScroll, which scroll-carousel calls %}
+<script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'product.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "t:general.product",
+  "tag": "section",
+  "class": "shopify-section--product",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tax_note",
+      "label": "Price note",
+      "default": "Price inclusive of all taxes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings_calculator",
+      "label": "Show savings calculator link",
+      "default": true
+    },
+    { "type": "header", "content": "Shop with confidence" },
+    {
+      "type": "text",
+      "id": "trust_heading",
+      "label": "Heading",
+      "default": "Shop with confidence"
+    },
+    { "type": "header", "content": "Need help choosing?" },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Heading",
+      "default": "Need help choosing?"
+    },
+    {
+      "type": "textarea",
+      "id": "help_body",
+      "label": "Body",
+      "default": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice."
+    },
+    { "type": "url", "id": "whatsapp_url", "label": "WhatsApp link" },
+    { "type": "url", "id": "video_call_url", "label": "Video call link" },
+    { "type": "header", "content": "Add-ons" },
+    {
+      "type": "product",
+      "id": "gift_product",
+      "label": "Gift sleeve product"
+    },
+    {
+      "type": "text",
+      "id": "gift_label",
+      "label": "Gift sleeve label",
+      "default": "Add a gift sleeve"
+    },
+    { "type": "image_picker", "id": "addons_image", "label": "Add-ons sidesheet image" },
+    { "type": "header", "content": "Know your jewellery" },
+    { "type": "image_picker", "id": "vermeil_image", "label": "Gold vermeil cutaway" },
+    { "type": "image_picker", "id": "diamond_image", "label": "Diamond render" },
+    { "type": "image_picker", "id": "certificate_image", "label": "SGL certificate sample" },
+    { "type": "image_picker", "id": "sgl_logo", "label": "SGL logo" },
+    { "type": "header", "content": "The Zinara Difference" },
+    {
+      "type": "text",
+      "id": "difference_heading",
+      "label": "Heading",
+      "info": "Wrap the highlighted word in [brackets].",
+      "default": "The [Zinara] Difference"
+    },
+    { "type": "header", "content": "Pair beautifully with" },
+    {
+      "type": "text",
+      "id": "pair_heading",
+      "label": "Heading",
+      "default": "Pair beautifully with"
+    },
+    { "type": "header", "content": "Curated trends" },
+    {
+      "type": "text",
+      "id": "ugc_heading",
+      "label": "Heading",
+      "default": "Curated trends for you"
+    },
+    { "type": "header", "content": "Reviews" },
+    { "type": "url", "id": "review_url", "label": "Write a review link" },
+    {
+      "type": "range",
+      "id": "reviews_shown",
+      "label": "Reviews shown before \"Show more\"",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "icon-return", "label": "Return" },
+            { "value": "icon-certificate", "label": "Certificate" },
+            { "value": "icon-handshake", "label": "Handshake" },
+            { "value": "icon-diamond-outline", "label": "Diamond" },
+            { "value": "icon-seal-check", "label": "Seal check" }
+          ],
+          "default": "icon-return"
+        },
+        { "type": "text", "id": "label", "label": "Label", "default": "7 days free return" },
+        {
+          "type": "select",
+          "id": "action",
+          "label": "Action",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "sgl", "label": "Open SGL certificate" }
+          ],
+          "default": "none"
+        }
+      ]
+    },
+    {
+      "type": "difference",
+      "name": "Difference row",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Feature", "default": "Gold Vermeil" },
+        { "type": "checkbox", "id": "show_sgl", "label": "Show SGL mark", "default": false }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Shipping policy" },
+        { "type": "richtext", "id": "content", "label": "Content" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

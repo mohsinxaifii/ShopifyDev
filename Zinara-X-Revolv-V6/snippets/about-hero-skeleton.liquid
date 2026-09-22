@@ -1,0 +1,17 @@
+{%- doc -%}
+  Loading placeholder for the About hero. Figma "About us skeleton"
+  7930:95738.
+
+  Scoped to the hero band, for the same reason the home one is: the rest of the
+  page is server-rendered text and images that should paint as they land.
+
+  The card's photo is a CSS background, which fires no load event of its own -
+  so there is no `:defined` hook here and this leans on skeleton.js clearing at
+  `complete`, which is after background images have loaded too.
+{%- enddoc -%}
+
+<div class="about-hero-skeleton skeleton" data-skeleton aria-hidden="true">
+  <div class="about-hero-skeleton_wrapper">
+    <span class="skeleton_tile skeleton_tile--card about-hero-skeleton_wrapper_card"></span>
+  </div>
+</div>

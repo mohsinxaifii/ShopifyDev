@@ -1,0 +1,89 @@
+{%- doc -%}
+  Add-ons sidesheet. Figma 7930:100360.
+
+  Each card toggles a selection rather than adding straight to the cart, so the
+  shopper can pick several and commit once with Done - which is also what keeps
+  the add-ons in the same cart request as the main product.
+
+  @param {object} addons - products from `custom.pdp_addons`
+  @param {object} [hero] - banner image above the grid
+  @param {string} [whatsapp_url] - shown above the footer when set
+{%- enddoc -%}
+
+<dialog class="pdp-sheet" data-sheet="addons" scroll-lock aria-labelledby="PdpAddonsTitle">
+  <div class="pdp-sheet_panel">
+    <div class="pdp-sheet_panel_head">
+      <h2 class="pdp-sheet_panel_head_title" id="PdpAddonsTitle">Add ons</h2>
+      <button
+        type="button"
+        class="pdp-sheet_panel_head_close"
+        data-sheet-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <div class="pdp-sheet_panel_body pdp-sheet_panel_body--padded">
+      <div class="pdp-sheet_panel_body_group">
+        <p class="pdp-sheet_panel_body_group_label">Elevate your piece with curated add-ons</p>
+        {%- if hero != blank -%}
+          <span class="pdp-addons_hero">
+            {{ hero | image_url: width: 806 | image_tag: loading: 'lazy', widths: '403,806', sizes: '403px', alt: '' }}
+          </span>
+        {%- endif -%}
+      </div>
+
+      <ul class="pdp-addons_grid">
+        {%- for addon in addons -%}
+          {%- assign addon_variant = addon.selected_or_first_available_variant -%}
+          <li class="pdp-addons_grid_card">
+            <span class="pdp-addons_grid_card_media">
+              {%- if addon.featured_image -%}
+                {{
+                  addon.featured_image
+                  | image_url: width: 344
+                  | image_tag: loading: 'lazy', widths: '172,344', sizes: '172px', alt: addon.title
+                }}
+              {%- endif -%}
+            </span>
+
+            <button
+              type="button"
+              class="pdp-addons_grid_card_toggle"
+              data-addon-toggle
+              data-variant-id="{{ addon_variant.id }}"
+              aria-pressed="false"
+              aria-label="Add {{ addon.title | escape }}"
+            >
+              <span class="pdp-addons_grid_card_toggle_plus" aria-hidden="true">
+                {{- 'icon-plus.svg' | inline_asset_content -}}
+              </span>
+              <span class="pdp-addons_grid_card_toggle_tick" aria-hidden="true">
+                {{- 'icon-tick.svg' | inline_asset_content -}}
+              </span>
+            </button>
+
+            <span class="pdp-addons_grid_card_title">{{ addon.title }}</span>
+            <span class="pdp-addons_grid_card_price">+{% render 'money', amount: addon.price %}</span>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if whatsapp_url != blank -%}
+        <a
+          href="{{ whatsapp_url }}"
+          class="pdp_button pdp_button--primary pdp_button--compact pdp-sheet_panel_body_cta"
+          target="_blank"
+          rel="noopener"
+        >
+          Whatsapp us
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="pdp-sheet_panel_footer">
+      <button type="button" class="pdp_button pdp_button--primary pdp_button--compact" data-addons-done>Done</button>
+    </div>
+  </div>
+</dialog>

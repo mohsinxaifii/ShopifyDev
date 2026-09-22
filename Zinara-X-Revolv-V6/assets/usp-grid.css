@@ -1,0 +1,96 @@
+/* Figma: Home page 827:24395 > Frame 1116601776 (860:30618).
+   Section padding 24/72/32, a content-width 2x2 grid centred in the page,
+   64px rows, 1px #D38A0D frame with 12px corners. */
+.usp-grid {
+  display: block;
+  width: 100%;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  background-color: #fff;
+  padding: 24px var(--page-margin) 32px;
+  box-sizing: border-box;
+}
+
+/* The frame is one unbroken rounded rectangle on the wrapper; the cells only
+   draw the dividers between them, so no border is lost to the corner clip. */
+.usp-grid_wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  /* Figma authors both columns at 421px wide; shrink rather than overflow. */
+  width: min(842px, 100%);
+  margin-inline: auto;
+  box-shadow: inset 0 0 0 1px #d38a0d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.usp-grid_wrapper_cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding-inline: 24px;
+  border-top: 1px solid #d38a0d;
+  border-left: 1px solid #d38a0d;
+  box-sizing: border-box;
+}
+
+.usp-grid_wrapper_cell:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.usp-grid_wrapper_cell:nth-child(odd) {
+  border-left: 0;
+}
+
+/* Uploaded icon files carry their own baked-in colours, so mask them instead of
+   drawing them: every icon in the design is the single amber below. */
+.usp-grid_wrapper_cell_icon {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  background-color: #d38a0d;
+  mask: var(--usp-grid-icon) center / contain no-repeat;
+}
+
+.usp-grid_wrapper_cell_text {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 0.8;
+  color: var(--color-brand, #712242);
+}
+
+.usp-grid_heading {
+  display: none;
+}
+
+/* Figma Mobile 7930:106815 keeps the 2x2 grid: 64px cells with 12px padding,
+   20px icons and 12px labels wrapping on a 20px line. Contact us 7930:118959
+   puts a 20px heading 16px above it. */
+@media screen and (max-width: 749px) {
+  .usp-grid_heading {
+    display: block;
+    margin: 0 0 16px;
+    font-family: var(--font-secondary--family);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: normal;
+    color: var(--color-text-secondary, #494949);
+  }
+
+  .usp-grid_wrapper_cell {
+    padding-inline: 12px;
+  }
+
+  .usp-grid_wrapper_cell_icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .usp-grid_wrapper_cell_text {
+    font-size: 12px;
+    line-height: 20px;
+  }
+}

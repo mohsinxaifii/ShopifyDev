@@ -1,0 +1,17 @@
+{%- doc -%}
+  Loading placeholder for the home hero. Figma "Home page skeleton"
+  7930:103276.
+
+  Scoped to the hero rather than the whole page. The home page is seventeen
+  server-rendered sections; a grey sheet over all of them would hold back
+  content that has already arrived. What genuinely takes a moment is this band -
+  a full-bleed image at 1280x576 plus the slideshow wiring - so that is what is
+  covered, and everything below it is left to paint as it lands.
+
+  Clears on `hero-banner-slideshow:defined`, which is when the slides become
+  navigable. See assets/skeleton.css for the other two ways it clears.
+{%- enddoc -%}
+
+<div class="hero-skeleton skeleton" data-skeleton aria-hidden="true">
+  <span class="skeleton_tile hero-skeleton_stage"></span>
+</div>

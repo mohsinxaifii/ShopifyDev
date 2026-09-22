@@ -1,0 +1,45 @@
+{%- doc -%}
+  One shoppable card in the UGC lightbox rail. Figma 7930:101840 - a wide card
+  with the thumbnail on the left and price, title and an add button stacked on
+  the right.
+
+  @param {object} item - a Shopify product object
+{%- enddoc -%}
+
+<article class="pdp-ugc-card">
+  <a href="{{ item.url }}" class="pdp-ugc-card_media">
+    {%- if item.featured_image -%}
+      {{
+        item.featured_image
+        | image_url: width: 176
+        | image_tag: loading: 'lazy', widths: '88,176', sizes: '88px', alt: item.title
+      }}
+    {%- endif -%}
+  </a>
+
+  <div class="pdp-ugc-card_info">
+    <span class="pdp-ugc-card_info_price">
+      <span class="pdp-ugc-card_info_price_current">{%- render 'money', amount: item.price -%}</span>
+      {%- if item.compare_at_price > item.price -%}
+        <span class="pdp-ugc-card_info_price_compare">
+          {%- render 'money', amount: item.compare_at_price -%}
+        </span>
+      {%- endif -%}
+    </span>
+
+    <a href="{{ item.url }}" class="pdp-ugc-card_info_title">{{ item.title }}</a>
+
+    <button
+      type="button"
+      class="pdp_button pdp_button--primary pdp_button--compact pdp-ugc-card_info_add"
+      data-add-single
+      data-variant-id="{{ item.selected_or_first_available_variant.id }}"
+      data-added-label="{{ 'products.added_to_cart' | t | escape }}"
+    >
+      <span class="pdp_button_icon" aria-hidden="true">
+        {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+      </span>
+      <span data-add-single-label>{{ 'products.add_to_cart' | t }}</span>
+    </button>
+  </div>
+</article>

@@ -1,0 +1,80 @@
+{{ 'usp-strip.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .usp-strip_wrapper_pill {
+    --usp-strip-gradient-start: {{ section.settings.gradient_start }};
+    --usp-strip-gradient-middle: {{ section.settings.gradient_middle }};
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <section class="usp-strip full-width">
+    <div class="usp-strip_wrapper">
+      <div class="usp-strip_wrapper_pill" data-animate>
+        {%- for block in section.blocks -%}
+          <div class="usp-strip_wrapper_pill_item" {{ block.shopify_attributes }}>
+            {%- if block.settings.image -%}
+              <span class="usp-strip_wrapper_pill_item_icon">
+                {{ block.settings.image | image_url: width: 72 | image_tag: loading: 'lazy', alt: '' }}
+              </span>
+            {%- endif -%}
+            <p class="usp-strip_wrapper_pill_item_text">{{ block.settings.text }}</p>
+          </div>
+          {%- unless forloop.last -%}
+            <span class="usp-strip_wrapper_pill_divider"></span>
+          {%- endunless -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "USP strip",
+  "tag": "section",
+  "class": "shopify-section--usp-strip",
+  "settings": [
+    {
+      "type": "color",
+      "id": "gradient_start",
+      "label": "Pill gradient start/end",
+      "default": "#FEF4E2"
+    },
+    {
+      "type": "color",
+      "id": "gradient_middle",
+      "label": "Pill gradient middle",
+      "default": "#FCE7C5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Icon or logo"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Badge text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "USP strip",
+      "blocks": [
+        { "type": "badge", "settings": { "text": "5x thicker 18 KT gold plating" } },
+        { "type": "badge", "settings": { "text": "SGL certified diamonds" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

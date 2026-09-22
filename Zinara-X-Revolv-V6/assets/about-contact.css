@@ -1,0 +1,262 @@
+/* Figma: About us 7930:95474 > Frame 1116601743 (7930:95634).
+   Heading, a two-line intro, then three equal bordered cards on a 24px gap. */
+.about-contact {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.about-contact_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.about-contact_wrapper_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.about-contact_wrapper_body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-contact_wrapper_body_intro {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.375;
+  color: var(--color-text-secondary, #494949);
+}
+
+.about-contact_wrapper_body_intro_lead {
+  font-weight: 700;
+}
+
+.about-contact_wrapper_body_channels {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.about-contact_wrapper_body_channels_card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.about-contact_wrapper_body_channels_card:hover {
+  border-color: var(--color-brand, #712242);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+.about-contact_wrapper_body_channels_card_icon {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  color: var(--color-brand, #712242);
+}
+
+.about-contact_wrapper_body_channels_card_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.about-contact_wrapper_body_channels_card_value {
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.about-contact_wrapper_body_channels_card_value--underlined {
+  text-decoration: underline;
+}
+
+/* The contact page's cards carry a label line above the value; the About page's
+   do not, so the value keeps its place either way. Figma: Contact us
+   7930:94717 > Frame 1116601772. */
+.about-contact_wrapper_body_channels_card_label {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #808080;
+}
+
+/* Under a label the value turns brand-coloured; the About cards have no label
+   and keep the grey value. Figma: Contact us 7930:94739 / 94743 / 94747. */
+.about-contact_wrapper_body_channels_card_label + .about-contact_wrapper_body_channels_card_value {
+  color: var(--color-brand, #712242);
+}
+
+/* Reserves no space until there is something to say, so the card does not
+   change height when the number is copied. */
+.about-contact_wrapper_body_channels_card_copied {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-accent, #f0166e);
+}
+
+.about-contact_wrapper_body_channels_card.is-copied {
+  border-color: var(--color-accent, #f0166e);
+}
+
+.about-contact_wrapper_body_image {
+  display: none;
+}
+
+/* Figma Mobile About us 7930:120125: 20px heading, 14px intro, and the three
+   cards kept in one row - 8px apart with 20px icons and 12px values. */
+@media screen and (max-width: 749px) {
+  .about-contact_wrapper {
+    padding-block: 24px;
+  }
+
+  .about-contact_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+    color: var(--color-text-secondary, #494949);
+  }
+
+  .about-contact_wrapper_body_intro {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .about-contact_wrapper_body_intro_lead {
+    font-weight: 600;
+  }
+
+  .about-contact_wrapper_body_channels {
+    gap: 8px;
+  }
+
+  .about-contact_wrapper_body_channels_card {
+    padding: 8px 8px 4px;
+  }
+
+  .about-contact_wrapper_body_channels_card_icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .about-contact_wrapper_body_channels_card_value {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .about-contact_wrapper_body_image {
+    display: block;
+    height: 184px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .about-contact_wrapper_body_image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  /* Figma Mobile Contact us 7930:118940: cards that carry a label stack full
+     width - 28px icons, 16px label and value lines - under a black heading. */
+  .about-contact:has(.about-contact_wrapper_body_channels_card_label) .about-contact_wrapper {
+    padding-top: 12px;
+  }
+
+  .about-contact:has(.about-contact_wrapper_body_channels_card_label)
+    .about-contact_wrapper_heading {
+    color: #000;
+  }
+
+  .about-contact_wrapper_body_channels:has(.about-contact_wrapper_body_channels_card_label) {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* flex: none - the desktop 1 1 0 basis collapses these overflow-hidden cards
+     to their padding once the row turns into a column. */
+  .about-contact_wrapper_body_channels:has(.about-contact_wrapper_body_channels_card_label)
+    .about-contact_wrapper_body_channels_card {
+    flex: none;
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .about-contact_wrapper_body_channels:has(.about-contact_wrapper_body_channels_card_label)
+    .about-contact_wrapper_body_channels_card_icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .about-contact_wrapper_body_channels_card_label {
+    line-height: 24px;
+    color: #666;
+  }
+
+  .about-contact_wrapper_body_channels_card_label
+    + .about-contact_wrapper_body_channels_card_value {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "Contact us skeleton" 7930:94604. Same 16px stack and 24px card gutter
+   as the band above, so nothing shifts when the cover lifts. */
+.contact-skeleton_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.contact-skeleton_wrapper_cards {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.contact-skeleton_wrapper_cards_item {
+  height: 110px;
+}
+
+@media screen and (max-width: 749px) {
+  .contact-skeleton_wrapper_cards {
+    flex-direction: column;
+  }
+}

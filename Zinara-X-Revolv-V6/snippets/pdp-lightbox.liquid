@@ -1,0 +1,68 @@
+{%- doc -%}
+  Full-bleed image lightbox. Figma 7930:98274.
+
+  Every media item is printed up front rather than cloned from the gallery on
+  open: the gallery renders at 556px and this frame is 626px tall, so reusing
+  those nodes would upscale a thumbnail-grade source.
+
+  @param {object} product - a Shopify product object
+{%- enddoc -%}
+
+<dialog class="pdp-lightbox" data-sheet="lightbox" scroll-lock aria-label="Product images">
+  <button
+    type="button"
+    class="pdp-lightbox_close"
+    data-sheet-close
+    aria-label="{{ 'accessibility.close' | t }}"
+  >
+    {{- 'icon-close.svg' | inline_asset_content -}}
+  </button>
+
+  <div class="pdp-lightbox_body">
+    <button
+      type="button"
+      class="pdp-lightbox_body_arrow"
+      data-lightbox-prev
+      aria-label="{{ 'accessibility.previous' | t }}"
+    >
+      {{- 'icon-caret-left.svg' | inline_asset_content -}}
+    </button>
+
+    <figure class="pdp-lightbox_body_stage">
+      <div class="pdp-lightbox_body_stage_frame">
+        {%- for media in product.media -%}
+          {%- assign media_alt = media.alt | default: product.title -%}
+          <div
+            class="pdp-lightbox_body_stage_frame_slide{% if forloop.first %} is-active{% endif %}"
+            data-lightbox-slide
+            data-index="{{ forloop.index0 }}"
+          >
+            {%- if media.media_type == 'video' -%}
+              {{ media | media_tag: image_size: '1252x', controls: true, preload: 'none' }}
+            {%- elsif media.media_type == 'external_video' -%}
+              {{ media | external_video_tag }}
+            {%- else -%}
+              {{
+                media
+                | image_url: width: 1252
+                | image_tag: loading: 'lazy', widths: '626,939,1252', sizes: '626px', alt: media_alt
+              }}
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+      <figcaption class="pdp-lightbox_body_stage_counter">
+        <span data-lightbox-current>1</span>/<span>{{ product.media.size }}</span>
+      </figcaption>
+    </figure>
+
+    <button
+      type="button"
+      class="pdp-lightbox_body_arrow"
+      data-lightbox-next
+      aria-label="{{ 'accessibility.next' | t }}"
+    >
+      {{- 'icon-caret-right.svg' | inline_asset_content -}}
+    </button>
+  </div>
+</dialog>

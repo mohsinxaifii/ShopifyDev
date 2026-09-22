@@ -1,0 +1,91 @@
+/* Figma: About us 7930:95474 > Breadcrumb nav (7930:95481).
+   16/72 padding, a 6px gap either side of a 4px dot. */
+.breadcrumb {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.breadcrumb_list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 16px var(--page-margin);
+  box-sizing: border-box;
+  list-style: none;
+}
+
+.breadcrumb_list_item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.219;
+}
+
+.breadcrumb_list_item + .breadcrumb_list_item::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: #808080;
+}
+
+.breadcrumb_list_item_link {
+  color: #808080;
+  text-decoration: none;
+}
+
+.breadcrumb_list_item_link:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb_list_item_current {
+  color: #4d4d4d;
+}
+
+/* Figma Mobile breadcrumb 7930:119998: 12/16 padding and 12px type on a 20px
+   line - a 44px strip. */
+@media screen and (max-width: 749px) {
+  .breadcrumb_list {
+    padding-block: 12px;
+  }
+
+  .breadcrumb_list_item {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .breadcrumb_list_item_link {
+    color: #666;
+  }
+
+  .breadcrumb_list_item_current {
+    color: #494949;
+  }
+}
+
+/* The product trail is three rungs deep and the last one is a full product
+   title, which stacks into a column on a phone. Scrolling the trail sideways
+   keeps it on one line, the way it reads on every wider screen. */
+@media screen and (max-width: 620px) {
+  .breadcrumb_list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .breadcrumb_list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .breadcrumb_list_item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}

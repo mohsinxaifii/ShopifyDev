@@ -1,0 +1,209 @@
+{{ 'footer.css' | asset_url | stylesheet_tag }}
+
+<footer class="footer full-width">
+  <div class="footer_wrapper">
+    <div class="footer_wrapper_top">
+      <div class="footer_wrapper_top_brand">
+        <span class="footer_wrapper_top_brand_mark">{{ 'logo-mark.svg' | inline_asset_content }}</span>
+        <p class="footer_wrapper_top_brand_tagline">{{ section.settings.tagline }}</p>
+      </div>
+
+      <div class="footer_wrapper_top_columns">
+        {%- if section.settings.quick_links != blank -%}
+          <div class="footer_wrapper_top_columns_col">
+            <h3 class="footer_wrapper_top_columns_col_title">Quick links</h3>
+            <ul class="footer_wrapper_top_columns_col_list">
+              {%- for link in section.settings.quick_links.links -%}
+                <li>
+                  <a href="{{ link.url }}" class="footer_wrapper_top_columns_col_list_link">{{ link.title }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.policy_links != blank -%}
+          <div class="footer_wrapper_top_columns_col">
+            <h3 class="footer_wrapper_top_columns_col_title">Policies</h3>
+            <ul class="footer_wrapper_top_columns_col_list">
+              {%- for link in section.settings.policy_links.links -%}
+                <li>
+                  <a href="{{ link.url }}" class="footer_wrapper_top_columns_col_list_link">{{ link.title }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        <div class="footer_wrapper_top_columns_col">
+          <h3 class="footer_wrapper_top_columns_col_title">Contact Us</h3>
+          <ul class="footer_wrapper_top_columns_col_list">
+            {%- if section.settings.phone != blank -%}
+              <li>
+                <a
+                  href="tel:{{ section.settings.phone }}"
+                  class="footer_wrapper_top_columns_col_list_link footer_wrapper_top_columns_col_list_link--icon"
+                >
+                  {{ 'icon-phone.svg' | inline_asset_content }}
+                  {{ section.settings.phone }}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.email != blank -%}
+              <li>
+                <a
+                  href="mailto:{{ section.settings.email }}"
+                  class="footer_wrapper_top_columns_col_list_link footer_wrapper_top_columns_col_list_link--icon"
+                >
+                  {{ 'icon-envelope.svg' | inline_asset_content }}
+                  {{ section.settings.email }}
+                </a>
+              </li>
+            {%- endif -%}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <hr class="footer_wrapper_divider">
+
+    <div class="footer_wrapper_legal">
+      <p class="footer_wrapper_legal_company">{{ section.settings.company_name }}</p>
+      <p class="footer_wrapper_legal_address">{{ section.settings.company_address }}</p>
+      <div class="footer_wrapper_legal_social">
+        {%- if section.settings.instagram_url != blank -%}
+          <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+            {{- 'icon-instagram.svg' | inline_asset_content -}}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.facebook_url != blank -%}
+          <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+            {{- 'icon-facebook.svg' | inline_asset_content -}}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="footer_wrapper_apps">
+        <p class="footer_wrapper_apps_title">Also available on</p>
+        <div class="footer_wrapper_apps_badges">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'app_badge' -%}
+              <a
+                href="{{ block.settings.link | default: '#' }}"
+                class="footer_wrapper_apps_badges_badge"
+                style="--footer-mark-height: {{ block.settings.height }}px;"
+                {{ block.shopify_attributes }}
+              >
+                {%- if block.settings.image -%}
+                  {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: '' }}
+                {%- endif -%}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.show_payment_icons -%}
+      <div class="footer_wrapper_payment">
+        <p class="footer_wrapper_payment_title">Accepted payment methods</p>
+        <div class="footer_wrapper_payment_icons">
+          {%- assign payment_blocks = section.blocks | where: 'type', 'payment_icon' -%}
+          {%- if payment_blocks.size > 0 -%}
+            {%- for block in payment_blocks -%}
+              <span
+                class="footer_wrapper_payment_icons_icon"
+                style="--footer-mark-height: {{ block.settings.height }}px;"
+                {{ block.shopify_attributes }}
+              >
+                {%- if block.settings.image -%}
+                  {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: '' }}
+                {%- endif -%}
+              </span>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for type in shop.enabled_payment_types -%}
+              {{ type | payment_type_svg_tag: class: 'footer_wrapper_payment_icons_fallback' }}
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Jewellery you'll never take off."
+    },
+    { "type": "link_list", "id": "quick_links", "label": "Quick links menu" },
+    { "type": "link_list", "id": "policy_links", "label": "Policies menu" },
+    { "type": "text", "id": "phone", "label": "Phone number" },
+    { "type": "text", "id": "email", "label": "Email" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
+    { "type": "url", "id": "facebook_url", "label": "Facebook URL" },
+    {
+      "type": "text",
+      "id": "company_name",
+      "label": "Company legal name",
+      "default": "Company name"
+    },
+    {
+      "type": "textarea",
+      "id": "company_address",
+      "label": "Company address"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show accepted payment methods",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "app_badge",
+      "name": "App badge",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Badge image" },
+        { "type": "url", "id": "link", "label": "Link" },
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Height",
+          "min": 12,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "default": 42
+        }
+      ]
+    },
+    {
+      "type": "payment_icon",
+      "name": "Payment icon",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Icon image" },
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Height",
+          "min": 12,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "default": 30
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

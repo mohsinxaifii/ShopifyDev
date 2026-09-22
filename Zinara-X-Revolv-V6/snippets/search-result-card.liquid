@@ -1,0 +1,29 @@
+{%- doc -%}
+  A non-product search hit - an article or a page. The results grid is built for
+  product cards, so these borrow the card's shape and swap the price row for the
+  result's type.
+
+  @param {object} item - an article or page from `search.results`
+{%- enddoc -%}
+
+{%- assign result_image = item.image | default: item.featured_image -%}
+
+<a href="{{ item.url }}" class="product-card product-card--grid search-result">
+  <span class="product-card_media">
+    {%- if result_image -%}
+      {{
+        result_image
+        | image_url: width: 532
+        | image_tag: loading: 'lazy', widths: '266,399,532', sizes: '266px', alt: item.title
+      }}
+    {%- endif -%}
+  </span>
+
+  <span class="product-card_info">
+    <span class="search-result_kind">{{ item.object_type }}</span>
+    <span class="product-card_info_title">{{ item.title }}</span>
+    {%- if item.summary != blank -%}
+      <span class="search-result_summary">{{ item.summary | strip_html | truncatewords: 18 }}</span>
+    {%- endif -%}
+  </span>
+</a>

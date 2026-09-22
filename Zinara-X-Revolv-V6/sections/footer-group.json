@@ -1,0 +1,108 @@
+{
+  "type": "footer",
+  "name": "t:general.footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "app-1": {
+          "type": "app_badge",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-badge-amazon.png",
+            "height": 20
+          }
+        },
+        "app-2": {
+          "type": "app_badge",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-badge-flipkart.png",
+            "height": 42
+          }
+        },
+        "app-3": {
+          "type": "app_badge",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-badge-eternz.png",
+            "height": 33
+          }
+        },
+        "pay-upi": {
+          "type": "payment_icon",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-pay-upi.png",
+            "height": 21
+          }
+        },
+        "pay-mastercard": {
+          "type": "payment_icon",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-pay-mastercard.png",
+            "height": 35
+          }
+        },
+        "pay-visa": {
+          "type": "payment_icon",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-pay-visa.png",
+            "height": 29
+          }
+        },
+        "pay-rupay": {
+          "type": "payment_icon",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-pay-rupay.png",
+            "height": 30
+          }
+        },
+        "pay-netbanking": {
+          "type": "payment_icon",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-pay-netbanking.png",
+            "height": 35
+          }
+        },
+        "pay-diners": {
+          "type": "payment_icon",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-pay-diners.png",
+            "height": 29
+          }
+        },
+        "pay-cod": {
+          "type": "payment_icon",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-pay-cod.png",
+            "height": 24
+          }
+        }
+      },
+      "block_order": [
+        "app-1",
+        "app-2",
+        "app-3",
+        "pay-upi",
+        "pay-mastercard",
+        "pay-visa",
+        "pay-rupay",
+        "pay-netbanking",
+        "pay-diners",
+        "pay-cod"
+      ],
+      "settings": {
+        "tagline": "Jewellery you'll never take off.",
+        "quick_links": "header_menu_3",
+        "policy_links": "footer-policies",
+        "phone": "+91 88518 12814",
+        "email": "admin@zinara.in",
+        "instagram_url": "https:\/\/www.instagram.com\/heyzinara\/",
+        "facebook_url": "https:\/\/www.facebook.com\/profile.php?id=61565232117218",
+        "company_name": "Indriten Technologies Pvt. Ltd.",
+        "company_address": "A-277-278, 2nd floor, Dhaka Johar, G.T.B. Nagar, North West Delhi, Delhi - 110009",
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

@@ -1,0 +1,281 @@
+.product-carousel {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.product-carousel_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.product-carousel_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* Controls: tabs + view-all */
+.product-carousel_wrapper_controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  position: relative;
+}
+
+.product-carousel_wrapper_controls_tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.product-carousel_wrapper_controls_tabs_tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--color-text-secondary, #494949);
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.product-carousel_wrapper_controls_tabs_tab.is-active {
+  border-color: var(--color-brand, #712242);
+  color: var(--color-brand, #712242);
+}
+
+.product-carousel_wrapper_controls_view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--color-brand, #712242);
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.product-carousel_wrapper_controls_view-all svg {
+  width: 16px;
+  height: 16px;
+}
+
+.product-carousel_wrapper_controls_view-all:hover {
+  background-color: #f7f3f5;
+}
+
+/* Stage: scrollable product track + arrows.
+   Figma fits 1136 / 264 = 4.303 card slots across the content width; the 264
+   ceiling stops cards growing past the design and the floor keeps them usable. */
+.product-carousel_wrapper_stage {
+  --product-card-visible: 4.303;
+  --product-card-step: 264px;
+  --product-card-gap: 24px;
+  --product-card-width: 240px;
+
+  position: relative;
+  width: 100%;
+}
+
+@supports (container-type: inline-size) {
+  .product-carousel_wrapper_stage {
+    --product-card-step: clamp(180px, calc(100cqw / var(--product-card-visible)), 264px);
+    --product-card-gap: calc(var(--product-card-step) * 0.0909);
+    --product-card-width: calc(var(--product-card-step) - var(--product-card-gap));
+  }
+}
+
+/* Figma 7930:104292 clips the row at the content edge: the last card is cut at
+   1208px, not at the viewport. */
+.product-carousel_wrapper_stage_panel_track {
+  display: flex;
+  gap: var(--product-card-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.product-carousel_wrapper_stage_panel_track::-webkit-scrollbar {
+  display: none;
+}
+
+.product-carousel_wrapper_stage_prev,
+.product-carousel_wrapper_stage_next {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.product-carousel_wrapper_stage_prev {
+  left: -20px;
+}
+
+.product-carousel_wrapper_stage_next {
+  right: -20px;
+}
+
+.product-carousel_wrapper_stage_prev svg,
+.product-carousel_wrapper_stage_next svg {
+  width: 100%;
+  height: 100%;
+}
+
+.product-carousel_wrapper_stage_prev:hover,
+.product-carousel_wrapper_stage_next:hover {
+  background-color: #5a1b34;
+}
+
+.product-carousel_wrapper_dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.product-carousel_wrapper_dots_dot {
+  width: 5px;
+  height: 5px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background-color: #c4c4c4;
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.product-carousel_wrapper_dots_dot.is-active {
+  width: 18px;
+  background-color: var(--color-brand, #712242);
+}
+
+.product-carousel_wrapper_bottom-link {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.219;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+/* Figma Mobile 7930:106731: 24/16 padding, a 20px heading, one swipeable row of
+   12px chips, and 168px cards that run off both screen edges. The arrows and the
+   underlined "View all" are desktop-only. */
+@media screen and (max-width: 749px) {
+  .product-carousel_wrapper {
+    padding-block: 24px;
+  }
+
+  .product-carousel_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .product-carousel_wrapper_controls {
+    flex-wrap: nowrap;
+    align-self: stretch;
+    justify-content: flex-start;
+    gap: 12px;
+    width: auto;
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .product-carousel_wrapper_controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-carousel_wrapper_controls_tabs {
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .product-carousel_wrapper_controls_tabs_tab,
+  .product-carousel_wrapper_controls_view-all {
+    flex: 0 0 auto;
+    padding: 11px 12px;
+    font-size: 12px;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+
+  .product-carousel_wrapper_controls_tabs_tab.is-active {
+    background-color: #f7f3f5;
+    font-weight: 600;
+  }
+
+  .product-carousel_wrapper_stage {
+    --product-card-width: 168px;
+    --product-card-gap: 12px;
+  }
+
+  .product-carousel_wrapper_stage_panel_track {
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline-start: var(--page-margin);
+  }
+
+  .product-carousel_wrapper_stage_prev,
+  .product-carousel_wrapper_stage_next,
+  .product-carousel_wrapper_bottom-link {
+    display: none;
+  }
+
+  .product-carousel_wrapper_dots {
+    margin-top: -8px;
+  }
+}
+
+/* Snapping fights a scripted scroll animation: every scrollLeft write gets
+   re-snapped, so the tween collapses into a jump. Suspended while animating,
+   which leaves touch swiping snapped as before. */
+.product-carousel_wrapper_stage_panel_track.is-scrolling {
+  scroll-snap-type: none;
+}

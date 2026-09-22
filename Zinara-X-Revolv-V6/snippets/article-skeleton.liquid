@@ -1,0 +1,30 @@
+{%- doc -%}
+  Loading placeholder for an article. Figma "Blog skeleton" 7930:94079.
+
+  Traces the two-column shape - a measure column of bars beside the aside tile -
+  so the cover sits on the same grid the article lands on. The body is three
+  runs of a short heading bar over four lines of copy, which is the rhythm the
+  design's body sections have.
+
+  See assets/skeleton.css for how this clears.
+{%- enddoc -%}
+
+<div class="article-skeleton skeleton" data-skeleton aria-hidden="true">
+  <div class="article-skeleton_wrapper">
+    <div class="article-skeleton_wrapper_body">
+      <span class="skeleton_tile" style="height: 18px; width: 171px"></span>
+      <span class="skeleton_tile" style="height: 24px; width: 60%"></span>
+      <span class="skeleton_tile" style="height: 15px; width: 120px"></span>
+      <span class="skeleton_tile skeleton_tile--card article-skeleton_wrapper_body_hero"></span>
+
+      {%- for block in (1..3) -%}
+        <span class="skeleton_tile article-skeleton_wrapper_body_subhead" style="height: 20px; width: 45%"></span>
+        {%- for line in (1..4) -%}
+          <span class="skeleton_tile" style="height: 14px"></span>
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+
+    <span class="skeleton_tile skeleton_tile--card article-skeleton_wrapper_aside"></span>
+  </div>
+</div>

@@ -1,0 +1,220 @@
+{%- comment -%}
+  Blog article. Figma: Desktop / Blogs 7930:93522 > Blog page (7930:93922),
+  with the skeleton state from 7930:94079.
+
+  A 748px measure column with a 364x368 image pinned beside its top - the two
+  sit on the page's 24px gutter, and the image is sticky so it stays with the
+  reader rather than scrolling away after the first screen.
+
+  The design draws the body as a run of heading-and-paragraph pairs at fixed
+  sizes. Those are not separate fields, they are the article's own rich text, so
+  the type scale is applied to the rendered HTML from article.css rather than
+  restated as markup here - which is also what lets an author add a list or a
+  quote and have it land in the same scale.
+
+  Two things the design shows that Shopify has nowhere to store yet, so both
+  degrade to nothing and both take a section-level fallback:
+  - the aside image -> `article.metafields.custom.aside_image`
+  - the inline product row -> `article.metafields.custom.shop_products`
+  See docs/BUILD-PLAN.md for the definitions these want in admin.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/article
+{%- endcomment -%}
+
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'article.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  comment
+    200 words a minute, floored at 1 so a short note reads "1 min" rather than
+    "0 min". Counted by splitting rather than with `number_of_words`, which
+    theme-check does not recognise. Runs of whitespace split into empty tokens
+    and so count slightly high, which is within the noise of an estimate.
+  endcomment
+  assign words = article.content | strip_html | strip_newlines | split: ' ' | size
+  assign read_minutes = words | divided_by: 200
+  if read_minutes < 1
+    assign read_minutes = 1
+  endif
+
+  comment
+    Filter arguments cannot themselves be filtered, so the fallback has to be
+    resolved before it reaches image_tag.
+  endcomment
+  assign hero_alt = article.image.alt | default: article.title
+
+  assign aside_image = article.metafields.custom.aside_image.value
+  if aside_image == blank
+    assign aside_image = section.settings.aside_image
+  endif
+
+  assign shop_products = article.metafields.custom.shop_products.value
+  if shop_products == blank
+    assign shop_products = section.settings.shop_collection.products
+  endif
+-%}
+
+<div class="article full-width skeleton-host">
+  {%- render 'article-skeleton' -%}
+
+  <div class="article_wrapper">
+    <article class="article_wrapper_body">
+      <header class="article_wrapper_body_head" data-animate>
+        <div class="article_wrapper_body_head_meta">
+          <p class="article_wrapper_body_head_meta_line">
+            <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+              {{- article.published_at | date: '%-d %B, %Y' -}}
+            </time>
+            &ndash;
+            {{ read_minutes }} min read
+          </p>
+
+          <div class="article_wrapper_body_head_meta_text">
+            <h1 class="article_wrapper_body_head_meta_text_title">{{ article.title }}</h1>
+            {%- if article.author != blank -%}
+              <p class="article_wrapper_body_head_meta_text_byline">by {{ article.author }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- if article.image -%}
+          <div class="article_wrapper_body_head_image">
+            {{
+              article.image
+              | image_url: width: 1496
+              | image_tag: widths: '748,1122,1496', sizes: '(max-width: 989px) 100vw, 748px', alt: hero_alt
+            }}
+          </div>
+        {%- endif -%}
+      </header>
+
+      <div class="article_wrapper_body_content">
+        {{ article.content }}
+      </div>
+
+      {%- if shop_products.size > 0 -%}
+        <scroll-carousel class="article_wrapper_body_shop">
+          {%- if section.settings.shop_heading != blank -%}
+            <h2 class="article_wrapper_body_shop_heading">{{ section.settings.shop_heading }}</h2>
+          {%- endif -%}
+
+          <div class="article_wrapper_body_shop_stage">
+            <button
+              type="button"
+              class="scroll-carousel_arrow article_wrapper_body_shop_stage_arrow article_wrapper_body_shop_stage_arrow--prev"
+              data-prev
+              aria-label="{{ 'accessibility.previous' | t }}"
+            >
+              {{- 'icon-caret-left.svg' | inline_asset_content -}}
+            </button>
+
+            <div class="article_wrapper_body_shop_stage_track" data-track>
+              {%- for product in shop_products limit: 8 -%}
+                {%- render 'product-card', product: product -%}
+              {%- endfor -%}
+            </div>
+
+            <button
+              type="button"
+              class="scroll-carousel_arrow article_wrapper_body_shop_stage_arrow article_wrapper_body_shop_stage_arrow--next"
+              data-next
+              aria-label="{{ 'accessibility.next' | t }}"
+            >
+              {{- 'icon-caret-right.svg' | inline_asset_content -}}
+            </button>
+          </div>
+        </scroll-carousel>
+
+        <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
+      {%- endif -%}
+
+      {%- if blog.comments_enabled? -%}
+        {%- comment -%}
+          Not in the design - carried over from the template this replaced so
+          enabling comments in admin still has somewhere to land.
+        {%- endcomment -%}
+        <section class="article_wrapper_body_comments" id="comments">
+          <h2 class="article_wrapper_body_comments_heading">{{ 'blog.article_comments' | t }}</h2>
+
+          {%- paginate article.comments by 10 -%}
+            {%- for comment in article.comments -%}
+              <div class="article_wrapper_body_comments_item">
+                <p class="article_wrapper_body_comments_item_meta">
+                  {{ comment.author }}
+                  &ndash;
+                  <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">
+                    {{- comment.created_at | date: '%-d %B, %Y' -}}
+                  </time>
+                </p>
+                <p class="article_wrapper_body_comments_item_body">{{ comment.content }}</p>
+              </div>
+            {%- endfor -%}
+
+            {%- if paginate.pages > 1 -%}
+              {{ paginate | default_pagination: anchor: 'comments' }}
+            {%- endif -%}
+          {%- endpaginate -%}
+
+          {%- form 'new_comment', article, class: 'article_wrapper_body_comments_form' -%}
+            <h3 class="article_wrapper_body_comments_form_heading">{{ 'blog.comment_form_title' | t }}</h3>
+
+            {{ form.errors | default_errors }}
+
+            <label for="CommentAuthor">{{ 'blog.comment_form_name' | t }}</label>
+            <input type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" required>
+
+            <label for="CommentEmail">{{ 'blog.comment_form_email' | t }}</label>
+            <input type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" required>
+
+            <label for="CommentBody">{{ 'blog.comment_form_body' | t }}</label>
+            <textarea name="comment[body]" id="CommentBody" rows="4" required>{{ form.body }}</textarea>
+
+            <button type="submit" class="article_wrapper_body_comments_form_submit">
+              {{- 'blog.comment_form_submit' | t -}}
+            </button>
+          {%- endform -%}
+        </section>
+      {%- endif -%}
+    </article>
+
+    {%- if aside_image -%}
+      <aside class="article_wrapper_aside" aria-hidden="true">
+        {{
+          aside_image
+          | image_url: width: 728
+          | image_tag: loading: 'lazy', widths: '364,546,728', sizes: '364px', alt: ''
+        }}
+      </aside>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Blog post",
+  "tag": "section",
+  "class": "shopify-section--article",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "aside_image",
+      "label": "Aside image",
+      "info": "Used when an article has no aside_image metafield of its own."
+    },
+    {
+      "type": "text",
+      "id": "shop_heading",
+      "label": "Product row heading",
+      "default": "Shop this story"
+    },
+    {
+      "type": "collection",
+      "id": "shop_collection",
+      "label": "Product row fallback",
+      "info": "Shown when an article has no shop_products metafield of its own."
+    }
+  ],
+  "presets": [{ "name": "Blog post" }]
+}
+{% endschema %}

@@ -1,0 +1,151 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "home_label": "Home",
+        "current_label": ""
+      }
+    },
+    "main": {
+      "type": "about-contact",
+      "blocks": {
+        "channel-1": {
+          "type": "channel",
+          "settings": {
+            "icon": "phone",
+            "label": "Speak with our experts",
+            "value": "+91-8851812814",
+            "url": "tel:+918851812814",
+            "copy_on_click": true
+          }
+        },
+        "channel-2": {
+          "type": "channel",
+          "settings": {
+            "icon": "email",
+            "label": "Write to us anytime",
+            "value": "help@zinara.in",
+            "url": "mailto:help@zinara.in"
+          }
+        },
+        "channel-3": {
+          "type": "channel",
+          "settings": {
+            "icon": "whatsapp",
+            "label": "Whatsapp us",
+            "value": "+91-9217975782",
+            "url": "https:\/\/wa.me\/919217975782?text=Hi%20Zinara%2C%20I%27d%20like%20some%20help%20choosing%20a%20piece."
+          }
+        }
+      },
+      "block_order": [
+        "channel-1",
+        "channel-2",
+        "channel-3"
+      ],
+      "settings": {
+        "heading": "Let’s talk jewellery.",
+        "lead": "",
+        "intro": "Whether you’re choosing a piece, or need help with an order, we’re happy to help.",
+        "mobile_image": "shopify:\/\/shop_images\/zinara-contact-mobile.png"
+      }
+    },
+    "usp-grid": {
+      "type": "usp-grid",
+      "blocks": {
+        "cell-1": {
+          "type": "cell",
+          "settings": {
+            "icon": "shopify:\/\/shop_images\/zinara-icon-return-arrow.svg",
+            "text": "Lifetime buyback & exchange"
+          }
+        },
+        "cell-2": {
+          "type": "cell",
+          "settings": {
+            "icon": "shopify:\/\/shop_images\/zinara-icon-hand-heart.svg",
+            "text": "Handcrafted"
+          }
+        },
+        "cell-3": {
+          "type": "cell",
+          "settings": {
+            "icon": "shopify:\/\/shop_images\/zinara-icon-return-arrow.svg",
+            "text": "Lifetime buyback & exchange"
+          }
+        },
+        "cell-4": {
+          "type": "cell",
+          "settings": {
+            "icon": "shopify:\/\/shop_images\/zinara-icon-truck.svg",
+            "text": "Insured & free shipping"
+          }
+        }
+      },
+      "block_order": [
+        "cell-1",
+        "cell-2",
+        "cell-3",
+        "cell-4"
+      ],
+      "settings": {
+        "heading": "The Zinara experience",
+        "padding_top": 24,
+        "padding_bottom": 48
+      }
+    },
+    "instagram": {
+      "type": "instagram-feed",
+      "blocks": {
+        "post-1": {
+          "type": "post",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-insta-post-1.png",
+            "link": ""
+          }
+        },
+        "post-2": {
+          "type": "post",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-insta-post-2.png",
+            "link": ""
+          }
+        },
+        "post-3": {
+          "type": "post",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-insta-post-3.png",
+            "link": ""
+          }
+        },
+        "post-4": {
+          "type": "post",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-insta-post-4.png",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "post-1",
+        "post-2",
+        "post-3",
+        "post-4"
+      ],
+      "settings": {
+        "heading": "Join our Instagram community",
+        "background_color": "#fef4e2",
+        "instagram_url": "https:\/\/www.instagram.com\/heyzinara\/",
+        "handle": "@zinara",
+        "layout": "fill"
+      }
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "main",
+    "usp-grid",
+    "instagram"
+  ]
+}

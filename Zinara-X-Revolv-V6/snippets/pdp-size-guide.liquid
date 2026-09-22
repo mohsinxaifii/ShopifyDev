@@ -1,0 +1,98 @@
+{%- doc -%}
+  Size guide sidesheet. Figma 7930:97519.
+
+  Rows come from the product's `custom.size_chart` metaobject list and the column
+  headings from `custom.size_chart_headings`, so a product with a two-column
+  chart doesn't print an empty third column.
+
+  @param {object} product - a Shopify product object
+  @param {string} [whatsapp_url] - shown as the footer CTA when set
+{%- enddoc -%}
+
+{%- liquid
+  comment
+    The heading names the thing being measured, so it has to follow the product
+    rather than the template - it read "ring size" on pendants before this.
+  endcomment
+  assign guide_heading = product.metafields.custom.pdp_size_guide_heading.value
+  assign rows = product.metafields.custom.pdp_size_chart.value | default: product.metafields.custom.size_chart.value
+  assign headings = product.metafields.custom.pdp_size_chart_headings.value | default: product.metafields.custom.size_chart_headings.value
+  assign guide_video = product.metafields.custom.pdp_size_guide_video.value | default: product.metafields.custom.size_chart_video.value
+-%}
+
+<dialog class="pdp-sheet" data-sheet="size-guide" scroll-lock aria-labelledby="PdpSizeGuideTitle">
+  <div class="pdp-sheet_panel">
+    <div class="pdp-sheet_panel_head">
+      <h2 class="pdp-sheet_panel_head_title" id="PdpSizeGuideTitle">Size guide</h2>
+      <button
+        type="button"
+        class="pdp-sheet_panel_head_close"
+        data-sheet-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <div class="pdp-sheet_panel_body">
+      {%- if guide_video != blank -%}
+        <div class="pdp-sheet_panel_body_group">
+          {%- if guide_heading != blank -%}
+            <p class="pdp-sheet_panel_body_group_label">{{ guide_heading }}</p>
+          {%- endif -%}
+          <video
+            class="pdp-sheet_panel_body_video"
+            src="{{ guide_video | file_url }}"
+            controls
+            playsinline
+            preload="none"
+            {% if guide_video.preview_image %}
+              poster="{{ guide_video.preview_image | image_url: width: 806 }}"
+            {% endif %}
+          ></video>
+        </div>
+      {%- endif -%}
+
+      {%- if rows != blank -%}
+        <div class="pdp-sheet_panel_body_group">
+          <p class="pdp-sheet_panel_body_group_label">{{ 'products.size_chart' | t }}</p>
+          <div class="pdp-sheet_panel_body_table">
+            <table class="pdp-table">
+              <thead>
+                <tr>
+                  {%- for heading in headings -%}
+                    <th scope="col">{{ heading }}</th>
+                  {%- endfor -%}
+                </tr>
+              </thead>
+              <tbody>
+                {%- for row in rows -%}
+                  <tr>
+                    <td>{{ row.column_1 }}</td>
+                    {%- if headings.size > 1 -%}
+                      <td>{{ row.column_2 }}</td>
+                    {%- endif -%}
+                    {%- if headings.size > 2 -%}
+                      <td>{{ row.column_3 }}</td>
+                    {%- endif -%}
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if whatsapp_url != blank -%}
+        <a
+          href="{{ whatsapp_url }}"
+          class="pdp_button pdp_button--primary pdp_button--compact pdp-sheet_panel_body_cta"
+          target="_blank"
+          rel="noopener"
+        >
+          Whatsapp us
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</dialog>

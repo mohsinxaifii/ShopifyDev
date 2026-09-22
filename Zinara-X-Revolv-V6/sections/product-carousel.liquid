@@ -1,0 +1,146 @@
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'product-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- if section.blocks.size > 0 -%}
+  <product-carousel class="product-carousel full-width">
+    <div class="product-carousel_wrapper">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="product-carousel_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      <div class="product-carousel_wrapper_controls" data-animate>
+        <div class="product-carousel_wrapper_controls_tabs" role="tablist">
+          {%- for block in section.blocks -%}
+            <button
+              type="button"
+              class="product-carousel_wrapper_controls_tabs_tab{% if forloop.first %} is-active{% endif %}"
+              data-tab-index="{{ forloop.index0 }}"
+              data-collection-url="{{ block.settings.collection.url }}"
+              role="tab"
+              aria-selected="{{ forloop.first }}"
+              {{ block.shopify_attributes }}
+            >
+              {{ block.settings.label }}
+            </button>
+          {%- endfor -%}
+        </div>
+
+        <a
+          href="{{ section.blocks.first.settings.collection.url }}"
+          class="product-carousel_wrapper_controls_view-all"
+          data-view-all-link
+        >
+          {{ 'accessibility.view_all' | t }}
+          {{ 'icon-caret-right.svg' | inline_asset_content }}
+        </a>
+      </div>
+
+      <div class="product-carousel_wrapper_stage">
+        {%- for block in section.blocks -%}
+          <div
+            class="product-carousel_wrapper_stage_panel{% if forloop.first %} is-active{% endif %}"
+            data-panel-index="{{ forloop.index0 }}"
+            {% if forloop.first == false %}
+              hidden
+            {% endif %}
+          >
+            <div class="product-carousel_wrapper_stage_panel_track">
+              {%- for product in block.settings.collection.products limit: block.settings.product_limit -%}
+                {%- render 'product-card', product: product -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endfor -%}
+
+        <button
+          type="button"
+          class="product-carousel_wrapper_stage_prev"
+          aria-label="{{ 'accessibility.previous_page' | t }}"
+        >
+          {{ 'icon-caret-left.svg' | inline_asset_content }}
+        </button>
+
+        <button
+          type="button"
+          class="product-carousel_wrapper_stage_next"
+          aria-label="{{ 'accessibility.next_page' | t }}"
+        >
+          {{ 'icon-caret-right.svg' | inline_asset_content }}
+        </button>
+      </div>
+
+      <div class="product-carousel_wrapper_dots" data-dots></div>
+
+      {%- if section.settings.show_bottom_link -%}
+        <a
+          href="{{ section.blocks.first.settings.collection.url }}"
+          class="product-carousel_wrapper_bottom-link"
+          data-view-all-link
+        >
+          {{ 'accessibility.view_all' | t }}
+        </a>
+      {%- endif -%}
+    </div>
+  </product-carousel>
+
+  <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
+
+  <script src="{{ 'product-carousel.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product carousel",
+  "tag": "section",
+  "class": "shopify-section--product-carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured products"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bottom_link",
+      "label": "Show \"View all\" link below the carousel",
+      "info": "The link beside the tabs is always shown.",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab label",
+          "default": "Tab"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "range",
+          "id": "product_limit",
+          "label": "Products to show",
+          "min": 4,
+          "max": 20,
+          "step": 1,
+          "default": 10
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product carousel",
+      "blocks": [{ "type": "tab" }]
+    }
+  ]
+}
+{% endschema %}

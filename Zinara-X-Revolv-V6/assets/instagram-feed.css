@@ -1,0 +1,163 @@
+/* Figma: Home page 827:24395 > Frame 1116601775 (827:24849).
+   Section 32/72 padding, 20px rows, four 253x339 tiles on a 24px gap. */
+.instagram-feed {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+.instagram-feed_wave {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.instagram-feed_wave svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.instagram-feed_wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.instagram-feed_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.24;
+  color: var(--color-brand, #712242);
+}
+
+.instagram-feed_wrapper_grid {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Figma caps the tiles at 253 wide; below that they share the row equally
+   instead of wrapping the last one onto a line of its own. */
+.instagram-feed_wrapper_grid_item {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 253px;
+  aspect-ratio: 253 / 339;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.instagram-feed_wrapper_grid_item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.instagram-feed_wrapper_grid_item:hover {
+  transform: translateY(-4px);
+}
+
+/* Figma: Contact us 7930:94765. The same band with a 16px stack and four tiles
+   that share the full 1136px row (266 wide at 309/414) instead of capping at 253. */
+.instagram-feed--fill .instagram-feed_wrapper {
+  gap: 16px;
+}
+
+.instagram-feed--fill .instagram-feed_wrapper_grid_item {
+  max-width: none;
+  aspect-ratio: 309 / 414;
+}
+
+.instagram-feed_wrapper_follow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 8px;
+  background-color: inherit;
+  text-decoration: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--color-text-secondary, #494949);
+}
+
+.instagram-feed_wrapper_follow svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-brand, #712242);
+}
+
+.instagram-feed_wrapper_follow_handle {
+  font-weight: 600;
+  color: var(--color-brand, #712242);
+}
+
+/* Figma Mobile 7930:106935 (and Contact 7930:118974): one row of four 114x153
+   tiles on a 4px gap that runs off the right edge, under a 20px heading. */
+@media screen and (max-width: 749px) {
+  .instagram-feed_wrapper,
+  .instagram-feed--fill .instagram-feed_wrapper {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .instagram-feed_wrapper_heading {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .instagram-feed_wrapper_grid {
+    align-self: stretch;
+    justify-content: flex-start;
+    gap: 4px;
+    width: auto;
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .instagram-feed_wrapper_grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .instagram-feed_wrapper_grid_item,
+  .instagram-feed--fill .instagram-feed_wrapper_grid_item {
+    flex: 0 0 114px;
+    max-width: none;
+    aspect-ratio: 114 / 153;
+    border-radius: 8px;
+  }
+
+  .instagram-feed_wrapper_follow {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .instagram-feed_wrapper_follow_handle {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

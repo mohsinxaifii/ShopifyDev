@@ -1,0 +1,121 @@
+.faq {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.faq_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 24px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.faq_wrapper_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.faq_wrapper_heading_accent {
+  color: var(--color-accent, #f0166e);
+}
+
+.faq_wrapper_list {
+  display: flex;
+  flex-direction: column;
+}
+
+.faq_wrapper_list_item {
+  box-shadow: 0 1px 0 0 #999;
+  padding: 12px 0;
+}
+
+.faq_wrapper_list_item:last-child {
+  box-shadow: none;
+}
+
+.faq_wrapper_list_item_summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq_wrapper_list_item_summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq_wrapper_list_item_summary_question {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+}
+
+.faq_wrapper_list_item_summary_icon {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  color: var(--color-icon, #666);
+}
+
+.faq_wrapper_list_item_summary_icon_plus,
+.faq_wrapper_list_item_summary_icon_minus {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.faq_wrapper_list_item_summary_icon_minus {
+  opacity: 0;
+  transform: rotate(-90deg);
+}
+
+.faq_wrapper_list_item[open] .faq_wrapper_list_item_summary_icon_plus {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.faq_wrapper_list_item[open] .faq_wrapper_list_item_summary_icon_minus {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.faq_wrapper_list_item_answer {
+  overflow: hidden;
+  padding-top: 12px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-icon, #666);
+}
+
+/* Figma Mobile 7930:106957: a centred 20px #494949 heading on a 16px stack. */
+@media screen and (max-width: 749px) {
+  .faq_wrapper {
+    gap: 16px;
+  }
+
+  .faq_wrapper_heading {
+    text-align: center;
+    font-size: 20px;
+    line-height: normal;
+    color: var(--color-text-secondary, #494949);
+  }
+}

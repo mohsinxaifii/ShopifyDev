@@ -1,0 +1,117 @@
+{%- comment -%}
+  Wishlist. Figma: Desktop / Wishlist page 7930:94295 > Wishlist (7930:94300),
+  with the skeleton state from 7930:94446.
+
+  "My wishlist" with a live item count, a row of circular category filters, and
+  a four-up grid of the PLP product card (266px on the 24px gutter, which is
+  exactly the grid variant's width).
+
+  Nothing in the grid can be server-rendered: the list lives in the visitor's
+  browser, so this section ships the frame and wishlist.js fills it by fetching
+  each card from sections/wishlist-card.liquid. The skeleton here is therefore a
+  real loading state rather than a cover over finished markup - the one in the
+  theme that is.
+
+  The filters are toggles: clicking one narrows the grid, clicking it again
+  clears it. Figma shows a chip in its selected state but no "all" chip to
+  escape through, and a toggle is the way to have both without inventing one.
+{%- endcomment -%}
+
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'wishlist.css' | asset_url | stylesheet_tag }}
+
+<wishlist-page class="wishlist full-width" data-root-url="{{ routes.root_url }}">
+  <div class="wishlist_wrapper">
+    <div class="wishlist_wrapper_head">
+      <h1 class="wishlist_wrapper_head_title">{{ section.settings.heading }}</h1>
+      <p class="wishlist_wrapper_head_count" data-wishlist-count hidden></p>
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="wishlist_wrapper_filters" data-wishlist-filters hidden>
+        {%- for block in section.blocks -%}
+          <button
+            type="button"
+            class="wishlist_wrapper_filters_item"
+            data-wishlist-filter="{{ block.settings.match | downcase | escape }}"
+            aria-pressed="false"
+            {{ block.shopify_attributes }}
+          >
+            <span class="wishlist_wrapper_filters_item_image">
+              {%- if block.settings.image -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 160
+                  | image_tag: loading: 'lazy', widths: '80,120,160', sizes: '80px', alt: block.settings.label
+                }}
+              {%- endif -%}
+            </span>
+            <span class="wishlist_wrapper_filters_item_label">{{ block.settings.label }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- render 'wishlist-skeleton' -%}
+
+    <div class="wishlist_wrapper_grid" data-wishlist-grid hidden></div>
+
+    {%- comment -%}
+      Not in the design - a wishlist that has never been used has to say
+      something, and it is the state a first-time visitor lands on.
+    {%- endcomment -%}
+    <div class="wishlist_wrapper_empty" data-wishlist-empty hidden>
+      <p class="wishlist_wrapper_empty_title">{{ 'wishlist.empty_title' | t }}</p>
+      <p class="wishlist_wrapper_empty_body">{{ 'wishlist.empty_body' | t }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="wishlist_wrapper_empty_action">
+        {{- 'wishlist.empty_action' | t -}}
+      </a>
+    </div>
+
+    {%- comment -%}
+      Shown when a filter matches nothing the visitor has saved.
+    {%- endcomment -%}
+    <p class="wishlist_wrapper_nomatch" data-wishlist-nomatch hidden>{{ 'collection.empty' | t }}</p>
+  </div>
+</wishlist-page>
+
+{%- render 'variant-drawer' -%}
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "tag": "section",
+  "class": "shopify-section--wishlist",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "My wishlist"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category filter",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Rings" },
+        {
+          "type": "text",
+          "id": "match",
+          "label": "Matches",
+          "info": "Matched against each product's type and tags, e.g. \"Rings\".",
+          "default": "Rings"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wishlist",
+      "blocks": [{ "type": "category" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,206 @@
+/* Figma: Blogs page 7930:93788 > Frame 1116601589 (featured) and
+   Frame 1116601739 (more articles).
+
+   Two identical white bands, each 32/72 padded with a 24px stack inside: a
+   centred 28px heading over a row of cards. The only difference between them is
+   that the featured row is three across where the grid wraps, so both share one
+   `blog_band` and differ by the row class alone. */
+.blog {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.blog_band {
+  display: block;
+  width: 100%;
+}
+
+.blog_band_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.blog_band_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* The featured row is a fixed three-up; the grid below wraps as it fills. Both
+   sit on the 24px gutter the rest of the theme uses. */
+.blog_band_wrapper_featured,
+.blog_band_wrapper_grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.blog_band_wrapper_more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.blog_band_wrapper_more_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.222;
+  color: var(--color-brand, #712242);
+  text-decoration: none;
+}
+
+.blog_band_wrapper_more_button_caret svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.blog_band_wrapper_more_button_spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+
+.blog_band_wrapper_more_button_spinner svg {
+  width: 100%;
+  height: 100%;
+  animation: blog-spin 0.9s linear infinite;
+}
+
+/* While a page is in flight the caret is swapped for the spinner, so the button
+   keeps its width and the row below does not jump. */
+.blog_band_wrapper_more.is-loading .blog_band_wrapper_more_button_caret {
+  display: none;
+}
+
+.blog_band_wrapper_more.is-loading .blog_band_wrapper_more_button_spinner {
+  display: block;
+}
+
+@keyframes blog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.blog_empty {
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 64px var(--page-margin);
+}
+
+.blog_empty_text {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text-secondary, #494949);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog_band_wrapper_more_button_spinner svg {
+    animation-duration: 3s;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .blog_band_wrapper_featured,
+  .blog_band_wrapper_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .blog_band_wrapper {
+    gap: 20px;
+    padding-block: 24px;
+  }
+
+  .blog_band_wrapper_heading {
+    font-size: 22px;
+  }
+
+  .blog_band_wrapper_featured,
+  .blog_band_wrapper_grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "Blogs page skeleton" 7930:93523. Mirrors the two bands above, so the
+   placeholder settles on the same rhythm the real page lands on. */
+.blog-skeleton_band {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.blog-skeleton_band_heading {
+  width: 288px;
+  height: 34px;
+  margin-inline: auto;
+}
+
+.blog-skeleton_band_row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.blog-skeleton_band_row_card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.blog-skeleton_band_row_card_media {
+  aspect-ratio: 361 / 270;
+  margin-bottom: 4px;
+}
+
+.blog-skeleton_band_more {
+  width: 171px;
+  height: 24px;
+  margin-inline: auto;
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 989px) {
+  .blog-skeleton_band_row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .blog-skeleton_band {
+    gap: 20px;
+    padding-block: 24px;
+  }
+
+  .blog-skeleton_band_row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

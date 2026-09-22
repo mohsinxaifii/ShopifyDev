@@ -1,0 +1,18 @@
+{%- doc -%}
+  Formats an amount the way the designs show it.
+
+  This shop's money format is a bare "{{amount}}" with no symbol (see the same
+  workaround in product-card.liquid), so the currency symbol is prepended unless
+  the configured format already carries one.
+
+  @param {number} amount - a price in cents, e.g. product.price
+{%- enddoc -%}
+
+{%- liquid
+  assign money_symbol = cart.currency.symbol
+  assign money_text = amount | money_without_trailing_zeros
+  unless money_text contains money_symbol
+    assign money_text = money_text | prepend: money_symbol
+  endunless
+-%}
+{{- money_text -}}

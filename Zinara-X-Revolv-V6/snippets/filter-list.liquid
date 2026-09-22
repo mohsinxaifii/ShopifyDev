@@ -1,0 +1,43 @@
+{%- doc -%}
+  One storefront `list` / `boolean` filter group: a checkbox per value.
+  Figma 7930:16716 (Product type) and 7930:16698 (Colour).
+
+  A value whose swatch metadata Shopify exposes gets the round gradient chip the
+  Colour group shows; everything else is just checkbox + label.
+
+  @param {object} filter - a Shopify storefront filter
+{%- enddoc -%}
+
+<ul class="filter-list">
+  {%- for value in filter.values -%}
+    <li class="filter-list_item">
+      <label class="filter-list_item_label{% if value.active %} is-active{% endif %}">
+        <input
+          type="checkbox"
+          class="filter-list_item_label_input"
+          name="{{ value.param_name }}"
+          value="{{ value.value }}"
+          {% if value.active %}
+            checked
+          {% endif %}
+          {% if value.count == 0 and value.active == false %}
+            disabled
+          {% endif %}
+        >
+        <span class="filter-list_item_label_box" aria-hidden="true">
+          {{- 'icon-check.svg' | inline_asset_content -}}
+        </span>
+
+        {%- if value.swatch -%}
+          <span
+            class="filter-list_item_label_swatch"
+            style="--filter-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 48 }}){% else %}{{ value.swatch.color }}{% endif %};"
+            aria-hidden="true"
+          ></span>
+        {%- endif -%}
+
+        <span class="filter-list_item_label_text">{{ value.label }}</span>
+      </label>
+    </li>
+  {%- endfor -%}
+</ul>

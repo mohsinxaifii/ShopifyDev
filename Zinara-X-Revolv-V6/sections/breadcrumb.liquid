@@ -1,0 +1,78 @@
+{{ 'breadcrumb.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current = section.settings.current_label
+  if current == blank
+    assign current = page.title
+  endif
+  if current == blank
+    assign current = collection.title
+  endif
+  if current == blank
+    assign current = product.title
+  endif
+  if current == blank
+    assign current = article.title
+  endif
+  if current == blank
+    assign current = blog.title
+  endif
+
+  comment
+    Product pages sit one level deeper than everything else that uses this
+    section (Figma PDP 7930:95974 shows Home / collection / product), so a middle
+    rung is added only there. `collection` is set when the shopper arrived from a
+    collection URL; otherwise fall back to the one chosen in settings, then to
+    the product's own first collection.
+  endcomment
+  assign parent = null
+  if product != blank
+    assign parent = collection
+    if parent == blank
+      assign parent = section.settings.parent_collection
+    endif
+    if parent == blank
+      assign parent = product.collections.first
+    endif
+  endif
+-%}
+
+<nav class="breadcrumb full-width" aria-label="{{ 'accessibility.breadcrumb' | t }}">
+  <ol class="breadcrumb_list">
+    <li class="breadcrumb_list_item">
+      <a href="{{ routes.root_url }}" class="breadcrumb_list_item_link">{{ section.settings.home_label }}</a>
+    </li>
+    {%- if parent != blank -%}
+      <li class="breadcrumb_list_item">
+        <a href="{{ parent.url }}" class="breadcrumb_list_item_link">{{ parent.title }}</a>
+      </li>
+    {%- endif -%}
+    <li class="breadcrumb_list_item">
+      <span class="breadcrumb_list_item_current" aria-current="page">{{ current }}</span>
+    </li>
+  </ol>
+</nav>
+
+{% schema %}
+{
+  "name": "Breadcrumb",
+  "tag": "section",
+  "class": "shopify-section--breadcrumb",
+  "settings": [
+    { "type": "text", "id": "home_label", "label": "Home label", "default": "Home" },
+    {
+      "type": "text",
+      "id": "current_label",
+      "label": "Current page label",
+      "info": "Leave empty to use the page title."
+    },
+    {
+      "type": "collection",
+      "id": "parent_collection",
+      "label": "Parent collection",
+      "info": "Product pages only. Used when the shopper did not arrive from a collection."
+    }
+  ],
+  "presets": [{ "name": "Breadcrumb" }]
+}
+{% endschema %}

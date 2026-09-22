@@ -1,0 +1,154 @@
+/* Figma: Blogs page 7930:93788 > Blog card (featured 7930:93537, grid
+   7930:93808).
+
+   The card carries no frame of its own - no border, no padding, no background.
+   What shapes it is the 12px-radius media on top of a 122px text block, 12px
+   apart. Both variants put the tag pill 12px in from the left of the media; the
+   difference is only how it meets the image. The grid card lays the pill over
+   the image, so the media stays 270px and the card 404px. The featured card
+   gives the pill its own 20px row and pulls the image 12px back over it, which
+   is the 8px that makes that media 278px and the card 412px. */
+.blog-card {
+  display: block;
+  min-width: 0;
+}
+
+.blog-card_link {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.blog-card_media {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Laid over the top of the image by default; the featured card below hands it
+   a row of its own instead. */
+.blog-card_media_tags {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  height: 20px;
+}
+
+.blog-card--featured .blog-card_media_tags {
+  position: static;
+  padding-inline: 12px;
+}
+
+.blog-card_media_tags_pill {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 8px;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.blog-card_media_image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 361 / 270;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.blog-card--featured .blog-card_media_image {
+  margin-top: -12px;
+}
+
+.blog-card_media_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.blog-card_link:hover .blog-card_media_image img {
+  transform: scale(1.03);
+}
+
+.blog-card_body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.blog-card_body_date {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-icon, #666);
+}
+
+/* Title and standfirst run tighter together than the rest of the stack. */
+.blog-card_body_text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.blog-card_body_text_title {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Two lines then an ellipsis: Figma pins the standfirst at 44px. */
+.blog-card_body_text_excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.blog-card_body_readmore {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+.blog-card_body_readmore svg {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}

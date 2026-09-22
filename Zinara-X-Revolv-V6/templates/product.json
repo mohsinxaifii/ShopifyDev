@@ -1,0 +1,238 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "home_label": "Home",
+        "current_label": ""
+      }
+    },
+    "main": {
+      "type": "product",
+      "blocks": {
+        "trust-1": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-return",
+            "label": "7 days free return",
+            "action": "none"
+          }
+        },
+        "trust-2": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-certificate",
+            "label": "SGL certified diamonds",
+            "action": "sgl"
+          }
+        },
+        "trust-3": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-handshake",
+            "label": "Lifetime buyback & exchange",
+            "action": "none"
+          }
+        },
+        "trust-4": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-diamond-outline",
+            "label": "Lifetime free replating service",
+            "action": "none"
+          }
+        },
+        "diff-1": {
+          "type": "difference",
+          "settings": {
+            "label": "Gold Vermeil",
+            "show_sgl": false
+          }
+        },
+        "diff-2": {
+          "type": "difference",
+          "settings": {
+            "label": "Lab-Grown Diamonds",
+            "show_sgl": true
+          }
+        },
+        "diff-3": {
+          "type": "difference",
+          "settings": {
+            "label": "925 Sterling Silver",
+            "show_sgl": false
+          }
+        },
+        "diff-4": {
+          "type": "difference",
+          "settings": {
+            "label": "Transparent Pricing",
+            "show_sgl": false
+          }
+        },
+        "diff-5": {
+          "type": "difference",
+          "settings": {
+            "label": "Lifetime Buyback",
+            "show_sgl": false
+          }
+        },
+        "diff-6": {
+          "type": "difference",
+          "settings": {
+            "label": "Insured Shipping",
+            "show_sgl": false
+          }
+        },
+        "diff-7": {
+          "type": "difference",
+          "settings": {
+            "label": "Certificate of Authenticity",
+            "show_sgl": false
+          }
+        },
+        "shipping": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping policy",
+            "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"\/pages\/shipping-policy\">shipping policy<\/a> page.<\/p>"
+          }
+        }
+      },
+      "block_order": [
+        "trust-1",
+        "trust-2",
+        "trust-3",
+        "trust-4",
+        "shipping",
+        "diff-1",
+        "diff-2",
+        "diff-3",
+        "diff-4",
+        "diff-5",
+        "diff-6",
+        "diff-7"
+      ],
+      "settings": {
+        "tax_note": "Price inclusive of all taxes",
+        "show_savings_calculator": true,
+        "trust_heading": "Shop with confidence",
+        "help_heading": "Need help choosing?",
+        "help_body": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice.",
+        "whatsapp_url": "https:\/\/wa.me\/919999999999",
+        "video_call_url": "\/pages\/video-trial",
+        "gift_label": "Add a gift sleeve",
+        "addons_image": "shopify:\/\/shop_images\/zinara-pdp-addons-hero.png",
+        "vermeil_image": "shopify:\/\/shop_images\/zinara-kyj-gold-vermeil.png",
+        "diamond_image": "shopify:\/\/shop_images\/zinara-kyj-diamond-icon.png",
+        "certificate_image": "shopify:\/\/shop_images\/zinara-pdp-sgl-certificate.png",
+        "sgl_logo": "shopify:\/\/shop_images\/zinara-pdp-sgl-logo.png",
+        "difference_heading": "The [Zinara] Difference",
+        "pair_heading": "Pair beautifully with",
+        "ugc_heading": "Curated trends for you",
+        "reviews_shown": 3,
+        "review_url": "\/pages\/contact"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Are lab grown diamonds real?",
+            "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
+            "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Are ZINARA lab grown diamonds graded and certified?",
+            "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Do you deliver pan India?",
+            "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "Is ID proof required for delivery?",
+            "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "What payment options are available?",
+            "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6"
+      ],
+      "settings": {
+        "heading": "Frequently Asked Questions"
+      }
+    },
+    "featured-in": {
+      "type": "logo-marquee",
+      "blocks": {
+        "logo-1": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-press-a.png",
+            "height": 35
+          }
+        },
+        "logo-2": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-press-b.png",
+            "height": 23
+          }
+        },
+        "logo-3": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-press-c.png",
+            "height": 29
+          }
+        }
+      },
+      "block_order": [
+        "logo-1",
+        "logo-2",
+        "logo-3"
+      ],
+      "settings": {
+        "heading": "Featured in",
+        "background_color": "#fef4e2",
+        "speed": 25
+      }
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "main",
+    "faq",
+    "featured-in"
+  ]
+}

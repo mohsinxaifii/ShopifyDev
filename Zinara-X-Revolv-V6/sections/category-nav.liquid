@@ -1,0 +1,91 @@
+{{ 'category-nav.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign has_secondary = false
+  for block in section.blocks
+    if block.settings.align_end
+      assign has_secondary = true
+      break
+    endif
+  endfor
+-%}
+
+{%- if section.blocks.size > 0 -%}
+  <nav class="category-nav full-width" aria-label="Category navigation">
+    <div class="category-nav_wrapper">
+      <ul class="category-nav_wrapper_primary">
+        {%- for block in section.blocks -%}
+          {%- unless block.settings.align_end -%}
+            {%- render 'category-nav-item', block: block -%}
+          {%- endunless -%}
+        {%- endfor -%}
+      </ul>
+
+      {%- if has_secondary -%}
+        <ul class="category-nav_wrapper_secondary">
+          {%- for block in section.blocks -%}
+            {%- if block.settings.align_end -%}
+              {%- render 'category-nav-item', block: block -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </nav>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Category nav",
+  "tag": "section",
+  "class": "shopify-section--category-nav",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Link"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link URL"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_new_badge",
+          "label": "Show \"NEW\" badge",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "align_end",
+          "label": "Align to end of bar",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category nav",
+      "blocks": [
+        { "type": "link", "settings": { "label": "Shop all" } },
+        { "type": "link", "settings": { "label": "New arrivals" } },
+        { "type": "link", "settings": { "label": "Rakhi collection", "show_new_badge": true } },
+        { "type": "link", "settings": { "label": "Rings" } },
+        { "type": "link", "settings": { "label": "Earrings" } },
+        { "type": "link", "settings": { "label": "Pendants/Necklaces" } },
+        { "type": "link", "settings": { "label": "Bracelets" } },
+        { "type": "link", "settings": { "label": "About us", "align_end": true } },
+        { "type": "link", "settings": { "label": "Contact us", "align_end": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}

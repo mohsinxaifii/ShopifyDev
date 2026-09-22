@@ -1,0 +1,37 @@
+{%- doc -%}
+  Loading placeholder. Figma "PDP skeleton" 7930:96523.
+
+  The markup below is server-rendered, so this is not covering a fetch - it
+  covers the gap between first paint and the point where the gallery images have
+  decoded and product.js has wired the variant controls. Removed by product.js
+  (and by a CSS fallback if the script never runs), so it can never strand the
+  page behind a grey screen.
+
+  Every tile is the same `pdp-skeleton_tile`; the shapes differ only in size, so
+  the placeholder tracks the real layout's rhythm rather than duplicating it.
+{%- enddoc -%}
+
+<div class="pdp-skeleton" data-pdp-skeleton aria-hidden="true">
+  <div class="pdp-skeleton_col">
+    <span class="pdp-skeleton_tile pdp-skeleton_tile--stage"></span>
+    <div class="pdp-skeleton_thumbs">
+      <span class="pdp-skeleton_tile pdp-skeleton_tile--dot"></span>
+      {%- for i in (1..4) -%}
+        <span class="pdp-skeleton_tile pdp-skeleton_tile--thumb"></span>
+      {%- endfor -%}
+      <span class="pdp-skeleton_tile pdp-skeleton_tile--dot"></span>
+    </div>
+  </div>
+
+  <div class="pdp-skeleton_col">
+    <span class="pdp-skeleton_tile" style="height: 274px"></span>
+    <span class="pdp-skeleton_tile" style="height: 115px"></span>
+    <span class="pdp-skeleton_tile" style="height: 70px"></span>
+    <span class="pdp-skeleton_tile" style="height: 62px"></span>
+    <span class="pdp-skeleton_tile" style="height: 48px"></span>
+    <span class="pdp-skeleton_tile" style="height: 130px"></span>
+    <span class="pdp-skeleton_tile" style="height: 94px"></span>
+    <span class="pdp-skeleton_tile" style="height: 52px"></span>
+    <span class="pdp-skeleton_tile" style="height: 158px"></span>
+  </div>
+</div>

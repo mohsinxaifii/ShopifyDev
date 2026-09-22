@@ -1,0 +1,96 @@
+/* Shared loading-placeholder styling. Figma gives every page a skeleton frame
+   (7930:93523, 7930:94079, 7930:94446, 7930:94604, 7930:94998, 7930:95299,
+   7930:103276, 7930:102108, 7930:95738, and the two already built).
+
+   Every one of those skeletons is the same two ideas - a white cover that sits
+   over the real markup, and grey shimmering tiles that trace its layout - so
+   both live here and each page contributes only its own arrangement of tiles.
+
+   The markup underneath is server-rendered in all cases, so a skeleton here
+   covers rather than stands in for content. Three things can clear it, and the
+   last of them cannot fail:
+     1. skeleton.js removes it once the document reaches `complete`, which is
+        the point stylesheets and above-the-fold images have loaded and the
+        layout has stopped shifting.
+     2. Pages built on a custom element also drop it on `:defined` - see the
+        per-page rules in collection.css and search.css - so interactive pages
+        clear the moment their controls go live rather than waiting on images.
+     3. A pure-CSS timeout at 2.5s, so a blocked or failed script can never
+        strand a visitor behind a grey screen.
+
+   PDP and search predate this file and keep their own scoped copies of the
+   same rules; nothing here overrides them. */
+
+.skeleton-host {
+  position: relative;
+}
+
+.skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: #fff;
+  animation: skeleton-timeout 0s linear 2.5s forwards;
+}
+
+/* Constrains the tile layout to the same column the real section uses, so a
+   skeleton can be dropped in without restating the page frame every time. */
+.skeleton_page {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+@keyframes skeleton-timeout {
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+.skeleton_tile {
+  display: block;
+  width: 100%;
+  flex: none;
+  border-radius: 8px;
+  background: linear-gradient(270deg, #f2f2f2, #e0e0e0);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton_tile--round {
+  border-radius: 50%;
+}
+
+.skeleton_tile--card {
+  border-radius: 12px;
+}
+
+.skeleton_tile--pill {
+  border-radius: 999px;
+}
+
+@keyframes skeleton-shimmer {
+  0%,
+  100% {
+    background-position: 0% 0%;
+  }
+
+  50% {
+    background-position: 100% 0%;
+  }
+}
+
+/* Holding the gradient still leaves the placeholder readable as a placeholder
+   without animating anything. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton_tile {
+    animation: none;
+    background: #ececec;
+  }
+}

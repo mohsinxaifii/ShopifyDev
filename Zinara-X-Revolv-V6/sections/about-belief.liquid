@@ -1,0 +1,59 @@
+{{ 'about-belief.css' | asset_url | stylesheet_tag }}
+
+<section class="about-belief full-width">
+  <div class="about-belief_wrapper">
+    <div class="about-belief_wrapper_row">
+      <div class="about-belief_wrapper_row_media" data-animate aria-hidden="true">
+        <span class="about-belief_wrapper_row_media_front">
+          {%- if section.settings.image_front -%}
+            {{ section.settings.image_front | image_url: width: 440 | image_tag: loading: 'lazy', alt: '' }}
+          {%- endif -%}
+        </span>
+        <span class="about-belief_wrapper_row_media_back">
+          {%- if section.settings.image_back -%}
+            {{ section.settings.image_back | image_url: width: 562 | image_tag: loading: 'lazy', alt: '' }}
+          {%- endif -%}
+        </span>
+      </div>
+
+      <div class="about-belief_wrapper_row_text" data-animate>
+        {%- if section.settings.heading != blank -%}
+          <h2 class="about-belief_wrapper_row_text_heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.lead != blank -%}
+          <p class="about-belief_wrapper_row_text_lead">{{ section.settings.lead }}</p>
+        {%- endif -%}
+        {%- if section.settings.body != blank -%}
+          <div class="about-belief_wrapper_row_text_body">{{ section.settings.body | newline_to_br }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About belief",
+  "tag": "section",
+  "class": "shopify-section--about-belief",
+  "settings": [
+    { "type": "image_picker", "id": "image_front", "label": "Front image (smaller, overlaps)" },
+    { "type": "image_picker", "id": "image_back", "label": "Back image (larger)" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What we believe" },
+    {
+      "type": "text",
+      "id": "lead",
+      "label": "Lead line",
+      "default": "Thoughtful design. Modern materials. Timeless sparkle."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "info": "Leave a blank line between paragraphs.",
+      "default": "We believe diamonds should feel personal, powerful, and easy. That’s why our collections are consciously crafted using lab-grown diamonds and set in 18 KT gold vermeil and fine gold - giving you timeless sparkle without the markup or the guilt.\n\nEvery design is made to slip effortlessly into your everyday, adding just the right amount of shine to everything you do."
+    }
+  ],
+  "presets": [{ "name": "About belief" }]
+}
+{% endschema %}

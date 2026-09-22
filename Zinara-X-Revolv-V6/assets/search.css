@@ -1,0 +1,230 @@
+/**
+ * Search results page and the header's suggestion panel.
+ * Figma: Desktop / Search results 7930:105417.
+ *
+ * The results grid itself is the PLP, so collection.css does that work and this
+ * file only carries what search adds: the heading, the empty states, the
+ * skeleton, and the header's focus mode with its dropdown.
+ */
+
+.search_head {
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin) 0;
+  text-align: center;
+}
+
+.search_head_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--color-foreground, #000);
+}
+
+/* The heading already pays the 32px top inset, so the grid below it only needs
+   the 24px the Figma leaves between the two. */
+.search .collection_wrapper {
+  padding-top: 24px;
+}
+
+/* ------------------------------------------------------------ empty states */
+
+.search_empty {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 48px var(--page-margin) 96px;
+  text-align: center;
+}
+
+.search_empty_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text-secondary, #494949);
+}
+
+.search_empty_form {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  width: min(100%, 480px);
+}
+
+.search_empty_form_input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 8px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--color-foreground, #000);
+}
+
+.search_empty_form_submit {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: var(--color-brand, #712242);
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.search_empty_link {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------- load more */
+
+.search_more_link {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999;
+  text-decoration: none;
+}
+
+.search_more_link_spinner {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  animation: search-spin 0.9s linear infinite;
+}
+
+.search_more_link_spinner svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes search-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search_more_link_spinner {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------- non-product result card */
+
+.search-result_kind {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--color-icon, #666);
+  text-transform: capitalize;
+}
+
+.search-result_summary {
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-secondary, #494949);
+}
+
+.search_head_form {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ narrow */
+
+@media screen and (max-width: 599px) {
+  .search_head_title {
+    font-size: 20px;
+  }
+
+  .search_empty_form {
+    flex-wrap: wrap;
+  }
+}
+
+/* Figma Mobile Search page 7930:111745: a 46px search field 12px under the
+   breadcrumb takes the heading's place, and the category chips drop out so the
+   grid starts 16px below the field. */
+@media screen and (max-width: 749px) {
+  .search_head {
+    padding-top: 12px;
+    text-align: left;
+  }
+
+  .search_head_title,
+  .search .collection_wrapper_main_chips {
+    display: none;
+  }
+
+  .search_head_form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fff;
+    box-sizing: border-box;
+  }
+
+  .search_head_form_icon {
+    display: flex;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    color: var(--color-icon, #666);
+  }
+
+  .search_head_form_icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .search_head_form_input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    font-family: var(--font-secondary--family);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000;
+  }
+
+  .search .collection_wrapper {
+    padding-top: 0;
+  }
+
+  .search .collection_wrapper_main_grid {
+    margin-top: 16px;
+  }
+}

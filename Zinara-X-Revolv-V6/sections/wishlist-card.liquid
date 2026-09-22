@@ -1,0 +1,32 @@
+{%- comment -%}
+  One wishlist card, fetched on its own.
+
+  The wishlist is a list of product handles in the visitor's browser, so the
+  cards cannot be rendered with the page. wishlist.js fetches each one through
+  the Section Rendering API - `/products/<handle>?section_id=wishlist-card` -
+  which renders this section with `product` already set from the URL. That way
+  the card is the same product-card the rest of the theme uses, rather than a
+  second copy of it written in JavaScript.
+
+  The wrapper carries the product's type and tags so the category filters on the
+  page can match against them without another request.
+{%- endcomment -%}
+
+{%- if product != blank -%}
+  <div
+    class="wishlist_wrapper_grid_item"
+    data-wishlist-item
+    data-handle="{{ product.handle }}"
+    data-type="{{ product.type | downcase | escape }}"
+    data-tags="{{ product.tags | join: ',' | downcase | escape }}"
+  >
+    {%- render 'product-card', product: product, variant: 'grid' -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Wishlist card",
+  "settings": []
+}
+{% endschema %}

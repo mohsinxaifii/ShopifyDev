@@ -1,0 +1,84 @@
+{%- comment -%}
+  "Crafted to your choice". Figma: Get your own design 7930:95121 >
+  Frame 1116601738.
+
+  Heading, a line of subcopy, then three 363x217 option cards - an 8px-radius
+  181px image over a single label. No links in the design: these show what can
+  be chosen, they are not controls.
+{%- endcomment -%}
+
+{{ 'custom-design.css' | asset_url | stylesheet_tag }}
+
+<section class="custom-design-options full-width">
+  <div class="custom-design-options_wrapper">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="custom-design-options_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="custom-design-options_wrapper_body">
+      {%- if section.settings.subheading != blank -%}
+        <p class="custom-design-options_wrapper_body_subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="custom-design-options_wrapper_body_grid" data-animate>
+          {%- for block in section.blocks -%}
+            <div class="custom-design-options_wrapper_body_grid_item" {{ block.shopify_attributes }}>
+              <span class="custom-design-options_wrapper_body_grid_item_image">
+                {%- if block.settings.image -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 726
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '363,545,726',
+                      sizes: '(max-width: 749px) 100vw, 363px',
+                      alt: block.settings.label
+                  }}
+                {%- endif -%}
+              </span>
+              <span class="custom-design-options_wrapper_body_grid_item_label">{{ block.settings.label }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom design options",
+  "tag": "section",
+  "class": "shopify-section--custom-design-options",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Crafted to your choice" },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Choose from the below options and leave the rest to us."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "option",
+      "name": "Option",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Diamond carat" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom design options",
+      "blocks": [
+        { "type": "option", "settings": { "label": "Diamond carat" } },
+        { "type": "option", "settings": { "label": "Metal" } },
+        { "type": "option", "settings": { "label": "Colour" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

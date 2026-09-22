@@ -1,0 +1,66 @@
+{{ 'about-hero.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  {%- if section.settings.image -%}
+    #shopify-section-{{ section.id }} .about-hero_wrapper_card {
+      background-image: url({{ section.settings.image | image_url: width: 2400 }});
+    }
+  {%- endif -%}
+  {%- comment -%}
+    Figma Mobile 7930:120003 crops the photo for a near-square 361x323 card, so
+    phones take their own image when one is set.
+  {%- endcomment -%}
+  {%- if section.settings.mobile_image -%}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .about-hero_wrapper_card {
+        background-image: url({{ section.settings.mobile_image | image_url: width: 1200 }});
+      }
+    }
+  {%- endif -%}
+{%- endstyle -%}
+
+<section class="about-hero full-width skeleton-host">
+  {%- render 'about-hero-skeleton' -%}
+
+  <div class="about-hero_wrapper">
+    <div class="about-hero_wrapper_card" data-animate>
+      <span class="about-hero_wrapper_card_mark" aria-hidden="true">
+        {{- 'logo-mark.svg' | inline_asset_content -}}
+      </span>
+
+      <div class="about-hero_wrapper_card_text">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="about-hero_wrapper_card_text_eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.quote != blank -%}
+          <p class="about-hero_wrapper_card_text_quote">{{ section.settings.quote }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About hero",
+  "tag": "section",
+  "class": "shopify-section--about-hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Background image" },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile background image",
+      "info": "Optional. A crop for the taller phone card."
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our moto:" },
+    {
+      "type": "text",
+      "id": "quote",
+      "label": "Quote",
+      "default": "“Jewellery you'll never take off.”"
+    }
+  ],
+  "presets": [{ "name": "About hero" }]
+}
+{% endschema %}

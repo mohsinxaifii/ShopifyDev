@@ -1,0 +1,37 @@
+{%- doc -%}
+  The empty drawer shell. Its contents are fetched per product through the
+  Section Rendering API by variant-drawer.js. Figma 7930:102851.
+{%- enddoc -%}
+
+<variant-drawer class="variant-drawer" hidden>
+  <div class="variant-drawer_scrim" data-drawer-close></div>
+
+  <div
+    class="variant-drawer_panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="VariantDrawerTitle"
+  >
+    <div class="variant-drawer_panel_head">
+      <h2 class="variant-drawer_panel_head_title" id="VariantDrawerTitle">
+        {{- 'products.select_variant' | t -}}
+      </h2>
+      <button
+        type="button"
+        class="variant-drawer_panel_head_close"
+        data-drawer-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <div class="variant-drawer_panel_content" data-drawer-content></div>
+
+    <div class="variant-drawer_panel_footer">
+      <button type="button" class="variant-drawer_panel_footer_done" data-drawer-done disabled>
+        {{- 'products.done' | t -}}
+      </button>
+    </div>
+  </div>
+</variant-drawer>

@@ -1,0 +1,214 @@
+/* Figma: Home page 7930:104246 > Frame 1116601661 (7930:104649).
+   Section 32/72 padding, 20px rows, a scrolling row of 332px cards on a 24px
+   gap, then the dots. No arrows in the design - the dots are the only control. */
+.journal {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.journal_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.journal_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.journal_wrapper_stage {
+  /* Figma fits 1136 / 356 = 3.191 card slots across the content width, the same
+     three-and-a-sliver the review row uses. The 356px step is the ceiling so
+     cards never grow past the design. */
+  --journal-visible: 3.191;
+  --journal-step: 356px;
+  --journal-gap: 24px;
+  --journal-card: 332px;
+
+  position: relative;
+  width: 100%;
+}
+
+@supports (container-type: inline-size) {
+  .journal_wrapper_stage {
+    --journal-step: clamp(260px, calc(100cqw / var(--journal-visible)), 356px);
+    --journal-gap: calc(var(--journal-step) * 0.0674);
+    --journal-card: calc(var(--journal-step) - var(--journal-gap));
+  }
+}
+
+/* The FEATURED tag overhangs the card by 16px and a scrolling track cannot let
+   it bleed out, so the room is padded in and pulled straight back off - which
+   keeps every card top on the same line the design puts them on. */
+.journal_wrapper_stage_track {
+  display: flex;
+  gap: var(--journal-gap);
+  width: calc(100% + var(--page-margin) * 2);
+  padding-top: 16px;
+  margin-top: -16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  /* Figma runs the row to the edge of the page, so the next card breaks the
+     margin instead of stopping at it. The track spans the full width and pads
+     its own content back in, which keeps the first card on the content edge. */
+  margin-inline: calc(var(--page-margin) * -1);
+  padding-inline: var(--page-margin);
+  scroll-padding-inline-start: var(--page-margin);
+}
+
+.journal_wrapper_stage_track::-webkit-scrollbar {
+  display: none;
+}
+
+.journal_wrapper_stage_track_item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 0 0 var(--journal-card);
+  width: var(--journal-card);
+  scroll-snap-align: start;
+}
+
+/* Sits 16px in from the card's left edge and laps 12px over its top. */
+.journal_wrapper_stage_track_item_tag {
+  position: absolute;
+  top: -16px;
+  left: 16px;
+  z-index: 2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--color-brand, #712242);
+  box-shadow: inset 0 2px 3px 0 var(--color-accent, #f0166e);
+  color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.667;
+}
+
+.journal_wrapper_stage_track_item_card {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 8px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.journal_wrapper_stage_track_item_card:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.journal_wrapper_stage_track_item_card_image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 316 / 193;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.journal_wrapper_stage_track_item_card_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.journal_wrapper_stage_track_item_card_body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.journal_wrapper_stage_track_item_card_body_date {
+  max-width: 100%;
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-icon, #666);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Title and standfirst run tighter together than the rest of the stack. */
+.journal_wrapper_stage_track_item_card_body_text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.journal_wrapper_stage_track_item_card_body_text_title {
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #000;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Two lines then an ellipsis: Figma pins the standfirst at 44px. */
+.journal_wrapper_stage_track_item_card_body_text_excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.journal_wrapper_stage_track_item_card_body_readmore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.333;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+.journal_wrapper_stage_track_item_card_body_readmore svg {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+}

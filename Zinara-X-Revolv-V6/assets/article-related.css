@@ -1,0 +1,84 @@
+/* Figma: Blog page 7930:93922 > Frame 1116601739. A white 32/72 band on a 24px
+   stack: the heading row, then three cards on the 24px gutter. */
+.article-related {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.article-related_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.article-related_wrapper_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.article-related_wrapper_head_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.article-related_wrapper_head_link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.222;
+  color: var(--color-brand, #712242);
+  text-decoration: none;
+}
+
+.article-related_wrapper_head_link svg {
+  width: 24px;
+  height: 24px;
+}
+
+.article-related_wrapper_grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+@media screen and (max-width: 989px) {
+  .article-related_wrapper_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .article-related_wrapper {
+    gap: 20px;
+    padding-block: 24px;
+  }
+
+  .article-related_wrapper_head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .article-related_wrapper_head_heading {
+    font-size: 22px;
+  }
+
+  .article-related_wrapper_grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

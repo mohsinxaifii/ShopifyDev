@@ -1,0 +1,109 @@
+/* Figma: About us 7930:95474 > Frame 1116601741 (7930:95531).
+   Three 276px columns on a #F7F3F5 band, separated by full-height hairlines. */
+.about-stats {
+  display: block;
+  width: 100%;
+  background-color: #f7f3f5;
+}
+
+.about-stats_wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+
+  /* Figma spends 24px either side of each rule, and the rule itself is a
+     zero-width layer - so the columns sit 48px apart, not 24px. */
+  gap: 48px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.about-stats_wrapper_stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 276px;
+  min-width: 0;
+  text-align: center;
+}
+
+/* The rule sits in the middle of that gap, and spans the column rather than the
+   section so it stops level with the tallest stat. */
+.about-stats_wrapper_stat + .about-stats_wrapper_stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -24px;
+  width: 1px;
+  background-color: #e0e0e0;
+}
+
+.about-stats_wrapper_stat_icon {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  color: #d38a0d;
+}
+
+.about-stats_wrapper_stat_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.about-stats_wrapper_stat_value {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-brand, #712242);
+}
+
+.about-stats_wrapper_stat_label {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* Figma Mobile 7930:120040: the three stats stay in one row on white, 8px apart
+   with no rules - 24px marks, 24px values and 12px labels. */
+@media screen and (max-width: 749px) {
+  .about-stats {
+    background-color: #fff;
+  }
+
+  .about-stats_wrapper {
+    gap: 8px;
+    padding-block: 24px;
+  }
+
+  .about-stats_wrapper_stat {
+    flex: 1 1 0;
+    gap: 4px;
+  }
+
+  .about-stats_wrapper_stat + .about-stats_wrapper_stat::before {
+    display: none;
+  }
+
+  .about-stats_wrapper_stat_icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .about-stats_wrapper_stat_value {
+    font-size: 24px;
+    line-height: normal;
+  }
+
+  .about-stats_wrapper_stat_label {
+    font-size: 12px;
+    line-height: 20px;
+  }
+}

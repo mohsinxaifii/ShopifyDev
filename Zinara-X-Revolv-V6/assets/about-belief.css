@@ -1,0 +1,193 @@
+/* Figma: About us 7930:95474 > Frame 1116601742 (7930:95546).
+   A 437x416 media block - a 219x295 card lapping 63px over a 281x381 one - then
+   the copy taking the rest of the row. */
+.about-belief {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.about-belief_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.about-belief_wrapper_row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+}
+
+.about-belief_wrapper_row_media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 437px;
+  height: 416px;
+  isolation: isolate;
+}
+
+.about-belief_wrapper_row_media_front,
+.about-belief_wrapper_row_media_back {
+  display: block;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.about-belief_wrapper_row_media_front {
+  z-index: 2;
+  width: 219px;
+  height: 295px;
+
+  /* The overlap: the back card starts 63px inside the front one. */
+  margin-right: -63px;
+}
+
+.about-belief_wrapper_row_media_back {
+  z-index: 1;
+  width: 281px;
+  height: 381px;
+}
+
+.about-belief_wrapper_row_media_front img,
+.about-belief_wrapper_row_media_back img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-belief_wrapper_row_text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.about-belief_wrapper_row_text_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.about-belief_wrapper_row_text_lead {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.375;
+  color: #000;
+}
+
+.about-belief_wrapper_row_text_body {
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-text-secondary, #494949);
+}
+
+@media screen and (max-width: 989px) {
+  .about-belief_wrapper_row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .about-belief_wrapper_row_media {
+    align-self: center;
+    flex-basis: auto;
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  /* Below this the pair no longer fits side by side at its authored size. */
+  .about-belief_wrapper_row_media {
+    height: auto;
+  }
+
+  .about-belief_wrapper_row_media_front {
+    width: 40vw;
+    height: auto;
+    aspect-ratio: 219 / 295;
+    margin-right: -12vw;
+  }
+
+  .about-belief_wrapper_row_media_back {
+    width: 52vw;
+    height: auto;
+    aspect-ratio: 281 / 381;
+  }
+}
+
+/* Figma Mobile 7930:120053: heading and lead first, then the overlapping pair
+   (186x249 lapping 63px over 238x323 on the 361px row, kept as proportions),
+   then the body. The text column dissolves so the media can sit between its
+   parts. */
+@media screen and (max-width: 749px) {
+  .about-belief_wrapper {
+    padding-block: 24px;
+  }
+
+  .about-belief_wrapper_row {
+    gap: 16px;
+  }
+
+  .about-belief_wrapper_row_text {
+    display: contents;
+  }
+
+  .about-belief_wrapper_row_text_heading {
+    order: 1;
+    font-size: 20px;
+    line-height: normal;
+    color: var(--color-text-secondary, #494949);
+  }
+
+  .about-belief_wrapper_row_text_lead {
+    order: 2;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .about-belief_wrapper_row_media {
+    order: 3;
+    align-self: stretch;
+    justify-content: flex-start;
+    height: auto;
+  }
+
+  .about-belief_wrapper_row_media_front {
+    width: 51.52%;
+    height: auto;
+    aspect-ratio: 186 / 249;
+    margin-right: -17.45%;
+  }
+
+  .about-belief_wrapper_row_media_back {
+    width: 65.93%;
+    height: auto;
+    aspect-ratio: 238 / 323;
+  }
+
+  .about-belief_wrapper_row_text_body {
+    order: 4;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+  }
+}

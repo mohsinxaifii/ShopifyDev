@@ -1,0 +1,128 @@
+/* Figma: About us 7930:95474 > Frame 1116601466 (7930:95485).
+   32/72 section padding around a 323px card: the mark at the top, the moto at
+   the bottom, with a 50% black scrim over the photo. */
+.about-hero {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.about-hero_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.about-hero_wrapper_card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 323px;
+  padding: 40px 20px;
+  border-radius: 12px;
+  background-color: #5a1520;
+  background-size: cover;
+  background-position: center;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.about-hero_wrapper_card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.about-hero_wrapper_card_mark {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 39px;
+  color: #fff;
+}
+
+.about-hero_wrapper_card_mark svg {
+  display: block;
+  width: 39px;
+  height: 43px;
+}
+
+.about-hero_wrapper_card_text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.about-hero_wrapper_card_text_eyebrow {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.about-hero_wrapper_card_text_quote {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.375;
+  color: #fff;
+}
+
+/* Figma Mobile 7930:120002: a 16px band around the same 323px card; the eyebrow
+   turns SemiBold and the quote keeps 32px on a 40px line. */
+@media screen and (max-width: 749px) {
+  .about-hero_wrapper {
+    padding: 16px var(--page-margin);
+  }
+
+  .about-hero_wrapper_card_text {
+    gap: 12px;
+  }
+
+  .about-hero_wrapper_card_text_eyebrow {
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  .about-hero_wrapper_card_text_quote {
+    line-height: 40px;
+  }
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "About us skeleton" 7930:95738. The card's own 323px, inside the band's
+   own padding, so nothing shifts when the cover lifts. */
+.about-hero-skeleton_wrapper {
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.about-hero-skeleton_wrapper_card {
+  height: 323px;
+}
+
+@media screen and (max-width: 749px) {
+  .about-hero-skeleton_wrapper {
+    padding-block: 16px;
+  }
+}

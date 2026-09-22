@@ -1,0 +1,112 @@
+.shop-by-category {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.shop-by-category_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.shop-by-category_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.shop-by-category_wrapper_grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.shop-by-category_wrapper_grid_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 200px;
+  max-width: 266px;
+  text-decoration: none;
+}
+
+.shop-by-category_wrapper_grid_item_image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.shop-by-category_wrapper_grid_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shop-by-category_wrapper_grid_item:hover .shop-by-category_wrapper_grid_item_image {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.shop-by-category_wrapper_grid_item_label {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.shop-by-category_wrapper_grid_item:hover .shop-by-category_wrapper_grid_item_label {
+  color: var(--color-brand, #712242);
+}
+
+/* Figma Mobile 7930:106706: all four tiles share one row with no scroller - 24/16
+   padding, a 20px heading, 12px gutters, 14px labels on a 22px line. */
+@media screen and (max-width: 749px) {
+  .shop-by-category_wrapper {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .shop-by-category_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .shop-by-category_wrapper_grid {
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .shop-by-category_wrapper_grid_item {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .shop-by-category_wrapper_grid_item_label {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}

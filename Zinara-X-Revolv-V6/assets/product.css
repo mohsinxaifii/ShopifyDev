@@ -1,0 +1,2994 @@
+/**
+ * Product detail page. Figma: Desktop / PDP 7930:95962.
+ *
+ * Palette and type below come from the Figma variables (surface/*, text/*,
+ * border/*, soft-yellow/*), declared once on .pdp so the overlay dialogs - which
+ * the browser lifts into the top layer, outside .pdp - can inherit them from
+ * :root instead of re-declaring the set.
+ */
+
+:root {
+  --pdp-brand: #712242;
+  --pdp-accent: #f0166e;
+  --pdp-text: #000;
+  --pdp-text-secondary: #494949;
+  --pdp-muted: #666;
+  --pdp-disabled: #999;
+  --pdp-inverse: #fff;
+  --pdp-border: #e0e0e0;
+  --pdp-border-dark: #999;
+  --pdp-surface-subtle: #f7f3f5;
+  --pdp-surface-medium: #efe6ea;
+  --pdp-yellow-50: #fef4e2;
+  --pdp-yellow-100: #fce7c5;
+  --pdp-yellow-300: #f9d79f;
+  --pdp-yellow-600: #d38a0d;
+  --pdp-pink-50: #fcd4e4;
+  --pdp-pink-200: #faaecc;
+  --pdp-overlay: rgba(0, 0, 0, 0.85);
+  --pdp-tile: rgba(255, 255, 255, 0.6);
+
+  /* Metal swatches, for option values Shopify has no swatch media for. */
+  --pdp-swatch-gold: linear-gradient(135deg, #f9d496, #d5a95d 50%, #c39341 75%, #b17e25);
+  --pdp-swatch-yellow: var(--pdp-swatch-gold);
+  --pdp-swatch-rose: linear-gradient(135deg, #efc9d3, #d8989e 50%, #c06769);
+  --pdp-swatch-silver: linear-gradient(135deg, #fff, #c4c4c4 50%, #a7a7a7 75%, #8a8a8a);
+  --pdp-swatch-white: var(--pdp-swatch-silver);
+  --pdp-swatch-platinum: var(--pdp-swatch-silver);
+}
+
+/* Several blocks below are toggled with the `hidden` attribute, and every one of
+   them also carries a `display` rule here - which would otherwise win against the
+   user-agent's `[hidden] { display: none }` and leave them on screen. */
+.pdp [hidden],
+.pdp-sheet [hidden],
+.pdp-modal [hidden],
+.pdp-lightbox [hidden],
+.pdp-ugc-box [hidden] {
+  display: none !important;
+}
+
+.pdp {
+  position: relative;
+  display: block;
+  font-family: var(--font-secondary--family);
+  color: var(--pdp-text);
+}
+
+.pdp .visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+}
+
+.pdp_layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+  padding-block: 32px;
+}
+
+/* ---------------------------------------------------------------- gallery */
+
+.pdp_gallery {
+  position: sticky;
+  top: 24px;
+}
+
+.pdp_gallery_inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pdp_gallery_stage {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp_gallery_stage_slide {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease;
+}
+
+.pdp_gallery_stage_slide.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pdp_gallery_stage_slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp_gallery_stage_slide_play,
+.pdp_gallery_thumbs_track_item_play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  pointer-events: none;
+}
+
+.pdp_gallery_stage_slide_play svg {
+  width: 40px;
+  height: 40px;
+}
+
+.pdp_gallery_thumbs_track_item_play svg {
+  width: 19px;
+  height: 19px;
+}
+
+.pdp_gallery_stage_top {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 8px;
+  pointer-events: none;
+}
+
+.pdp_gallery_stage_top_badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-image: linear-gradient(-42.27deg, var(--pdp-brand) 24.5%, var(--pdp-accent) 90.6%);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-inverse);
+}
+
+.pdp_gallery_stage_top_wishlist {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--pdp-text-secondary);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.pdp_gallery_stage_top_wishlist svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pdp_gallery_stage_top_wishlist[aria-pressed='true'] {
+  color: var(--pdp-accent);
+}
+
+.pdp_gallery_stage_bottom {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px;
+  pointer-events: none;
+}
+
+.pdp_gallery_stage_bottom_pill {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: var(--pdp-pink-50);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--pdp-text);
+}
+
+.pdp_gallery_thumbs {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.pdp_gallery_thumbs_arrow {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--pdp-text-secondary);
+  cursor: pointer;
+}
+
+.pdp_gallery_thumbs_arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pdp_gallery_thumbs_track {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 12px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+.pdp_gallery_thumbs_track::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp_gallery_thumbs_track_item {
+  position: relative;
+  flex: 0 0 133px;
+  width: 133px;
+  height: 133px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.pdp_gallery_thumbs_track_item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp_gallery_thumbs_track_item.is-active {
+  outline: 1.5px solid var(--pdp-brand);
+  outline-offset: -1.5px;
+}
+
+/* ------------------------------------------------------------------- info */
+
+.pdp_info,
+.pdp_info_form {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp_section_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_section_title--lg {
+  font-size: 20px;
+}
+
+.pdp_link {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--pdp-brand);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Headline card - Figma 7930:96004 */
+
+.pdp_headline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--pdp-yellow-50);
+}
+
+.pdp_headline_top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdp_headline_top_title {
+  flex: 1 1 auto;
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 20px;
+  color: var(--pdp-text);
+  text-transform: capitalize;
+}
+
+.pdp_headline_top_rating {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 999px;
+  background-color: #fff;
+  font-family: var(--font-primary--family);
+  font-size: 14px;
+  color: var(--pdp-text-secondary);
+  text-decoration: none;
+}
+
+.pdp_headline_top_rating svg {
+  width: 16px;
+  height: 16px;
+  color: var(--pdp-yellow-600);
+}
+
+.pdp_headline_price {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pdp_headline_price_current {
+  font-weight: 600;
+  font-size: 24px;
+  color: var(--pdp-brand);
+}
+
+.pdp_headline_price_compare {
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--pdp-text-secondary);
+  text-decoration: line-through;
+}
+
+.pdp_headline_price_save {
+  padding: 8px 12px 8px 8px;
+  background-image: linear-gradient(270deg, var(--pdp-yellow-50) 0%, var(--pdp-yellow-300) 100%);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--pdp-brand);
+}
+
+.pdp_headline_tax {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_headline_calculator_button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--pdp-brand);
+  cursor: pointer;
+}
+
+.pdp_headline_calculator_button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pdp_headline_tags {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+}
+
+.pdp_headline_tags::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp_headline_tags_item {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: var(--pdp-yellow-300);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--pdp-text);
+}
+
+.pdp_headline_addons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--pdp-yellow-600);
+  border-radius: 8px;
+  background-color: var(--pdp-yellow-50);
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text);
+  cursor: pointer;
+}
+
+.pdp_headline_addons svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Offers - Figma 7930:96033 */
+
+.pdp_offers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 24px;
+}
+
+.pdp_offers_head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdp_offers_head_title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_offers_head_title_dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--pdp-muted);
+}
+
+.pdp_offers_head_title_count {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--pdp-muted);
+}
+
+.pdp_offers_rail {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pdp_offers_rail::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp_offers_rail .pdp-offer {
+  flex: 0 0 auto;
+}
+
+.pdp-offer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.pdp-offer_head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+}
+
+.pdp-offer_head_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--pdp-yellow-600);
+}
+
+.pdp-offer_head_text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pdp-offer_head_text_title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp-offer_head_text_sub {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--pdp-muted);
+}
+
+.pdp-offer_code {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-top: 1px dashed var(--pdp-border);
+  background-color: var(--pdp-surface-subtle);
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--pdp-brand);
+  cursor: pointer;
+}
+
+.pdp-offer_code_icon {
+  display: flex;
+  width: 16px;
+  height: 16px;
+}
+
+.pdp-offer_code.is-copied .pdp-offer_code_value::after {
+  content: ' copied';
+}
+
+/* Options - Figma 7930:96080 / 7930:96094 */
+
+.pdp_option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+}
+
+.pdp_option_head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 0;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_option_head_value {
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.pdp_option_guide {
+  position: absolute;
+  top: 12px;
+  right: 0;
+}
+
+.pdp_option--guide-only {
+  align-items: flex-end;
+}
+
+.pdp_option_guide_icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+}
+
+.pdp_option_values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.pdp_option_values_value {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.pdp_option_values_value input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pdp_option--swatch .pdp_option_values_value {
+  padding: 4px;
+}
+
+.pdp_option_values_value_swatch {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 999px;
+}
+
+.pdp_option_values_value_swatch::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--pdp-swatch, #ddd) center / cover no-repeat;
+}
+
+.pdp_option_values_value input:checked + .pdp_option_values_value_swatch {
+  border: 1.5px solid var(--pdp-brand);
+}
+
+.pdp_option_values_value_chip {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 999px;
+  background-color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--pdp-muted);
+}
+
+.pdp_option_values_value input:checked + .pdp_option_values_value_chip {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-brand);
+  color: var(--pdp-inverse);
+}
+
+.pdp_option_values_value input:disabled + .pdp_option_values_value_chip,
+.pdp_option_values_value input:disabled + .pdp_option_values_value_swatch {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pdp_option_values_value input:focus-visible + * {
+  outline: 2px solid var(--pdp-brand);
+  outline-offset: 2px;
+}
+
+/* Vermeil explainer link - Figma 7930:96109 */
+
+.pdp_explainer {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  color: var(--pdp-brand);
+  cursor: pointer;
+}
+
+.pdp_explainer_dot {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background-color: #f9d496;
+}
+
+.pdp_explainer_dot::before {
+  content: '';
+  width: 12.7px;
+  height: 12.7px;
+  border-radius: 999px;
+  background: var(--pdp-swatch-gold);
+}
+
+.pdp_explainer_text {
+  font-family: var(--font-tertiary--family);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 16px;
+}
+
+.pdp_explainer svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Buttons - Figma 7930:96117 */
+
+.pdp_button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--pdp-brand);
+  border-radius: 8px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 18px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pdp_button--primary {
+  background-color: var(--pdp-brand);
+  color: var(--pdp-inverse);
+}
+
+.pdp_button--secondary,
+.pdp_button--outline {
+  background-color: #fff;
+  color: var(--pdp-brand);
+}
+
+.pdp_button--compact {
+  height: auto;
+  padding: 12px;
+  font-size: 16px;
+}
+
+.pdp_button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pdp_button_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+}
+
+.pdp_button--compact .pdp_button_icon {
+  width: 20px;
+  height: 20px;
+}
+
+.pdp_buy {
+  display: flex;
+  gap: 16px;
+  padding-block: 12px;
+}
+
+.pdp_buy .pdp_button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Shop with confidence - Figma 7930:96120 */
+
+.pdp_trust {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 24px;
+}
+
+.pdp_trust_grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdp_trust_grid_item_inner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 12px 8px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+  text-align: left;
+  cursor: default;
+}
+
+button.pdp_trust_grid_item_inner {
+  cursor: pointer;
+}
+
+.pdp_trust_grid_item_inner_icon,
+.pdp_trust_grid_item_inner_out {
+  display: flex;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--pdp-yellow-600);
+}
+
+.pdp_trust_grid_item_inner_label {
+  flex: 1 1 auto;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--pdp-text);
+}
+
+/* Delivery estimate - Figma 7930:96136 */
+
+.pdp_delivery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 0 12px;
+}
+
+.pdp_delivery_row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.pdp_delivery_row_input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--pdp-text);
+}
+
+.pdp_delivery_row_input::placeholder {
+  color: var(--pdp-muted);
+}
+
+.pdp_delivery_result {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--pdp-text-secondary);
+}
+
+/* Gift sleeve - Figma 7930:96141 */
+
+.pdp_gift {
+  padding-block: 12px;
+}
+
+.pdp_gift_row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 10px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pdp_gift_row_check {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.pdp_gift_row_box {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--pdp-border-dark);
+  border-radius: 4px;
+  color: transparent;
+}
+
+.pdp_gift_row_box svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pdp_gift_row_check:checked + .pdp_gift_row_box {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-brand);
+  color: var(--pdp-inverse);
+}
+
+.pdp_gift_row_media {
+  display: flex;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+}
+
+.pdp_gift_row_media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pdp_gift_row_label {
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_gift_row_price {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--pdp-brand);
+}
+
+/* Need help choosing - Figma 7930:96150 */
+
+.pdp_help {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 24px;
+}
+
+.pdp_help_copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdp_help_copy_body {
+  margin: 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_help_actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pdp_help_actions .pdp_button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Accordions - Figma 7930:96179 / 96225 / 96276 */
+
+.pdp_accordions {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp_accordion {
+  border-bottom: 1px solid var(--pdp-border-dark);
+}
+
+.pdp_accordion--flush {
+  border-bottom: 0;
+}
+
+.pdp_accordion_summary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 16px;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--pdp-text-secondary);
+  list-style: none;
+  cursor: pointer;
+}
+
+.pdp_accordion_summary::-webkit-details-marker {
+  display: none;
+}
+
+.pdp_accordion[open] > .pdp_accordion_summary {
+  padding-top: 24px;
+}
+
+.pdp_accordion_summary_sign {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+.pdp_accordion_summary_sign svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pdp_accordion[open] .pdp_accordion_summary_sign_plus,
+.pdp_accordion:not([open]) .pdp_accordion_summary_sign_minus {
+  display: none;
+}
+
+.pdp_accordion_body {
+  padding-bottom: 24px;
+}
+
+.pdp_accordion_body--rte {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+/* Why you'll love it - Figma 7930:96158 */
+
+.pdp_highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Cells butt up against each other, so each one pulls its neighbour's border
+   underneath its own - otherwise every interior gridline renders 2px. */
+.pdp_highlights_item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 -1px -1px 0;
+  padding: 14px 12px;
+  border: 1px solid var(--pdp-border);
+  background-color: var(--pdp-tile);
+}
+
+.pdp_highlights_item_icon {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  color: var(--pdp-yellow-600);
+}
+
+.pdp_highlights_item_text {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-brand);
+}
+
+/* Spec lists inside the accordions */
+
+.pdp_specs {
+  margin: 0;
+}
+
+.pdp_specs_row {
+  display: flex;
+  gap: 12px;
+  padding-block: 8px;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.pdp_specs_row:last-child {
+  border-bottom: 0;
+}
+
+.pdp_specs_row_key {
+  flex: 0 0 40%;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--pdp-muted);
+}
+
+.pdp_specs_row_value {
+  flex: 1 1 auto;
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--pdp-text);
+}
+
+/* Know your jewellery - Figma 7930:96276 */
+
+.pdp-kj {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdp-kj_vermeil {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: var(--pdp-yellow-50);
+}
+
+.pdp-kj_vermeil_title,
+.pdp-kj_diamonds_title {
+  margin: 0;
+  padding-top: 12px;
+  font-family: var(--font-tertiary--family);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 20px;
+  color: var(--pdp-text);
+  text-align: center;
+}
+
+.pdp-kj--compact .pdp-kj_vermeil_title,
+.pdp-kj--compact .pdp-kj_diamonds_title {
+  font-size: 16px;
+}
+
+.pdp-kj_vermeil_diagram {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 532 / 238;
+}
+
+.pdp-kj_vermeil_diagram_image {
+  position: absolute;
+  top: -7.14%;
+  left: 18.42%;
+  display: block;
+  width: 59.96%;
+  height: 122.69%;
+}
+
+.pdp-kj_vermeil_diagram_image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 9.938px 9.938px rgba(0, 0, 0, 0.1));
+}
+
+.pdp-kj_vermeil_diagram_lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.pdp-kj_vermeil_diagram_lines path {
+  fill: none;
+  stroke: var(--pdp-brand);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.pdp-kj_vermeil_diagram_callout {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  gap: 5.3px;
+  align-items: center;
+}
+
+.pdp-kj_vermeil_diagram_callout--1 {
+  top: 3.78%;
+  left: 9.96%;
+  width: 35.96%;
+}
+
+.pdp-kj_vermeil_diagram_callout--2 {
+  top: 15.69%;
+  left: 73.12%;
+  width: 28.63%;
+}
+
+.pdp-kj_vermeil_diagram_callout--3 {
+  top: 90.34%;
+  left: 6.39%;
+  width: 34.27%;
+}
+
+.pdp-kj_vermeil_diagram_callout_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--pdp-brand);
+}
+
+.pdp-kj--compact .pdp-kj_vermeil_diagram_callout_icon {
+  width: 10.6px;
+  height: 10.6px;
+}
+
+.pdp-kj_vermeil_diagram_callout_text {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 13.25px;
+  color: var(--pdp-brand);
+}
+
+.pdp-kj--compact .pdp-kj_vermeil_diagram_callout_text {
+  font-size: 9.275px;
+}
+
+.pdp-kj_vermeil_specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.pdp-kj_vermeil_specs_cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  padding: 12px;
+  border: 1px solid var(--pdp-yellow-300);
+  background-color: var(--pdp-tile);
+}
+
+.pdp-kj_vermeil_specs_cell:first-child {
+  margin-right: -1px;
+  border-radius: 12px 0 0 12px;
+}
+
+.pdp-kj_vermeil_specs_cell:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+.pdp-kj_vermeil_specs_cell_label {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-yellow-600);
+  text-transform: uppercase;
+}
+
+.pdp-kj_vermeil_specs_cell_value {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--pdp-brand);
+}
+
+.pdp-kj--compact .pdp-kj_vermeil_specs_cell_label {
+  font-size: 10px;
+}
+
+.pdp-kj--compact .pdp-kj_vermeil_specs_cell_value {
+  font-size: 14px;
+}
+
+.pdp-kj_diamonds {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp-kj--compact .pdp-kj_diamonds {
+  background-color: #fff;
+}
+
+.pdp-kj_diamonds_compare {
+  display: flex;
+  gap: 53px;
+  align-items: center;
+  justify-content: center;
+  padding-block: 16px;
+}
+
+.pdp-kj--compact .pdp-kj_diamonds_compare {
+  gap: 16px;
+}
+
+.pdp-kj_diamonds_compare_side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.pdp-kj_diamonds_compare_side_media {
+  display: flex;
+  width: 63px;
+  height: 63px;
+}
+
+.pdp-kj_diamonds_compare_side_media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pdp-kj_diamonds_compare_side_label {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-brand);
+  text-align: center;
+}
+
+.pdp-kj_diamonds_compare_link {
+  display: flex;
+  flex: 0 0 81px;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: 81px;
+  padding-bottom: 32px;
+}
+
+.pdp-kj_diamonds_compare_link_text {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--pdp-text-secondary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* The arrow is drawn wider than its 81px column on purpose - it reaches into
+   the gaps on both sides to touch the two diamonds. */
+.pdp-kj_diamonds_compare_link_arrow {
+  flex: 0 0 auto;
+  width: 149px;
+  max-width: none;
+  height: 7.36px;
+  color: var(--pdp-brand);
+}
+
+.pdp-kj--compact .pdp-kj_diamonds_compare_side_label,
+.pdp-kj--compact .pdp-kj_diamonds_compare_link_text {
+  font-size: 10px;
+}
+
+.pdp-kj_diamonds_facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pdp-kj_diamonds_facts_cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-right: -1px;
+  padding: 12px;
+  border: 1px solid var(--pdp-pink-200);
+  background-color: var(--pdp-tile);
+}
+
+.pdp-kj_diamonds_facts_cell_label {
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 18px;
+  color: var(--pdp-accent);
+  text-transform: uppercase;
+}
+
+.pdp-kj_diamonds_facts_cell_value {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-family: var(--font-tertiary--family);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-brand);
+}
+
+.pdp-kj_diamonds_facts_cell_value img {
+  width: 33px;
+  height: auto;
+}
+
+/* You may also like / Recently viewed - Figma 7930:96277 */
+
+.pdp_related {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 24px;
+}
+
+.pdp_related_tabs {
+  display: flex;
+  gap: 20px;
+}
+
+.pdp_related_tabs_tab {
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--pdp-disabled);
+  cursor: pointer;
+}
+
+.pdp_related_tabs_tab.is-active {
+  border-bottom-color: var(--pdp-text-secondary);
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_related_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pdp_related_panel_track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.pdp_related_panel_track::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp_related_panel_track > .product-card {
+  flex: 0 0 266px;
+  width: 266px;
+}
+
+.pdp_related_panel_empty {
+  margin: 0;
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--pdp-muted);
+}
+
+/* The Zinara Difference - Figma 7930:96294 */
+
+.pdp_difference {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 16px;
+  background-image: linear-gradient(180deg, var(--pdp-yellow-50) 0%, #fff 100%);
+}
+
+.pdp_difference_title {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 28px;
+  color: var(--pdp-text);
+}
+
+.pdp_difference_title_accent {
+  color: var(--pdp-accent);
+}
+
+.pdp_difference_table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pdp_difference_table thead th {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--pdp-border);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--pdp-muted);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.pdp_difference_table thead th:first-child {
+  width: 46%;
+  text-align: left;
+}
+
+.pdp_difference_table tbody th {
+  padding-block: 5px;
+  border-bottom: 1px solid var(--pdp-border);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--pdp-text);
+  text-align: left;
+}
+
+.pdp_difference_table tbody td {
+  padding-block: 5px;
+  border-bottom: 1px solid var(--pdp-border);
+  text-align: center;
+}
+
+.pdp_difference_table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.pdp_difference_table_yes,
+.pdp_difference_table_no {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pdp_difference_table_yes {
+  color: var(--pdp-yellow-600);
+}
+
+.pdp_difference_table_no {
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_difference_table :is(.pdp_difference_table_yes, .pdp_difference_table_no) svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pdp_difference_table_yes img {
+  width: 38px;
+  height: auto;
+}
+
+/* Pair beautifully with - Figma 7930:96345 */
+
+.pdp_pair {
+  padding-block: 24px;
+}
+
+.pdp_pair_card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid var(--pdp-border);
+  border-radius: 12px;
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp_pair_card_title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding-block: 8px;
+  font-family: var(--font-tertiary--family);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 20px;
+  line-height: 22px;
+  color: var(--pdp-brand);
+}
+
+.pdp_pair_card_title_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  color: var(--pdp-yellow-600);
+}
+
+.pdp_pair_card_items {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pdp_pair_card_items_plus {
+  display: flex;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_pair_card_cta {
+  width: 100%;
+}
+
+.pdp-mini {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--pdp-border);
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+.pdp-mini_media {
+  display: block;
+  aspect-ratio: 1;
+}
+
+.pdp-mini_media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp-mini_add {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  border: 0.667px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--pdp-brand);
+  cursor: pointer;
+}
+
+.pdp-mini_add svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pdp-mini_add[aria-pressed='true'] {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-brand);
+  color: var(--pdp-inverse);
+}
+
+.pdp-mini_info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px 12px;
+}
+
+.pdp-mini_info_price {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pdp-mini_info_price_current {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--pdp-brand);
+}
+
+.pdp-mini_info_price_compare {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--pdp-disabled);
+  text-decoration: line-through;
+}
+
+.pdp-mini_info_title {
+  overflow: hidden;
+  font-family: var(--font-tertiary--family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-text);
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Curated trends - Figma 7930:96394 */
+
+.pdp_ugc {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 24px;
+}
+
+.pdp_ugc_carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pdp_ugc_carousel_track {
+  display: flex;
+  gap: 16px;
+  padding-left: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.pdp_ugc_carousel_track::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp_ugc_carousel_track_item {
+  position: relative;
+  flex: 0 0 215px;
+  height: 320px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--pdp-surface-subtle);
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.pdp_ugc_carousel_track_item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp_ugc_carousel_track_item_play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  pointer-events: none;
+}
+
+.pdp_ugc_carousel_track_item_play svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Reviews - Figma 7930:96415 */
+
+.pdp_reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-block: 24px;
+  scroll-margin-top: 96px;
+}
+
+.pdp_reviews_head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdp_reviews_head .pdp_button {
+  padding: 8px 12px;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.pdp_reviews_summary {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.pdp_reviews_summary_score {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 30px;
+  color: var(--pdp-text);
+}
+
+.pdp_reviews_summary_rule {
+  width: 1px;
+  height: 30px;
+  background-color: var(--pdp-border);
+}
+
+.pdp_reviews_summary_count {
+  margin-left: auto;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--pdp-muted);
+}
+
+/* testimonial-stars lives in testimonial-carousel.css, which this page does not
+   load - so the few rules it needs are restated here, scoped to .pdp. */
+.pdp .testimonial-stars {
+  display: flex;
+  gap: 3.56px;
+}
+
+.pdp .testimonial-stars_star {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  color: var(--pdp-yellow-600);
+}
+
+.pdp .testimonial-stars_star.is-empty {
+  color: var(--pdp-border);
+}
+
+.pdp .testimonial-stars_star svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pdp_reviews_summary .testimonial-stars {
+  gap: 8px;
+}
+
+.pdp_reviews_summary .testimonial-stars_star {
+  width: 24px;
+  height: 24px;
+}
+
+.pdp_reviews_list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdp_reviews_list_item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 12px;
+  overflow: hidden;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: var(--pdp-tile);
+}
+
+.pdp_reviews_list_item_author {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+}
+
+.pdp_reviews_list_item_author_name {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-brand);
+}
+
+.pdp_reviews_list_item_author_dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--pdp-brand);
+}
+
+.pdp_reviews_list_item_author_badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: var(--pdp-brand);
+  font-weight: 400;
+  font-size: 10px;
+  color: var(--pdp-inverse);
+}
+
+.pdp_reviews_list_item_media {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pdp_reviews_list_item_media::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp_reviews_list_item_media img {
+  flex: 0 0 144px;
+  width: 144px;
+  height: 144px;
+  object-fit: cover;
+}
+
+.pdp_reviews_list_item_body {
+  margin: 0;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_reviews_list_item_date {
+  margin: 0;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--pdp-muted);
+}
+
+.pdp_reviews_more {
+  display: flex;
+  justify-content: center;
+}
+
+/* ------------------------------------------------------------- skeleton */
+
+.pdp-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  padding-block: 32px;
+  background-color: #fff;
+  pointer-events: none;
+
+  /* Safety net: if product.js never runs, the placeholder still steps aside
+     rather than sitting on top of a page that is already complete. */
+  animation: pdp-skeleton-timeout 0s linear 2.5s forwards;
+}
+
+@keyframes pdp-skeleton-timeout {
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+.pdp.is-ready .pdp-skeleton {
+  display: none;
+}
+
+.pdp-skeleton_col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-content: start;
+}
+
+.pdp-skeleton_tile {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(270deg, #f2f2f2, #e0e0e0);
+  background-size: 200% 100%;
+  animation: pdp-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes pdp-skeleton-shimmer {
+  0%,
+  100% {
+    background-position: 0% 0;
+  }
+
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp-skeleton_tile {
+    animation: none;
+  }
+}
+
+.pdp-skeleton_tile--stage {
+  aspect-ratio: 1;
+}
+
+.pdp-skeleton_thumbs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.pdp-skeleton_tile--thumb {
+  flex: 0 0 133px;
+  width: 133px;
+  height: 133px;
+}
+
+.pdp-skeleton_tile--dot {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* ------------------------------------------------------------- overlays */
+
+.pdp-sheet,
+.pdp-modal,
+.pdp-lightbox,
+.pdp-ugc-box {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: var(--pdp-text);
+}
+
+.pdp-sheet::backdrop,
+.pdp-modal::backdrop,
+.pdp-lightbox::backdrop,
+.pdp-ugc-box::backdrop {
+  background-color: var(--pdp-overlay);
+}
+
+/* Sidesheets - Figma 7930:97519 / 98936 / 100360 / 101065 */
+
+.pdp-sheet_panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  width: 435px;
+  max-width: 100%;
+  height: 100%;
+  background-color: #fff;
+}
+
+.pdp-sheet_panel_head {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 0;
+}
+
+.pdp-sheet_panel_head_title,
+.pdp-modal_panel_head_title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--pdp-text);
+}
+
+.pdp-sheet_panel_head_close,
+.pdp-modal_panel_head_close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-right: -8px;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--pdp-text);
+  cursor: pointer;
+}
+
+.pdp-sheet_panel_head_close svg,
+.pdp-modal_panel_head_close svg {
+  width: 24px;
+  height: 24px;
+}
+
+.pdp-sheet_panel_body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 16px 24px;
+  overflow-y: auto;
+}
+
+.pdp-sheet_panel_body--padded {
+  gap: 24px;
+}
+
+.pdp-sheet_panel_body_group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdp-sheet_panel_body_group_label,
+.pdp-sheet_panel_body_label {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp-sheet_panel_body_video {
+  width: 100%;
+  height: 193px;
+  border-radius: 8px;
+  object-fit: cover;
+  background-color: #000;
+}
+
+.pdp-sheet_panel_body_table {
+  padding: 24px 16px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+}
+
+.pdp-sheet_panel_body_cta {
+  align-self: flex-start;
+}
+
+.pdp-sheet_panel_body_offers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.pdp-sheet_panel_footer {
+  flex: 0 0 auto;
+  padding: 16px 16px 18px;
+  background-color: #fff;
+  box-shadow: 0 -1px 0 #f2f2f2;
+}
+
+.pdp-sheet_panel_footer .pdp_button {
+  width: 100%;
+}
+
+.pdp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pdp-table :is(th, td) {
+  padding-block: 6px;
+  border-bottom: 1px solid var(--pdp-border);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 24px;
+  color: var(--pdp-muted);
+  text-align: left;
+}
+
+.pdp-table th {
+  line-height: 20px;
+  text-transform: uppercase;
+}
+
+.pdp-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* SGL modal - Figma 7930:99699 */
+
+.pdp-modal[open] {
+  display: grid;
+  place-items: center;
+}
+
+.pdp-modal_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 600px;
+  max-width: calc(100vw - 32px);
+  max-height: min(768px, calc(100dvh - 32px));
+  padding: 0 16px 16px;
+  overflow-y: auto;
+  border-radius: 24px;
+  background-color: #fff;
+}
+
+.pdp-modal_panel_head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+}
+
+.pdp-modal_panel_media img {
+  width: 100%;
+  height: auto;
+}
+
+/* Image lightbox - Figma 7930:98274 */
+
+.pdp-lightbox[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 72px;
+  background-color: var(--pdp-overlay);
+}
+
+.pdp-lightbox_close {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.pdp-lightbox_close svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pdp-lightbox_body {
+  display: flex;
+  gap: 88px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-height: 640px;
+}
+
+.pdp-lightbox_body_arrow,
+.pdp-ugc-box_reel_arrow {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 12px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--pdp-brand);
+  cursor: pointer;
+}
+
+.pdp-lightbox_body_arrow svg,
+.pdp-ugc-box_reel_arrow svg {
+  width: 24px;
+  height: 24px;
+}
+
+.pdp-lightbox_body_stage {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 16px;
+  justify-items: center;
+  height: 100%;
+  max-width: 100%;
+  margin: 0;
+
+  /* 626 image + 16 gap + 24 counter. Sizing the ratio here rather than on the
+     frame is what gives the frame a width at all: an aspect-ratio box resolves
+     its width from a definite height, and only the stage has one. */
+  aspect-ratio: 630 / 666;
+}
+
+.pdp-lightbox_body_stage_frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pdp-lightbox_body_stage_frame_slide {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.pdp-lightbox_body_stage_frame_slide.is-active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.pdp-lightbox_body_stage_frame_slide :is(img, video, iframe) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pdp-lightbox_body_stage_counter {
+  flex: 0 0 auto;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+/* UGC lightbox - Figma 7930:101840 */
+
+.pdp-ugc-box[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: var(--pdp-overlay);
+}
+
+.pdp-ugc-box_reel {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.pdp-ugc-box_reel_stage {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.pdp-ugc-box_reel_stage_slide {
+  display: none;
+  flex: 0 0 auto;
+  width: 205px;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #000;
+  opacity: 0.85;
+}
+
+.pdp-ugc-box_reel_stage_slide.is-active,
+.pdp-ugc-box_reel_stage_slide.is-near {
+  display: block;
+}
+
+/* The reel wraps, so the clip on the left can be the last one in the document.
+   `order` puts it back on the correct side without reordering the markup. */
+.pdp-ugc-box_reel_stage_slide.is-prev {
+  order: -1;
+}
+
+.pdp-ugc-box_reel_stage_slide.is-active {
+  width: 274px;
+  opacity: 1;
+}
+
+.pdp-ugc-box_reel_stage_slide_video {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  max-height: 60dvh;
+  object-fit: cover;
+}
+
+.pdp-ugc-box_shop {
+  width: 100%;
+  max-width: 700px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pdp-ugc-box_shop::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp-ugc-box_shop_track {
+  display: flex;
+  gap: 16px;
+}
+
+.pdp-ugc-card {
+  display: flex;
+  flex: 0 0 220px;
+  gap: 8px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.pdp-ugc-card_media {
+  display: block;
+  flex: 0 0 72px;
+}
+
+.pdp-ugc-card_media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp-ugc-card_info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 8px 8px 0;
+}
+
+.pdp-ugc-card_info_price {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.pdp-ugc-card_info_price_current {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--pdp-brand);
+}
+
+.pdp-ugc-card_info_price_compare {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--pdp-disabled);
+  text-decoration: line-through;
+}
+
+.pdp-ugc-card_info_title {
+  overflow: hidden;
+  font-family: var(--font-tertiary--family);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--pdp-text);
+  text-overflow: ellipsis;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pdp-ugc-card_info_add {
+  width: 100%;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.pdp-ugc-card_info_add .pdp_button_icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Add-ons sidesheet - Figma 7930:100360 */
+
+.pdp-addons_hero img {
+  width: 100%;
+  height: 193px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.pdp-addons_grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdp-addons_grid_card {
+  position: relative;
+  display: flex;
+  flex: 0 0 193px;
+  flex-direction: column;
+  gap: 6px;
+  width: 193px;
+  padding: 14px 12px;
+  border: 0.5px solid var(--pdp-border-dark);
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+.pdp-addons_grid_card_media {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--pdp-yellow-100);
+}
+
+.pdp-addons_grid_card_media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp-addons_grid_card_toggle {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  border: 1px solid var(--pdp-border-dark);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--pdp-brand);
+  cursor: pointer;
+}
+
+.pdp-addons_grid_card_toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pdp-addons_grid_card_toggle[aria-pressed='true'] {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-brand);
+  color: var(--pdp-inverse);
+}
+
+.pdp-addons_grid_card_toggle .pdp-addons_grid_card_toggle_tick,
+.pdp-addons_grid_card_toggle[aria-pressed='true'] .pdp-addons_grid_card_toggle_plus {
+  display: none;
+}
+
+.pdp-addons_grid_card_toggle[aria-pressed='true'] .pdp-addons_grid_card_toggle_tick {
+  display: grid;
+}
+
+.pdp-addons_grid_card_title {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-brand);
+}
+
+.pdp-addons_grid_card_price {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--pdp-text);
+}
+
+/* Price difference sidesheet - Figma 7930:101066 */
+
+.pdp-diff {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp-diff_banner {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 8px 16px;
+  border: 0.5px solid #9bc090;
+  border-radius: 12px 12px 0 0;
+  background-color: #e2f2d9;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--pdp-text);
+}
+
+.pdp-diff_banner_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp-diff_compare {
+  position: relative;
+  display: flex;
+  border: 1px solid var(--pdp-border);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+}
+
+.pdp-diff_compare_cell {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  padding: 14px 12px;
+}
+
+.pdp-diff_compare_cell--ours {
+  border-radius: 0 0 12px;
+  background-color: var(--pdp-surface-medium);
+}
+
+.pdp-diff_compare_cell_label {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-brand);
+  text-align: center;
+}
+
+.pdp-diff_compare_cell_price {
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 20px;
+  color: var(--pdp-text);
+}
+
+.pdp-diff_compare_arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--pdp-border-dark);
+  border-radius: 999px;
+  background-color: #fff;
+  font-size: 13px;
+  color: var(--pdp-text-secondary);
+  transform: translate(-50%, -50%);
+}
+
+.pdp-diff_facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdp-diff_facts_item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--pdp-text);
+}
+
+.pdp-diff_facts_item_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--pdp-brand);
+}
+
+.pdp-diff_certs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdp-diff_certs_track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.pdp-diff_certs_track::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp-diff_certs_track_item {
+  display: block;
+  flex: 0 0 328px;
+  scroll-snap-align: start;
+}
+
+.pdp-diff_explainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdp-diff_explainer_head_title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp-diff_explainer_head_sub {
+  margin: 0;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp-diff_cta {
+  gap: 4px;
+  width: 100%;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.pdp-diff_cta_dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: currentcolor;
+}
+
+.pdp-diff_cta_price {
+  font-weight: 600;
+  font-size: 19px;
+}
+
+/* ---------------------------------------------------------------- narrow */
+
+@media screen and (max-width: 1000px) {
+  .pdp_layout,
+  .pdp-skeleton {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pdp_gallery {
+    position: static;
+  }
+
+  .pdp-skeleton_col:last-child {
+    display: none;
+  }
+
+  .pdp-lightbox[open],
+  .pdp-ugc-box[open] {
+    padding: 24px;
+  }
+
+  .pdp-lightbox_body {
+    gap: 16px;
+  }
+
+  .pdp-lightbox_close {
+    top: 16px;
+    right: 16px;
+  }
+
+  .pdp-sheet_panel {
+    width: 100%;
+  }
+
+  .pdp-ugc-box_reel_stage_slide.is-near {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .pdp_highlights,
+  .pdp-sheet_panel_body_offers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pdp_trust_grid,
+  .pdp-diff_facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pdp_buy,
+  .pdp_help_actions {
+    flex-wrap: wrap;
+  }
+
+  .pdp-kj_diamonds_compare {
+    gap: 16px;
+  }
+
+  .pdp-kj_diamonds_compare_link_arrow {
+    width: 100%;
+  }
+
+  .pdp_difference {
+    padding-inline: 0;
+  }
+
+  .pdp-addons_grid_card {
+    flex: 1 1 160px;
+    width: auto;
+  }
+}
+
+.pdp_gallery_dots {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- mobile --
+   Figma Mobile PDP 7930:112221. The gallery runs edge to edge on a cream band
+   with dots in place of thumbnails, the price card joins that band, the trust
+   tiles stay two-up, and Add to cart / Buy now pin to a white bar along the
+   bottom of the screen (7930:112804). */
+@media screen and (max-width: 749px) {
+  .pdp_layout {
+    gap: 0;
+    padding-block: 0 24px;
+  }
+
+  .pdp_gallery {
+    margin-inline: calc(var(--page-margin) * -1);
+    background-color: var(--pdp-yellow-50);
+  }
+
+  .pdp_gallery_inner {
+    gap: 12px;
+  }
+
+  .pdp_gallery_stage {
+    border-radius: 0;
+  }
+
+  .pdp_gallery_stage_top_badge,
+  .pdp_gallery_stage_bottom_pill {
+    padding: 2px 6px;
+    font-weight: 500;
+    font-size: 8px;
+    line-height: 16px;
+  }
+
+  .pdp_gallery_stage_top_wishlist {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    border-width: 0.75px;
+    border-radius: 6px;
+  }
+
+  .pdp_gallery_thumbs {
+    display: none;
+  }
+
+  .pdp_gallery_dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .pdp_gallery_dots_dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background-color: #c4c4c4;
+    transition: width 0.25s ease;
+  }
+
+  .pdp_gallery_dots_dot.is-active {
+    width: 18px;
+    background-color: var(--pdp-brand);
+  }
+
+  /* The cream band carries on under the price card, which loses its own frame. */
+  .pdp_headline {
+    margin-inline: calc(var(--page-margin) * -1);
+    padding: 12px var(--page-margin);
+    border-radius: 0;
+  }
+
+  .pdp_headline_top_title {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .pdp_headline_price_compare {
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .pdp_headline_price_save {
+    font-size: 12px;
+    line-height: 22px;
+  }
+
+  .pdp_headline_tax {
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .pdp_headline_tags_item {
+    padding: 2px 8px;
+    font-size: 12px;
+  }
+
+  .pdp_trust_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pdp_trust_grid_item_inner_label {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .pdp_help_copy_body {
+    font-size: 12px;
+  }
+
+  .pdp_help_actions {
+    flex-wrap: nowrap;
+  }
+
+  .pdp_help_actions .pdp_button {
+    padding-inline: 8px;
+    white-space: nowrap;
+  }
+
+  .pdp_highlights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pdp_highlights_item_text {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .pdp_buy {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 30;
+    flex-wrap: nowrap;
+    gap: 12px;
+    padding: 12px var(--page-margin) 20px;
+    background-color: #fff;
+    box-shadow: 0 -1px 0 var(--pdp-border);
+  }
+
+  /* Room at the foot of the page so the pinned bar never covers the footer. */
+  .pdp {
+    padding-bottom: 76px;
+  }
+}

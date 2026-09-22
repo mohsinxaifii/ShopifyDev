@@ -1,0 +1,363 @@
+/* Figma: Blog page 7930:93922 > Frame 1116601589 (body) and Frame 1116601739
+   (related row).
+
+   A 748px measure beside a 364px image on the page's 24px gutter -
+   748 + 24 + 364 = 1136, the content width. The image is only 368px tall
+   against a body many screens long, so it is stuck to the top of the column
+   rather than stretched down it. */
+.article {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.article_wrapper {
+  display: grid;
+  grid-template-columns: 748fr 364fr;
+  gap: 24px;
+  align-items: start;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+/* No aside to place: the measure keeps its width instead of stretching to fill
+   the row, so the type does not widen past the design. */
+.article_wrapper:not(:has(.article_wrapper_aside)) {
+  grid-template-columns: minmax(0, 748px);
+}
+
+.article_wrapper_body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.article_wrapper_body_head {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.article_wrapper_body_head_meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The one accent-coloured line on the page. */
+.article_wrapper_body_head_meta_line {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-accent, #f0166e);
+}
+
+.article_wrapper_body_head_meta_text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.article_wrapper_body_head_meta_text_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.2;
+  color: #000;
+}
+
+.article_wrapper_body_head_meta_text_byline {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.25;
+  color: #4d4d4d;
+}
+
+.article_wrapper_body_head_image {
+  aspect-ratio: 748 / 400;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.article_wrapper_body_head_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------- article body --
+   The author writes this as rich text, so the scale is applied to whatever
+   Shopify renders. Figma's body sections are a 16/20 heading over 14/22 copy,
+   12px apart, with 24px between one section and the next. */
+.article_wrapper_body_content {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+}
+
+.article_wrapper_body_content > :first-child {
+  margin-top: 0;
+}
+
+.article_wrapper_body_content > :last-child {
+  margin-bottom: 0;
+}
+
+.article_wrapper_body_content p,
+.article_wrapper_body_content ul,
+.article_wrapper_body_content ol {
+  margin-block: 0 24px;
+}
+
+.article_wrapper_body_content h2,
+.article_wrapper_body_content h3,
+.article_wrapper_body_content h4 {
+  margin-block: 24px 12px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.article_wrapper_body_content ul,
+.article_wrapper_body_content ol {
+  padding-inline-start: 20px;
+}
+
+.article_wrapper_body_content li {
+  margin-bottom: 8px;
+}
+
+.article_wrapper_body_content a {
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+.article_wrapper_body_content img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block: 24px;
+  border-radius: 12px;
+}
+
+.article_wrapper_body_content blockquote {
+  margin: 24px 0;
+  padding-inline-start: 16px;
+  border-inline-start: 2px solid var(--color-brand, #712242);
+  font-style: italic;
+}
+
+/* --------------------------------------------------------- shop this story */
+.article_wrapper_body_shop {
+  display: block;
+}
+
+.article_wrapper_body_shop_heading {
+  margin: 0 0 12px;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+/* Figma hangs the arrows off both edges of the row, vertically centred - the
+   left one sits out in the page gutter. */
+.article_wrapper_body_shop_stage {
+  position: relative;
+}
+
+.article_wrapper_body_shop_stage_track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.article_wrapper_body_shop_stage_track::-webkit-scrollbar {
+  display: none;
+}
+
+.article_wrapper_body_shop_stage_arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+}
+
+.article_wrapper_body_shop_stage_arrow--prev {
+  left: -20px;
+}
+
+.article_wrapper_body_shop_stage_arrow--next {
+  right: -20px;
+}
+
+.article_wrapper_body_shop_stage_arrow:hover {
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* --------------------------------------------------------------- comments --
+   Not in the design; kept so a blog with comments enabled still renders. */
+.article_wrapper_body_comments {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border, #e0e0e0);
+  font-family: var(--font-secondary--family);
+}
+
+.article_wrapper_body_comments_heading,
+.article_wrapper_body_comments_form_heading {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.article_wrapper_body_comments_item_meta {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--color-icon, #666);
+}
+
+.article_wrapper_body_comments_item_body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+}
+
+.article_wrapper_body_comments_form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.article_wrapper_body_comments_form label {
+  font-size: 12px;
+  color: var(--color-icon, #666);
+}
+
+.article_wrapper_body_comments_form input,
+.article_wrapper_body_comments_form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: var(--style-border-radius-inputs, 8px);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.article_wrapper_body_comments_form_submit {
+  align-self: flex-start;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: var(--style-border-radius-inputs, 8px);
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------ aside --
+   368px of image against a long body, so it rides down with the reader. */
+.article_wrapper_aside {
+  position: sticky;
+  top: 24px;
+  aspect-ratio: 364 / 368;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.article_wrapper_aside img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 989px) {
+  .article_wrapper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Below the measure it would be a 368px-tall decoration between the article
+     and what follows it, so it steps out. */
+  .article_wrapper_aside {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .article_wrapper {
+    padding-block: 24px;
+  }
+
+  .article_wrapper_body_shop_stage_arrow {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- skeleton --
+   Figma "Blog skeleton" 7930:94079. Same grid as the article above it. */
+.article-skeleton_wrapper {
+  display: grid;
+  grid-template-columns: 748fr 364fr;
+  gap: 24px;
+  align-items: start;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+}
+
+.article-skeleton_wrapper_body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.article-skeleton_wrapper_body_hero {
+  aspect-ratio: 748 / 400;
+  margin-block: 12px;
+}
+
+.article-skeleton_wrapper_body_subhead {
+  margin-top: 16px;
+}
+
+.article-skeleton_wrapper_aside {
+  aspect-ratio: 364 / 368;
+}
+
+@media screen and (max-width: 989px) {
+  .article-skeleton_wrapper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .article-skeleton_wrapper_aside {
+    display: none;
+  }
+}

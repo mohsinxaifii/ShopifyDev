@@ -1,0 +1,175 @@
+{%- doc -%}
+  The "Know your jewellery" explainer - a material cutaway diagram plus the
+  stone comparison. Figma 7930:96276 (accordion) and, at reduced type sizes,
+  7930:101124 inside the price-difference sidesheet.
+
+  Every claim here is per-product and comes from metafields: a silver piece must
+  not tell the shopper it has 5x thicker gold plating, and a moissanite piece
+  must not be compared against a mined diamond. The Figma copy is kept only as
+  the fallback for products that have not been filled in yet.
+
+  The connector lines are one inline SVG rather than three positioned images:
+  Figma draws them as separate rotated vectors, but rotating an <img> inside a
+  percentage-positioned box re-rounds on every resize and the leaders drift off
+  the block. The path data below is those same three vectors resolved onto a
+  single 532x238 canvas, so they scale with the diagram instead of against it.
+
+  @param {object} product - a Shopify product object
+  @param {object} [vermeil_image] - cutaway render of the plating stack
+  @param {object} [mined_image] - stone render used for both comparison sides
+  @param {boolean} [compact] - smaller type, for the sidesheet
+  @param {object} [sgl_logo] - certification mark, only in the compact variant
+{%- enddoc -%}
+
+{%- liquid
+  assign base_metal = product.metafields.custom.pdp_base_metal.value
+  assign plating = product.metafields.custom.pdp_plating.value
+  assign material_name = product.metafields.custom.pdp_material_name.value | default: 'Gold Vermeil'
+  assign stone_name = product.metafields.custom.pdp_stone_name.value | default: 'Lab Grown Diamonds'
+
+  assign callouts = product.metafields.custom.pdp_material_callouts.value
+  assign compare_labels = product.metafields.custom.pdp_stone_compare_labels.value
+  assign compare_notes = product.metafields.custom.pdp_stone_compare_notes.value
+
+  comment
+    Icons pair with the callouts positionally, so the list order in the metafield
+    is what decides which leader line each label sits on.
+  endcomment
+  assign callout_icons = 'icon-sparkles.svg,icon-droplet.svg,icon-layers.svg' | split: ','
+
+  assign kj_class = 'pdp-kj'
+  if compact
+    assign kj_class = 'pdp-kj pdp-kj--compact'
+  endif
+-%}
+
+<div class="{{ kj_class }}">
+  {%- if callouts != blank or base_metal != blank or plating != blank -%}
+    <div class="pdp-kj_vermeil">
+      <h4 class="pdp-kj_vermeil_title">{{ material_name }}</h4>
+
+      <div class="pdp-kj_vermeil_diagram">
+        {%- if vermeil_image != blank -%}
+          <span class="pdp-kj_vermeil_diagram_image">
+            {{ vermeil_image | image_url: width: 640 | image_tag: loading: 'lazy', alt: material_name }}
+          </span>
+        {%- endif -%}
+
+        <svg
+          class="pdp-kj_vermeil_diagram_lines"
+          viewBox="0 0 532 238"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path d="M286.34 100.45 L286.34 61.36 L376.67 61.36" />
+          <path d="M334.4 100.21 L334.4 36.61 L241.61 36.61" />
+          <path d="M244.76 199 V206.29 H261.82 M278.88 199 V206.29 H261.82 M261.82 206.29 V222.19 H220" />
+        </svg>
+
+        {%- for callout in callouts limit: 3 -%}
+          <span
+            class="pdp-kj_vermeil_diagram_callout pdp-kj_vermeil_diagram_callout--{{ forloop.index }}"
+          >
+            <span class="pdp-kj_vermeil_diagram_callout_icon" aria-hidden="true">
+              {{- callout_icons[forloop.index0] | inline_asset_content -}}
+            </span>
+            <span class="pdp-kj_vermeil_diagram_callout_text">{{ callout }}</span>
+          </span>
+        {%- endfor -%}
+      </div>
+
+      {%- if base_metal != blank or plating != blank -%}
+        <dl class="pdp-kj_vermeil_specs">
+          {%- if base_metal != blank -%}
+            <div class="pdp-kj_vermeil_specs_cell">
+              <dt class="pdp-kj_vermeil_specs_cell_label">{{ 'products.base_metal' | t }}</dt>
+              <dd class="pdp-kj_vermeil_specs_cell_value">{{ base_metal }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if plating != blank -%}
+            <div class="pdp-kj_vermeil_specs_cell">
+              <dt class="pdp-kj_vermeil_specs_cell_label">{{ 'products.plating' | t }}</dt>
+              <dd class="pdp-kj_vermeil_specs_cell_value">{{ plating }}</dd>
+            </div>
+          {%- endif -%}
+        </dl>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if compare_labels.size > 1 -%}
+    <div class="pdp-kj_diamonds">
+      <h4 class="pdp-kj_diamonds_title">{{ stone_name }}</h4>
+
+      <div class="pdp-kj_diamonds_compare">
+        <div class="pdp-kj_diamonds_compare_side">
+          {%- if mined_image != blank -%}
+            <span class="pdp-kj_diamonds_compare_side_media">
+              {{ mined_image | image_url: width: 126 | image_tag: loading: 'lazy', alt: compare_labels[0] }}
+            </span>
+          {%- endif -%}
+          <span class="pdp-kj_diamonds_compare_side_label">{{ compare_labels[0] }}</span>
+        </div>
+
+        <div class="pdp-kj_diamonds_compare_link">
+          {%- if compare_notes[0] != blank -%}
+            <span class="pdp-kj_diamonds_compare_link_text">{{ compare_notes[0] }}</span>
+          {%- endif -%}
+          <svg
+            class="pdp-kj_diamonds_compare_link_arrow"
+            viewBox="0 0 150 7.364"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0.146447 3.32843C-0.0488155 3.52369 -0.0488155 3.84027 0.146447 4.03553L3.32843 7.21751C3.52369 7.41278 3.84027 7.41278 4.03553 7.21751C4.2308 7.02225 4.2308 6.70567 4.03553 6.51041L1.20711 3.68198L4.03553 0.853554C4.2308 0.658291 4.2308 0.341709 4.03553 0.146447C3.84027 -0.0488155 3.52369 -0.0488155 3.32843 0.146447L0.146447 3.32843ZM149.854 4.03553C150.049 3.84027 150.049 3.52369 149.854 3.32843L146.672 0.146447C146.476 -0.0488155 146.16 -0.0488155 145.964 0.146447C145.769 0.341709 145.769 0.658291 145.964 0.853554L148.793 3.68198L145.964 6.51041C145.769 6.70567 145.769 7.02225 145.964 7.21751C146.16 7.41278 146.476 7.41278 146.672 7.21751L149.854 4.03553ZM0.5 3.68198V4.18198H149.5V3.68198V3.18198H0.5V3.68198Z"
+              fill="currentColor"
+            />
+          </svg>
+          {%- if compare_notes[1] != blank -%}
+            <span class="pdp-kj_diamonds_compare_link_text">{{ compare_notes[1] }}</span>
+          {%- endif -%}
+        </div>
+
+        <div class="pdp-kj_diamonds_compare_side">
+          {%- if mined_image != blank -%}
+            <span class="pdp-kj_diamonds_compare_side_media">
+              {{ mined_image | image_url: width: 126 | image_tag: loading: 'lazy', alt: compare_labels[1] }}
+            </span>
+          {%- endif -%}
+          <span class="pdp-kj_diamonds_compare_side_label">{{ compare_labels[1] }}</span>
+        </div>
+      </div>
+
+      {%- comment -%}
+        Only the sidesheet carries the certification/pricing pair (Figma
+        7930:101169); the accordion version stops at the comparison row.
+      {%- endcomment -%}
+      {%- if compact -%}
+        {%- assign certification = product.metafields.custom.pdp_certification_label.value -%}
+        {%- assign pricing_claim = product.metafields.custom.pdp_pricing_claim.value -%}
+        {%- if certification != blank or pricing_claim != blank -%}
+          <div class="pdp-kj_diamonds_facts">
+            {%- if certification != blank -%}
+              <div class="pdp-kj_diamonds_facts_cell">
+                <span class="pdp-kj_diamonds_facts_cell_label">{{ 'products.certification' | t }}</span>
+                <span class="pdp-kj_diamonds_facts_cell_value">
+                  {%- if sgl_logo != blank -%}
+                    {{ sgl_logo | image_url: width: 80 | image_tag: loading: 'lazy', alt: certification }}
+                  {%- endif -%}
+                  {{ certification }}
+                </span>
+              </div>
+            {%- endif -%}
+            {%- if pricing_claim != blank -%}
+              <div class="pdp-kj_diamonds_facts_cell">
+                <span class="pdp-kj_diamonds_facts_cell_label">{{ 'products.pricing' | t }}</span>
+                <span class="pdp-kj_diamonds_facts_cell_value">{{ pricing_claim }}</span>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>

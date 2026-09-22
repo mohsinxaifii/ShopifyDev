@@ -1,0 +1,319 @@
+.video-showcase {
+  position: relative;
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.video-showcase_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.video-showcase_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+/* Stage: clipped viewport + arrows sitting just outside the track */
+.video-showcase_wrapper_stage {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
+}
+
+.video-showcase_wrapper_viewport {
+  width: 100%;
+
+  /* Padding + matching negative margin widens the clip box vertically so the
+     active card's shadow is not cut off, without changing the stage height. */
+  padding-block: 48px;
+  margin-block: -48px;
+  overflow: hidden;
+}
+
+.video-showcase_wrapper_track {
+  /* How many card slots span the stage. Figma fits 1136 / 330 = 3.442 of them:
+     the active card, a full card either side, and a sliver at each edge. */
+  --video-showcase-visible: 3.442;
+  --video-showcase-ratio: 282 / 400;
+  --video-showcase-step: 330px;
+  --video-showcase-gap: 48px;
+  --video-showcase-card-width: 282px;
+
+  display: flex;
+  align-items: center;
+  gap: var(--video-showcase-gap);
+  width: max-content;
+  will-change: transform;
+}
+
+@supports (container-type: inline-size) {
+  .video-showcase_wrapper_track {
+    --video-showcase-step: calc(100cqw / var(--video-showcase-visible));
+    --video-showcase-gap: calc(var(--video-showcase-step) * 0.1455);
+    --video-showcase-card-width: calc(var(--video-showcase-step) - var(--video-showcase-gap));
+  }
+}
+
+.video-showcase_wrapper_track.is-animating {
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.video-showcase_wrapper_track_item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--video-showcase-card-width);
+  width: var(--video-showcase-card-width);
+
+  /* Height follows the video's own ratio, so nothing is stretched or cropped. */
+  aspect-ratio: var(--video-showcase-ratio);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #000;
+  cursor: pointer;
+}
+
+.video-showcase_wrapper_track_item.is-active {
+  cursor: default;
+}
+
+.video-showcase_wrapper_track_item_media,
+.video-showcase_wrapper_track_item_video-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.video-showcase_wrapper_track_item_poster {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.video-showcase_wrapper_track_item_poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-showcase_wrapper_track_item.is-active .video-showcase_wrapper_track_item_poster {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-showcase_wrapper_track_item_media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: #000;
+  pointer-events: none;
+}
+
+/* Timeline shown on top of the active card */
+.video-showcase_wrapper_track_item_scrim {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  height: 64px;
+  background: linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.video-showcase_wrapper_track_item.is-active .video-showcase_wrapper_track_item_scrim {
+  opacity: 1;
+}
+
+.video-showcase_wrapper_track_item_progress {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 3;
+  height: 5px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.video-showcase_wrapper_track_item.is-active .video-showcase_wrapper_track_item_progress {
+  opacity: 1;
+}
+
+.video-showcase_wrapper_track_item_progress_bar {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background-color: #fff;
+}
+
+/* Play affordance on the resting cards */
+.video-showcase_wrapper_track_item_play {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  opacity: 1;
+  transition:
+    opacity 0.3s ease,
+    transform 0.2s ease;
+  pointer-events: none;
+}
+
+.video-showcase_wrapper_track_item_play svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+}
+
+.video-showcase_wrapper_track_item.is-active .video-showcase_wrapper_track_item_play,
+.video-showcase_wrapper_track_item.is-playing .video-showcase_wrapper_track_item_play {
+  opacity: 0;
+}
+
+.video-showcase_wrapper_track_item.is-active.is-paused .video-showcase_wrapper_track_item_play {
+  opacity: 1;
+}
+
+.video-showcase_wrapper_track_item:not(.is-active):hover .video-showcase_wrapper_track_item_play {
+  transform: scale(1.1);
+}
+
+.video-showcase_wrapper_track_item_link {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.video-showcase_wrapper_stage_prev,
+.video-showcase_wrapper_stage_next {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.video-showcase_wrapper_stage_prev {
+  left: -20px;
+}
+
+.video-showcase_wrapper_stage_next {
+  right: -20px;
+}
+
+.video-showcase_wrapper_stage_prev svg,
+.video-showcase_wrapper_stage_next svg {
+  width: 100%;
+  height: 100%;
+}
+
+.video-showcase_wrapper_stage_prev:hover,
+.video-showcase_wrapper_stage_next:hover {
+  background-color: #5a1b34;
+}
+
+@media screen and (max-width: 989px) {
+  .video-showcase_wrapper_track {
+    --video-showcase-visible: 2.8;
+    --video-showcase-step: 260px;
+    --video-showcase-gap: 32px;
+    --video-showcase-card-width: 228px;
+  }
+}
+
+/* Figma Mobile 7930:106796: 24/16 padding, a 20px heading, and tall 169x320 video
+   cards on a 16px gap, centred on the active one with neighbours running off
+   both screen edges. The script centres on the viewport's own width, so letting
+   the viewport bleed past the gutter keeps the active card centred on screen. */
+@media screen and (max-width: 749px) {
+  .video-showcase_wrapper {
+    padding-block: 24px;
+  }
+
+  .video-showcase_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .video-showcase_wrapper_viewport {
+    width: auto;
+    margin-inline: calc(var(--page-margin) * -1);
+  }
+
+  .video-showcase_wrapper_track {
+    --video-showcase-step: 185px;
+    --video-showcase-gap: 16px;
+    --video-showcase-card-width: 169px;
+  }
+
+  .video-showcase_wrapper_track_item {
+    aspect-ratio: 169 / 320;
+  }
+
+  .video-showcase_wrapper_stage_prev,
+  .video-showcase_wrapper_stage_next {
+    display: none;
+  }
+
+  .video-showcase_wrapper .scroll-carousel_dots {
+    margin-top: -4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-showcase_wrapper_track.is-animating {
+    transition-duration: 0.01ms;
+  }
+
+  .video-showcase_wrapper_track_item {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* Instant repositioning used by the seamless loop */
+.video-showcase_wrapper_track.is-snapping,
+.video-showcase_wrapper_track.is-snapping .video-showcase_wrapper_track_item,
+.video-showcase_wrapper_track.is-snapping .video-showcase_wrapper_track_item * {
+  transition: none !important;
+}

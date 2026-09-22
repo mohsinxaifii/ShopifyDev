@@ -1,0 +1,337 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "home_label": "Home",
+        "current_label": "About us"
+      }
+    },
+    "about-hero": {
+      "type": "about-hero",
+      "settings": {
+        "image": "shopify:\/\/shop_images\/zinara-about-hero.png",
+        "eyebrow": "Our moto:",
+        "quote": "“Jewellery you'll never take off.”",
+        "mobile_image": "shopify:\/\/shop_images\/zinara-about-hero-mobile.png"
+      }
+    },
+    "about-intro": {
+      "type": "about-intro",
+      "blocks": {
+        "column-1": {
+          "type": "column",
+          "settings": {
+            "image_1": "shopify:\/\/shop_images\/zinara-about-intro-1.png",
+            "image_2": "shopify:\/\/shop_images\/zinara-about-intro-sliver-a.png"
+          }
+        },
+        "column-2": {
+          "type": "column",
+          "settings": {
+            "image_1": "shopify:\/\/shop_images\/zinara-about-intro-sliver-b.jpg",
+            "image_2": "shopify:\/\/shop_images\/zinara-about-intro-4.png"
+          }
+        },
+        "column-3": {
+          "type": "column",
+          "settings": {
+            "image_1": "shopify:\/\/shop_images\/zinara-about-intro-5.png",
+            "image_2": "shopify:\/\/shop_images\/zinara-about-intro-sliver-c.png"
+          }
+        }
+      },
+      "block_order": [
+        "column-1",
+        "column-2",
+        "column-3"
+      ],
+      "settings": {
+        "heading": "Our vision & mission",
+        "body": "Make real gold and real diamond jewellery an everyday choice - not a once-in-a-lifetime event."
+      }
+    },
+    "about-stats": {
+      "type": "about-stats",
+      "blocks": {
+        "stat-1": {
+          "type": "stat",
+          "settings": {
+            "icon": "customers",
+            "value": "5000+",
+            "label": "Customers"
+          }
+        },
+        "stat-2": {
+          "type": "stat",
+          "settings": {
+            "icon": "rating",
+            "value": "4.8\/5",
+            "label": "Customer rating"
+          }
+        },
+        "stat-3": {
+          "type": "stat",
+          "settings": {
+            "icon": "designs",
+            "value": "2100+",
+            "label": "Designs"
+          }
+        }
+      },
+      "block_order": [
+        "stat-1",
+        "stat-2",
+        "stat-3"
+      ],
+      "settings": {}
+    },
+    "about-belief": {
+      "type": "about-belief",
+      "settings": {
+        "image_front": "shopify:\/\/shop_images\/zinara-about-belief-front.png",
+        "image_back": "shopify:\/\/shop_images\/zinara-about-belief-back.png",
+        "heading": "What we believe",
+        "lead": "Thoughtful design. Modern materials. Timeless sparkle.",
+        "body": "We believe diamonds should feel personal, powerful, and easy. That’s why our collections are consciously crafted using lab-grown diamonds and set in 18 KT gold vermeil and fine gold - giving you timeless sparkle without the markup or the guilt.\n\nEvery design is made to slip effortlessly into your everyday, adding just the right amount of shine to everything you do."
+      }
+    },
+    "zinara-collections": {
+      "type": "zinara-collections",
+      "blocks": {
+        "card-1": {
+          "type": "collection_card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-collection-new-job.png",
+            "label": "New job, new era",
+            "url": ""
+          }
+        },
+        "card-2": {
+          "type": "collection_card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
+            "label": "Siesta",
+            "url": "\/collections\/siesta-collection"
+          }
+        },
+        "card-3": {
+          "type": "collection_card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "label": "Festive edit",
+            "url": ""
+          }
+        },
+        "card-4": {
+          "type": "collection_card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
+            "label": "Siesta",
+            "url": "\/collections\/siesta-collection"
+          }
+        },
+        "card-5": {
+          "type": "collection_card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "label": "Festive edit",
+            "url": ""
+          }
+        }
+      },
+      "block_order": [
+        "card-1",
+        "card-2",
+        "card-3",
+        "card-4",
+        "card-5"
+      ],
+      "settings": {
+        "heading": "Zinara Collections",
+        "background_color": "#fef4e2"
+      }
+    },
+    "about-story": {
+      "type": "about-story",
+      "blocks": {
+        "card-1": {
+          "type": "card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-about-story-1.png",
+            "label": "Lifetime free replating"
+          }
+        },
+        "card-2": {
+          "type": "card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-about-story-2.png",
+            "label": "7 day free returns"
+          }
+        },
+        "card-3": {
+          "type": "card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-about-story-3.png",
+            "label": "Lifetime buyback and exchange"
+          }
+        },
+        "card-4": {
+          "type": "card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-about-story-4.png",
+            "label": "Obsession with the Details"
+          }
+        },
+        "card-5": {
+          "type": "card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-about-story-5.png",
+            "label": "Handcrafted by Skilled Artisans"
+          }
+        },
+        "card-6": {
+          "type": "card",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/zinara-about-story-6.png",
+            "label": "Insured and free shipping"
+          }
+        }
+      },
+      "block_order": [
+        "card-1",
+        "card-2",
+        "card-3",
+        "card-4",
+        "card-5",
+        "card-6"
+      ],
+      "settings": {
+        "heading": "Our story",
+        "quote": "“Thoughtful design. Modern materials. Timeless sparkle.”",
+        "body": "We pair gold vermeil (thick, real gold over sterling silver) with lab-grown diamonds (identical to mined, without the cost or conscience). The result is jewellery that feels like an heirloom but lives like your favourite pair of earrings - on you, every single day.",
+        "block_heading": "What makes Zinara different"
+      }
+    },
+    "about-founder": {
+      "type": "about-founder",
+      "settings": {
+        "image": "shopify:\/\/shop_images\/zinara-about-founder.png",
+        "heading": "Founder",
+        "quote": "“We wanted diamonds to feel less like an occasion, and more like a part of life.”",
+        "body": "“Zinara started with a simple question: why should beautiful jewellery spend most of its life in a box? We wanted to create pieces that women could genuinely live in—pieces that feel special, but never too precious to wear.\n\nLab-grown diamonds gave us the opportunity to bring that vision to life in a way that felt modern, considered, and accessible.”",
+        "name": "— Harshit Abrol",
+        "role": "Founder, Zinara"
+      }
+    },
+    "about-contact": {
+      "type": "about-contact",
+      "blocks": {
+        "channel-1": {
+          "type": "channel",
+          "settings": {
+            "icon": "phone",
+            "value": "+91-8851812814",
+            "url": "tel:+918851812814"
+          }
+        },
+        "channel-2": {
+          "type": "channel",
+          "settings": {
+            "icon": "email",
+            "value": "help@zinara.in",
+            "url": "mailto:help@zinara.in"
+          }
+        },
+        "channel-3": {
+          "type": "channel",
+          "settings": {
+            "icon": "whatsapp",
+            "value": "+91-9217975782",
+            "url": "https:\/\/wa.me\/919217975782"
+          }
+        }
+      },
+      "block_order": [
+        "channel-1",
+        "channel-2",
+        "channel-3"
+      ],
+      "settings": {
+        "heading": "Get in touch",
+        "lead": "Let’s talk jewellery.",
+        "intro": "Whether you’re choosing a piece, or need help with an order, we’re happy to help."
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Are lab grown diamonds real?",
+            "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
+            "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Are ZINARA lab grown diamonds graded and certified?",
+            "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Do you deliver pan India?",
+            "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "Is ID proof required for delivery?",
+            "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "What payment options are available?",
+            "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6"
+      ],
+      "settings": {
+        "heading": "Frequently Asked Questions"
+      }
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "about-hero",
+    "about-intro",
+    "about-stats",
+    "about-belief",
+    "zinara-collections",
+    "about-story",
+    "about-founder",
+    "about-contact",
+    "faq"
+  ]
+}

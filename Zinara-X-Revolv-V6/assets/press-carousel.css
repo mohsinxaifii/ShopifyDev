@@ -1,0 +1,182 @@
+/* Figma: Home page 827:24395 > Frame 1116601658 (827:24813).
+   Section 32/72 padding, 20px rows, 240x339 images on a 24px gap. */
+.press-carousel {
+  position: relative;
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.press-carousel_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.press-carousel_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.press-carousel_wrapper_stage {
+  /* Figma fits 1136 / 264 = 4.303 card slots across the content width. The 264
+     ceiling stops cards growing past the design and the floor keeps them usable. */
+  --press-visible: 4.303;
+  --press-step: 264px;
+  --press-gap: 24px;
+  --press-card: 240px;
+
+  position: relative;
+  width: 100%;
+}
+
+@supports (container-type: inline-size) {
+  .press-carousel_wrapper_stage {
+    --press-step: clamp(170px, calc(100cqw / var(--press-visible)), 264px);
+    --press-gap: calc(var(--press-step) * 0.0909);
+    --press-card: calc(var(--press-step) - var(--press-gap));
+  }
+}
+
+/* Figma 7930:104601 clips the row at the content edge: the last card is cut at
+   1208px, not at the viewport. */
+.press-carousel_wrapper_track {
+  display: flex;
+  gap: var(--press-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.press-carousel_wrapper_track::-webkit-scrollbar {
+  display: none;
+}
+
+.press-carousel_wrapper_track_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 var(--press-card);
+  width: var(--press-card);
+  scroll-snap-align: start;
+}
+
+.press-carousel_wrapper_track_item_image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 240 / 339;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.press-carousel_wrapper_track_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.press-carousel_wrapper_track_item_caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.press-carousel_wrapper_track_item_caption_by {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.press-carousel_wrapper_track_item_caption_title {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.219;
+  color: var(--color-brand, #712242);
+  text-decoration: underline;
+}
+
+/* Centred on the image rather than the whole card, and 20px outside the track.
+   Offset with `top` rather than translateY so the shared :hover transform in
+   scroll-carousel.css cannot displace them. */
+.press-carousel_wrapper_stage_prev,
+.press-carousel_wrapper_stage_next {
+  position: absolute;
+  top: calc(var(--press-card) * 0.7063 - 20px);
+  z-index: 2;
+}
+
+.press-carousel_wrapper_stage_prev {
+  left: -20px;
+}
+
+.press-carousel_wrapper_stage_next {
+  right: -20px;
+}
+
+/* Figma Mobile 7930:106911: 24/16 padding on a 16px stack, a 20px heading, and
+   168x237 photos (8px corners) on a 16px gap running off both screen edges, with
+   14px captions on a 22px line. */
+@media screen and (max-width: 749px) {
+  .press-carousel_wrapper {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .press-carousel_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .press-carousel_wrapper_stage {
+    --press-card: 168px;
+    --press-gap: 16px;
+  }
+
+  .press-carousel_wrapper_track {
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline-start: var(--page-margin);
+  }
+
+  .press-carousel_wrapper_track_item_image {
+    aspect-ratio: 168 / 237;
+    border-radius: 8px;
+  }
+
+  .press-carousel_wrapper_track_item_caption_by,
+  .press-carousel_wrapper_track_item_caption_title {
+    line-height: 22px;
+  }
+
+  .press-carousel_wrapper_track_item_caption_title {
+    max-width: 158px;
+    overflow: hidden;
+    text-decoration: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .press-carousel_wrapper_stage_prev,
+  .press-carousel_wrapper_stage_next {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+{%- doc -%}
+  Loading placeholder for the all-collections page. Figma
+  "All collections skeleton" 7930:94998.
+
+  A heading bar over eight card tiles on the same four-up grid, each a
+  12px-radius media tile with a centred title bar and count bar beneath.
+
+  See assets/skeleton.css for how this clears.
+{%- enddoc -%}
+
+<div class="collections-skeleton skeleton" data-skeleton aria-hidden="true">
+  <div class="collections-skeleton_wrapper">
+    <span class="skeleton_tile collections-skeleton_wrapper_heading"></span>
+
+    <div class="collections-skeleton_wrapper_grid">
+      {%- for card in (1..8) -%}
+        <div class="collections-skeleton_wrapper_grid_item">
+          <span class="skeleton_tile skeleton_tile--card collections-skeleton_wrapper_grid_item_media"></span>
+          <span class="skeleton_tile" style="height: 25px; width: 70%"></span>
+          <span class="skeleton_tile" style="height: 20px; width: 40%"></span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+.logo-marquee {
+  display: block;
+  width: 100%;
+}
+
+.logo-marquee_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.logo-marquee_wrapper_heading {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.24;
+  color: #000;
+}
+
+.logo-marquee_wrapper_track {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.logo-marquee_wrapper_track_set {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 32px;
+  padding-inline-end: 32px;
+  animation: logo-marquee-scroll var(--logo-marquee-speed, 25s) linear infinite;
+}
+
+/* Figma 7930:104690 draws each press mark at its own height (103x35, 87x23,
+   226x29), so the height comes from the block rather than one shared cap. */
+.logo-marquee_wrapper_track_set_logo {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  height: 35px;
+}
+
+.logo-marquee_wrapper_track_set_logo img {
+  display: block;
+  width: auto;
+  height: var(--logo-marquee-logo-height, 35px);
+}
+
+@keyframes logo-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.logo-marquee_wrapper_track--second {
+  display: none;
+}
+
+/* Figma Mobile 7930:106967: 24px band padding with the rows running edge to edge,
+   a 20px heading, and a second row 20px under the first scrolling the other way. */
+@media screen and (max-width: 749px) {
+  .logo-marquee_wrapper {
+    padding: 24px 0;
+  }
+
+  .logo-marquee_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .logo-marquee_wrapper_track {
+    mask-image: none;
+  }
+
+  .logo-marquee_wrapper_track--second {
+    display: flex;
+    margin-top: -12px;
+  }
+
+  .logo-marquee_wrapper_track--second .logo-marquee_wrapper_track_set {
+    animation-direction: reverse;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee_wrapper_track_set {
+    animation: none;
+  }
+
+  .logo-marquee_wrapper_track {
+    overflow-x: auto;
+  }
+}

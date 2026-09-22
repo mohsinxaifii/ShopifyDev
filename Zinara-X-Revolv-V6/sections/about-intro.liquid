@@ -1,0 +1,82 @@
+{{ 'about-intro.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign columns = section.blocks | where: 'type', 'column'
+-%}
+
+<section class="about-intro full-width">
+  <div class="about-intro_wrapper">
+    <div class="about-intro_wrapper_row">
+      <div class="about-intro_wrapper_row_text" data-animate>
+        {%- if section.settings.heading != blank -%}
+          <h2 class="about-intro_wrapper_row_text_heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.body != blank -%}
+          <p class="about-intro_wrapper_row_text_body">{{ section.settings.body }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- if columns.size > 0 -%}
+        <div class="about-intro_wrapper_row_mosaic" data-animate aria-hidden="true">
+          {%- for block in columns limit: 3 -%}
+            <div
+              class="about-intro_wrapper_row_mosaic_column about-intro_wrapper_row_mosaic_column--{{ forloop.index }}"
+              {{ block.shopify_attributes }}
+            >
+              {%- for i in (1..2) -%}
+                {%- if i == 1 -%}
+                  {%- assign tile = block.settings.image_1 -%}
+                {%- else -%}
+                  {%- assign tile = block.settings.image_2 -%}
+                {%- endif -%}
+                <span class="about-intro_wrapper_row_mosaic_column_tile">
+                  {%- if tile -%}
+                    {{
+                      tile
+                      | image_url: width: 400
+                      | image_tag: loading: 'lazy', widths: '200,300,400', sizes: '200px', alt: ''
+                    }}
+                  {%- endif -%}
+                </span>
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About intro",
+  "tag": "section",
+  "class": "shopify-section--about-intro",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Our vision & mission" },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Make real gold and real diamond jewellery an everyday choice - not a once-in-a-lifetime event."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Mosaic column",
+      "limit": 3,
+      "settings": [
+        { "type": "image_picker", "id": "image_1", "label": "Top image" },
+        { "type": "image_picker", "id": "image_2", "label": "Bottom image" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About intro",
+      "blocks": [{ "type": "column" }, { "type": "column" }, { "type": "column" }]
+    }
+  ]
+}
+{% endschema %}

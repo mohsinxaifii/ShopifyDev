@@ -1,0 +1,101 @@
+{{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'about-story.css' | asset_url | stylesheet_tag }}
+
+<scroll-carousel class="about-story full-width">
+  <div class="about-story_wrapper">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="about-story_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.quote != blank -%}
+      <p class="about-story_wrapper_quote" data-animate>{{ section.settings.quote }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.body != blank -%}
+      <p class="about-story_wrapper_body" data-animate>{{ section.settings.body }}</p>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="about-story_wrapper_block">
+        {%- if section.settings.block_heading != blank -%}
+          <h3 class="about-story_wrapper_block_heading">{{ section.settings.block_heading }}</h3>
+        {%- endif -%}
+
+        <div class="about-story_wrapper_block_track" data-track>
+          {%- for block in section.blocks -%}
+            <div class="about-story_wrapper_block_track_item" {{ block.shopify_attributes }}>
+              <span class="about-story_wrapper_block_track_item_image">
+                {%- if block.settings.image -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 550
+                    | image_tag: loading: 'lazy', widths: '275,413,550', sizes: '275px', alt: block.settings.label
+                  }}
+                {%- endif -%}
+              </span>
+              <span class="about-story_wrapper_block_track_item_label">{{ block.settings.label }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="scroll-carousel_dots" data-dots></div>
+      </div>
+    {%- endif -%}
+  </div>
+</scroll-carousel>
+
+<script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
+
+<script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "About story",
+  "tag": "section",
+  "class": "shopify-section--about-story",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Our story" },
+    {
+      "type": "text",
+      "id": "quote",
+      "label": "Pull quote",
+      "default": "“Thoughtful design. Modern materials. Timeless sparkle.”"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "We pair gold vermeil (thick, real gold over sterling silver) with lab-grown diamonds (identical to mined, without the cost or conscience). The result is jewellery that feels like an heirloom but lives like your favourite pair of earrings - on you, every single day."
+    },
+    {
+      "type": "text",
+      "id": "block_heading",
+      "label": "Carousel heading",
+      "default": "What makes Zinara different"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Lifetime free replating" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About story",
+      "blocks": [
+        { "type": "card", "settings": { "label": "Lifetime free replating" } },
+        { "type": "card", "settings": { "label": "7 day free returns" } },
+        { "type": "card", "settings": { "label": "Lifetime buyback and exchange" } },
+        { "type": "card", "settings": { "label": "Obsession with the Details" } },
+        { "type": "card", "settings": { "label": "Handcrafted by Skilled Artisans" } },
+        { "type": "card", "settings": { "label": "Insured and free shipping" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

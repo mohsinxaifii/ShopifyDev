@@ -1,0 +1,157 @@
+{
+  "accessibility": {
+    "previous_announcement": "Previous announcement",
+    "next_announcement": "Next announcement",
+    "menu": "Menu",
+    "close_menu": "Close menu",
+    "search": "Search",
+    "account": "Account",
+    "wishlist": "Wishlist",
+    "cart": "Cart",
+    "cart_count": "{{ count }} items in cart",
+    "previous_slide": "Previous slide",
+    "next_slide": "Next slide",
+    "slides": "Slides",
+    "go_to_slide": "Go to slide {{ number }}",
+    "wishlist_add": "Add to wishlist",
+    "wishlist_remove": "Remove from wishlist",
+    "view_all": "View all",
+    "previous_page": "Previous",
+    "next_page": "Next",
+    "read_more": "Read more",
+    "close": "Close",
+    "review": "Review",
+    "follow_us": "Follow us on",
+    "breadcrumb": "Breadcrumb",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "404": {
+    "title": "404",
+    "not_found": "Page not found.",
+    "back_to_shopping": "Back to shopping"
+  },
+  "blog": {
+    "article_comments": "Comments",
+    "article_metadata_html": "{{ date }} by {{ author }}",
+    "comment_form_body": "Comment",
+    "comment_form_email": "Email",
+    "comment_form_name": "Name",
+    "comment_form_submit": "Post",
+    "comment_form_title": "Add a comment",
+    "featured_tag": "Featured",
+    "load_more": "Load more ({{ count }})",
+    "back_to_blog": "Back to the journal",
+    "view_all": "View all",
+    "empty": "No articles have been published yet.",
+    "share": "Share this article"
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "title": "Cart",
+    "update": "Update",
+    "remove": "Remove",
+    "drawer_title": "Your cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "taxes_note": "Taxes and shipping calculated at checkout",
+    "adding": "Adding…",
+    "added": "Added to cart",
+    "failed": "Could not add",
+    "quantity": "Quantity",
+    "increase": "Increase quantity",
+    "decrease": "Decrease quantity"
+  },
+  "customers": {
+    "login": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "title": "Login"
+    }
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "added_to_cart": "Added to cart",
+    "sold_out": "Sold out",
+    "size_guide": "Size guide",
+    "select_variant": "Select variant",
+    "done": "Done",
+    "price_drop": "Price drop",
+    "open_image": "Open image {{ index }} full screen",
+    "show_image": "Show image {{ index }}",
+    "base_metal": "Base metal",
+    "plating": "Plating",
+    "certification": "Certification",
+    "pricing": "Pricing",
+    "size_chart": "Size chart",
+    "what_is": "What is {{ material }}?"
+  },
+  "collection": {
+    "filters": "Filters",
+    "clear_all": "Clear all",
+    "sort_by": "Sort by:",
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "selected_price_range": "Selected price range",
+    "load_more": "Load more",
+    "loading": "Loading",
+    "empty": "No products match these filters.",
+    "sort": "Sort",
+    "apply": "Apply",
+    "sort_by_heading": "Sort by"
+  },
+  "collections": {
+    "title": "Collections",
+    "empty": "No collections to show yet.",
+    "product_count": "{{ count }} items"
+  },
+  "wishlist": {
+    "title": "My wishlist",
+    "item_count": "({{ count }} items)",
+    "item_count_one": "(1 item)",
+    "loading": "Loading your wishlist",
+    "empty_title": "Nothing saved yet",
+    "empty_body": "Tap the heart on any piece and it will wait for you here.",
+    "empty_action": "Start browsing",
+    "all": "All",
+    "remove": "Remove from wishlist"
+  },
+  "contact": {
+    "call_label": "Speak with our experts",
+    "email_label": "Write to us anytime",
+    "whatsapp_label": "Whatsapp us",
+    "copy": "Copy number",
+    "copied": "Copied"
+  },
+  "custom_design": {
+    "start": "Start your design",
+    "designed_for": "for {{ name }}"
+  },
+  "labels": {
+    "new": "NEW"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "card": "Gift card",
+    "expired": "This gift card has expired",
+    "expires_on": "Expires on {{ expires_on }}",
+    "use_at_checkout": "Use this gift card at checkout"
+  },
+  "password": {
+    "title": "This shop is private",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search articles, pages, or products",
+    "placeholder_short": "Search",
+    "submit": "Search",
+    "no_results_html": "No results found for {{ terms }}",
+    "results_for_html": "{{ count }} results found for {{ terms }}"
+  }
+}

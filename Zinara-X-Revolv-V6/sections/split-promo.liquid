@@ -1,0 +1,96 @@
+{{ 'split-promo.css' | asset_url | stylesheet_tag }}
+
+<section class="split-promo full-width">
+  <div class="split-promo_left" data-animate>
+    <div
+      class="split-promo_left_card"
+      {% if section.settings.left_image %}
+        style="background-image: url({{ section.settings.left_image | image_url: width: 1200 }})"
+      {% endif %}
+    >
+      <div class="split-promo_left_card_content">
+        <div class="split-promo_left_card_content_text">
+          <h2 class="split-promo_left_card_content_text_heading">{{ section.settings.left_heading }}</h2>
+          <p class="split-promo_left_card_content_text_subheading">{{ section.settings.left_subheading }}</p>
+        </div>
+        <a href="{{ section.settings.left_button_url | default: '#' }}" class="split-promo_button">
+          <span class="split-promo_button_icon">{{ 'icon-pencil.svg' | inline_asset_content }}</span>
+          {{ section.settings.left_button_label }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="split-promo_right" data-animate>
+    <div
+      class="split-promo_right_card{% if section.settings.right_image_mobile %} split-promo_right_card--mobile-image{% endif %}"
+    >
+      {%- comment -%}
+        Figma Mobile 7930:106898 swaps the tilted pair for one landscape photo
+        beside the heading; without a mobile image the pair is kept, just smaller.
+      {%- endcomment -%}
+      {%- if section.settings.right_image_mobile -%}
+        <span class="split-promo_right_card_mobile-image">
+          {{ section.settings.right_image_mobile | image_url: width: 648 | image_tag: loading: 'lazy', alt: '' }}
+        </span>
+      {%- endif -%}
+      <div class="split-promo_right_card_images">
+        {%- if section.settings.right_image_1 -%}
+          <span class="split-promo_right_card_images_img split-promo_right_card_images_img--back">
+            {{ section.settings.right_image_1 | image_url: width: 300 | image_tag: loading: 'lazy', alt: '' }}
+          </span>
+        {%- endif -%}
+        {%- if section.settings.right_image_2 -%}
+          <span class="split-promo_right_card_images_img split-promo_right_card_images_img--front">
+            {{ section.settings.right_image_2 | image_url: width: 300 | image_tag: loading: 'lazy', alt: '' }}
+          </span>
+        {%- endif -%}
+      </div>
+      <div class="split-promo_right_card_content">
+        <h2 class="split-promo_right_card_content_heading">{{ section.settings.right_heading }}</h2>
+        <a href="{{ section.settings.right_button_url | default: '#' }}" class="split-promo_button">
+          {{ section.settings.right_button_label }}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Split promo",
+  "tag": "section",
+  "class": "shopify-section--split-promo",
+  "settings": [
+    { "type": "header", "content": "Left panel" },
+    { "type": "image_picker", "id": "left_image", "label": "Background image" },
+    { "type": "text", "id": "left_heading", "label": "Heading", "default": "Get your dream jewellery" },
+    {
+      "type": "text",
+      "id": "left_subheading",
+      "label": "Subheading",
+      "default": "Share your idea and we'll shape it into the piece you imagined"
+    },
+    { "type": "text", "id": "left_button_label", "label": "Button label", "default": "Start designing" },
+    { "type": "url", "id": "left_button_url", "label": "Button link" },
+    { "type": "header", "content": "Right panel" },
+    { "type": "image_picker", "id": "right_image_1", "label": "Image 1" },
+    { "type": "image_picker", "id": "right_image_2", "label": "Image 2" },
+    {
+      "type": "image_picker",
+      "id": "right_image_mobile",
+      "label": "Mobile image",
+      "info": "Shown beside the heading on phones in place of the two tilted photos."
+    },
+    {
+      "type": "textarea",
+      "id": "right_heading",
+      "label": "Heading",
+      "default": "Made to be worn.\nMade to be yours."
+    },
+    { "type": "text", "id": "right_button_label", "label": "Button label", "default": "Get to know us" },
+    { "type": "url", "id": "right_button_url", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Split promo" }]
+}
+{% endschema %}

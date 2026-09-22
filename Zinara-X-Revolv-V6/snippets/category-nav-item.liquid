@@ -1,0 +1,20 @@
+{%- doc -%}
+  Renders one category-nav link <li>.
+
+  @param {object} block - a "link" type block from the category-nav section
+{%- enddoc -%}
+
+<li
+  class="category-nav_wrapper_item{% if block.settings.url == request.path %} is-active{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  <span class="category-nav_wrapper_item_content">
+    <a href="{{ block.settings.url | default: '#' }}" class="category-nav_wrapper_item_content_link">
+      {{ block.settings.label }}
+    </a>
+    {%- if block.settings.show_new_badge -%}
+      <span class="category-nav_wrapper_item_content_badge">{{ 'labels.new' | t }}</span>
+    {%- endif -%}
+  </span>
+  <span class="category-nav_wrapper_item_underline"></span>
+</li>

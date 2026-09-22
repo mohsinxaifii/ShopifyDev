@@ -1,0 +1,140 @@
+{{ 'about-contact.css' | asset_url | stylesheet_tag }}
+
+<section class="about-contact full-width skeleton-host">
+  {%- render 'contact-skeleton', cards: section.blocks.size -%}
+
+  <div class="about-contact_wrapper">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="about-contact_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="about-contact_wrapper_body" data-animate>
+      {%- if section.settings.lead != blank or section.settings.intro != blank -%}
+        <p class="about-contact_wrapper_body_intro">
+          {%- if section.settings.lead != blank -%}
+            <strong class="about-contact_wrapper_body_intro_lead">{{ section.settings.lead }}</strong><br>
+          {%- endif -%}
+          {{ section.settings.intro }}
+        </p>
+      {%- endif -%}
+
+      {%- comment -%}
+        Figma Mobile Contact us 7930:118945 adds a photo between the intro and
+        the cards; desktop has none, so it only shows on phones.
+      {%- endcomment -%}
+      {%- if section.settings.mobile_image -%}
+        <span class="about-contact_wrapper_body_image">
+          {{
+            section.settings.mobile_image
+            | image_url: width: 800
+            | image_tag: loading: 'lazy', widths: '400,600,800', sizes: '100vw', alt: ''
+          }}
+        </span>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="about-contact_wrapper_body_channels">
+          {%- for block in section.blocks -%}
+            <a
+              href="{{ block.settings.url | default: '#' }}"
+              class="about-contact_wrapper_body_channels_card"
+              {% if block.settings.copy_on_click %}
+                data-copy="{{ block.settings.value | escape }}"
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
+              <span class="about-contact_wrapper_body_channels_card_icon" aria-hidden="true">
+                {%- case block.settings.icon -%}
+                  {%- when 'phone' -%}
+                    {{ 'icon-phone.svg' | inline_asset_content }}
+                  {%- when 'email' -%}
+                    {{ 'icon-envelope.svg' | inline_asset_content }}
+                  {%- when 'whatsapp' -%}
+                    {{ 'icon-whatsapp.svg' | inline_asset_content }}
+                {%- endcase -%}
+              </span>
+              {%- if block.settings.label != blank -%}
+                <span class="about-contact_wrapper_body_channels_card_label">{{ block.settings.label }}</span>
+              {%- endif -%}
+
+              <span
+                class="about-contact_wrapper_body_channels_card_value{% if block.settings.icon == 'email' %} about-contact_wrapper_body_channels_card_value--underlined{% endif %}"
+              >
+                {{- block.settings.value -}}
+              </span>
+
+              {%- if block.settings.copy_on_click -%}
+                <span class="about-contact_wrapper_body_channels_card_copied" data-copied aria-live="polite"></span>
+              {%- endif -%}
+            </a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'contact-channels.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "About contact",
+  "tag": "section",
+  "class": "shopify-section--about-contact",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Get in touch" },
+    { "type": "text", "id": "lead", "label": "Lead line", "default": "Let’s talk jewellery." },
+    {
+      "type": "text",
+      "id": "intro",
+      "label": "Intro",
+      "default": "Whether you’re choosing a piece, or need help with an order, we’re happy to help."
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image",
+      "info": "Optional. Shown between the intro and the cards on phones only."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "channel",
+      "name": "Channel",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "phone", "label": "Phone" },
+            { "value": "email", "label": "Email" },
+            { "value": "whatsapp", "label": "WhatsApp" }
+          ],
+          "default": "phone"
+        },
+        { "type": "text", "id": "label", "label": "Label", "info": "Optional line above the value." },
+        { "type": "text", "id": "value", "label": "Value", "default": "+91-8851812814" },
+        { "type": "url", "id": "url", "label": "Link" },
+        {
+          "type": "checkbox",
+          "id": "copy_on_click",
+          "label": "Copy value on click",
+          "info": "Copies the value to the clipboard instead of following the link.",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About contact",
+      "blocks": [
+        { "type": "channel", "settings": { "icon": "phone", "value": "+91-8851812814" } },
+        { "type": "channel", "settings": { "icon": "email", "value": "help@zinara.in" } },
+        { "type": "channel", "settings": { "icon": "whatsapp", "value": "+91-9217975782" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

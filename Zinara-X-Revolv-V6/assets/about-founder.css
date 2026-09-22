@@ -1,0 +1,162 @@
+/* Figma: About us 7930:95474 > Frame 1116601745 (7930:95625).
+   A 361px square portrait, then the copy on a 16px stack with the quote in the
+   pink accent. */
+.about-founder {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.about-founder_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.about-founder_wrapper_row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.about-founder_wrapper_row_image {
+  display: block;
+  flex: 0 0 361px;
+  width: 361px;
+  height: 361px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.about-founder_wrapper_row_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-founder_wrapper_row_text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.about-founder_wrapper_row_text_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+/* Figma sets the quote on a 718px measure inside a 751px column, which is what
+   breaks it after "an". */
+.about-founder_wrapper_row_text_quote {
+  margin: 0;
+  max-width: 718px;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.25;
+  color: var(--color-accent, #f0166e);
+}
+
+.about-founder_wrapper_row_text_block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.about-founder_wrapper_row_text_block_body {
+  font-family: var(--font-secondary--family);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.428;
+  color: var(--color-text-secondary, #494949);
+}
+
+.about-founder_wrapper_row_text_block_attribution {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.571;
+  color: #000;
+}
+
+@media screen and (max-width: 989px) {
+  .about-founder_wrapper_row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .about-founder_wrapper_row_image {
+    flex-basis: auto;
+    width: min(361px, 100%);
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .about-founder_wrapper_row_text_quote {
+    font-size: 24px;
+  }
+}
+
+/* Figma Mobile 7930:120118: heading and quote above the portrait, the words
+   below it. The text column dissolves so the photo can sit between them. */
+@media screen and (max-width: 749px) {
+  .about-founder_wrapper {
+    padding-block: 24px;
+  }
+
+  .about-founder_wrapper_row {
+    gap: 16px;
+  }
+
+  .about-founder_wrapper_row_text {
+    display: contents;
+  }
+
+  .about-founder_wrapper_row_text_heading {
+    order: 1;
+    font-size: 20px;
+    line-height: normal;
+    color: var(--color-text-secondary, #494949);
+  }
+
+  .about-founder_wrapper_row_text_quote {
+    order: 2;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .about-founder_wrapper_row_image {
+    order: 3;
+    width: 100%;
+  }
+
+  .about-founder_wrapper_row_text_block {
+    order: 4;
+  }
+
+  .about-founder_wrapper_row_text_block_body {
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  .about-founder_wrapper_row_text_block_attribution {
+    line-height: 22px;
+  }
+}

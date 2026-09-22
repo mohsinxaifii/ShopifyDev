@@ -1,0 +1,34 @@
+{%- doc -%}
+  Loading placeholder for the custom-design page. Figma
+  "Get your own design skeleton" 7930:95299.
+
+  Covers the first band only - the heading, the call-to-action and the three
+  step cards. The bands below are plain images and text that arrive with the
+  document, so covering them would hold back content that is already there.
+
+  See assets/skeleton.css for how this clears.
+
+  @param {number} [cards] - step cards, to match the section's blocks
+{%- enddoc -%}
+
+{%- liquid
+  assign card_count = cards | default: 3
+  if card_count < 1
+    assign card_count = 1
+  endif
+-%}
+
+<div class="custom-design-skeleton skeleton" data-skeleton aria-hidden="true">
+  <div class="custom-design-skeleton_wrapper">
+    <div class="custom-design-skeleton_wrapper_head">
+      <span class="skeleton_tile custom-design-skeleton_wrapper_head_heading"></span>
+      <span class="skeleton_tile custom-design-skeleton_wrapper_head_cta"></span>
+    </div>
+
+    <div class="custom-design-skeleton_wrapper_grid">
+      {%- for card in (1..card_count) -%}
+        <span class="skeleton_tile skeleton_tile--card custom-design-skeleton_wrapper_grid_item"></span>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

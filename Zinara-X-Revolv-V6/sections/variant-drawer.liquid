@@ -1,0 +1,165 @@
+{%- comment -%}
+  Figma: PLP 7930:102669 > Frame 1116601454 (7930:102852).
+
+  Rendered on its own through the Section Rendering API - the drawer fetches
+  `{product.url}?section_id=variant-drawer` - rather than being built in JS.
+  That keeps swatch data, money formatting and image sizing in Liquid, none of
+  which the /products/x.js payload carries.
+{%- endcomment -%}
+
+{%- liquid
+  assign money_symbol = cart.currency.symbol
+  assign price_text = product.price | money_without_trailing_zeros
+  unless price_text contains money_symbol
+    assign price_text = price_text | prepend: money_symbol
+  endunless
+  assign compare_text = product.compare_at_price | money_without_trailing_zeros
+  unless compare_text contains money_symbol
+    assign compare_text = compare_text | prepend: money_symbol
+  endunless
+
+  assign feature_badge = product.metafields.content['product-features-badges'].first
+  assign is_ready_to_ship = false
+  if product.tags contains 'Ready to ship'
+    assign is_ready_to_ship = true
+  endif
+  assign average_rating = product.metafields.reviews.rating.value
+  assign current = product.selected_or_first_available_variant
+-%}
+
+<div class="variant-drawer_panel_body" data-drawer-body>
+  <div class="variant-drawer_panel_body_card">
+    <span class="variant-drawer_panel_body_card_media">
+      {%- if product.featured_image -%}
+        {{
+          product.featured_image
+          | image_url: width: 810
+          | image_tag: loading: 'lazy', widths: '403,605,810', sizes: '403px', alt: product.title
+        }}
+      {%- endif -%}
+
+      <span class="variant-drawer_panel_body_card_media_top">
+        {%- if feature_badge != blank -%}
+          <span class="product-card_media_top_badge product-card_media_top_badge--feature">{{ feature_badge }}</span>
+        {%- elsif is_ready_to_ship -%}
+          <span class="product-card_media_top_badge product-card_media_top_badge--ready">Ready to ship</span>
+        {%- endif -%}
+      </span>
+
+      {%- if average_rating > 0 -%}
+        <span class="product-card_media_rating">
+          {{ 'icon-star.svg' | inline_asset_content }}
+          <span class="product-card_media_rating_value">{{ average_rating | round: 1 }}</span>
+        </span>
+      {%- endif -%}
+    </span>
+
+    <span class="variant-drawer_panel_body_card_info">
+      <span class="variant-drawer_panel_body_card_info_price">
+        <span class="product-card_info_price_current">{{ price_text }}</span>
+        {%- if product.compare_at_price > product.price -%}
+          <span class="product-card_info_price_compare">{{ compare_text }}</span>
+        {%- endif -%}
+      </span>
+      <span class="variant-drawer_panel_body_card_info_title">{{ product.title }}</span>
+    </span>
+  </div>
+
+  <div class="variant-drawer_panel_body_options">
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign is_swatch_option = false
+        if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
+          assign is_swatch_option = true
+        endif
+      -%}
+      <fieldset
+        class="variant-drawer_panel_body_options_group{% if is_swatch_option %} variant-drawer_panel_body_options_group--swatch{% endif %}"
+        data-option-group
+        data-option-position="{{ option.position }}"
+      >
+        <legend class="variant-drawer_panel_body_options_group_head">
+          <span class="variant-drawer_panel_body_options_group_head_name">
+            {{- option.name -}}
+            {%- if is_swatch_option %}:{% endif -%}
+          </span>
+          {%- if is_swatch_option -%}
+            <span class="variant-drawer_panel_body_options_group_head_value" data-option-readout>
+              {{- option.selected_value -}}
+            </span>
+          {%- endif -%}
+        </legend>
+
+        {%- unless is_swatch_option -%}
+          {%- if section.settings.size_guide_url != blank -%}
+            <a
+              href="{{ section.settings.size_guide_url }}"
+              class="variant-drawer_panel_body_options_group_guide"
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="variant-drawer_panel_body_options_group_guide_icon" aria-hidden="true">
+                {{- 'icon-ruler.svg' | inline_asset_content -}}
+              </span>
+              {{ 'products.size_guide' | t }}
+            </a>
+          {%- endif -%}
+        {%- endunless -%}
+
+        <div class="variant-drawer_panel_body_options_group_values">
+          {%- for value in option.values -%}
+            <label class="variant-drawer_panel_body_options_group_values_value">
+              <input
+                type="radio"
+                name="option-{{ option.position }}"
+                value="{{ value | escape }}"
+                data-option-input
+                {% if value == option.selected_value %}
+                  checked
+                {% endif %}
+              >
+              {%- if is_swatch_option -%}
+                <span
+                  class="variant-drawer_panel_body_options_group_values_value_swatch"
+                  style="--variant-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--variant-swatch-{{ value | handle }}, #ddd){% endif %};"
+                >
+                  <span
+                    class="variant-drawer_panel_body_options_group_values_value_swatch_dot"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="visually-hidden">{{ value }}</span>
+                </span>
+              {%- else -%}
+                <span class="variant-drawer_panel_body_options_group_values_value_chip">{{ value }}</span>
+              {%- endif -%}
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} Variant lookup for the JS: option values -> id / availability. {%- endcomment -%}
+  <script type="application/json" data-variant-data>
+    {
+      "productTitle": {{ product.title | json }},
+      "variants": [
+        {%- for variant in product.variants -%}
+          {
+            "id": {{ variant.id }},
+            "options": {{ variant.options | json }},
+            "available": {{ variant.available | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ],
+      "current": {{ current.id | default: 0 }}
+    }
+  </script>
+</div>
+
+{% schema %}
+{
+  "name": "Variant drawer",
+  "settings": [{ "type": "url", "id": "size_guide_url", "label": "Size guide link" }]
+}
+{% endschema %}

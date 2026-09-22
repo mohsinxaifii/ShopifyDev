@@ -1,0 +1,102 @@
+.usp-strip {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.usp-strip_wrapper {
+  display: flex;
+  justify-content: center;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 24px var(--page-margin);
+  box-sizing: border-box;
+}
+
+.usp-strip_wrapper_pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: linear-gradient(
+    90deg,
+    var(--usp-strip-gradient-start, #fef4e2) 0%,
+    var(--usp-strip-gradient-middle, #fce7c5) 50%,
+    var(--usp-strip-gradient-start, #fef4e2) 100%
+  );
+  border-radius: 12px;
+}
+
+.usp-strip_wrapper_pill_item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.usp-strip_wrapper_pill_item_icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  max-width: 66px;
+  max-height: 36px;
+}
+
+.usp-strip_wrapper_pill_item_icon img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-height: 36px;
+  object-fit: contain;
+}
+
+.usp-strip_wrapper_pill_item_text {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 0.8;
+  color: var(--color-brand, #712242);
+  white-space: nowrap;
+}
+
+.usp-strip_wrapper_pill_divider {
+  width: 1px;
+  height: 32px;
+  background-color: #999;
+  flex: 0 0 auto;
+}
+
+/* Figma Mobile 7930:106721: the pill keeps both claims side by side at full
+   width - two 64px halves with 24px marks and 12px labels wrapping to two lines. */
+@media screen and (max-width: 749px) {
+  .usp-strip_wrapper {
+    padding-block: 16px;
+  }
+
+  .usp-strip_wrapper_pill {
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+
+  .usp-strip_wrapper_pill_item {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 64px;
+    gap: 10px;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .usp-strip_wrapper_pill_item_icon,
+  .usp-strip_wrapper_pill_item_icon img {
+    max-height: 24px;
+  }
+
+  .usp-strip_wrapper_pill_item_text {
+    font-size: 12px;
+    line-height: 20px;
+    white-space: normal;
+  }
+}

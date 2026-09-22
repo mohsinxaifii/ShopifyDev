@@ -1,0 +1,114 @@
+{{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'zinara-collections.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .zinara-collections {
+    background-color: {{ section.settings.background_color }};
+  }
+{%- endstyle -%}
+
+{%- if section.blocks.size > 0 -%}
+  <scroll-carousel class="zinara-collections full-width" loop>
+    <span class="zinara-collections_wave" aria-hidden="true">{{ 'decorative-wave.svg' | inline_asset_content }}</span>
+
+    <div class="zinara-collections_wrapper">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="zinara-collections_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      <div class="zinara-collections_wrapper_stage">
+        <div class="zinara-collections_wrapper_track" data-track>
+          {%- for block in section.blocks -%}
+            <a
+              href="{{ block.settings.url | default: '#' }}"
+              class="zinara-collections_wrapper_track_item"
+              {{ block.shopify_attributes }}
+            >
+              <span class="zinara-collections_wrapper_track_item_image">
+                {%- if block.settings.image -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 480
+                    | image_tag: loading: 'lazy', widths: '240,360,480', sizes: '240px', alt: block.settings.label
+                  }}
+                {%- endif -%}
+              </span>
+              <span class="zinara-collections_wrapper_track_item_label">{{ block.settings.label }}</span>
+            </a>
+          {%- endfor -%}
+        </div>
+
+        <button
+          type="button"
+          class="scroll-carousel_arrow zinara-collections_wrapper_stage_prev"
+          data-prev
+          aria-label="{{ 'accessibility.previous_page' | t }}"
+        >
+          {{ 'icon-caret-left.svg' | inline_asset_content }}
+        </button>
+
+        <button
+          type="button"
+          class="scroll-carousel_arrow zinara-collections_wrapper_stage_next"
+          data-next
+          aria-label="{{ 'accessibility.next_page' | t }}"
+        >
+          {{ 'icon-caret-right.svg' | inline_asset_content }}
+        </button>
+      </div>
+
+      <div class="scroll-carousel_dots" data-dots></div>
+
+      <a href="{{ section.blocks.first.settings.url | default: '#' }}" class="zinara-collections_wrapper_link">
+        {{- 'accessibility.view_all' | t -}}
+      </a>
+    </div>
+  </scroll-carousel>
+
+  <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
+
+  <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Zinara Collections",
+  "tag": "section",
+  "class": "shopify-section--zinara-collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Zinara Collections"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FEF4E2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Collection" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Zinara Collections",
+      "blocks": [
+        { "type": "collection_card", "settings": { "label": "New job, new era" } },
+        { "type": "collection_card", "settings": { "label": "Siesta" } },
+        { "type": "collection_card", "settings": { "label": "Festive edit" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

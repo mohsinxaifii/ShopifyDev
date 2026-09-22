@@ -1,0 +1,179 @@
+/* Figma: About us 7930:95474 > Frame 1116601738 (7930:95589).
+   24px between the copy rows, then a 16px-gapped block holding the label, a row
+   of 275px cards on a 12px gap, and the dots. */
+.about-story {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.about-story_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin);
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.about-story_wrapper_heading {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: #000;
+}
+
+.about-story_wrapper_quote {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.375;
+  color: #000;
+}
+
+.about-story_wrapper_body {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-text-secondary, #494949);
+}
+
+.about-story_wrapper_block {
+  /* Figma fits 1136 / 287 = 3.958 card slots across the content width, so the
+     row shows just under four cards with the next one breaking the edge. */
+  --about-story-visible: 3.958;
+  --about-story-step: 287px;
+  --about-story-gap: 12px;
+  --about-story-card: 275px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+@supports (container-type: inline-size) {
+  .about-story_wrapper_block {
+    --about-story-step: clamp(180px, calc(100cqw / var(--about-story-visible)), 287px);
+    --about-story-gap: calc(var(--about-story-step) * 0.0418);
+    --about-story-card: calc(var(--about-story-step) - var(--about-story-gap));
+  }
+}
+
+.about-story_wrapper_block_heading {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.2;
+  color: #000;
+}
+
+.about-story_wrapper_block_track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--about-story-gap);
+  width: calc(100% + var(--page-margin) * 2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  /* Figma runs the row to the edge of the page, so the next card breaks the
+     margin instead of stopping at it. The track spans the full width and pads
+     its own content back in, which keeps the first card on the content edge. */
+  margin-inline: calc(var(--page-margin) * -1);
+  padding-inline: var(--page-margin);
+  scroll-padding-inline-start: var(--page-margin);
+}
+
+.about-story_wrapper_block_track::-webkit-scrollbar {
+  display: none;
+}
+
+.about-story_wrapper_block_track_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 var(--about-story-card);
+  width: var(--about-story-card);
+  scroll-snap-align: start;
+}
+
+.about-story_wrapper_block_track_item_image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+
+  /* Figma's tiles sit on this warm ground; several of the photos are cut-outs
+     that do not fill the square. */
+  background-color: #f1ece2;
+}
+
+.about-story_wrapper_block_track_item_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-story_wrapper_block_track_item_label {
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--color-brand, #712242);
+  text-align: center;
+}
+
+/* Figma Mobile 7930:120082 + 7930:120086: 20px #494949 headings, the quote at
+   32/44, 14px copy, and 129px cards on a 12px gap. The card row starts its own
+   24/24 band in the design, hence the extra space above it. */
+@media screen and (max-width: 749px) {
+  .about-story_wrapper {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .about-story_wrapper_heading,
+  .about-story_wrapper_block_heading {
+    font-size: 20px;
+    line-height: normal;
+    color: var(--color-text-secondary, #494949);
+  }
+
+  .about-story_wrapper_quote {
+    line-height: 44px;
+  }
+
+  .about-story_wrapper_body {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .about-story_wrapper_block {
+    --about-story-card: 129px;
+    --about-story-gap: 12px;
+
+    margin-top: 32px;
+  }
+
+  .about-story_wrapper_block_track_item_label {
+    font-size: 14px;
+    line-height: normal;
+  }
+}

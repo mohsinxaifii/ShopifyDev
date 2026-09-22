@@ -1,0 +1,76 @@
+{%- doc -%}
+  UGC video lightbox. Figma 7930:101840 - a three-up reel where the centre clip
+  plays and its neighbours sit inert on either side, over a shoppable rail.
+
+  Only the active clip gets a `src`; the neighbours render as poster frames, so
+  opening the lightbox doesn't start three video downloads at once.
+
+  @param {object} product - a Shopify product object
+  @param {object} videos - files from `custom.pdp_ugc_videos`
+{%- enddoc -%}
+
+<dialog class="pdp-ugc-box" data-sheet="ugc" scroll-lock aria-label="Customer videos">
+  <button
+    type="button"
+    class="pdp-lightbox_close"
+    data-sheet-close
+    aria-label="{{ 'accessibility.close' | t }}"
+  >
+    {{- 'icon-close.svg' | inline_asset_content -}}
+  </button>
+
+  <div class="pdp-ugc-box_reel">
+    <button
+      type="button"
+      class="pdp-ugc-box_reel_arrow"
+      data-ugc-prev
+      aria-label="{{ 'accessibility.previous' | t }}"
+    >
+      {{- 'icon-caret-left.svg' | inline_asset_content -}}
+    </button>
+
+    <div class="pdp-ugc-box_reel_stage">
+      {%- for video in videos -%}
+        <div
+          class="pdp-ugc-box_reel_stage_slide{% if forloop.first %} is-active{% endif %}"
+          data-ugc-slide
+          data-index="{{ forloop.index0 }}"
+          data-src="{{ video | file_url }}"
+        >
+          <video
+            class="pdp-ugc-box_reel_stage_slide_video"
+            playsinline
+            controls
+            preload="none"
+            {% if video.preview_image %}
+              poster="{{ video.preview_image | image_url: width: 800 }}"
+            {% endif %}
+          ></video>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <button
+      type="button"
+      class="pdp-ugc-box_reel_arrow"
+      data-ugc-next
+      aria-label="{{ 'accessibility.next' | t }}"
+    >
+      {{- 'icon-caret-right.svg' | inline_asset_content -}}
+    </button>
+  </div>
+
+  {%- liquid
+    assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
+    assign shoppable = product.metafields.custom.pdp_pair_products.value | default: shopify_recs.complementary_products.value
+    assign shop_the_look = product
+  -%}
+  <div class="pdp-ugc-box_shop">
+    <div class="pdp-ugc-box_shop_track">
+      {%- for item in shoppable -%}
+        {%- render 'pdp-ugc-card', item: item -%}
+      {%- endfor -%}
+      {%- render 'pdp-ugc-card', item: shop_the_look -%}
+    </div>
+  </div>
+</dialog>

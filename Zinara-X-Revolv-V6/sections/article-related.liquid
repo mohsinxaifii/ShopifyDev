@@ -1,0 +1,98 @@
+{%- comment -%}
+  "More from the journal" - the related row under an article. Figma: Blog page
+  7930:93922 > Frame 1116601739.
+
+  Three cards from the article's own blog with the current article held out, so
+  a reader is never offered the page they are already on. The heading sits left
+  with "Read all" pushed to the far side of the same row, which is the one place
+  in the theme a band heading is not centred.
+{%- endcomment -%}
+
+{{ 'blog-card.css' | asset_url | stylesheet_tag }}
+{{ 'article-related.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  comment
+    The count is read through `default` rather than compared straight: placed
+    outside an article with no fallback blog chosen, `blogs[blank]` hands back a
+    string, and `string.articles_count > 1` is a Liquid error rather than a
+    quiet false.
+  endcomment
+  assign source = blog
+  assign source_count = source.articles_count | default: 0
+  if source_count == 0
+    assign source = blogs[section.settings.blog]
+    assign source_count = source.articles_count | default: 0
+  endif
+
+  comment
+    One extra is fetched so holding out the current article still leaves three.
+  endcomment
+  assign wanted = section.settings.articles_to_show
+  assign fetch_limit = wanted | plus: 1
+-%}
+
+{%- if source_count > 1 -%}
+  <section class="article-related full-width">
+    <div class="article-related_wrapper">
+      <div class="article-related_wrapper_head">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="article-related_wrapper_head_heading" data-animate>{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        <a href="{{ source.url }}" class="article-related_wrapper_head_link">
+          <span>{{ section.settings.link_label }}</span>
+          {{ 'icon-caret-right.svg' | inline_asset_content }}
+        </a>
+      </div>
+
+      <div class="article-related_wrapper_grid" data-animate>
+        {%- assign shown = 0 -%}
+        {%- for related in source.articles limit: fetch_limit -%}
+          {%- if related.id != article.id and shown < wanted -%}
+            {%- render 'blog-card', article: related, heading_level: 'h3' -%}
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "More from the journal",
+  "tag": "section",
+  "class": "shopify-section--article-related",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "More from the journal"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Read all"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Fallback blog",
+      "info": "Used when the section is placed outside an article."
+    },
+    {
+      "type": "range",
+      "id": "articles_to_show",
+      "label": "Articles to show",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    }
+  ],
+  "presets": [{ "name": "More from the journal" }]
+}
+{% endschema %}

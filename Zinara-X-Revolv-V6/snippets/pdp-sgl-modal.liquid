@@ -1,0 +1,35 @@
+{%- doc -%}
+  SGL certificate modal. Figma 7930:99699 - a centred 600px card rather than a
+  sidesheet, because the certificate is landscape and unreadable in a 435px rail.
+
+  @param {object} product - a Shopify product object
+  @param {object} [fallback] - sample certificate used when the product has none
+{%- enddoc -%}
+
+{%- assign certificate = product.metafields.custom.pdp_certificate.value | default: fallback -%}
+
+<dialog class="pdp-modal" data-sheet="sgl" scroll-lock aria-labelledby="PdpSglTitle">
+  <div class="pdp-modal_panel">
+    <div class="pdp-modal_panel_head">
+      <h2 class="pdp-modal_panel_head_title" id="PdpSglTitle">SGL certified diamonds</h2>
+      <button
+        type="button"
+        class="pdp-modal_panel_head_close"
+        data-sheet-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    {%- if certificate != blank -%}
+      <div class="pdp-modal_panel_media">
+        {{
+          certificate
+          | image_url: width: 1136
+          | image_tag: loading: 'lazy', widths: '568,1136', sizes: '568px', alt: 'Sample SGL diamond certificate'
+        }}
+      </div>
+    {%- endif -%}
+  </div>
+</dialog>

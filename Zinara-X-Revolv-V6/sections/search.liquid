@@ -1,0 +1,295 @@
+{%- comment -%}
+  Search results. Figma: Desktop / Search results 7930:105417 > Search results
+  (7930:105422), with the skeleton state from 7930:106276 - which, like the
+  layout, is shared with the PLP as snippets/plp-skeleton.liquid.
+
+  Below the heading this is the PLP, pixel for pixel: a 266px filter rail beside
+  a three-up grid on a 24px gutter. So it reuses <collection-page>, collection.css
+  and collection.js wholesale rather than restating them - the only wiring needed
+  is `q` and `type` as hidden fields, which keeps the query on every filter and
+  sort request the shared script builds.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/search
+{%- endcomment -%}
+
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'collection.css' | asset_url | stylesheet_tag }}
+{{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
+{{ 'search.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sort_by = search.sort_by | default: search.default_sort_by
+  assign category_blocks = section.blocks | where: 'type', 'category'
+  assign terms = search.terms | default: ''
+-%}
+
+<collection-page
+  class="collection search full-width"
+  data-collection-url="{{ routes.search_url }}"
+>
+  {%- render 'plp-skeleton', heading: true -%}
+
+  <div class="search_head">
+    <h1 class="search_head_title">{{ section.settings.heading }}</h1>
+
+    {%- comment -%}
+      Figma Mobile Search page 7930:111746 swaps the heading for a search field
+      holding the current query; desktop keeps the heading.
+    {%- endcomment -%}
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search_head_form">
+      <input type="hidden" name="type" value="product">
+      <span class="search_head_form_icon" aria-hidden="true">{{ 'icon-search.svg' | inline_asset_content }}</span>
+      <label class="visually-hidden" for="SearchHeadInput">{{ 'search.placeholder' | t }}</label>
+      <input
+        type="search"
+        id="SearchHeadInput"
+        name="q"
+        class="search_head_form_input"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+        autocomplete="off"
+      >
+    </form>
+  </div>
+
+  {%- if search.performed == false -%}
+    <div class="search_empty">
+      <p class="search_empty_title">{{ 'search.title' | t }}</p>
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search_empty_form">
+        <input type="hidden" name="type" value="product">
+        <label class="visually-hidden" for="SearchPageInput">{{ 'search.placeholder' | t }}</label>
+        <input
+          type="search"
+          id="SearchPageInput"
+          name="q"
+          class="search_empty_form_input"
+          placeholder="{{ 'search.placeholder' | t }}"
+          autocomplete="off"
+        >
+        <button type="submit" class="search_empty_form_submit">{{ 'search.submit' | t }}</button>
+      </form>
+    </div>
+  {%- elsif search.results_count == 0 -%}
+    <div class="search_empty">
+      <p class="search_empty_title">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="search_empty_link">
+        {{- 'accessibility.view_all' | t -}}
+      </a>
+    </div>
+  {%- else -%}
+    <form id="SearchFilterForm" class="collection_wrapper" data-filter-form>
+      {%- comment -%}
+        Both of these ride along on every filter and sort request: the shared
+        script rebuilds the URL from this form, and without them the query and
+        the product-only scope would be dropped on the first facet click.
+      {%- endcomment -%}
+      <input type="hidden" name="q" value="{{ terms | escape }}">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
+
+      <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
+        <div class="collection_wrapper_filters_head">
+          <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
+          <a
+            href="{{ routes.search_url }}?q={{ terms | url_encode }}&type=product&sort_by={{ sort_by }}"
+            class="collection_wrapper_filters_head_clear"
+          >
+            {{- 'collection.clear_all' | t -}}
+          </a>
+          <button
+            type="button"
+            class="collection_wrapper_filters_head_close"
+            data-filters-close
+            aria-label="{{ 'accessibility.close' | t }}"
+          >
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </button>
+        </div>
+
+        <div class="collection_wrapper_filters_groups">
+          {%- for filter in search.filters -%}
+            <details class="collection_wrapper_filters_groups_group" open>
+              <summary class="collection_wrapper_filters_groups_group_head">
+                <span class="collection_wrapper_filters_groups_group_head_label">{{ filter.label }}</span>
+                <span class="collection_wrapper_filters_groups_group_head_icon" aria-hidden="true">
+                  <span data-icon-plus>{{ 'icon-faq-plus.svg' | inline_asset_content }}</span>
+                  <span data-icon-minus>{{ 'icon-faq-minus.svg' | inline_asset_content }}</span>
+                </span>
+              </summary>
+
+              <div class="collection_wrapper_filters_groups_group_body">
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    {%- render 'filter-price', filter: filter -%}
+                  {%- else -%}
+                    {%- render 'filter-list', filter: filter -%}
+                {%- endcase -%}
+              </div>
+            </details>
+          {%- else -%}
+            <p class="collection_wrapper_filters_groups_none">{{ 'collection.empty' | t }}</p>
+          {%- endfor -%}
+        </div>
+
+        <div class="collection_wrapper_filters_footer">
+          <a
+            href="{{ routes.search_url }}?q={{ terms | url_encode }}&type=product&sort_by={{ sort_by }}"
+            class="collection_wrapper_filters_footer_clear"
+          >
+            {{- 'collection.clear_all' | t -}}
+          </a>
+          <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-close>
+            {{- 'collection.apply' | t -}}
+          </button>
+        </div>
+      </aside>
+
+      <div class="collection_wrapper_main">
+        <div class="collection_wrapper_main_toolbar">
+          <p class="collection_wrapper_main_toolbar_count">
+            {{- 'collection.product_count' | t: count: search.results_count -}}
+          </p>
+
+          {%- if search.sort_options.size > 0 -%}
+            <div class="collection_wrapper_main_toolbar_sort" data-sort>
+              <button
+                type="button"
+                class="collection_wrapper_main_toolbar_sort_trigger"
+                data-sort-trigger
+                aria-expanded="false"
+              >
+                <span class="collection_wrapper_main_toolbar_sort_trigger_label">
+                  {{ 'collection.sort_by' | t }}
+                  <strong data-sort-current>
+                    {%- for option in search.sort_options -%}
+                      {%- if option.value == sort_by -%}{{ option.name }}{%- endif -%}
+                    {%- endfor -%}
+                  </strong>
+                </span>
+                <span class="collection_wrapper_main_toolbar_sort_trigger_icon" aria-hidden="true">
+                  {{- 'icon-caret-down.svg' | inline_asset_content -}}
+                </span>
+              </button>
+
+              <div class="collection_wrapper_main_toolbar_sort_menu" data-sort-menu hidden>
+                <div class="collection_wrapper_main_toolbar_sort_menu_head">
+                  {{- 'collection.sort_by_heading' | t -}}
+                  <button
+                    type="button"
+                    class="collection_wrapper_main_toolbar_sort_menu_head_close"
+                    data-sort-close
+                    aria-label="{{ 'accessibility.close' | t }}"
+                  >
+                    {{- 'icon-close.svg' | inline_asset_content -}}
+                  </button>
+                </div>
+                {%- for option in search.sort_options -%}
+                  <button
+                    type="button"
+                    class="collection_wrapper_main_toolbar_sort_menu_item{% if option.value == sort_by %} is-active{% endif %}"
+                    data-sort-option
+                    value="{{ option.value }}"
+                  >
+                    {{- option.name -}}
+                  </button>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if category_blocks.size > 0 -%}
+          <nav class="collection_wrapper_main_chips" aria-label="{{ 'collection.filters' | t }}">
+            {%- for block in category_blocks -%}
+              <a
+                href="{{ block.settings.url | default: routes.all_products_collection_url }}"
+                class="collection_wrapper_main_chips_chip"
+                {{ block.shopify_attributes }}
+              >
+                {{- block.settings.label -}}
+              </a>
+            {%- endfor -%}
+          </nav>
+        {%- endif -%}
+
+        {%- paginate search.results by section.settings.results_per_page -%}
+          <div class="collection_wrapper_main_grid" data-grid data-animate-group data-animate-stagger="0.05">
+            {%- for item in search.results -%}
+              {%- if item.object_type == 'product' -%}
+                {%- render 'product-card', product: item, variant: 'grid' -%}
+              {%- else -%}
+                {%- render 'search-result-card', item: item -%}
+              {%- endif -%}
+            {%- else -%}
+              <p class="collection_wrapper_main_grid_empty">{{ 'collection.empty' | t }}</p>
+            {%- endfor -%}
+          </div>
+
+          {%- if paginate.next -%}
+            {%- comment -%}
+              The design shows only a spinner, because search-more.js clicks this
+              as it scrolls into view. It stays a real link so the next page is
+              still reachable with the script blocked.
+            {%- endcomment -%}
+            <div class="collection_wrapper_main_more search_more" data-more>
+              <a
+                href="{{ paginate.next.url }}"
+                class="search_more_link"
+                data-more-link
+                aria-label="{{ 'collection.load_more' | t }}"
+              >
+                <span class="search_more_link_label">{{ 'collection.loading' | t }}</span>
+                <span class="search_more_link_spinner" aria-hidden="true">
+                  {{- 'icon-spinner.svg' | inline_asset_content -}}
+                </span>
+              </a>
+            </div>
+          {%- endif -%}
+        {%- endpaginate -%}
+      </div>
+    </form>
+
+    {%- render 'plp-mobile-bar', filters: search.filters -%}
+  {%- endif -%}
+</collection-page>
+
+{%- render 'variant-drawer' -%}
+
+<script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'search-more.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "t:general.search",
+  "tag": "section",
+  "class": "shopify-section--search",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Search results"
+    },
+    {
+      "type": "range",
+      "id": "results_per_page",
+      "label": "Results per page",
+      "min": 9,
+      "max": 48,
+      "step": 3,
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category chip",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "All" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ]
+}
+{% endschema %}
