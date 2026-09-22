@@ -9,6 +9,7 @@
 {%- endcomment -%}
 
 {{ 'blog-card.css' | asset_url | stylesheet_tag }}
+{{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
 {{ 'article-related.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
@@ -33,7 +34,12 @@
 -%}
 
 {%- if source_count > 1 -%}
-  <section class="article-related full-width">
+  {%- comment -%}
+    On phones this row scrolls sideways with dots (Figma Mobile 7930:120570);
+    above that it stays the three-up grid, and scroll-carousel hides the dots
+    by itself once everything fits on one page.
+  {%- endcomment -%}
+  <scroll-carousel class="article-related full-width">
     <div class="article-related_wrapper">
       <div class="article-related_wrapper_head">
         {%- if section.settings.heading != blank -%}
@@ -46,7 +52,7 @@
         </a>
       </div>
 
-      <div class="article-related_wrapper_grid" data-animate>
+      <div class="article-related_wrapper_grid" data-track data-animate>
         {%- assign shown = 0 -%}
         {%- for related in source.articles limit: fetch_limit -%}
           {%- if related.id != article.id and shown < wanted -%}
@@ -55,8 +61,12 @@
           {%- endif -%}
         {%- endfor -%}
       </div>
+
+      <div class="scroll-carousel_dots article-related_wrapper_dots" data-dots></div>
     </div>
-  </section>
+  </scroll-carousel>
+
+  <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
 {% schema %}

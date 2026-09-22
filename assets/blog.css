@@ -141,6 +141,9 @@
   .blog_band_wrapper_featured,
   .blog_band_wrapper_grid {
     grid-template-columns: minmax(0, 1fr);
+
+    /* Figma Mobile 7930:120916 stacks the cards 32px apart. */
+    gap: 32px;
   }
 }
 

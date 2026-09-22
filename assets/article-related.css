@@ -56,12 +56,19 @@
   gap: 24px;
 }
 
+.article-related_wrapper_dots {
+  display: none;
+}
+
 @media screen and (max-width: 989px) {
   .article-related_wrapper_grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
+/* Figma Mobile 7930:120566. The heading keeps "View all" on its own row, the
+   cards become a sideways scroller of 332px framed cards, and the dots appear
+   underneath. */
 @media screen and (max-width: 749px) {
   .article-related_wrapper {
     gap: 20px;
@@ -69,16 +76,72 @@
   }
 
   .article-related_wrapper_head {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    flex-direction: row;
+    gap: 16px;
   }
 
   .article-related_wrapper_head_heading {
-    font-size: 22px;
+    font-size: 20px;
+    line-height: normal;
   }
 
+  .article-related_wrapper_head_link {
+    font-size: 16px;
+  }
+
+  .article-related_wrapper_head_link svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Bleeds to both screen edges so a card can peek in from the right. */
   .article-related_wrapper_grid {
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    grid-template-columns: none;
+    gap: 16px;
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline-start: var(--page-margin);
+    scrollbar-width: none;
+  }
+
+  .article-related_wrapper_grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .article-related_wrapper_dots {
+    display: flex;
+  }
+
+  /* Unlike the listing, the related card carries a frame: 8px of padding inside
+     a 12px rounded border, with the tag straddling the top edge. */
+  .article-related_wrapper_grid .blog-card {
+    position: relative;
+    flex: 0 0 332px;
+    width: 332px;
+    box-sizing: border-box;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid var(--color-border, #f2f2f2);
+    border-radius: 12px;
+    background-color: #fff;
+    scroll-snap-align: start;
+  }
+
+  .article-related_wrapper_grid .blog-card_media_tags {
+    position: absolute;
+    top: -10px;
+    left: 8px;
+    z-index: 2;
+    padding-inline: 0;
+  }
+
+  .article-related_wrapper_grid .blog-card_media_image {
+    margin-top: 0;
+    aspect-ratio: 316 / 193;
+    border-radius: 8px;
   }
 }
