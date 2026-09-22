@@ -12,13 +12,33 @@
     <div class="usp-strip_wrapper">
       <div class="usp-strip_wrapper_pill" data-animate>
         {%- for block in section.blocks -%}
+          {%- liquid
+            comment
+              A karat mark must never break across lines, so bind the number to
+              its unit with a non-breaking space before the label is printed.
+            endcomment
+            assign badge_text = block.settings.text | replace: ' KT', '&nbsp;KT' | replace: ' Kt', '&nbsp;Kt' | replace: ' kt', '&nbsp;kt'
+          -%}
           <div class="usp-strip_wrapper_pill_item" {{ block.shopify_attributes }}>
             {%- if block.settings.image -%}
               <span class="usp-strip_wrapper_pill_item_icon">
-                {{ block.settings.image | image_url: width: 72 | image_tag: loading: 'lazy', alt: '' }}
+                {%- comment -%}
+                  The SGL mark is a raster master, so it is served at its native
+                  width with a density set; asking for 72px made it upscale on
+                  retina screens. Vector badges ignore the extra candidates.
+                {%- endcomment -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 170
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '54,72,108,144,170',
+                    sizes: '(max-width: 749px) 56px, 80px',
+                    alt: ''
+                }}
               </span>
             {%- endif -%}
-            <p class="usp-strip_wrapper_pill_item_text">{{ block.settings.text }}</p>
+            <p class="usp-strip_wrapper_pill_item_text">{{ badge_text }}</p>
           </div>
           {%- unless forloop.last -%}
             <span class="usp-strip_wrapper_pill_divider"></span>

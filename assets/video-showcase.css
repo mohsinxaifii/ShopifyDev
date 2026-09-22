@@ -317,3 +317,177 @@
 .video-showcase_wrapper_track.is-snapping .video-showcase_wrapper_track_item * {
   transition: none !important;
 }
+
+/* ------------------------------------------------- product card on a slide */
+
+/* A compact buy row pinned to the bottom of the video. It sits above the
+   whole-card link (z-index 4) so its own link and button stay clickable. */
+.video-showcase_wrapper_track_item_product {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+}
+
+.video-showcase_wrapper_track_item_product_link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+  text-decoration: none;
+  color: inherit;
+}
+
+.video-showcase_wrapper_track_item_product_media {
+  display: block;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.video-showcase_wrapper_track_item_product_media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-showcase_wrapper_track_item_product_info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.video-showcase_wrapper_track_item_product_info_title {
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000;
+
+  /* One line only: the card is ~282px wide and the video needs to stay visible. */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.video-showcase_wrapper_track_item_product_info_price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.video-showcase_wrapper_track_item_product_info_price_current {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-brand, #712242);
+}
+
+.video-showcase_wrapper_track_item_product_info_price_compare {
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--color-icon, #666);
+  text-decoration: line-through;
+}
+
+.video-showcase_wrapper_track_item_product_add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-brand, #712242);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.video-showcase_wrapper_track_item_product_add:hover {
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+}
+
+.video-showcase_wrapper_track_item_product_add[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.video-showcase_wrapper_track_item_product_add--disabled {
+  border-color: #cfcfcf;
+  color: var(--color-icon, #666);
+  cursor: default;
+}
+
+/* The tick only appears once the line is in the cart. */
+.video-showcase_wrapper_track_item_product_add_icon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+
+.video-showcase_wrapper_track_item_product_add_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.video-showcase_wrapper_track_item_product_add.is-added {
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+}
+
+.video-showcase_wrapper_track_item_product_add.is-added .video-showcase_wrapper_track_item_product_add_icon {
+  display: inline-flex;
+}
+
+@media screen and (max-width: 749px) {
+  .video-showcase_wrapper_track_item_product {
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .video-showcase_wrapper_track_item_product_media {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .video-showcase_wrapper_track_item_product_add {
+    min-height: 28px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}

@@ -81,6 +81,14 @@
                 <span class="video-showcase_wrapper_track_item_play" data-play-icon>
                   {{ 'icon-play.svg' | inline_asset_content }}
                 </span>
+
+                {%- comment -%}
+                  Sits above the whole-card link so the card's own controls stay
+                  clickable, and is the last child so it paints over the scrim.
+                {%- endcomment -%}
+                {%- if block.settings.product != blank -%}
+                  {%- render 'video-showcase-product', product: block.settings.product -%}
+                {%- endif -%}
               </div>
             {%- endfor -%}
           </div>
@@ -108,6 +116,26 @@
       <div class="scroll-carousel_dots" data-dots></div>
     </div>
   </video-showcase>
+
+  {%- liquid
+    assign needs_variant_drawer = false
+    for block in section.blocks
+      assign linked = block.settings.product
+      if linked != blank
+        assign option_count = linked.variants | size
+        if option_count > 1
+          assign needs_variant_drawer = true
+        endif
+      endif
+    endfor
+  -%}
+  {%- if needs_variant_drawer -%}
+    {%- unless request.page_type == 'collection' or request.page_type == 'search' -%}
+      {{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
+      {%- render 'variant-drawer' -%}
+      <script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
+    {%- endunless -%}
+  {%- endif -%}
 
   <script src="{{ 'video-showcase.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
@@ -168,7 +196,13 @@
           "label": "Cover image (optional)",
           "info": "Leave empty to use the first frame of the video."
         },
-        { "type": "url", "id": "link", "label": "Link (optional)" }
+        { "type": "url", "id": "link", "label": "Link (optional)" },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Featured product",
+          "info": "Shows a compact product card along the bottom of the video, with an add to cart."
+        }
       ]
     }
   ],

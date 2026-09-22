@@ -23,6 +23,11 @@
   height: auto;
 }
 
+/* The phone grid is a separate, denser vector; only one is ever rendered. */
+.zinara-collections_wave--mobile {
+  display: none;
+}
+
 .zinara-collections_wrapper {
   position: relative;
   z-index: 1;
@@ -202,5 +207,31 @@
   .zinara-collections_wrapper_stage_prev,
   .zinara-collections_wrapper_stage_next {
     display: none;
+  }
+
+  /* Figma Mobile 7930:106830: a 260px band of grid sitting just off the bottom
+     edge, bleeding 1px past both sides, and mirrored horizontally. The desktop
+     vector is a different, much wider grid, so it is swapped out rather than
+     scaled down. */
+  .zinara-collections_wave--desktop {
+    display: none;
+  }
+
+  .zinara-collections_wave--mobile {
+    display: block;
+    right: -1px;
+    bottom: 4px;
+    left: -1px;
+    height: 260px;
+
+    /* `-scale-y-100 rotate-180` in the design composes to a horizontal mirror. */
+    transform: scaleX(-1);
+  }
+
+  /* The exported vector carries preserveAspectRatio="none", so it fills the
+     band on wider phones without the grid squares visibly distorting. */
+  .zinara-collections_wave--mobile svg {
+    width: 100%;
+    height: 100%;
   }
 }

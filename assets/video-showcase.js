@@ -30,6 +30,7 @@ class VideoShowcase extends HTMLElement {
     this.applyTransform();
 
     this.bindEvents();
+    this.bindProductCards();
     this.observeVisibility();
 
     // Wait for layout to settle (fonts/images) before trusting the measurement.
@@ -38,6 +39,44 @@ class VideoShowcase extends HTMLElement {
       this.applyTransform();
       this.startSlide(this.index);
     });
+  }
+
+  /* The buy row on a slide. Delegated, because buildLoop() clones the slides
+     for the infinite track and a listener bound to the originals would be lost
+     on every copy. Clicks are kept away from the slide itself, which otherwise
+     treats any click as "make me the active slide". */
+  bindProductCards() {
+    this.addEventListener('click', (event) => {
+      const card = event.target.closest('[data-product-card]');
+      if (!card || !this.contains(card)) return;
+
+      const button = event.target.closest('[data-add-to-cart]');
+      if (!button) {
+        // A tap on the title or thumbnail should just follow the link.
+        event.stopPropagation();
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      this.addProduct(button);
+    });
+  }
+
+  async addProduct(button) {
+    if (button.disabled) return;
+
+    // Anything with options has to be chosen first; the drawer then adds it.
+    const variantCount = Number(button.dataset.variantCount || 1);
+    const drawer = document.querySelector('variant-drawer');
+    if (variantCount > 1 && drawer && button.dataset.productUrl) {
+      drawer.open(button.dataset.productUrl, button);
+      return;
+    }
+
+    const variantId = Number(button.dataset.variantId);
+    if (!variantId) return;
+    await window.zinaraCart?.add([{ id: variantId, quantity: 1 }], button);
   }
 
   disconnectedCallback() {

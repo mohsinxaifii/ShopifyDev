@@ -360,6 +360,7 @@
   transition:
     margin 0.3s ease,
     transform 0.3s ease,
+    opacity 0.3s ease,
     border-color 0.3s ease;
 }
 
@@ -393,6 +394,50 @@
   transform: translateY(20.57px);
   opacity: 0;
   pointer-events: none;
+}
+
+/* The deck is swiped as well as tapped. The perspective lives here because the
+   cards themselves tip on their Y axis when they leave; `pan-y` keeps the page
+   scrolling while a sideways drag is claimed by the card. */
+.know-your-jewellery_wrapper_grid_diamonds_stack {
+  perspective: 1200px;
+  touch-action: pan-y;
+}
+
+.know-your-jewellery_wrapper_grid_diamonds_stack_item[data-depth='0'] {
+  cursor: grab;
+}
+
+/* Under the finger the card tracks 1:1, so easing is dropped for the duration. */
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-dragging {
+  transition: none;
+  cursor: grabbing;
+  transform: translateX(var(--stack-drag-x, 0px)) rotate(var(--stack-drag-rotate, 0deg));
+}
+
+/* Leaving the deck: the card tips away on its vertical axis and fades out,
+   which reads as a flip as the card behind it rises into the front slot. */
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving {
+  z-index: 4;
+  opacity: 0;
+  transition:
+    transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.32s ease;
+}
+
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving--next {
+  transform: translateX(-62%) rotateY(38deg) scale(0.9);
+}
+
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving--prev {
+  transform: translateX(62%) rotateY(-38deg) scale(0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .know-your-jewellery_wrapper_grid_diamonds_stack_item,
+  .know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving {
+    transition: none;
+  }
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_stack_arrow {
