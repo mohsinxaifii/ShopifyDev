@@ -2,5 +2,3 @@ node_modules/
 .DS_Store
 *.log
 .shopify/
-clone-tooling/__pycache__/
-clone-tooling/lib/__pycache__/
