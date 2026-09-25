@@ -88,10 +88,18 @@
       </button>
     </div>
 
-    {%- assign badge_titles = section.settings.menu_badge_items | downcase | split: ',' -%}
+    {%- liquid
+      # The burger drawer has its own store menu (Online Store > Navigation),
+      # falling back to the header's main menu when none is picked.
+      assign drawer_menu = section.settings.menu
+      if section.settings.mobile_menu != blank
+        assign drawer_menu = section.settings.mobile_menu
+      endif
+      assign badge_titles = section.settings.menu_badge_items | downcase | split: ','
+    -%}
     <nav class="header_drawer_nav">
       <ul class="header_drawer_nav_list">
-        {%- for link in section.settings.menu.links -%}
+        {%- for link in drawer_menu.links -%}
           {%- liquid
             assign link_key = link.title | downcase | strip
             assign has_badge = false
@@ -203,6 +211,12 @@
     {
       "type": "header",
       "content": "Mobile menu"
+    },
+    {
+      "type": "link_list",
+      "id": "mobile_menu",
+      "label": "Mobile menu",
+      "info": "The burger menu on phones. Edit it in Online Store > Navigation. Nested items open as dropdowns. Falls back to the menu above."
     },
     {
       "type": "text",
