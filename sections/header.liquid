@@ -77,40 +77,105 @@
     inert
     aria-label="{{ 'accessibility.menu' | t }}"
   >
+    {%- comment -%}
+      Figma Mobile 7930:108685 (Sidenav): a full-screen sheet - close button on
+      top, one divided row per menu item, nested menus as accordions (chevron
+      turns from right to down), then login and socials at the foot.
+    {%- endcomment -%}
     <div class="header_drawer_header">
-      <a href="{{ routes.root_url }}" class="header_wrapper_brand_logo">
-        {%- if settings.logo -%}
-          {{
-            settings.logo
-            | image_url: width: 300
-            | image_tag: loading: 'lazy', width: settings.logo_width, alt: shop.name
-          }}
-        {%- else -%}
-          {{ 'logo.svg' | inline_asset_content }}
-        {%- endif -%}
-      </a>
       <button type="button" class="header_drawer_header_close" aria-label="{{ 'accessibility.close_menu' | t }}">
-        {{ 'icon-menu.svg' | inline_asset_content }}
+        {{ 'icon-close.svg' | inline_asset_content }}
       </button>
     </div>
 
+    {%- assign badge_titles = section.settings.menu_badge_items | downcase | split: ',' -%}
     <nav class="header_drawer_nav">
       <ul class="header_drawer_nav_list">
         {%- for link in section.settings.menu.links -%}
+          {%- liquid
+            assign link_key = link.title | downcase | strip
+            assign has_badge = false
+            for badge_title in badge_titles
+              assign badge_key = badge_title | strip
+              if badge_key != blank and badge_key == link_key
+                assign has_badge = true
+              endif
+            endfor
+          -%}
           <li class="header_drawer_nav_list_item">
-            <a href="{{ link.url }}" class="header_drawer_nav_list_item_link">{{ link.title }}</a>
             {%- if link.links != blank -%}
-              <ul class="header_drawer_nav_sublist">
-                {%- for childlink in link.links -%}
-                  <li>
-                    <a href="{{ childlink.url }}" class="header_drawer_nav_list_item_link">{{ childlink.title }}</a>
-                  </li>
-                {%- endfor -%}
-              </ul>
+              <details class="header_drawer_nav_group"{% if link.child_active %} open{% endif %}>
+                <summary class="header_drawer_nav_row{% if link.active %} is-current{% endif %}">
+                  <span class="header_drawer_nav_row_label">{{ link.title }}</span>
+                  {%- if has_badge -%}
+                    <span class="header_drawer_nav_row_badge">{{ section.settings.menu_badge_text }}</span>
+                  {%- endif -%}
+                  <span class="header_drawer_nav_row_chevron" aria-hidden="true">
+                    {{- 'icon-caret-right.svg' | inline_asset_content -}}
+                  </span>
+                </summary>
+                <ul class="header_drawer_nav_sublist">
+                  {%- for childlink in link.links -%}
+                    <li>
+                      <a
+                        href="{{ childlink.url }}"
+                        class="header_drawer_nav_sublist_link{% if childlink.current %} is-current{% endif %}"
+                        {% if childlink.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{- childlink.title -}}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            {%- else -%}
+              <a
+                href="{{ link.url }}"
+                class="header_drawer_nav_row{% if link.current %} is-current{% endif %}"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                <span class="header_drawer_nav_row_label">{{ link.title }}</span>
+                {%- if has_badge -%}
+                  <span class="header_drawer_nav_row_badge">{{ section.settings.menu_badge_text }}</span>
+                {%- endif -%}
+              </a>
             {%- endif -%}
           </li>
         {%- endfor -%}
       </ul>
+
+      <div class="header_drawer_nav_foot">
+        {%- if customer -%}
+          <a href="{{ routes.account_url }}" class="header_drawer_nav_foot_account">
+            {{- 'icon-user.svg' | inline_asset_content -}}
+            <span>{{ 'accessibility.account' | t }}</span>
+          </a>
+        {%- else -%}
+          <a href="{{ routes.account_login_url }}" class="header_drawer_nav_foot_account">
+            {{- 'icon-user.svg' | inline_asset_content -}}
+            <span>Login</span>
+          </a>
+        {%- endif -%}
+
+        {%- if section.settings.instagram_url != blank or section.settings.facebook_url != blank -%}
+          <div class="header_drawer_nav_foot_social">
+            {%- if section.settings.instagram_url != blank -%}
+              <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+                {{- 'icon-instagram.svg' | inline_asset_content -}}
+              </a>
+            {%- endif -%}
+            {%- if section.settings.facebook_url != blank -%}
+              <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+                {{- 'icon-facebook.svg' | inline_asset_content -}}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
     </nav>
   </div>
 </header-component>
@@ -134,7 +199,25 @@
       "type": "url",
       "id": "wishlist_url",
       "label": "Wishlist page URL"
-    }
+    },
+    {
+      "type": "header",
+      "content": "Mobile menu"
+    },
+    {
+      "type": "text",
+      "id": "menu_badge_items",
+      "label": "Menu items with a badge",
+      "info": "Menu item titles, comma separated, e.g. Rakhi Collection, New Arrivals."
+    },
+    {
+      "type": "text",
+      "id": "menu_badge_text",
+      "label": "Badge text",
+      "default": "NEW"
+    },
+    { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
+    { "type": "url", "id": "facebook_url", "label": "Facebook URL" }
   ]
 }
 {% endschema %}
