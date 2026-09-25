@@ -81,6 +81,40 @@
                 <span class="video-showcase_wrapper_track_item_play" data-play-icon>
                   {{ 'icon-play.svg' | inline_asset_content }}
                 </span>
+
+                {%- assign card_product = block.settings.product -%}
+                {%- if card_product != blank -%}
+                  {%- assign card_variant = card_product.selected_or_first_available_variant -%}
+                  <div class="video-showcase_wrapper_track_item_product" data-product-card>
+                    <a href="{{ card_product.url }}" class="video-showcase_wrapper_track_item_product_info">
+                      <span class="video-showcase_wrapper_track_item_product_info_title">{{ card_product.title }}</span>
+                      <span class="video-showcase_wrapper_track_item_product_info_price">
+                        {%- render 'money', amount: card_variant.price -%}
+                        {%- if card_variant.compare_at_price > card_variant.price -%}
+                          <s class="video-showcase_wrapper_track_item_product_info_price_compare">
+                            {%- render 'money', amount: card_variant.compare_at_price -%}
+                          </s>
+                        {%- endif -%}
+                      </span>
+                    </a>
+
+                    {%- if card_product.available -%}
+                      <button
+                        type="button"
+                        class="video-showcase_wrapper_track_item_product_add"
+                        data-video-add-to-cart
+                        data-variant-id="{{ card_variant.id }}"
+                        data-added-label="{{ 'products.added_to_cart' | t | escape }}"
+                      >
+                        <span data-add-label>{{ 'products.add_to_cart' | t }}</span>
+                      </button>
+                    {%- else -%}
+                      <span class="video-showcase_wrapper_track_item_product_add video-showcase_wrapper_track_item_product_add--disabled">
+                        {{- 'products.sold_out' | t -}}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
               </div>
             {%- endfor -%}
           </div>
@@ -168,7 +202,13 @@
           "label": "Cover image (optional)",
           "info": "Leave empty to use the first frame of the video."
         },
-        { "type": "url", "id": "link", "label": "Link (optional)" }
+        { "type": "url", "id": "link", "label": "Link (optional)" },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product",
+          "info": "Shows a card along the bottom of the video with the title, price and an add to cart button."
+        }
       ]
     }
   ],

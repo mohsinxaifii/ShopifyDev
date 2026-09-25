@@ -100,10 +100,19 @@ class VideoShowcase extends HTMLElement {
 
     this.slides.forEach((slide, i) => {
       slide.addEventListener('click', (event) => {
-        if (event.target.closest('a')) return;
+        if (event.target.closest('a, [data-product-card]')) return;
         if (i === this.index) this.togglePlayback();
         else this.goTo(i);
       });
+    });
+
+    // Delegated so the looping clones' buttons work too. The shared cart runs
+    // the request and the button feedback, then opens the cart drawer.
+    this.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-video-add-to-cart]');
+      if (!button) return;
+      event.preventDefault();
+      window.zinaraCart?.add([{ id: Number(button.dataset.variantId), quantity: 1 }], button);
     });
 
     this.onVisibilityChange = () => {

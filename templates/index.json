@@ -16,44 +16,44 @@
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": "",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
+            "button_url": ""
           }
         },
         "slide_mkRNm4": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": "",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
+            "button_url": ""
           }
         },
         "slide_BEYVhA": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": "",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
+            "button_url": ""
           }
         },
         "slide_4KCA4Q": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": "",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
+            "button_url": ""
           }
         }
       },
@@ -580,10 +580,10 @@
         "left_button_url": "/pages/get-your-own-design",
         "right_image_1": "shopify://shop_images/zinara-collection-siesta.png",
         "right_image_2": "shopify://shop_images/zinara-video-thumb-generic.jpg",
+        "right_image_mobile": "shopify://shop_images/zinara-split-promo-mobile.png",
         "right_heading": "Made to be worn.\nMade to be yours.",
         "right_button_label": "Get to know us",
-        "right_button_url": "/pages/about-us",
-        "right_image_mobile": "shopify://shop_images/zinara-split-promo-mobile.png"
+        "right_button_url": "/pages/about-us"
       }
     },
     "as-seen-on": {
