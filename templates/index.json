@@ -16,44 +16,44 @@
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         },
         "slide_mkRNm4": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         },
         "slide_BEYVhA": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         },
         "slide_4KCA4Q": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "",
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         }
       },
@@ -256,35 +256,40 @@
           "type": "video_card",
           "settings": {
             "video_url": "https://cdn.shopify.com/videos/c/o/v/2e139a0856f64e579be23755d97f656a.mp4",
-            "link": ""
+            "link": "",
+            "product": "rudraksh-trio-silver-rakhi"
           }
         },
         "video-2": {
           "type": "video_card",
           "settings": {
             "video_url": "https://cdn.shopify.com/videos/c/o/v/9a15667407a340e6aa5973bf8206dd96.mp4",
-            "link": ""
+            "link": "",
+            "product": "rudraksh-trio-silver-rakhi"
           }
         },
         "video-3": {
           "type": "video_card",
           "settings": {
             "video_url": "https://cdn.shopify.com/videos/c/o/v/2c012bdb2119450790294e3ac7690db4.mp4",
-            "link": ""
+            "link": "",
+            "product": "rudraksh-trio-silver-rakhi"
           }
         },
         "video-4": {
           "type": "video_card",
           "settings": {
             "video_url": "https://cdn.shopify.com/videos/c/o/v/35311d00add34874ab99f79f4b5e33ae.mp4",
-            "link": ""
+            "link": "",
+            "product": "rudraksh-trio-silver-rakhi"
           }
         },
         "video-5": {
           "type": "video_card",
           "settings": {
             "video_url": "https://cdn.shopify.com/videos/c/o/v/b78557a449714d3bbb35bc512a6cc48d.mp4",
-            "link": ""
+            "link": "",
+            "product": "rudraksh-trio-silver-rakhi"
           }
         }
       },
@@ -580,10 +585,10 @@
         "left_button_url": "/pages/get-your-own-design",
         "right_image_1": "shopify://shop_images/zinara-collection-siesta.png",
         "right_image_2": "shopify://shop_images/zinara-video-thumb-generic.jpg",
-        "right_image_mobile": "shopify://shop_images/zinara-split-promo-mobile.png",
         "right_heading": "Made to be worn.\nMade to be yours.",
         "right_button_label": "Get to know us",
-        "right_button_url": "/pages/about-us"
+        "right_button_url": "/pages/about-us",
+        "right_image_mobile": "shopify://shop_images/zinara-split-promo-mobile.png"
       }
     },
     "as-seen-on": {
