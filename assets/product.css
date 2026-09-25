@@ -2244,6 +2244,23 @@ button.pdp_trust_grid_item_inner {
   height: auto;
 }
 
+/* On phones the SGL modal is a bottom sheet (data-bottom-sheet; the slide is
+   in motion.css): full width, docked to the bottom, 24px top corners. */
+@media screen and (max-width: 749px) {
+  .pdp-modal[open] {
+    place-items: end stretch;
+  }
+
+  .pdp-modal_panel {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90dvh;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    overscroll-behavior: contain;
+  }
+}
+
 /* Image lightbox - Figma 7930:98274 */
 
 .pdp-lightbox[open] {

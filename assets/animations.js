@@ -122,7 +122,7 @@
     const { gsap } = window;
     ROOT.classList.add('motion-dialogs');
 
-    // [data-bottom-sheet] dialogs run their own slide (review-modal.js), so
+    // [data-bottom-sheet] dialogs run their own slide (initBottomSheets), so
     // they are left alone here.
     root.querySelectorAll('dialog:not([data-motion-bound]):not([data-bottom-sheet])').forEach((dialog) => {
       dialog.setAttribute('data-motion-bound', '');
@@ -189,6 +189,75 @@
         closing = false;
         dialog.classList.remove('is-closing');
         gsap.set(target, { clearProps: 'opacity,transform' });
+      });
+    });
+  }
+
+  /* ----------------------------------------------------- bottom sheets */
+
+  /**
+   * Any `<dialog data-bottom-sheet>` is a centred popup on desktop and a sheet
+   * that slides up from the bottom on phones (the look lives in motion.css,
+   * keyed off `.is-open`). showModal/close are wrapped so every caller - a
+   * close button, a backdrop click, Esc, or a script calling dialog.close() -
+   * plays the exit before the browser removes the dialog. Plain CSS
+   * transitions, so it works whether or not GSAP arrives.
+   */
+  function initBottomSheets(root = document) {
+    root.querySelectorAll('dialog[data-bottom-sheet]:not([data-sheet-bound])').forEach((dialog) => {
+      const panel = dialog.firstElementChild;
+      if (!panel) return;
+      dialog.setAttribute('data-sheet-bound', '');
+
+      const nativeShow = dialog.showModal.bind(dialog);
+      const nativeClose = dialog.close.bind(dialog);
+      let closing = false;
+      let timer = null;
+      let onEnd = null;
+
+      const settle = () => {
+        clearTimeout(timer);
+        if (onEnd) panel.removeEventListener('transitionend', onEnd);
+        onEnd = null;
+      };
+
+      dialog.showModal = (...args) => {
+        settle();
+        closing = false;
+        dialog.classList.remove('is-open');
+        nativeShow(...args);
+        void panel.offsetHeight; // commit the off-screen start before moving
+        dialog.classList.add('is-open');
+      };
+
+      dialog.close = (...args) => {
+        if (!dialog.open || closing) return;
+        closing = true;
+        dialog.classList.remove('is-open');
+
+        const finish = () => {
+          settle();
+          if (!closing) return;
+          closing = false;
+          nativeClose(...args);
+        };
+        onEnd = (event) => {
+          if (event.target === panel && event.propertyName === 'transform') finish();
+        };
+        panel.addEventListener('transitionend', onEnd);
+        timer = setTimeout(finish, 500);
+      };
+
+      // Esc would drop the dialog instantly; route it through the exit.
+      dialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        dialog.close();
+      });
+
+      dialog.addEventListener('close', () => {
+        settle();
+        closing = false;
+        dialog.classList.remove('is-open');
       });
     });
   }
@@ -280,6 +349,8 @@
   }
 
   function boot() {
+    initBottomSheets();
+
     if (reduced.matches) {
       revealAll();
       return;
@@ -315,7 +386,10 @@
 
   // Re-run for sections the theme editor swaps in after load.
   if (window.Shopify && window.Shopify.designMode) {
-    document.addEventListener('shopify:section:load', (event) => init(event.target));
+    document.addEventListener('shopify:section:load', (event) => {
+      initBottomSheets(event.target);
+      init(event.target);
+    });
   }
 
   reduced.addEventListener('change', (event) => {

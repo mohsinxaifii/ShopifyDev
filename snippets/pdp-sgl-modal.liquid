@@ -8,8 +8,9 @@
 
 {%- assign certificate = product.metafields.custom.pdp_certificate.value | default: fallback -%}
 
-<dialog class="pdp-modal" data-sheet="sgl" scroll-lock aria-labelledby="PdpSglTitle">
-  <div class="pdp-modal_panel">
+<dialog class="pdp-modal" data-sheet="sgl" data-bottom-sheet scroll-lock aria-labelledby="PdpSglTitle">
+  {%- comment -%} Focus lands on the panel, not the close button, so opening shows no focus ring. {%- endcomment -%}
+  <div class="pdp-modal_panel" tabindex="-1" autofocus>
     <div class="pdp-modal_panel_head">
       <h2 class="pdp-modal_panel_head_title" id="PdpSglTitle">SGL certified diamonds</h2>
       <button
@@ -27,7 +28,7 @@
         {{
           certificate
           | image_url: width: 1136
-          | image_tag: loading: 'lazy', widths: '568,1136', sizes: '568px', alt: 'Sample SGL diamond certificate'
+          | image_tag: loading: 'lazy', widths: '568,1136', sizes: '(max-width: 749px) calc(100vw - 32px), 568px', alt: 'Sample SGL diamond certificate'
         }}
       </div>
     {%- endif -%}
