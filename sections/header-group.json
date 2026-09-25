@@ -54,7 +54,11 @@
       "type": "header",
       "settings": {
         "menu": "main-menu",
-        "wishlist_url": "/pages/wishlist"
+        "wishlist_url": "/pages/wishlist",
+        "menu_badge_items": "Rakhi Collection",
+        "menu_badge_text": "NEW",
+        "instagram_url": "https://www.instagram.com/heyzinara/",
+        "facebook_url": "https://www.facebook.com/profile.php?id=61565232117218"
       }
     },
     "category-nav": {
