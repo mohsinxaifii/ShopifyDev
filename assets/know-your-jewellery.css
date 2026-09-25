@@ -473,7 +473,11 @@
 
 .know-your-jewellery_wrapper_grid_diamonds_stack_arrow {
   position: absolute;
-  top: 82px;
+
+  /* Centred on the 164px card by offsetting half the 40px button, not with
+     translateY(-50%): motion.css scales every button:active, which would wipe
+     that transform and drop the arrow 20px on each press. */
+  top: calc(82px - 20px);
   z-index: 4;
   display: flex;
   align-items: center;
@@ -485,7 +489,6 @@
   background: none;
   color: var(--color-brand, #712242);
   cursor: pointer;
-  transform: translateY(-50%);
   transition: opacity 0.2s ease;
 }
 
