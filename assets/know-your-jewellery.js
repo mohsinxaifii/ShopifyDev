@@ -32,8 +32,60 @@ class CardStack extends HTMLElement {
       button.addEventListener('click', () => this.goTo(this.activeIndex + 1)),
     );
 
+    this.bindSwipe(this.querySelector('.know-your-jewellery_wrapper_grid_diamonds_stack'));
     this.buildDots();
     this.updateDepths();
+  }
+
+  /* A horizontal drag (touch or mouse) steps the deck: left for next, right for
+     previous. The click that follows a swipe is swallowed so it doesn't also
+     flip the card or jump to a card behind it. */
+  bindSwipe(surface) {
+    if (!surface) return;
+
+    const threshold = 40;
+    let start = null;
+    let swiped = false;
+
+    surface.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      start = { x: event.clientX, y: event.clientY, id: event.pointerId };
+      swiped = false;
+    });
+
+    // Capture only once the pointer is clearly dragging, so a plain tap still
+    // lands on the card under it and flips it.
+    surface.addEventListener('pointermove', (event) => {
+      if (!start || event.pointerId !== start.id) return;
+      if (Math.abs(event.clientX - start.x) > 10 && !surface.hasPointerCapture(event.pointerId)) {
+        surface.setPointerCapture(event.pointerId);
+      }
+    });
+
+    surface.addEventListener('pointerup', (event) => {
+      if (!start || event.pointerId !== start.id) return;
+      const dx = event.clientX - start.x;
+      const dy = event.clientY - start.y;
+      start = null;
+      if (Math.abs(dx) < threshold || Math.abs(dx) < Math.abs(dy)) return;
+      swiped = true;
+      this.goTo(this.activeIndex + (dx < 0 ? 1 : -1));
+    });
+
+    surface.addEventListener('pointercancel', () => {
+      start = null;
+    });
+
+    surface.addEventListener(
+      'click',
+      (event) => {
+        if (!swiped) return;
+        swiped = false;
+        event.preventDefault();
+        event.stopPropagation();
+      },
+      true,
+    );
   }
 
   goTo(index) {

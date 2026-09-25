@@ -348,6 +348,16 @@
   max-width: 361px;
   height: 185px;
   margin-inline: auto;
+
+  /* Vertical page scroll stays with the browser; horizontal drags reach the
+     swipe handler in know-your-jewellery.js. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.know-your-jewellery_wrapper_grid_diamonds_stack img {
+  -webkit-user-drag: none;
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_stack_item {
