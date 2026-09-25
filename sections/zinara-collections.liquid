@@ -10,6 +10,9 @@
 {%- if section.blocks.size > 0 -%}
   <scroll-carousel class="zinara-collections full-width" loop>
     <span class="zinara-collections_wave" aria-hidden="true">{{ 'decorative-wave.svg' | inline_asset_content }}</span>
+    <span class="zinara-collections_wave zinara-collections_wave--mobile" aria-hidden="true">
+      {{- 'decorative-grid-mobile.svg' | inline_asset_content -}}
+    </span>
 
     <div class="zinara-collections_wrapper">
       {%- if section.settings.heading != blank -%}

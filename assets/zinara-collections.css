@@ -23,6 +23,10 @@
   height: auto;
 }
 
+.zinara-collections_wave--mobile {
+  display: none;
+}
+
 .zinara-collections_wrapper {
   position: relative;
   z-index: 1;
@@ -166,6 +170,18 @@
 /* Figma Mobile 7930:106829: 24/16 padding, a 20px heading, 168x237 cards on a
    16px gap running off both screen edges, 16px serif labels on a 24px line. */
 @media screen and (max-width: 749px) {
+  /* Mobile has its own 394x260 grid (7930:106830) with ~28px cells, mirrored
+     and flush with the bottom. The desktop wave shrinks to an ~80px strip of
+     tiny cells here. */
+  .zinara-collections_wave:not(.zinara-collections_wave--mobile) {
+    display: none;
+  }
+
+  .zinara-collections_wave--mobile {
+    display: block;
+    transform: scaleX(-1);
+  }
+
   .zinara-collections_wrapper {
     padding-block: 24px;
   }
