@@ -107,6 +107,16 @@
                   {%- assign card_variant = card_product.selected_or_first_available_variant -%}
                   <div class="video-showcase_wrapper_track_item_product" data-product-card>
                     <a href="{{ card_product.url }}" class="video-showcase_wrapper_track_item_product_info">
+                      <span class="video-showcase_wrapper_track_item_product_info_image">
+                        {%- if card_product.featured_image -%}
+                          {{
+                            card_product.featured_image
+                            | image_url: width: 120
+                            | image_tag: loading: 'lazy', widths: '60,120', sizes: '48px', alt: card_product.featured_image.alt
+                          }}
+                        {%- endif -%}
+                      </span>
+                      <span class="video-showcase_wrapper_track_item_product_info_text">
                       <span class="video-showcase_wrapper_track_item_product_info_title">{{ card_product.title }}</span>
                       <span class="video-showcase_wrapper_track_item_product_info_price">
                         {%- render 'money', amount: card_variant.price -%}
@@ -115,6 +125,7 @@
                             {%- render 'money', amount: card_variant.compare_at_price -%}
                           </s>
                         {%- endif -%}
+                      </span>
                       </span>
                     </a>
 
