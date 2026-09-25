@@ -70,8 +70,14 @@
                 </div>
               </div>
 
-              <dialog class="review-dialog" scroll-lock aria-label="{{ 'accessibility.review' | t }}">
-                <div class="review-dialog_panel">
+              <dialog
+                class="review-dialog"
+                scroll-lock
+                data-bottom-sheet
+                aria-label="{{ 'accessibility.review' | t }}"
+              >
+                {%- comment -%} Focus lands on the panel, not the close button, so opening shows no focus ring. {%- endcomment -%}
+                <div class="review-dialog_panel" tabindex="-1" autofocus>
                   <div class="review-dialog_panel_head">
                     <p class="review-dialog_panel_head_title">{{ 'accessibility.review' | t }}</p>
                     <button
@@ -89,8 +95,12 @@
                       {%- if block.settings.image -%}
                         {{
                           block.settings.image
-                          | image_url: width: 320
-                          | image_tag: loading: 'lazy', widths: '160,240,320', sizes: '160px', alt: block.settings.name
+                          | image_url: width: 800
+                          | image_tag:
+                            loading: 'lazy',
+                            widths: '160,320,480,640,800',
+                            sizes: '(max-width: 749px) calc(100vw - 32px), 160px',
+                            alt: block.settings.name
                         }}
                       {%- endif -%}
                     </span>

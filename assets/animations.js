@@ -135,22 +135,37 @@
       const target = panel || centred || dialog.firstElementChild;
       if (!target) return;
 
+      // A [data-bottom-sheet] dialog docks to the bottom on phones and rises its
+      // own height from there; on wider screens it stays a centred popup. The
+      // check runs on every open so rotating or resizing picks the right one.
+      const sheetQuery = dialog.hasAttribute('data-bottom-sheet')
+        ? window.matchMedia('(max-width: 749px)')
+        : null;
+
       // xPercent is relative to the panel's own width, so the same figure works
       // for the 435px drawer and for the full-width one on a phone.
-      const enter = panel ? { xPercent: 100 } : { scale: 0.96 };
-      const rest = panel ? { xPercent: 0 } : { scale: 1 };
+      let enter;
+      let rest;
+      let slides;
+      const pickMotion = () => {
+        const sheet = sheetQuery?.matches;
+        slides = Boolean(panel || sheet);
+        enter = panel ? { xPercent: 100 } : sheet ? { yPercent: 100 } : { scale: 0.96 };
+        rest = panel ? { xPercent: 0 } : sheet ? { yPercent: 0 } : { scale: 1 };
+      };
 
       const nativeShow = dialog.showModal.bind(dialog);
       const nativeClose = dialog.close.bind(dialog);
       let closing = false;
 
       dialog.showModal = (...args) => {
+        pickMotion();
         nativeShow(...args);
         dialog.classList.remove('is-closing');
         gsap.killTweensOf(target);
         gsap.fromTo(
           target,
-          { opacity: panel ? 1 : 0, ...enter },
+          { opacity: slides ? 1 : 0, ...enter },
           {
             opacity: 1,
             ...rest,
@@ -168,8 +183,9 @@
         // cannot be tweened directly.
         dialog.classList.add('is-closing');
         gsap.killTweensOf(target);
+        if (!enter) pickMotion();
         gsap.to(target, {
-          opacity: panel ? 1 : 0,
+          opacity: slides ? 1 : 0,
           ...enter,
           duration: 0.3,
           ease: 'power2.in',
