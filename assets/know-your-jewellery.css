@@ -466,7 +466,16 @@
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact {
+  padding: 0;
   transform: rotateY(-180deg);
+}
+
+/* The diamond comparison is the back of every myth card; the flip card already
+   draws the border, so the comparison fills it edge to edge. */
+.know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact
+  .know-your-jewellery_wrapper_grid_diamonds_compare {
+  border: none;
+  border-radius: 15px;
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card.is-flipped
@@ -493,13 +502,6 @@
   font-size: 14px;
   line-height: 1.43;
   color: #000;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact
-  .know-your-jewellery_wrapper_grid_diamonds_flip_card_quote {
-  font-family: var(--font-secondary--family);
-  font-style: normal;
-  color: var(--color-text-secondary, #494949);
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card_hint {
