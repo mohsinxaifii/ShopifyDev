@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "header",
   "name": "t:general.header",
@@ -8,21 +17,21 @@
         "message-1": {
           "type": "message",
           "settings": {
-            "text": "Sign up to avail <strong>10% OFF<\/strong> on your first order!",
+            "text": "Sign up to avail <strong>10% OFF</strong> on your first order!",
             "link": ""
           }
         },
         "message_3Mt9UH": {
           "type": "message",
           "settings": {
-            "text": "Sign up to avail <strong>10% OFF<\/strong> on your first order!",
+            "text": "Sign up to avail <strong>10% OFF</strong> on your first order!",
             "link": ""
           }
         },
         "message_RXiUML": {
           "type": "message",
           "settings": {
-            "text": "Sign up to avail <strong>10% OFF<\/strong> on your first order!",
+            "text": "Sign up to avail <strong>10% OFF</strong> on your first order!",
             "link": ""
           }
         }
@@ -45,7 +54,7 @@
       "type": "header",
       "settings": {
         "menu": "main-menu",
-        "wishlist_url": "\/pages\/wishlist"
+        "wishlist_url": "/pages/wishlist"
       }
     },
     "category-nav": {
@@ -55,7 +64,7 @@
           "type": "link",
           "settings": {
             "label": "Shop all",
-            "url": "\/collections\/all",
+            "url": "/collections/all",
             "show_new_badge": false,
             "align_end": false
           }
@@ -64,7 +73,7 @@
           "type": "link",
           "settings": {
             "label": "New arrivals",
-            "url": "\/collections\/new-arrivals-18kt-gold-vermeil-and-lab-grown-diamond-jewellery",
+            "url": "/collections/new-arrivals-18kt-gold-vermeil-and-lab-grown-diamond-jewellery",
             "show_new_badge": false,
             "align_end": false
           }
@@ -73,7 +82,7 @@
           "type": "link",
           "settings": {
             "label": "Rakhi collection",
-            "url": "\/collections\/925-silver-rakhi-18kt-gold-vermeil-rakhi-with-lab-grown-diamonds",
+            "url": "/collections/925-silver-rakhi-18kt-gold-vermeil-rakhi-with-lab-grown-diamonds",
             "show_new_badge": true,
             "align_end": false
           }
@@ -82,7 +91,7 @@
           "type": "link",
           "settings": {
             "label": "Rings",
-            "url": "\/collections\/all-rings",
+            "url": "/collections/all-rings",
             "show_new_badge": false,
             "align_end": false
           }
@@ -91,7 +100,7 @@
           "type": "link",
           "settings": {
             "label": "Earrings",
-            "url": "\/collections\/all-earrings",
+            "url": "/collections/all-earrings",
             "show_new_badge": false,
             "align_end": false
           }
@@ -99,8 +108,8 @@
         "link-6": {
           "type": "link",
           "settings": {
-            "label": "Pendants\/Necklaces",
-            "url": "\/collections\/all-pendants",
+            "label": "Pendants/Necklaces",
+            "url": "/collections/all-pendants",
             "show_new_badge": false,
             "align_end": false
           }
@@ -109,7 +118,7 @@
           "type": "link",
           "settings": {
             "label": "Bracelets",
-            "url": "\/collections\/all-bracelets",
+            "url": "/collections/all-bracelets",
             "show_new_badge": false,
             "align_end": false
           }
@@ -118,7 +127,7 @@
           "type": "link",
           "settings": {
             "label": "About us",
-            "url": "\/pages\/about-us",
+            "url": "/pages/about-us",
             "show_new_badge": false,
             "align_end": true
           }
@@ -127,7 +136,7 @@
           "type": "link",
           "settings": {
             "label": "Contact us",
-            "url": "\/pages\/contact",
+            "url": "/pages/contact",
             "show_new_badge": false,
             "align_end": true
           }

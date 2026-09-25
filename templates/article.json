@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -85,21 +94,21 @@
         "logo-1": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-a.png",
+            "image": "shopify://shop_images/zinara-press-a.png",
             "height": 35
           }
         },
         "logo-2": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-b.png",
+            "image": "shopify://shop_images/zinara-press-b.png",
             "height": 23
           }
         },
         "logo-3": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-c.png",
+            "image": "shopify://shop_images/zinara-press-c.png",
             "height": 29
           }
         }

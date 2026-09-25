@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "breadcrumb": {
@@ -35,7 +44,7 @@
             "icon": "whatsapp",
             "label": "Whatsapp us",
             "value": "+91-9217975782",
-            "url": "https:\/\/wa.me\/919217975782?text=Hi%20Zinara%2C%20I%27d%20like%20some%20help%20choosing%20a%20piece."
+            "url": "https://wa.me/919217975782?text=Hi%20Zinara%2C%20I%27d%20like%20some%20help%20choosing%20a%20piece."
           }
         }
       },
@@ -48,7 +57,7 @@
         "heading": "Let’s talk jewellery.",
         "lead": "",
         "intro": "Whether you’re choosing a piece, or need help with an order, we’re happy to help.",
-        "mobile_image": "shopify:\/\/shop_images\/zinara-contact-mobile.png"
+        "mobile_image": "shopify://shop_images/zinara-contact-mobile.png"
       }
     },
     "usp-grid": {
@@ -57,28 +66,28 @@
         "cell-1": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-return-arrow.svg",
+            "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
             "text": "Lifetime buyback & exchange"
           }
         },
         "cell-2": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-hand-heart.svg",
+            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
             "text": "Handcrafted"
           }
         },
         "cell-3": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-return-arrow.svg",
+            "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
             "text": "Lifetime buyback & exchange"
           }
         },
         "cell-4": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-truck.svg",
+            "icon": "shopify://shop_images/zinara-icon-truck.svg",
             "text": "Insured & free shipping"
           }
         }
@@ -101,28 +110,28 @@
         "post-1": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-1.png",
+            "image": "shopify://shop_images/zinara-insta-post-1.png",
             "link": ""
           }
         },
         "post-2": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-2.png",
+            "image": "shopify://shop_images/zinara-insta-post-2.png",
             "link": ""
           }
         },
         "post-3": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-3.png",
+            "image": "shopify://shop_images/zinara-insta-post-3.png",
             "link": ""
           }
         },
         "post-4": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-4.png",
+            "image": "shopify://shop_images/zinara-insta-post-4.png",
             "link": ""
           }
         }
@@ -136,7 +145,7 @@
       "settings": {
         "heading": "Join our Instagram community",
         "background_color": "#fef4e2",
-        "instagram_url": "https:\/\/www.instagram.com\/heyzinara\/",
+        "instagram_url": "https://www.instagram.com/heyzinara/",
         "handle": "@zinara",
         "layout": "fill"
       }

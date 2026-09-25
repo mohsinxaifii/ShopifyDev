@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero-banner": {
@@ -6,45 +15,45 @@
         "slide-1": {
           "type": "slide",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-hero-slide-1.png",
+            "image": "shopify://shop_images/zinara-hero-slide-1.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
             "button_url": "",
-            "mobile_image": "shopify:\/\/shop_images\/zinara-hero-mobile-rakhi.png"
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         },
         "slide_mkRNm4": {
           "type": "slide",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-hero-slide-1.png",
+            "image": "shopify://shop_images/zinara-hero-slide-1.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
             "button_url": "",
-            "mobile_image": "shopify:\/\/shop_images\/zinara-hero-mobile-rakhi.png"
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         },
         "slide_BEYVhA": {
           "type": "slide",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-hero-slide-1.png",
+            "image": "shopify://shop_images/zinara-hero-slide-1.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
             "button_url": "",
-            "mobile_image": "shopify:\/\/shop_images\/zinara-hero-mobile-rakhi.png"
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         },
         "slide_4KCA4Q": {
           "type": "slide",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-hero-slide-1.png",
+            "image": "shopify://shop_images/zinara-hero-slide-1.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
             "button_url": "",
-            "mobile_image": "shopify:\/\/shop_images\/zinara-hero-mobile-rakhi.png"
+            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png"
           }
         }
       },
@@ -65,33 +74,33 @@
         "category-1": {
           "type": "category",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-category-rings.png",
+            "image": "shopify://shop_images/zinara-category-rings.png",
             "label": "Rings",
-            "url": "\/collections\/all-rings"
+            "url": "/collections/all-rings"
           }
         },
         "category-2": {
           "type": "category",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-category-earrings.png",
+            "image": "shopify://shop_images/zinara-category-earrings.png",
             "label": "Earrings",
-            "url": "\/collections\/all-earrings"
+            "url": "/collections/all-earrings"
           }
         },
         "category-3": {
           "type": "category",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-category-pendants.png",
+            "image": "shopify://shop_images/zinara-category-pendants.png",
             "label": "Pendants",
-            "url": "\/collections\/all-pendants"
+            "url": "/collections/all-pendants"
           }
         },
         "category-4": {
           "type": "category",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-category-bracelets.png",
+            "image": "shopify://shop_images/zinara-category-bracelets.png",
             "label": "Bracelets",
-            "url": "\/collections\/all-bracelets"
+            "url": "/collections/all-bracelets"
           }
         }
       },
@@ -111,14 +120,14 @@
         "badge-1": {
           "type": "badge",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-icon-gold-plating.svg",
+            "image": "shopify://shop_images/zinara-icon-gold-plating.svg",
             "text": "5x thicker 18 KT gold plating"
           }
         },
         "badge-2": {
           "type": "badge",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-sgl-certified-logo.png",
+            "image": "shopify://shop_images/zinara-sgl-certified-logo.png",
             "text": "SGL certified diamonds"
           }
         }
@@ -194,21 +203,21 @@
         "fact-1": {
           "type": "vermeil_fact",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-sparkles-small.svg",
+            "icon": "shopify://shop_images/zinara-icon-sparkles-small.svg",
             "text": "Looks and feels like solid gold"
           }
         },
         "fact-2": {
           "type": "vermeil_fact",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-droplet.svg",
+            "icon": "shopify://shop_images/zinara-icon-droplet.svg",
             "text": "Sweat and waterproof"
           }
         },
         "fact-3": {
           "type": "vermeil_fact",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-layers.svg",
+            "icon": "shopify://shop_images/zinara-icon-layers.svg",
             "text": "5x thicker gold plating"
           }
         },
@@ -237,14 +246,14 @@
       "settings": {
         "heading": "Know Your Jewellery",
         "vermeil_title": "Gold Vermeil",
-        "vermeil_image": "shopify:\/\/shop_images\/zinara-kyj-gold-vermeil.png",
+        "vermeil_image": "shopify://shop_images/zinara-kyj-gold-vermeil.png",
         "diamonds_title": "Lab Grown Diamonds",
-        "mined_image": "shopify:\/\/shop_images\/zinara-kyj-diamond-icon.png",
-        "mined_value": "160kg \/ carat",
+        "mined_image": "shopify://shop_images/zinara-kyj-diamond-icon.png",
+        "mined_value": "160kg / carat",
         "mined_label": "Mined diamond",
         "co2_reduction": "96%",
         "co2_label": "CO2 emission",
-        "lab_grown_value": "6kg \/ carat",
+        "lab_grown_value": "6kg / carat",
         "lab_grown_label": "Lab grown diamond"
       }
     },
@@ -254,35 +263,35 @@
         "video-1": {
           "type": "video_card",
           "settings": {
-            "video_url": "https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/2e139a0856f64e579be23755d97f656a.mp4",
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/2e139a0856f64e579be23755d97f656a.mp4",
             "link": ""
           }
         },
         "video-2": {
           "type": "video_card",
           "settings": {
-            "video_url": "https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/9a15667407a340e6aa5973bf8206dd96.mp4",
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/9a15667407a340e6aa5973bf8206dd96.mp4",
             "link": ""
           }
         },
         "video-3": {
           "type": "video_card",
           "settings": {
-            "video_url": "https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/2c012bdb2119450790294e3ac7690db4.mp4",
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/2c012bdb2119450790294e3ac7690db4.mp4",
             "link": ""
           }
         },
         "video-4": {
           "type": "video_card",
           "settings": {
-            "video_url": "https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/35311d00add34874ab99f79f4b5e33ae.mp4",
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/35311d00add34874ab99f79f4b5e33ae.mp4",
             "link": ""
           }
         },
         "video-5": {
           "type": "video_card",
           "settings": {
-            "video_url": "https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/b78557a449714d3bbb35bc512a6cc48d.mp4",
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/b78557a449714d3bbb35bc512a6cc48d.mp4",
             "link": ""
           }
         }
@@ -296,7 +305,7 @@
       ],
       "settings": {
         "heading": "Curated trends for you",
-        "card_ratio": "282 \/ 400",
+        "card_ratio": "282 / 400",
         "fallback_duration": 6
       }
     },
@@ -306,28 +315,28 @@
         "cell-1": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-return-arrow.svg",
+            "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
             "text": "Lifetime buyback & exchange"
           }
         },
         "cell-2": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-hand-heart.svg",
+            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
             "text": "Handcrafted"
           }
         },
         "cell-3": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-return-arrow.svg",
+            "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
             "text": "Lifetime buyback & exchange"
           }
         },
         "cell-4": {
           "type": "cell",
           "settings": {
-            "icon": "shopify:\/\/shop_images\/zinara-icon-truck.svg",
+            "icon": "shopify://shop_images/zinara-icon-truck.svg",
             "text": "Insured & free shipping"
           }
         }
@@ -346,7 +355,7 @@
         "card-1": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-new-job.png",
+            "image": "shopify://shop_images/zinara-collection-new-job.png",
             "label": "New job, new era",
             "url": ""
           }
@@ -354,15 +363,15 @@
         "card-2": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
+            "image": "shopify://shop_images/zinara-collection-siesta.png",
             "label": "Siesta",
-            "url": "\/collections\/siesta-collection"
+            "url": "/collections/siesta-collection"
           }
         },
         "card-3": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",
             "url": ""
           }
@@ -370,15 +379,15 @@
         "card-4": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
+            "image": "shopify://shop_images/zinara-collection-siesta.png",
             "label": "Siesta",
-            "url": "\/collections\/siesta-collection"
+            "url": "/collections/siesta-collection"
           }
         },
         "card-5": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",
             "url": ""
           }
@@ -402,7 +411,7 @@
         "review-1": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/zinara-testimonial-person.png",
             "rating": 5,
             "name": "Priya S.",
             "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
@@ -414,7 +423,7 @@
         "testimonial_YtDEyh": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/zinara-testimonial-person.png",
             "rating": 5,
             "name": "Priya S.",
             "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
@@ -426,7 +435,7 @@
         "testimonial_NaJqQq": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/zinara-testimonial-person.png",
             "rating": 5,
             "name": "Priya S.",
             "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
@@ -438,7 +447,7 @@
         "testimonial_MnFhGq": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/zinara-testimonial-person.png",
             "rating": 5,
             "name": "Priya S.",
             "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
@@ -464,7 +473,7 @@
         "occ-1": {
           "type": "occasion_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-new-job.png",
+            "image": "shopify://shop_images/zinara-collection-new-job.png",
             "label": "New job, new era",
             "url": ""
           }
@@ -472,7 +481,7 @@
         "occ-2": {
           "type": "occasion_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",
             "url": ""
           }
@@ -480,7 +489,7 @@
         "occ-3": {
           "type": "occasion_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
+            "image": "shopify://shop_images/zinara-collection-siesta.png",
             "label": "Monsoon edit",
             "url": ""
           }
@@ -488,7 +497,7 @@
         "occ-4": {
           "type": "occasion_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",
             "url": ""
           }
@@ -496,7 +505,7 @@
         "occ-5": {
           "type": "occasion_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",
             "url": ""
           }
@@ -572,17 +581,17 @@
     "split-promo": {
       "type": "split-promo",
       "settings": {
-        "left_image": "shopify:\/\/shop_images\/zinara-custom-design-bg.png",
+        "left_image": "shopify://shop_images/zinara-custom-design-bg.png",
         "left_heading": "Get your dream jewellery",
         "left_subheading": "Share your idea and we’ll shape it into the piece you imagined",
         "left_button_label": "Start designing",
-        "left_button_url": "\/pages\/get-your-own-design",
-        "right_image_1": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
-        "right_image_2": "shopify:\/\/shop_images\/zinara-video-thumb-generic.jpg",
+        "left_button_url": "/pages/get-your-own-design",
+        "right_image_1": "shopify://shop_images/zinara-collection-siesta.png",
+        "right_image_2": "shopify://shop_images/zinara-video-thumb-generic.jpg",
         "right_heading": "Made to be worn.\nMade to be yours.",
         "right_button_label": "Get to know us",
-        "right_button_url": "\/pages\/about-us",
-        "right_image_mobile": "shopify:\/\/shop_images\/zinara-split-promo-mobile.png"
+        "right_button_url": "/pages/about-us",
+        "right_image_mobile": "shopify://shop_images/zinara-split-promo-mobile.png"
       }
     },
     "as-seen-on": {
@@ -591,7 +600,7 @@
         "press-1": {
           "type": "press_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-as-seen-on-1.jpg",
+            "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
             "by_text": "Kirti Vij in",
             "caption": "Majestic Solitaire Ring",
             "link": ""
@@ -600,7 +609,7 @@
         "press-2": {
           "type": "press_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-video-thumb-generic.jpg",
+            "image": "shopify://shop_images/zinara-video-thumb-generic.jpg",
             "by_text": "Kirti Vij in",
             "caption": "Majestic Solitaire Ring",
             "link": ""
@@ -609,7 +618,7 @@
         "press-3": {
           "type": "press_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-as-seen-on-1.jpg",
+            "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
             "by_text": "Kirti Vij in",
             "caption": "Majestic Solitaire Ring",
             "link": ""
@@ -618,7 +627,7 @@
         "press-4": {
           "type": "press_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-video-thumb-generic.jpg",
+            "image": "shopify://shop_images/zinara-video-thumb-generic.jpg",
             "by_text": "Kirti Vij in",
             "caption": "Majestic Solitaire Ring",
             "link": ""
@@ -627,7 +636,7 @@
         "press-5": {
           "type": "press_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-as-seen-on-1.jpg",
+            "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
             "by_text": "Kirti Vij in",
             "caption": "Majestic Solitaire Ring",
             "link": ""
@@ -651,28 +660,28 @@
         "post-1": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-1.png",
+            "image": "shopify://shop_images/zinara-insta-post-1.png",
             "link": ""
           }
         },
         "post-2": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-2.png",
+            "image": "shopify://shop_images/zinara-insta-post-2.png",
             "link": ""
           }
         },
         "post-3": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-3.png",
+            "image": "shopify://shop_images/zinara-insta-post-3.png",
             "link": ""
           }
         },
         "post-4": {
           "type": "post",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-insta-post-4.png",
+            "image": "shopify://shop_images/zinara-insta-post-4.png",
             "link": ""
           }
         }
@@ -686,7 +695,7 @@
       "settings": {
         "heading": "Join our Instagram community",
         "background_color": "#fef4e2",
-        "instagram_url": "https:\/\/www.instagram.com\/heyzinara\/",
+        "instagram_url": "https://www.instagram.com/heyzinara/",
         "handle": "@zinara"
       }
     },
@@ -762,21 +771,21 @@
         "logo-1": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-a.png",
+            "image": "shopify://shop_images/zinara-press-a.png",
             "height": 35
           }
         },
         "logo-2": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-b.png",
+            "image": "shopify://shop_images/zinara-press-b.png",
             "height": 23
           }
         },
         "logo-3": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-c.png",
+            "image": "shopify://shop_images/zinara-press-c.png",
             "height": 29
           }
         }

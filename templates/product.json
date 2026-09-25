@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "breadcrumb": {
@@ -95,7 +104,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Shipping policy",
-            "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"\/pages\/shipping-policy\">shipping policy<\/a> page.<\/p>"
+            "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"/pages/shipping-policy\">shipping policy</a> page.</p>"
           }
         }
       },
@@ -119,19 +128,19 @@
         "trust_heading": "Shop with confidence",
         "help_heading": "Need help choosing?",
         "help_body": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice.",
-        "whatsapp_url": "https:\/\/wa.me\/919999999999",
-        "video_call_url": "\/pages\/video-trial",
+        "whatsapp_url": "https://wa.me/919999999999",
+        "video_call_url": "/pages/video-trial",
         "gift_label": "Add a gift sleeve",
-        "addons_image": "shopify:\/\/shop_images\/zinara-pdp-addons-hero.png",
-        "vermeil_image": "shopify:\/\/shop_images\/zinara-kyj-gold-vermeil.png",
-        "diamond_image": "shopify:\/\/shop_images\/zinara-kyj-diamond-icon.png",
-        "certificate_image": "shopify:\/\/shop_images\/zinara-pdp-sgl-certificate.png",
-        "sgl_logo": "shopify:\/\/shop_images\/zinara-pdp-sgl-logo.png",
+        "addons_image": "shopify://shop_images/zinara-pdp-addons-hero.png",
+        "vermeil_image": "shopify://shop_images/zinara-kyj-gold-vermeil.png",
+        "diamond_image": "shopify://shop_images/zinara-kyj-diamond-icon.png",
+        "certificate_image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
+        "sgl_logo": "shopify://shop_images/zinara-pdp-sgl-logo.png",
         "difference_heading": "The [Zinara] Difference",
         "pair_heading": "Pair beautifully with",
         "ugc_heading": "Curated trends for you",
         "reviews_shown": 3,
-        "review_url": "\/pages\/contact"
+        "review_url": "/pages/contact"
       }
     },
     "faq": {
@@ -198,21 +207,21 @@
         "logo-1": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-a.png",
+            "image": "shopify://shop_images/zinara-press-a.png",
             "height": 35
           }
         },
         "logo-2": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-b.png",
+            "image": "shopify://shop_images/zinara-press-b.png",
             "height": 23
           }
         },
         "logo-3": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-c.png",
+            "image": "shopify://shop_images/zinara-press-c.png",
             "height": 29
           }
         }

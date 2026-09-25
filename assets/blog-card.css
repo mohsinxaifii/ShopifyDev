@@ -49,7 +49,6 @@
   padding: 2px 6px;
   border-radius: 4px;
   background-color: var(--color-brand, #712242);
-  box-shadow: inset 0 2px 3px var(--color-accent, #f0166e);
   color: #fff;
   font-family: var(--font-secondary--family);
   font-weight: 500;
@@ -96,7 +95,7 @@
   font-family: var(--font-secondary--family);
   font-weight: 500;
   font-size: 12px;
-  line-height: 20px;
+  line-height: 1.5;
   color: var(--color-icon, #666);
 }
 
@@ -109,20 +108,17 @@
   min-width: 0;
 }
 
-/* Figma I7930:120917;788:37479 lets the headline wrap and pins it at 24px
-   leading; it was previously clamped to a single truncated line. */
 .blog-card_body_text_title {
-  display: -webkit-box;
+  display: block;
   margin: 0;
   overflow: hidden;
   font-family: var(--font-secondary--family);
   font-weight: 600;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 1.25;
   color: #000;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* Two lines then an ellipsis: Figma pins the standfirst at 44px. */
@@ -146,7 +142,7 @@
   font-family: var(--font-secondary--family);
   font-weight: 600;
   font-size: 16px;
-  line-height: normal;
+  line-height: 1.25;
   color: var(--color-brand, #712242);
   text-decoration: underline;
 }
@@ -155,18 +151,4 @@
   flex: 0 0 auto;
   width: 20px;
   height: 20px;
-}
-
-/* Figma Mobile 7930:120916: the phone listing is one column of identical cards,
-   so the grid card adopts the featured card's in-flow pill rather than laying
-   it over the image. */
-@media screen and (max-width: 749px) {
-  .blog-card--grid .blog-card_media_tags {
-    position: static;
-    padding-inline: 12px;
-  }
-
-  .blog-card--grid .blog-card_media_image {
-    margin-top: -12px;
-  }
 }

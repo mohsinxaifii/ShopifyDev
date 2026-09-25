@@ -73,36 +73,6 @@
   object-fit: cover;
 }
 
-/* A video tile stacks the clip over its poster. The poster stays underneath so
-   there is never a blank frame while the clip buffers, and it is what shows if
-   autoplay is refused or motion is reduced. */
-.instagram-feed_wrapper_grid_item--video {
-  position: relative;
-}
-
-.instagram-feed_wrapper_grid_item_video-wrap,
-.instagram-feed_wrapper_grid_item--video video {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.instagram-feed_wrapper_grid_item--video video {
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.instagram-feed_wrapper_grid_item--video video.is-ready {
-  opacity: 1;
-}
-
-.instagram-feed_wrapper_grid_item_video-wrap video {
-  object-fit: cover;
-}
-
 .instagram-feed_wrapper_grid_item:hover {
   transform: translateY(-4px);
 }
