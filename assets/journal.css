@@ -230,7 +230,8 @@
   }
 
   .journal_wrapper_stage {
-    --journal-card: 332px;
+    /* 332px as designed; on narrower phones leave the next card peeking in. */
+    --journal-card: min(332px, calc(100vw - 48px));
     --journal-gap: 16px;
   }
 
