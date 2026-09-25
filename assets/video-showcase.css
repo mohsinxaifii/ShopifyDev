@@ -277,30 +277,56 @@
   -webkit-user-drag: none;
 }
 
-/* Product card pinned full-width along the bottom of the video, above the
-   optional whole-card link so its title and button stay clickable. */
+/* Product card floating over the bottom of the video: inset from the card
+   edges, rounded, on a lightly frosted panel. Sits above the optional
+   whole-card link so its title and button stay clickable. */
 .video-showcase_wrapper_track_item_product {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
   z-index: 5;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 12px 12px;
-  background-color: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  padding: 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   cursor: default;
 }
 
 .video-showcase_wrapper_track_item_product_info {
   display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.video-showcase_wrapper_track_item_product_info_image {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: #f5f0f2;
+}
+
+.video-showcase_wrapper_track_item_product_info_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-showcase_wrapper_track_item_product_info_text {
+  display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  text-decoration: none;
 }
 
 .video-showcase_wrapper_track_item_product_info_title {
@@ -316,8 +342,10 @@
 
 .video-showcase_wrapper_track_item_product_info_price {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px;
+  column-gap: 6px;
+  white-space: nowrap;
   font-family: var(--font-secondary--family);
   font-weight: 600;
   font-size: 14px;
@@ -445,8 +473,22 @@
   }
 
   .video-showcase_wrapper_track_item_product {
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
     gap: 6px;
-    padding: 8px;
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  .video-showcase_wrapper_track_item_product_info {
+    gap: 6px;
+  }
+
+  .video-showcase_wrapper_track_item_product_info_image {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
   }
 
   .video-showcase_wrapper_track_item_product_info_title,

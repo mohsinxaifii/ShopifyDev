@@ -117,15 +117,15 @@
                         {%- endif -%}
                       </span>
                       <span class="video-showcase_wrapper_track_item_product_info_text">
-                      <span class="video-showcase_wrapper_track_item_product_info_title">{{ card_product.title }}</span>
-                      <span class="video-showcase_wrapper_track_item_product_info_price">
-                        {%- render 'money', amount: card_variant.price -%}
-                        {%- if card_variant.compare_at_price > card_variant.price -%}
-                          <s class="video-showcase_wrapper_track_item_product_info_price_compare">
-                            {%- render 'money', amount: card_variant.compare_at_price -%}
-                          </s>
-                        {%- endif -%}
-                      </span>
+                        <span class="video-showcase_wrapper_track_item_product_info_title">{{ card_product.title }}</span>
+                        <span class="video-showcase_wrapper_track_item_product_info_price">
+                          <span>{%- render 'money', amount: card_variant.price -%}</span>
+                          {%- if card_variant.compare_at_price > card_variant.price -%}
+                            <s class="video-showcase_wrapper_track_item_product_info_price_compare">
+                              {%- render 'money', amount: card_variant.compare_at_price -%}
+                            </s>
+                          {%- endif -%}
+                        </span>
                       </span>
                     </a>
 
