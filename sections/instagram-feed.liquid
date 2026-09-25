@@ -50,19 +50,20 @@
                   {% endif %}
                 ></video>
               {%- else -%}
-                {{
-                  block.settings.video
-                  | video_tag:
-                    class: 'instagram-feed_wrapper_grid_item_video',
-                    muted: true,
-                    loop: true,
-                    playsinline: true,
-                    autoplay: false,
-                    controls: false,
-                    preload: 'metadata',
-                    data-feed-video: '',
-                    image_size: '400x'
-                }}
+                <span class="instagram-feed_wrapper_grid_item_video-wrap" data-feed-video-wrap>
+                  {{
+                    block.settings.video
+                    | video_tag:
+                      class: 'instagram-feed_wrapper_grid_item_video',
+                      muted: true,
+                      loop: true,
+                      playsinline: true,
+                      autoplay: false,
+                      controls: false,
+                      preload: 'metadata',
+                      image_size: '400x'
+                  }}
+                </span>
               {%- endif -%}
               <span class="instagram-feed_wrapper_grid_item_badge" aria-hidden="true">
                 {{- 'icon-play.svg' | inline_asset_content -}}
@@ -92,7 +93,7 @@
     // visitors who prefer reduced motion (they keep the cover frame).
     (() => {
       const section = document.currentScript?.previousElementSibling;
-      const videos = section ? section.querySelectorAll('[data-feed-video]') : [];
+      const videos = section ? section.querySelectorAll('video[data-feed-video], [data-feed-video-wrap] video') : [];
       if (!videos.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       videos.forEach((video) => {
         video.muted = true;
