@@ -26,10 +26,10 @@ class CardStack extends HTMLElement {
     });
 
     this.querySelectorAll('[data-prev]').forEach((button) =>
-      button.addEventListener('click', () => this.goTo(this.activeIndex - 1)),
+      button.addEventListener('click', () => this.goTo(this.activeIndex - 1, -1)),
     );
     this.querySelectorAll('[data-next]').forEach((button) =>
-      button.addEventListener('click', () => this.goTo(this.activeIndex + 1)),
+      button.addEventListener('click', () => this.goTo(this.activeIndex + 1, 1)),
     );
 
     this.bindSwipe(this.querySelector('.know-your-jewellery_wrapper_grid_diamonds_stack'));
@@ -69,7 +69,8 @@ class CardStack extends HTMLElement {
       start = null;
       if (Math.abs(dx) < threshold || Math.abs(dx) < Math.abs(dy)) return;
       swiped = true;
-      this.goTo(this.activeIndex + (dx < 0 ? 1 : -1));
+      // The card swings out on the side the finger is moving towards.
+      this.goTo(this.activeIndex + (dx < 0 ? 1 : -1), dx < 0 ? -1 : 1);
     });
 
     surface.addEventListener('pointercancel', () => {
@@ -88,9 +89,34 @@ class CardStack extends HTMLElement {
     );
   }
 
-  goTo(index) {
+  /* Stepping forward sends the front card out to the side, behind the deck and
+     down to the back; stepping back plays that in reverse on the back card.
+     `swing` is the side the card swings out on: 1 right, -1 left. */
+  goTo(index, swing) {
     const total = this.items.length;
     const next = (index + total) % total;
+    if (next === this.activeIndex || this.animating) return;
+
+    const step = (next - this.activeIndex + total) % total;
+    let moving = null;
+    let animation = '';
+    if (step === 1) {
+      moving = this.items[this.activeIndex];
+      animation = 'is-sending-back';
+    } else if (step === total - 1) {
+      moving = this.items[next];
+      animation = 'is-bringing-front';
+    }
+
+    if (moving) {
+      this.animating = true;
+      moving.style.setProperty('--card-stack-swing', String(swing || (animation === 'is-sending-back' ? 1 : -1)));
+      moving.classList.add(animation);
+      window.setTimeout(() => {
+        moving.classList.remove(animation);
+        this.animating = false;
+      }, CardStack.duration);
+    }
 
     this.items.forEach((item) => item.classList.remove('is-flipped'));
     this.activeIndex = next;
@@ -125,5 +151,8 @@ class CardStack extends HTMLElement {
     });
   }
 }
+
+/* Matches the length of the kyj-card-send-back / kyj-card-bring-front keyframes. */
+CardStack.duration = 600;
 
 customElements.define('card-stack', CardStack);

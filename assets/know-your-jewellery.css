@@ -405,6 +405,72 @@
   pointer-events: none;
 }
 
+/* Deck shuffle: the front card swings out, tucks behind the deck and settles at
+   the back (next); previous runs the same path backwards on the back card. The
+   z-index switch halfway is what carries the card behind the others. */
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-sending-back {
+  animation: kyj-card-send-back 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-bringing-front {
+  animation: kyj-card-bring-front 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+@keyframes kyj-card-send-back {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    z-index: 4;
+  }
+
+  35% {
+    transform: translateX(calc(100px * var(--card-stack-swing, 1))) scale(0.96)
+      rotate(calc(4deg * var(--card-stack-swing, 1)));
+    z-index: 4;
+  }
+
+  50% {
+    transform: translateX(calc(70px * var(--card-stack-swing, 1))) scale(0.93)
+      rotate(calc(3deg * var(--card-stack-swing, 1)));
+    z-index: 0;
+  }
+
+  100% {
+    transform: translate(0, 20.57px) rotate(0deg);
+    z-index: 0;
+  }
+}
+
+@keyframes kyj-card-bring-front {
+  0% {
+    transform: translate(0, 20.57px) rotate(0deg);
+    z-index: 0;
+  }
+
+  50% {
+    transform: translateX(calc(70px * var(--card-stack-swing, -1))) scale(0.93)
+      rotate(calc(3deg * var(--card-stack-swing, -1)));
+    z-index: 0;
+  }
+
+  65% {
+    transform: translateX(calc(100px * var(--card-stack-swing, -1))) scale(0.96)
+      rotate(calc(4deg * var(--card-stack-swing, -1)));
+    z-index: 4;
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    z-index: 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .know-your-jewellery_wrapper_grid_diamonds_stack_item.is-sending-back,
+  .know-your-jewellery_wrapper_grid_diamonds_stack_item.is-bringing-front {
+    animation: none;
+  }
+}
+
 .know-your-jewellery_wrapper_grid_diamonds_stack_arrow {
   position: absolute;
   top: 82px;
