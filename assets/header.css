@@ -172,7 +172,9 @@
   line-height: 1;
 }
 
-/* Off-canvas menu drawer */
+/* Off-canvas menu drawer - Figma Mobile 7930:108685 (Sidenav). A full-screen
+   sheet that slides in from the left: close button on top, one divided row per
+   menu item, nested menus as accordions, login and socials at the foot. */
 .header_drawer_overlay {
   position: fixed;
   inset: 0;
@@ -187,13 +189,13 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: min(360px, 85vw);
-  background-color: var(--color-background, #fff);
+  width: 100%;
+  height: 100dvh;
+  background-color: #fff;
   z-index: 101;
   transform: translateX(-100%);
   display: flex;
   flex-direction: column;
-  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.12);
 }
 
 .header[data-drawer-open='true'] .header_drawer_overlay {
@@ -203,10 +205,11 @@
 
 .header_drawer_header {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  border-bottom: 1px solid var(--color-border, #f2f2f2);
+  height: 56px;
+  padding-inline: 16px;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .header_drawer_header_close {
@@ -215,46 +218,155 @@
   justify-content: center;
   width: 24px;
   height: 24px;
+  padding: 0;
   border: 0;
   background: none;
   color: var(--color-icon, #666);
   cursor: pointer;
 }
 
+.header_drawer_header_close svg {
+  width: 24px;
+  height: 24px;
+}
+
 .header_drawer_nav {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
   overflow-y: auto;
-  padding: 12px 8px;
+  overscroll-behavior: contain;
 }
 
 .header_drawer_nav_list {
-  list-style: none;
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
-.header_drawer_nav_list_item_link {
-  display: block;
-  padding: 12px;
+.header_drawer_nav_list_item {
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.header_drawer_nav_row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 16px;
+  box-sizing: border-box;
   font-family: var(--font-secondary--family);
   font-weight: 500;
-  font-size: 15px;
-  color: var(--color-foreground, #000);
+  font-size: 12px;
+  line-height: 16px;
+  color: #222;
   text-decoration: none;
-  border-radius: 6px;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  cursor: pointer;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.header_drawer_nav_list_item_link:hover {
-  background-color: color-mix(in srgb, var(--color-brand, #712242) 8%, transparent);
+.header_drawer_nav_row::-webkit-details-marker {
+  display: none;
+}
+
+.header_drawer_nav_row.is-current {
+  font-weight: 600;
+  color: var(--color-accent, #f0166e);
+}
+
+.header_drawer_nav_row_badge {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-weight: 500;
+  font-size: 8px;
+  letter-spacing: 0.02em;
+}
+
+.header_drawer_nav_row_chevron {
+  display: flex;
+  margin-left: auto;
+  color: var(--color-icon, #666);
+  transition: transform 0.25s ease;
+}
+
+.header_drawer_nav_row_chevron svg {
+  width: 16px;
+  height: 16px;
+}
+
+.header_drawer_nav_group[open] .header_drawer_nav_row_chevron {
+  transform: rotate(90deg);
+}
+
+/* Children sit 16px further in, 34px apart, with no dividers of their own. */
+.header_drawer_nav_sublist {
+  margin: -4px 0 0;
+  padding: 0 16px 8px 32px;
+  list-style: none;
+}
+
+.header_drawer_nav_sublist_link {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #222;
+  text-decoration: none;
+}
+
+.header_drawer_nav_sublist_link.is-current {
+  font-weight: 600;
+  color: var(--color-accent, #f0166e);
+}
+
+.header_drawer_nav_foot {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: auto;
+  padding: 32px 16px calc(24px + env(safe-area-inset-bottom));
+}
+
+.header_drawer_nav_foot_account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary, #494949);
+  text-decoration: none;
+}
+
+.header_drawer_nav_foot_account svg {
+  width: 24px;
+  height: 24px;
+}
+
+.header_drawer_nav_foot_social {
+  display: flex;
+  gap: 16px;
+}
+
+.header_drawer_nav_foot_social a {
+  display: flex;
   color: var(--color-brand, #712242);
 }
 
-.header_drawer_nav_sublist {
-  list-style: none;
-  margin: 0 0 8px 12px;
-  padding: 0;
+.header_drawer_nav_foot_social svg {
+  width: 24px;
+  height: 24px;
 }
 
 @media screen and (max-width: 989px) {
