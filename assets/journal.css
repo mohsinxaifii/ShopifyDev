@@ -212,3 +212,68 @@
   width: 24px;
   height: 24px;
 }
+
+/* Figma Mobile 7930:106947: 24/16 padding and 16px between rows, a 20px
+   heading, fixed 332px cards on a 16px gap running off the right edge (the
+   next card peeks in), and the card's type scaled down - 10px date, 14px
+   title, 12px standfirst, 16px "Read more". The FEATURED pill shrinks to the
+   8px label and laps 12px over the card top. */
+@media screen and (max-width: 749px) {
+  .journal_wrapper {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .journal_wrapper_heading {
+    font-size: 20px;
+    line-height: normal;
+  }
+
+  .journal_wrapper_stage {
+    --journal-card: 332px;
+    --journal-gap: 16px;
+  }
+
+  .journal_wrapper_stage_track {
+    padding-top: 8px;
+    margin-top: -8px;
+  }
+
+  .journal_wrapper_stage_track_item_tag {
+    top: -8px;
+    padding: 2px 6px;
+    font-weight: 500;
+    font-size: 8px;
+    line-height: 16px;
+  }
+
+  .journal_wrapper_stage_track_item_card:hover {
+    transform: none;
+  }
+
+  .journal_wrapper_stage_track_item_card_body_date {
+    font-size: 10px;
+    line-height: 18px;
+  }
+
+  .journal_wrapper_stage_track_item_card_body_text_title {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .journal_wrapper_stage_track_item_card_body_text_excerpt {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .journal_wrapper_stage_track_item_card_body_readmore {
+    gap: 4px;
+    font-size: 16px;
+    line-height: normal;
+  }
+
+  .journal_wrapper_stage_track_item_card_body_readmore svg {
+    width: 20px;
+    height: 20px;
+  }
+}
