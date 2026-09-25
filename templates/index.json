@@ -227,21 +227,13 @@
             "myth": "Lab grown diamonds are fake diamonds.",
             "fact": ""
           }
-        },
-        "myth-2": {
-          "type": "myth_fact",
-          "settings": {
-            "myth": "Lab grown diamonds are fake diamonds.",
-            "fact": ""
-          }
         }
       },
       "block_order": [
         "fact-1",
         "fact-2",
         "fact-3",
-        "myth-1",
-        "myth-2"
+        "myth-1"
       ],
       "settings": {
         "heading": "Know Your Jewellery",
