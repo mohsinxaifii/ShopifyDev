@@ -15,7 +15,7 @@
           <div class="usp-strip_wrapper_pill_item" {{ block.shopify_attributes }}>
             {%- if block.settings.image -%}
               <span class="usp-strip_wrapper_pill_item_icon">
-                {{ block.settings.image | image_url: width: 72 | image_tag: loading: 'lazy', alt: '' }}
+                {{ block.settings.image | image_tag: loading: 'lazy', alt: '' }}
               </span>
             {%- endif -%}
             <p class="usp-strip_wrapper_pill_item_text">{{ block.settings.text }}</p>
