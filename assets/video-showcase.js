@@ -20,6 +20,9 @@ class VideoShowcase extends HTMLElement {
     this.fallbackDuration = (parseFloat(this.dataset.fallbackDuration) || 6) * 1000;
     this.isVisible = true;
     this.isPaused = false;
+    // One sound setting for the whole carousel: once a shopper unmutes, the
+    // next videos keep playing with sound.
+    this.isMuted = true;
 
     this.buildLoop();
     this.buildDots();
@@ -100,7 +103,7 @@ class VideoShowcase extends HTMLElement {
 
     this.slides.forEach((slide, i) => {
       slide.addEventListener('click', (event) => {
-        if (event.target.closest('a, [data-product-card]')) return;
+        if (event.target.closest('a, [data-product-card], [data-sound-toggle]')) return;
         if (i === this.index) this.togglePlayback();
         else this.goTo(i);
       });
@@ -109,11 +112,17 @@ class VideoShowcase extends HTMLElement {
     // Delegated so the looping clones' buttons work too. The shared cart runs
     // the request and the button feedback, then opens the cart drawer.
     this.addEventListener('click', (event) => {
+      if (event.target.closest('[data-sound-toggle]')) {
+        this.setMuted(!this.isMuted);
+        return;
+      }
       const button = event.target.closest('[data-video-add-to-cart]');
       if (!button) return;
       event.preventDefault();
       window.zinaraCart?.add([{ id: Number(button.dataset.variantId), quantity: 1 }], button);
     });
+
+    this.bindSwipe();
 
     this.onVisibilityChange = () => {
       if (document.hidden) this.pauseCurrent();
@@ -132,6 +141,81 @@ class VideoShowcase extends HTMLElement {
     this.addEventListener('shopify:block:select', (event) => {
       const target = this.originals.indexOf(event.target.closest('[data-slide]'));
       if (target >= 0) this.goTo(this.nearestIndexFor(target));
+    });
+  }
+
+  /* A horizontal drag moves the track with the pointer (touch or mouse); letting
+     go past a fifth of a card steps one slide, anything shorter springs back.
+     The click that ends a drag is swallowed so it cannot also toggle playback,
+     follow the product link or add to cart. */
+  bindSwipe() {
+    let drag = null;
+    let suppressClick = false;
+
+    this.viewport.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, active: false };
+      suppressClick = false;
+    });
+
+    this.viewport.addEventListener('pointermove', (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const dx = event.clientX - drag.x;
+      const dy = event.clientY - drag.y;
+
+      if (!drag.active) {
+        if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;
+        drag.active = true;
+        this.viewport.setPointerCapture(event.pointerId);
+        this.track.classList.remove('is-animating');
+        this.track.classList.add('is-dragging');
+      }
+
+      drag.dx = dx;
+      this.track.style.transform = `translate3d(${this.restingX() + dx}px, 0, 0)`;
+    });
+
+    const release = (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const { active, dx } = drag;
+      drag = null;
+      if (!active) return;
+
+      suppressClick = true;
+      this.track.classList.remove('is-dragging');
+      const threshold = Math.min(60, (this.step || 200) * 0.2);
+      if (event.type !== 'pointercancel' && Math.abs(dx) > threshold) {
+        this.goTo(this.index + (dx < 0 ? 1 : -1));
+      } else {
+        this.track.classList.add('is-animating');
+        this.applyTransform();
+      }
+    };
+    this.viewport.addEventListener('pointerup', release);
+    this.viewport.addEventListener('pointercancel', release);
+
+    this.viewport.addEventListener(
+      'click',
+      (event) => {
+        if (!suppressClick) return;
+        suppressClick = false;
+        event.preventDefault();
+        event.stopPropagation();
+      },
+      true,
+    );
+
+    // Native link and image dragging would cancel the pointer stream on desktop.
+    this.viewport.addEventListener('dragstart', (event) => event.preventDefault());
+  }
+
+  setMuted(muted) {
+    this.isMuted = muted;
+    this.classList.toggle('is-unmuted', !muted);
+    if (this.currentVideo) this.currentVideo.muted = muted;
+    this.querySelectorAll('[data-sound-toggle]').forEach((button) => {
+      button.setAttribute('aria-label', muted ? button.dataset.labelMuted : button.dataset.labelUnmuted);
+      button.setAttribute('aria-pressed', String(!muted));
     });
   }
 
@@ -168,10 +252,13 @@ class VideoShowcase extends HTMLElement {
     this.cardWidth = this.step - gap;
   }
 
+  restingX() {
+    return this.viewport.clientWidth / 2 - (this.index * this.step + this.cardWidth / 2);
+  }
+
   applyTransform() {
     if (!this.step) return;
-    const x = this.viewport.clientWidth / 2 - (this.index * this.step + this.cardWidth / 2);
-    this.track.style.transform = `translate3d(${x}px, 0, 0)`;
+    this.track.style.transform = `translate3d(${this.restingX()}px, 0, 0)`;
   }
 
   withoutTransition(callback) {
@@ -260,7 +347,7 @@ class VideoShowcase extends HTMLElement {
     }
 
     this.currentVideo = video;
-    video.muted = true;
+    video.muted = this.isMuted;
     video.loop = false;
     video.preload = 'auto';
     this.onVideoEnded = () => this.next();
@@ -278,7 +365,13 @@ class VideoShowcase extends HTMLElement {
 
     const played = video.play();
     if (played && typeof played.catch === 'function') {
-      played.catch(() => this.startFallbackTimer());
+      played.catch(() => {
+        // Browsers can refuse sound without a fresh gesture; drop back to muted
+        // rather than stalling the carousel.
+        if (video.muted || this.currentVideo !== video) return this.startFallbackTimer();
+        this.setMuted(true);
+        video.play().catch(() => this.startFallbackTimer());
+      });
     }
     slide.classList.add('is-playing');
     this.startTicker();

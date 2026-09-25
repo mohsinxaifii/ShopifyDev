@@ -212,6 +212,71 @@
   z-index: 4;
 }
 
+/* Sound toggle, top right under the timeline. Only the playing card shows
+   it; the icon follows the carousel-wide muted state. */
+.video-showcase_wrapper_track_item_sound {
+  position: absolute;
+  top: 24px;
+  right: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease,
+    background-color 0.2s ease;
+}
+
+.video-showcase_wrapper_track_item.is-active .video-showcase_wrapper_track_item_sound {
+  opacity: 1;
+  visibility: visible;
+}
+
+.video-showcase_wrapper_track_item_sound:hover {
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
+.video-showcase_wrapper_track_item_sound svg {
+  width: 18px;
+  height: 18px;
+}
+
+.video-showcase_wrapper_track_item_sound_icon--unmuted,
+.video-showcase.is-unmuted .video-showcase_wrapper_track_item_sound_icon--muted {
+  display: none;
+}
+
+.video-showcase.is-unmuted .video-showcase_wrapper_track_item_sound_icon--unmuted {
+  display: block;
+}
+
+/* Horizontal drags belong to the carousel; vertical ones still scroll the page. */
+.video-showcase_wrapper_viewport {
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.video-showcase_wrapper_track.is-dragging {
+  cursor: grabbing;
+}
+
+.video-showcase_wrapper_track img,
+.video-showcase_wrapper_track a {
+  -webkit-user-drag: none;
+}
+
 /* Product card pinned full-width along the bottom of the video, above the
    optional whole-card link so its title and button stay clickable. */
 .video-showcase_wrapper_track_item_product {

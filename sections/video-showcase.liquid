@@ -78,6 +78,26 @@
                   ></a>
                 {%- endif -%}
 
+                {%- if block.settings.video_url != blank or block.settings.video != blank -%}
+                  <button
+                    type="button"
+                    class="video-showcase_wrapper_track_item_sound"
+                    data-sound-toggle
+                    aria-label="Unmute video"
+                    data-label-muted="Unmute video"
+                    data-label-unmuted="Mute video"
+                  >
+                    <svg class="video-showcase_wrapper_track_item_sound_icon--muted" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path d="M9.5 3.5 5.5 7H3v6h2.5l4 3.5v-13Z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                      <path d="m13 7.5 5 5m0-5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    <svg class="video-showcase_wrapper_track_item_sound_icon--unmuted" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path d="M9.5 3.5 5.5 7H3v6h2.5l4 3.5v-13Z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                      <path d="M13 7.2a4 4 0 0 1 0 5.6M15.3 5a7 7 0 0 1 0 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                {%- endif -%}
+
                 <span class="video-showcase_wrapper_track_item_play" data-play-icon>
                   {{ 'icon-play.svg' | inline_asset_content }}
                 </span>
