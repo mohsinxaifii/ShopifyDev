@@ -400,6 +400,7 @@
   }
 
   .review-dialog_panel {
+    gap: 16px;
     max-height: 90dvh;
     padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
     border-radius: 24px 24px 0 0;
