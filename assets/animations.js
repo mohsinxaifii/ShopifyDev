@@ -122,7 +122,9 @@
     const { gsap } = window;
     ROOT.classList.add('motion-dialogs');
 
-    root.querySelectorAll('dialog:not([data-motion-bound])').forEach((dialog) => {
+    // [data-bottom-sheet] dialogs run their own slide (review-modal.js), so
+    // they are left alone here.
+    root.querySelectorAll('dialog:not([data-motion-bound]):not([data-bottom-sheet])').forEach((dialog) => {
       dialog.setAttribute('data-motion-bound', '');
 
       // A drawer travels its own full width, so it starts and ends genuinely
@@ -135,37 +137,22 @@
       const target = panel || centred || dialog.firstElementChild;
       if (!target) return;
 
-      // A [data-bottom-sheet] dialog docks to the bottom on phones and rises its
-      // own height from there; on wider screens it stays a centred popup. The
-      // check runs on every open so rotating or resizing picks the right one.
-      const sheetQuery = dialog.hasAttribute('data-bottom-sheet')
-        ? window.matchMedia('(max-width: 749px)')
-        : null;
-
       // xPercent is relative to the panel's own width, so the same figure works
       // for the 435px drawer and for the full-width one on a phone.
-      let enter;
-      let rest;
-      let slides;
-      const pickMotion = () => {
-        const sheet = sheetQuery?.matches;
-        slides = Boolean(panel || sheet);
-        enter = panel ? { xPercent: 100 } : sheet ? { yPercent: 100 } : { scale: 0.96 };
-        rest = panel ? { xPercent: 0 } : sheet ? { yPercent: 0 } : { scale: 1 };
-      };
+      const enter = panel ? { xPercent: 100 } : { scale: 0.96 };
+      const rest = panel ? { xPercent: 0 } : { scale: 1 };
 
       const nativeShow = dialog.showModal.bind(dialog);
       const nativeClose = dialog.close.bind(dialog);
       let closing = false;
 
       dialog.showModal = (...args) => {
-        pickMotion();
         nativeShow(...args);
         dialog.classList.remove('is-closing');
         gsap.killTweensOf(target);
         gsap.fromTo(
           target,
-          { opacity: slides ? 1 : 0, ...enter },
+          { opacity: panel ? 1 : 0, ...enter },
           {
             opacity: 1,
             ...rest,
@@ -183,9 +170,8 @@
         // cannot be tweened directly.
         dialog.classList.add('is-closing');
         gsap.killTweensOf(target);
-        if (!enter) pickMotion();
         gsap.to(target, {
-          opacity: slides ? 1 : 0,
+          opacity: panel ? 1 : 0,
           ...enter,
           duration: 0.3,
           ease: 'power2.in',

@@ -322,12 +322,6 @@ dialog.is-closing::backdrop {
   }
 }
 
-@keyframes motion-slide-up {
-  from {
-    transform: translateY(100%);
-  }
-}
-
 @keyframes motion-scale-in {
   from {
     opacity: 0;
@@ -345,12 +339,6 @@ html:not(.motion-dialogs) .cart-drawer[open] .cart-drawer_panel,
 html:not(.motion-dialogs) .pdp-sheet[open] .pdp-sheet_panel,
 html:not(.motion-dialogs) .variant-drawer[open] .variant-drawer_panel {
   animation: motion-slide-in var(--motion-slow) var(--motion-ease);
-}
-
-@media screen and (max-width: 749px) {
-  html:not(.motion-dialogs) .review-dialog[open] .review-dialog_panel {
-    animation: motion-slide-up var(--motion-slow) var(--motion-ease);
-  }
 }
 
 html:not(.motion-dialogs) .pdp-modal[open] .pdp-modal_panel,
