@@ -24,7 +24,50 @@
             rel="noopener"
             {{ block.shopify_attributes }}
           >
-            {%- if block.settings.image -%}
+            {%- liquid
+              assign has_video = false
+              if block.settings.video_url != blank or block.settings.video != blank
+                assign has_video = true
+              endif
+            -%}
+            {%- if has_video -%}
+              {%- comment -%}
+                Muted, looping, inline - it plays like a reel while on screen and
+                pauses off screen (script below). The image, when set, is the cover.
+              {%- endcomment -%}
+              {%- if block.settings.video_url != blank -%}
+                <video
+                  class="instagram-feed_wrapper_grid_item_video"
+                  src="{{ block.settings.video_url }}#t=0.1"
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                  disableremoteplayback
+                  data-feed-video
+                  {% if block.settings.image %}
+                    poster="{{ block.settings.image | image_url: width: 400 }}"
+                  {% endif %}
+                ></video>
+              {%- else -%}
+                {{
+                  block.settings.video
+                  | video_tag:
+                    class: 'instagram-feed_wrapper_grid_item_video',
+                    muted: true,
+                    loop: true,
+                    playsinline: true,
+                    autoplay: false,
+                    controls: false,
+                    preload: 'metadata',
+                    data-feed-video: '',
+                    image_size: '400x'
+                }}
+              {%- endif -%}
+              <span class="instagram-feed_wrapper_grid_item_badge" aria-hidden="true">
+                {{- 'icon-play.svg' | inline_asset_content -}}
+              </span>
+            {%- elsif block.settings.image -%}
               {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: 'Instagram post' }}
             {%- endif -%}
           </a>
@@ -43,6 +86,33 @@
       </a>
     </div>
   </section>
+
+  <script>
+    // Video tiles play only while they are on screen, and not at all for
+    // visitors who prefer reduced motion (they keep the cover frame).
+    (() => {
+      const section = document.currentScript?.previousElementSibling;
+      const videos = section ? section.querySelectorAll('[data-feed-video]') : [];
+      if (!videos.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      videos.forEach((video) => {
+        video.muted = true;
+      });
+      if (!('IntersectionObserver' in window)) {
+        videos.forEach((video) => video.play().catch(() => {}));
+        return;
+      }
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(({ target, isIntersecting }) => {
+            if (isIntersecting) target.play().catch(() => {});
+            else target.pause();
+          });
+        },
+        { threshold: 0.4 },
+      );
+      videos.forEach((video) => observer.observe(video));
+    })();
+  </script>
 {%- endif -%}
 
 {% schema %}
@@ -90,7 +160,24 @@
       "type": "post",
       "name": "Post",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Shown on its own, or as the cover while a video loads."
+        },
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "Video URL (.mp4)",
+          "info": "Paste a hosted MP4 URL. Takes priority over the video picker below."
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video (from library)",
+          "info": "Plays muted on a loop while on screen, like a reel."
+        },
         { "type": "url", "id": "link", "label": "Link to post" }
       ]
     }
