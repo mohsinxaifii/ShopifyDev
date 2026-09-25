@@ -197,55 +197,69 @@
 
   /**
    * Any `<dialog data-bottom-sheet>` is a centred popup on desktop and a sheet
-   * that slides up from the bottom on phones (the look lives in motion.css,
-   * keyed off `.is-open`). showModal/close are wrapped so every caller - a
-   * close button, a backdrop click, Esc, or a script calling dialog.close() -
-   * plays the exit before the browser removes the dialog. Plain CSS
-   * transitions, so it works whether or not GSAP arrives.
+   * that slides up from the bottom on phones. showModal/close are wrapped so
+   * every caller - a close button, a backdrop click, Esc, or a script calling
+   * dialog.close() - plays the exit before the browser removes the dialog.
+   *
+   * The panel is driven with the Web Animations API rather than a CSS
+   * transition: a transition has to catch the dialog's first styled frame as
+   * it enters the top layer, which is not reliable, while an explicit
+   * from/to animation always plays. It needs no GSAP. The backdrop fade stays
+   * in motion.css, keyed off `.is-open`. Each dialog owns its mobile layout.
    */
+  const sheetQuery = window.matchMedia('(max-width: 749px)');
+  const SHEET_EASE_IN = 'cubic-bezier(0.22, 1, 0.36, 1)';
+  const SHEET_EASE_OUT = 'cubic-bezier(0.4, 0, 1, 1)';
+
+  function sheetFrames() {
+    // The sheet only ever slides; the desktop popup scales and fades.
+    return sheetQuery.matches
+      ? [{ transform: 'translateY(100%)' }, { transform: 'translateY(0)' }]
+      : [
+          { opacity: 0, transform: 'scale(0.96)' },
+          { opacity: 1, transform: 'scale(1)' },
+        ];
+  }
+
   function initBottomSheets(root = document) {
     root.querySelectorAll('dialog[data-bottom-sheet]:not([data-sheet-bound])').forEach((dialog) => {
       const panel = dialog.firstElementChild;
-      if (!panel) return;
+      if (!panel || typeof panel.animate !== 'function') return;
       dialog.setAttribute('data-sheet-bound', '');
 
       const nativeShow = dialog.showModal.bind(dialog);
       const nativeClose = dialog.close.bind(dialog);
+      let motion = null;
       let closing = false;
-      let timer = null;
-      let onEnd = null;
 
-      const settle = () => {
-        clearTimeout(timer);
-        if (onEnd) panel.removeEventListener('transitionend', onEnd);
-        onEnd = null;
+      const run = (frames, duration, easing) => {
+        motion?.cancel();
+        motion = panel.animate(frames, { duration: reduced.matches ? 0 : duration, easing, fill: 'both' });
+        return motion;
       };
 
       dialog.showModal = (...args) => {
-        settle();
         closing = false;
-        dialog.classList.remove('is-open');
         nativeShow(...args);
-        void panel.offsetHeight; // commit the off-screen start before moving
         dialog.classList.add('is-open');
+        const entry = run(sheetFrames(), 400, SHEET_EASE_IN);
+        // Drop the held end state so the panel rests on its own styles.
+        entry.finished.then(() => entry.cancel()).catch(() => {});
       };
 
       dialog.close = (...args) => {
         if (!dialog.open || closing) return;
         closing = true;
         dialog.classList.remove('is-open');
-
-        const finish = () => {
-          settle();
-          if (!closing) return;
-          closing = false;
-          nativeClose(...args);
-        };
-        onEnd = (event) => {
-          if (event.target === panel && event.propertyName === 'transform') finish();
-        };
-        panel.addEventListener('transitionend', onEnd);
-        timer = setTimeout(finish, 500);
+        const exit = run(sheetFrames().reverse(), 300, SHEET_EASE_OUT);
+        exit.finished
+          .then(() => {
+            if (!closing) return;
+            closing = false;
+            nativeClose(...args);
+            exit.cancel();
+          })
+          .catch(() => {});
       };
 
       // Esc would drop the dialog instantly; route it through the exit.
@@ -255,9 +269,9 @@
       });
 
       dialog.addEventListener('close', () => {
-        settle();
         closing = false;
         dialog.classList.remove('is-open');
+        motion?.cancel();
       });
     });
   }

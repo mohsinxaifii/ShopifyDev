@@ -323,8 +323,8 @@ dialog.is-closing::backdrop {
 }
 
 /**
- * Popup on desktop, bottom sheet on phones - see initBottomSheets() in
- * animations.js, which toggles `.is-open` around showModal()/close(). The
+ * Popup on desktop, bottom sheet on phones - initBottomSheets() in
+ * animations.js slides the panel and toggles `.is-open` for the backdrop. The
  * sheet only ever slides; the dimmed backdrop is the one thing that fades.
  * Each dialog still owns its mobile layout (full width, docked to the bottom,
  * rounded top corners).
@@ -341,24 +341,6 @@ dialog[data-bottom-sheet].is-open::backdrop {
 
 dialog[data-bottom-sheet] > :first-child {
   outline: none;
-  opacity: 0;
-  transform: scale(0.96);
-  transition:
-    opacity 0.3s ease,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-dialog[data-bottom-sheet].is-open > :first-child {
-  opacity: 1;
-  transform: none;
-}
-
-@media screen and (max-width: 749px) {
-  dialog[data-bottom-sheet] > :first-child {
-    opacity: 1;
-    transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  }
 }
 
 @keyframes motion-scale-in {
