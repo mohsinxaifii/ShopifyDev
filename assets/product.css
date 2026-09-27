@@ -1481,7 +1481,7 @@ button.pdp_trust_grid_item_inner {
 /* Centred on the 264px card image, flush with the column's right edge. */
 .pdp_related_panel_next {
   position: absolute;
-  top: 112px;
+  top: 88px;
   right: 0;
   z-index: 2;
 }
