@@ -3756,6 +3756,12 @@ button.pdp_trust_grid_item_inner {
     height: 48px;
   }
 
+  /* Price compare 7930:113600: the four facts sit two-up. */
+  .pdp-diff_facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
   /* Add-ons 7930:114163: 193px banner, two-up cards. */
   .pdp-addons_hero img {
     height: 193px;
