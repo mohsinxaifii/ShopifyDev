@@ -5,8 +5,13 @@
   shopper can pick several and commit once with Done - which is also what keeps
   the add-ons in the same cart request as the main product.
 
+  The banner above the grid is a swipeable strip (Figma Mobile 7930:114174):
+  it opens on the piece itself, and each add-on the shopper ticks slides its own
+  photo in beside it, so the picture keeps up with what they are building.
+
   @param {object} addons - products from `custom.pdp_addons`
-  @param {object} [hero] - banner image above the grid
+  @param {object} product - the product the add-ons are for
+  @param {object} [hero] - banner image above the grid; the product's own image when unset
   @param {string} [whatsapp_url] - shown above the footer when set
 {%- enddoc -%}
 
@@ -27,11 +32,43 @@
     <div class="pdp-sheet_panel_body pdp-sheet_panel_body--padded">
       <div class="pdp-sheet_panel_body_group">
         <p class="pdp-sheet_panel_body_group_label">Elevate your piece with curated add-ons</p>
-        {%- if hero != blank -%}
-          <span class="pdp-addons_hero">
-            {{ hero | image_url: width: 806 | image_tag: loading: 'lazy', widths: '403,806', sizes: '403px', alt: '' }}
-          </span>
-        {%- endif -%}
+        {%- assign hero_image = hero | default: product.featured_image -%}
+        <div class="pdp-addons_hero">
+          <div class="pdp-addons_hero_track" data-addons-hero>
+            {%- if hero_image != blank -%}
+              <span class="pdp-addons_hero_track_slide">
+                {{
+                  hero_image
+                  | image_url: width: 806
+                  | image_tag: loading: 'lazy', widths: '403,806', sizes: '403px', alt: ''
+                }}
+              </span>
+            {%- endif -%}
+            {%- for addon in addons -%}
+              {%- liquid
+                comment
+                  The second photo is usually the add-on worn or styled; the
+                  packshot is the fallback.
+                endcomment
+                assign addon_photo = addon.images[1] | default: addon.featured_image
+              -%}
+              {%- if addon_photo != blank -%}
+                <span
+                  class="pdp-addons_hero_track_slide"
+                  data-hero-for="{{ addon.selected_or_first_available_variant.id }}"
+                  hidden
+                >
+                  {{
+                    addon_photo
+                    | image_url: width: 806
+                    | image_tag: loading: 'lazy', widths: '403,806', sizes: '403px', alt: addon.title
+                  }}
+                </span>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <div class="pdp-addons_hero_dots" data-addons-hero-dots aria-hidden="true"></div>
+        </div>
       </div>
 
       <ul class="pdp-addons_grid">

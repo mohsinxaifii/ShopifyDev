@@ -522,11 +522,12 @@
       this.addEventListener('click', (event) => {
         const toggle = event.target.closest('[data-addon-toggle], [data-pair-toggle]');
         if (!toggle) return;
-        toggle.setAttribute(
-          'aria-pressed',
-          toggle.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
-        );
+        const pressed = toggle.getAttribute('aria-pressed') !== 'true';
+        toggle.setAttribute('aria-pressed', String(pressed));
+        if (toggle.matches('[data-addon-toggle]')) this.syncAddonHero(toggle.dataset.variantId, pressed);
+        if (toggle.matches('[data-pair-toggle]')) this.syncPairCta();
       });
+      this.initAddonHero();
 
       this.querySelector('[data-addons-done]')?.addEventListener('click', () => {
         this.sheets.get('addons')?.close();
@@ -563,6 +564,55 @@
           trigger: button,
         });
       });
+    }
+
+    /* --------------------------------------------------------- add-ons */
+
+    /* The add-ons banner shows the piece, then each ticked add-on's photo,
+       sliding to the newest pick so the shopper sees what they just added. */
+    initAddonHero() {
+      this.addonHero = this.querySelector('[data-addons-hero]');
+      this.addonDots = this.querySelector('[data-addons-hero-dots]');
+      if (!this.addonHero) return;
+      let frame = 0;
+      this.addonHero.addEventListener(
+        'scroll',
+        () => {
+          cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(() => this.paintAddonDots());
+        },
+        { passive: true },
+      );
+      this.paintAddonDots();
+    }
+
+    addonSlides() {
+      return Array.from(this.addonHero?.children || []).filter((slide) => !slide.hidden);
+    }
+
+    syncAddonHero(variantId, pressed) {
+      const slide = this.addonHero?.querySelector(`[data-hero-for="${variantId}"]`);
+      if (!slide) return;
+      slide.hidden = !pressed;
+      // A newly shown slide moves to the end, so the strip reads in pick order.
+      if (pressed) this.addonHero.append(slide);
+      const target = pressed ? slide : this.addonSlides().at(-1);
+      this.addonHero.scrollTo({ left: target ? target.offsetLeft : 0, behavior: 'smooth' });
+      this.paintAddonDots();
+    }
+
+    paintAddonDots() {
+      if (!this.addonDots) return;
+      const slides = this.addonSlides();
+      if (slides.length < 2) {
+        this.addonDots.replaceChildren();
+        return;
+      }
+      const index = Math.round(this.addonHero.scrollLeft / (this.addonHero.clientWidth || 1));
+      if (this.addonDots.children.length !== slides.length) {
+        this.addonDots.replaceChildren(...slides.map(() => document.createElement('span')));
+      }
+      Array.from(this.addonDots.children).forEach((dot, i) => dot.classList.toggle('is-active', i === index));
     }
 
     buildItems() {
