@@ -463,8 +463,15 @@
     line-height: 20px;
   }
 
+  /* The legend sits outside the fieldset's grid, so the 8px under the title is
+     set on the values, and Size guide is pinned to the title's row. */
   .variant-drawer_panel_body_options_group {
-    gap: 8px;
+    position: relative;
+    display: block;
+  }
+
+  .variant-drawer_panel_body_options_group_values {
+    margin-top: 8px;
   }
 
   .variant-drawer_panel_body_options_group_head_name {
@@ -477,6 +484,10 @@
   }
 
   .variant-drawer_panel_body_options_group_guide {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 24px;
     gap: 6px;
     font-size: 12px;
     line-height: normal;
