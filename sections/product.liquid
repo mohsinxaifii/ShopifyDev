@@ -12,6 +12,7 @@
 {{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
 {{ 'product-card.css' | asset_url | stylesheet_tag }}
 {{ 'product.css' | asset_url | stylesheet_tag }}
+{{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
@@ -963,8 +964,6 @@
     sgl_logo: section.settings.sgl_logo
   -%}
   {%- render 'pdp-ugc-lightbox', product: product, videos: ugc_videos -%}
-  {%- comment -%} The PLP's variant picker, for the product cards further down the page. {%- endcomment -%}
-  {%- render 'variant-drawer' -%}
 
   {%- comment -%}
     Variant lookup for the JS. `/products/x.js` carries none of the money
@@ -998,10 +997,17 @@
   </script>
 </product-page>
 
+{%- comment -%}
+  The PLP's variant picker, for the product cards further down the page. It
+  sits outside <product-page> so its option groups never mix with the PDP's own.
+{%- endcomment -%}
+{%- render 'variant-drawer' -%}
+
 {% # carousel-scroll defines window.carouselScroll, which scroll-carousel calls %}
 <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'product.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {
