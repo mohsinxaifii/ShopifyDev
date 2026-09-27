@@ -290,10 +290,17 @@
       this.lightboxCurrent = dialog.querySelector('[data-lightbox-current]');
       this.lightboxIndex = 0;
 
+      this.lightboxFrame = dialog.querySelector('.pdp-lightbox_body_stage_frame');
+      this.phone = window.matchMedia('(max-width: 749px)');
+
       this.addEventListener('gallery:open', (event) => {
         this.showLightbox(event.detail.index);
         dialog.showModal();
+        // The strip only has a width once the dialog is open.
+        requestAnimationFrame(() => this.alignLightbox());
       });
+
+      this.initLightboxPhone(dialog);
 
       dialog
         .querySelector('[data-lightbox-prev]')
@@ -323,6 +330,144 @@
 
     stepLightbox(direction) {
       this.showLightbox(this.lightboxIndex + direction);
+      this.alignLightbox('smooth');
+    }
+
+    alignLightbox(behavior = 'auto') {
+      if (!this.phone?.matches || !this.lightboxFrame) return;
+      this.lightboxFrame.scrollTo({ left: this.lightboxIndex * this.lightboxFrame.clientWidth, behavior });
+    }
+
+    /**
+     * Phones get a WhatsApp-style viewer (product.css): a black full-screen
+     * strip the shopper swipes through natively, with pinch, double-tap and
+     * drag-to-pan on the image in view. Zooming locks the strip so a pan
+     * inside the image cannot turn the page.
+     */
+    initLightboxPhone(dialog) {
+      const frame = this.lightboxFrame;
+      if (!frame) return;
+
+      let scrollFrame = 0;
+      frame.addEventListener(
+        'scroll',
+        () => {
+          if (!this.phone.matches) return;
+          cancelAnimationFrame(scrollFrame);
+          scrollFrame = requestAnimationFrame(() => {
+            const index = Math.round(frame.scrollLeft / (frame.clientWidth || 1));
+            if (index !== this.lightboxIndex) {
+              reset();
+              this.showLightbox(index);
+            }
+          });
+        },
+        { passive: true },
+      );
+
+      let zoom = { scale: 1, x: 0, y: 0 };
+      let image = null;
+      let start = null;
+      let lastTap = 0;
+      let moved = false;
+
+      const MAX = 4;
+      const apply = (animate = false) => {
+        if (!image) return;
+        image.style.transition = animate ? 'transform 0.25s ease' : 'none';
+        image.style.transform = `translate(${zoom.x}px, ${zoom.y}px) scale(${zoom.scale})`;
+        frame.classList.toggle('is-zoomed', zoom.scale > 1.01);
+      };
+      const clamp = () => {
+        const box = image.parentElement.getBoundingClientRect();
+        const maxX = (box.width * (zoom.scale - 1)) / 2;
+        const maxY = (box.height * (zoom.scale - 1)) / 2;
+        zoom.x = Math.max(-maxX, Math.min(maxX, zoom.x));
+        zoom.y = Math.max(-maxY, Math.min(maxY, zoom.y));
+      };
+      const reset = (animate = false) => {
+        zoom = { scale: 1, x: 0, y: 0 };
+        apply(animate);
+        if (!animate && image) image.style.removeProperty('transform');
+      };
+      const distance = (touches) =>
+        Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+
+      frame.addEventListener(
+        'touchstart',
+        (event) => {
+          if (!this.phone.matches) return;
+          const next = event.target.closest('[data-lightbox-slide]')?.querySelector('img');
+          if (!next) return;
+          if (next !== image) {
+            reset();
+            image = next;
+          }
+          moved = false;
+          if (event.touches.length === 2) {
+            start = { dist: distance(event.touches), scale: zoom.scale };
+          } else if (event.touches.length === 1) {
+            start = { px: event.touches[0].clientX, py: event.touches[0].clientY, x: zoom.x, y: zoom.y };
+          }
+        },
+        { passive: true },
+      );
+
+      frame.addEventListener(
+        'touchmove',
+        (event) => {
+          if (!this.phone.matches || !image || !start) return;
+          moved = true;
+          if (event.touches.length === 2 && start.dist) {
+            event.preventDefault();
+            zoom.scale = Math.max(1, Math.min(MAX, (start.scale * distance(event.touches)) / start.dist));
+            clamp();
+            apply();
+          } else if (event.touches.length === 1 && zoom.scale > 1.01 && start.px !== undefined) {
+            event.preventDefault();
+            zoom.x = start.x + (event.touches[0].clientX - start.px);
+            zoom.y = start.y + (event.touches[0].clientY - start.py);
+            clamp();
+            apply();
+          }
+        },
+        { passive: false },
+      );
+
+      frame.addEventListener('touchend', (event) => {
+        if (!this.phone.matches || !image) return;
+        if (event.touches.length > 0) {
+          // One finger lifted mid-pinch: carry on as a pan from here.
+          start = { px: event.touches[0].clientX, py: event.touches[0].clientY, x: zoom.x, y: zoom.y };
+          return;
+        }
+        start = null;
+        if (zoom.scale < 1.05) reset(true);
+
+        // Double tap: zoom to 2.5x on the tapped point, or back out.
+        const now = Date.now();
+        if (!moved && now - lastTap < 280) {
+          if (zoom.scale > 1.01) {
+            reset(true);
+          } else {
+            const box = image.parentElement.getBoundingClientRect();
+            const tap = event.changedTouches[0];
+            zoom.scale = 2.5;
+            zoom.x = (box.left + box.width / 2 - tap.clientX) * 1.5;
+            zoom.y = (box.top + box.height / 2 - tap.clientY) * 1.5;
+            clamp();
+            apply(true);
+          }
+          lastTap = 0;
+          return;
+        }
+        lastTap = moved ? 0 : now;
+      });
+
+      dialog.addEventListener('close', () => {
+        reset();
+        image = null;
+      });
     }
 
     /* -------------------------------------------------------------- UGC */
