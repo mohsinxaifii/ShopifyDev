@@ -43,7 +43,7 @@
   unless compare_text contains money_symbol
     assign compare_text = compare_text | prepend: money_symbol
   endunless
-  assign average_rating = product.metafields.reviews.rating.value
+  assign average_rating = product.metafields.reviews.rating.value.rating | plus: 0
 
   if is_grid
     assign media_sizes = '266px'

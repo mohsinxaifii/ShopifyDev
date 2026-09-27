@@ -23,7 +23,7 @@
   if product.tags contains 'Ready to ship'
     assign is_ready_to_ship = true
   endif
-  assign average_rating = product.metafields.reviews.rating.value
+  assign average_rating = product.metafields.reviews.rating.value.rating | plus: 0
   assign current = product.selected_or_first_available_variant
 -%}
 
