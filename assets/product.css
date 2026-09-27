@@ -1870,8 +1870,15 @@ button.pdp_trust_grid_item_inner {
   color: var(--pdp-yellow-600);
 }
 
-.pdp .testimonial-stars_star.is-empty {
-  color: var(--pdp-border);
+/* Figma draws the unearned stars as outlines in the same yellow. */
+.pdp .testimonial-stars_star.is-empty svg {
+  overflow: visible;
+}
+
+.pdp .testimonial-stars_star.is-empty svg path {
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.2;
 }
 
 .pdp .testimonial-stars_star svg {
