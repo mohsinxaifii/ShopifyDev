@@ -3487,8 +3487,7 @@ button.pdp_trust_grid_item_inner {
   /* The Zinara Difference 7930:112575 */
   .pdp_difference {
     gap: 16px;
-    width: 100vw;
-    margin-inline: calc(50% - 50vw);
+    margin-inline: calc(var(--page-margin) * -1);
     padding: 24px var(--page-margin);
   }
 
