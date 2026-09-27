@@ -717,6 +717,15 @@
               {%- endfor -%}
             {%- endif -%}
           </div>
+          {%- comment -%} Desktop only (Figma 7930:96003): a next arrow over the row's right edge. {%- endcomment -%}
+          <button
+            type="button"
+            class="scroll-carousel_arrow pdp_related_panel_next"
+            data-next
+            aria-label="{{ 'accessibility.next' | t }}"
+          >
+            {{- 'icon-caret-right.svg' | inline_asset_content -}}
+          </button>
           <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
         </scroll-carousel>
 

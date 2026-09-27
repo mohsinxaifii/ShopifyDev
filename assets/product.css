@@ -1472,9 +1472,18 @@ button.pdp_trust_grid_item_inner {
 }
 
 .pdp_related_panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* Centred on the 264px card image, flush with the column's right edge. */
+.pdp_related_panel_next {
+  position: absolute;
+  top: 112px;
+  right: 0;
+  z-index: 2;
 }
 
 .pdp_related_panel_track {
@@ -1550,7 +1559,7 @@ button.pdp_trust_grid_item_inner {
   border-bottom: 1px solid var(--pdp-border);
   font-weight: 500;
   font-size: 14px;
-  line-height: 24px;
+  line-height: 22px;
   color: var(--pdp-text);
   text-align: left;
 }
