@@ -211,14 +211,17 @@
   const SHEET_EASE_IN = 'cubic-bezier(0.22, 1, 0.36, 1)';
   const SHEET_EASE_OUT = 'cubic-bezier(0.4, 0, 1, 1)';
 
-  function sheetFrames() {
-    // The sheet only ever slides; the desktop popup scales and fades.
-    return sheetQuery.matches
-      ? [{ transform: 'translateY(100%)' }, { transform: 'translateY(0)' }]
-      : [
-          { opacity: 0, transform: 'scale(0.96)' },
-          { opacity: 1, transform: 'scale(1)' },
-        ];
+  function sheetFrames(dialog) {
+    // The sheet only ever slides; the desktop popup scales and fades, and a
+    // `data-bottom-sheet="side"` dialog stays a right-hand sidesheet there.
+    if (sheetQuery.matches) return [{ transform: 'translateY(100%)' }, { transform: 'translateY(0)' }];
+    if (dialog.dataset.bottomSheet === 'side') {
+      return [{ transform: 'translateX(100%)' }, { transform: 'translateX(0)' }];
+    }
+    return [
+      { opacity: 0, transform: 'scale(0.96)' },
+      { opacity: 1, transform: 'scale(1)' },
+    ];
   }
 
   function initBottomSheets(root = document) {
@@ -242,7 +245,7 @@
         closing = false;
         nativeShow(...args);
         dialog.classList.add('is-open');
-        const entry = run(sheetFrames(), 400, SHEET_EASE_IN);
+        const entry = run(sheetFrames(dialog), 400, SHEET_EASE_IN);
         // Drop the held end state so the panel rests on its own styles.
         entry.finished.then(() => entry.cancel()).catch(() => {});
       };
@@ -251,7 +254,7 @@
         if (!dialog.open || closing) return;
         closing = true;
         dialog.classList.remove('is-open');
-        const exit = run(sheetFrames().reverse(), 300, SHEET_EASE_OUT);
+        const exit = run(sheetFrames(dialog).reverse(), 300, SHEET_EASE_OUT);
         exit.finished
           .then(() => {
             if (!closing) return;
