@@ -585,6 +585,12 @@
 
 /* Options - Figma 7930:96080 / 7930:96094 */
 
+/* With no offers rail between them, the first option still sits 24px under
+   the price card (its own 12px padding plus this). */
+.pdp_headline + fieldset.pdp_option {
+  margin-top: 12px;
+}
+
 .pdp_option {
   position: relative;
   display: flex;
@@ -1188,7 +1194,7 @@ button.pdp_trust_grid_item_inner {
 .pdp-kj_vermeil_diagram_image img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   filter: drop-shadow(0 9.938px 9.938px rgba(0, 0, 0, 0.1));
 }
 
@@ -1231,7 +1237,7 @@ button.pdp_trust_grid_item_inner {
 .pdp-kj_vermeil_diagram_callout--3 {
   top: 90.34%;
   left: 6.39%;
-  width: 34.27%;
+  white-space: nowrap;
 }
 
 .pdp-kj_vermeil_diagram_callout_icon {
@@ -3385,10 +3391,6 @@ button.pdp_trust_grid_item_inner {
     left: calc(50% - 163.5px);
     width: 319px;
     height: 292px;
-  }
-
-  .pdp-kj_vermeil_diagram_image img {
-    object-fit: cover;
   }
 
   .pdp-kj_vermeil_diagram_callout_icon {
