@@ -3626,6 +3626,75 @@ button.pdp_trust_grid_item_inner {
     flex: 1 1 0;
   }
 
+  /* Customer reviews 7930:112702 */
+  .pdp_reviews {
+    gap: 16px;
+    padding-block: 24px;
+  }
+
+  .pdp_reviews_head .pdp_button,
+  .pdp_reviews_more .pdp_button {
+    height: auto;
+    padding: 12px 16px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .pdp_reviews_summary_score {
+    font-size: 24px;
+  }
+
+  .pdp_reviews_summary .testimonial-stars {
+    gap: 8px;
+  }
+
+  .pdp_reviews_summary .testimonial-stars_star {
+    width: 24px;
+    height: 24px;
+  }
+
+  .pdp_reviews_summary_count {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .pdp_reviews_list {
+    gap: 12px;
+  }
+
+  .pdp_reviews_list_item .testimonial-stars {
+    gap: 3.556px;
+  }
+
+  .pdp_reviews_list_item .testimonial-stars_star {
+    width: 16px;
+    height: 16px;
+  }
+
+  .pdp_reviews_list_item_author_name {
+    line-height: 22px;
+  }
+
+  .pdp_reviews_list_item_author_badge {
+    padding: 2px 6px;
+    font-size: 8px;
+    line-height: 16px;
+  }
+
+  .pdp_reviews_list_item_body {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .pdp_reviews_list_item_date {
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 18px;
+  }
+
   /* Bottom sheets: every PDP sidesheet docks to the bottom on phones and
      slides/dims exactly like the review sheet (motion.css --sheet-* tokens). */
   .pdp-sheet::backdrop {
