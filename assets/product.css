@@ -3387,6 +3387,10 @@ button.pdp_trust_grid_item_inner {
     height: 292px;
   }
 
+  .pdp-kj_vermeil_diagram_image img {
+    object-fit: cover;
+  }
+
   .pdp-kj_vermeil_diagram_callout_icon {
     width: 10.6px;
     height: 10.6px;
@@ -3435,6 +3439,16 @@ button.pdp_trust_grid_item_inner {
 
   .pdp-kj_diamonds_compare {
     gap: 16px;
+  }
+
+  .pdp-kj_diamonds_compare_side {
+    min-width: 103px;
+  }
+
+  /* Why you'll love it 7930:112465 */
+  .pdp_highlights_item_text {
+    font-size: 14px;
+    line-height: 20px;
   }
 
   .pdp-kj_diamonds_compare_side_label,
