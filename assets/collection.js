@@ -102,6 +102,8 @@ class CollectionPage extends HTMLElement {
   revealFilters() {
     const rail = this.querySelector('[data-filters]');
     if (!rail) return;
+    // A pending scroll-reveal would otherwise nudge the sheet mid-slide.
+    window.gsap?.killTweensOf(rail);
     rail.classList.add('is-visible');
     rail.style.removeProperty('opacity');
     rail.style.removeProperty('transform');
