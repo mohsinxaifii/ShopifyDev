@@ -147,7 +147,10 @@
           data-product-id="{{ product.id }}"
           data-added-label="{{ 'products.added_to_cart' | t | escape }}"
         >
-          <span class="product-card_info_add_icon" aria-hidden="true">
+          <span class="product-card_info_add_icon product-card_info_add_icon--bag" aria-hidden="true">
+            {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+          </span>
+          <span class="product-card_info_add_icon product-card_info_add_icon--check" aria-hidden="true">
             {{- 'icon-check.svg' | inline_asset_content -}}
           </span>
           <span class="product-card_info_add_label" data-add-label>{{ 'products.add_to_cart' | t }}</span>

@@ -281,11 +281,18 @@
   cursor: default;
 }
 
-/* The tick only belongs on the card once the line is actually in the cart. */
+/* Figma 7930:15626: the bag leads the label; it swaps for the tick once the
+   line is actually in the cart. */
 .product-card--grid .product-card_info_add_icon {
-  display: none;
+  display: flex;
+  flex-shrink: 0;
   width: 20px;
   height: 20px;
+}
+
+.product-card--grid .product-card_info_add_icon--check,
+.product-card--grid .product-card_info_add.is-added .product-card_info_add_icon--bag {
+  display: none;
 }
 
 .product-card--grid .product-card_info_add_icon svg {
@@ -293,7 +300,7 @@
   height: 100%;
 }
 
-.product-card--grid .product-card_info_add.is-added .product-card_info_add_icon {
+.product-card--grid .product-card_info_add.is-added .product-card_info_add_icon--check {
   display: flex;
 }
 
