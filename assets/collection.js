@@ -14,6 +14,13 @@ class CollectionPage extends HTMLElement {
 
     this.grid = this.querySelector('[data-grid]');
     this.sortInput = this.querySelector('[data-sort-input]');
+    this.phone = window.matchMedia('(max-width: 749px)');
+    this.filterTab = 0;
+
+    // Capture phase, so on phones a group title switches tabs before the
+    // accordion handler on the <summary> itself can collapse it.
+    this.addEventListener('click', this.onFilterTab, true);
+    this.syncFilterTabs();
 
     this.form.addEventListener('change', (event) => {
       if (event.target.closest('[data-price-filter]')) return; // price commits on release
@@ -99,9 +106,32 @@ class CollectionPage extends HTMLElement {
     document.body.style.overflow = open ? 'hidden' : '';
   }
 
+  /* Phones show the filter groups as tabs (Figma 7930:118227): the titles stack
+     in a column and only the current group's values show beside them. */
+  onFilterTab = (event) => {
+    if (!this.phone.matches) return;
+    const summary = event.target.closest('[data-filter-group] > summary');
+    if (!summary) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.filterTab = Array.from(this.querySelectorAll('[data-filter-group]')).indexOf(summary.parentElement);
+    this.syncFilterTabs();
+  };
+
+  syncFilterTabs() {
+    const groups = Array.from(this.querySelectorAll('[data-filter-group]'));
+    if (this.filterTab >= groups.length) this.filterTab = 0;
+    groups.forEach((group, index) => {
+      group.classList.toggle('is-current', index === this.filterTab);
+      // A group collapsed on a wider screen would otherwise hide its values.
+      if (this.phone.matches) group.open = true;
+    });
+  }
+
   revealFilters() {
     const rail = this.querySelector('[data-filters]');
     if (!rail) return;
+    this.syncFilterTabs();
     // The scroll-reveal owns the rail's inline transform and writes an inline
     // `translate: none`, which would cancel the sheet's slide. Drop it for good.
     window.ScrollTrigger?.getAll().forEach((trigger) => {
