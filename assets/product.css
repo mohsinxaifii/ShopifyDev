@@ -2355,10 +2355,11 @@ button.pdp_trust_grid_item_inner {
   max-width: 100%;
   margin: 0;
 
-  /* 626 image + 16 gap + 24 counter. Sizing the ratio here rather than on the
-     frame is what gives the frame a width at all: an aspect-ratio box resolves
-     its width from a definite height, and only the stage has one. */
-  aspect-ratio: 630 / 666;
+  /* Figma 7930:98279: 630/626 across image + 16 gap + 20 counter. Sizing the
+     ratio here rather than on the frame is what gives the frame a width at
+     all: an aspect-ratio box resolves its width from a definite height, and
+     only the stage has one. */
+  aspect-ratio: 630 / 626;
 }
 
 .pdp-lightbox_body_stage_frame {
@@ -3030,6 +3031,41 @@ button.pdp_trust_grid_item_inner {
   .pdp {
     padding-bottom: 76px;
   }
+}
+
+/* Desktop lightbox (Figma 7930:98274): the 32px close row sits 38px down and
+   the 640px stage 88px down - Figma's 72px padding overflows the 759px frame,
+   so those are the rendered offsets. The photo fills its frame (cover). */
+@media screen and (min-width: 1001px) {
+  .pdp-lightbox[open] {
+    justify-content: flex-start;
+    padding: 88px 72px 31px;
+  }
+
+  .pdp-lightbox_close {
+    top: 38px;
+    right: 80px;
+  }
+
+  .pdp-lightbox_body_stage_frame_slide img {
+    object-fit: cover;
+  }
+}
+
+/* Sheet head (Figma 7930:101065 etc.): a 24px title row and a bare 21.5px
+   close, rather than a padded 40px button. */
+.pdp-sheet_panel_head_title {
+  line-height: 24px;
+}
+
+.pdp-sheet_panel_head_close {
+  margin: 0;
+  padding: 0;
+}
+
+.pdp-sheet_panel_head_close svg {
+  width: 21.5px;
+  height: 21.5px;
 }
 
 /* ------------------------------------------------- gallery track / add-ons --
