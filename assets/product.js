@@ -533,7 +533,21 @@
         this.sheets.get('addons')?.close();
       });
 
+      // Product cards on the page (You may also like, Recently viewed) pick
+      // their variant in the same bottom sheet the PLP uses (variant-drawer.js)
+      // instead of following the card link.
+      this.addEventListener('click', (event) => {
+        const cardAdd = event.target.closest('.product-card [data-add-to-cart]');
+        if (!cardAdd) return;
+        event.preventDefault();
+        const drawer = document.querySelector('variant-drawer');
+        const url = cardAdd.closest('.product-card')?.getAttribute('href');
+        if (drawer && url) return drawer.open(url, cardAdd);
+        this.addToCart([{ id: Number(cardAdd.dataset.variantId), quantity: 1 }], { trigger: cardAdd });
+      });
+
       const pairAdd = this.querySelector('[data-pair-add]');
+      this.syncPairCta();
       pairAdd?.addEventListener('click', () => {
         const items = Array.from(
           this.querySelectorAll('[data-pair-toggle][aria-pressed="true"]'),
@@ -564,6 +578,16 @@
           trigger: button,
         });
       });
+    }
+
+    /* The set CTA says what it will add: the whole set until the shopper ticks
+       pieces, then just those. */
+    syncPairCta() {
+      const label = this.querySelector('[data-pair-add-label]');
+      if (!label) return;
+      const picked = this.querySelectorAll('[data-pair-toggle][aria-pressed="true"]').length;
+      label.textContent =
+        picked === 0 ? 'Add set to cart' : `Add ${picked} ${picked === 1 ? 'item' : 'items'} to cart`;
     }
 
     /* --------------------------------------------------------- add-ons */

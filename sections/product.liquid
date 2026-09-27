@@ -832,7 +832,7 @@
               <span class="pdp_button_icon" aria-hidden="true">
                 {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
               </span>
-              <span>Add set to cart</span>
+              <span data-pair-add-label>Add set to cart</span>
             </button>
           </div>
         </section>
@@ -963,6 +963,8 @@
     sgl_logo: section.settings.sgl_logo
   -%}
   {%- render 'pdp-ugc-lightbox', product: product, videos: ugc_videos -%}
+  {%- comment -%} The PLP's variant picker, for the product cards further down the page. {%- endcomment -%}
+  {%- render 'variant-drawer' -%}
 
   {%- comment -%}
     Variant lookup for the JS. `/products/x.js` carries none of the money
