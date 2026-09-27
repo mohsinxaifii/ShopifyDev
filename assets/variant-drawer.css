@@ -47,6 +47,38 @@
   }
 }
 
+/* Phones: a bottom sheet, sliding and dimming exactly like the review sheet
+   (motion.css --sheet-* tokens). The exit curve sits on the closed state and
+   the entry curve on .is-open, so each direction gets its own. */
+@media screen and (max-width: 749px) {
+  .variant-drawer_scrim {
+    background-color: var(--sheet-scrim);
+    -webkit-backdrop-filter: var(--sheet-blur);
+    backdrop-filter: var(--sheet-blur);
+    transition: opacity var(--sheet-scrim-duration) ease;
+  }
+
+  .variant-drawer_panel {
+    top: auto;
+    left: 0;
+    width: 100%;
+    /* Opens before the product is fetched; the floor stops it sliding up as a
+       sliver and then jumping taller. */
+    min-height: 50dvh;
+    max-height: 90dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform var(--sheet-exit-duration) var(--sheet-exit-ease);
+  }
+
+  .variant-drawer.is-open .variant-drawer_panel {
+    transform: translateY(0);
+    transition: transform var(--sheet-enter-duration) var(--sheet-enter-ease);
+  }
+}
+
 /* ------------------------------------------------------------------- head */
 
 .variant-drawer_panel_head {
