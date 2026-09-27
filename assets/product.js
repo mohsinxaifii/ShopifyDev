@@ -3,7 +3,7 @@
  *
  * One custom element owns the page so the seven overlay states, the gallery and
  * the buy form can share a single variant table and a single cart request - the
- * add-ons, the gift sleeve and the paired products all have to land in the same
+ * add-ons and the paired products all have to land in the same
  * /cart/add.js call, or a shopper who picks three things gets three toasts and
  * three chances for one of them to fail on its own.
  */
@@ -567,9 +567,6 @@
 
     buildItems() {
       const items = [{ id: Number(this.variantInput.value), quantity: 1 }];
-
-      const gift = this.querySelector('[data-gift-toggle]');
-      if (gift?.checked) items.push({ id: Number(gift.dataset.variantId), quantity: 1 });
 
       this.querySelectorAll('[data-addon-toggle][aria-pressed="true"]').forEach((button) => {
         items.push({ id: Number(button.dataset.variantId), quantity: 1 });

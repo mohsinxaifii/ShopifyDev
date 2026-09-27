@@ -189,6 +189,20 @@
               {%- endfor -%}
             </div>
           {%- endif -%}
+
+          {%- comment -%}
+            Phones only (Figma Mobile 7930:112276): the add-ons prompt is a
+            frosted band along the foot of the image rather than a button under
+            the price.
+          {%- endcomment -%}
+          {%- if addons != blank -%}
+            <button type="button" class="pdp_gallery_stage_addons" data-open="addons">
+              <span>Add-ons available</span>
+              <span class="pdp_gallery_stage_addons_icon" aria-hidden="true">
+                {{- 'icon-caret-right.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          {%- endif -%}
         </div>
 
         {%- comment -%}
@@ -526,29 +540,6 @@
         </div>
         <p class="pdp_delivery_result" data-pincode-result hidden></p>
       </section>
-
-      {%- comment -%} Gift sleeve add-on - Figma 7930:96141 {%- endcomment -%}
-      {%- if section.settings.gift_product != blank -%}
-        {%- assign gift = section.settings.gift_product -%}
-        <div class="pdp_gift">
-          <label class="pdp_gift_row">
-            <input
-              type="checkbox"
-              class="pdp_gift_row_check"
-              data-gift-toggle
-              data-variant-id="{{ gift.selected_or_first_available_variant.id }}"
-            >
-            <span class="pdp_gift_row_box" aria-hidden="true">{{ 'icon-tick.svg' | inline_asset_content }}</span>
-            {%- if gift.featured_image -%}
-              <span class="pdp_gift_row_media">
-                {{ gift.featured_image | image_url: width: 56 | image_tag: loading: 'lazy', alt: '' }}
-              </span>
-            {%- endif -%}
-            <span class="pdp_gift_row_label">{{ section.settings.gift_label | default: gift.title }}</span>
-            <span class="pdp_gift_row_price">{%- render 'money', amount: gift.price -%}</span>
-          </label>
-        </div>
-      {%- endif -%}
 
       {%- comment -%} Need help choosing? - Figma 7930:96150 {%- endcomment -%}
       <section class="pdp_help" data-animate>
