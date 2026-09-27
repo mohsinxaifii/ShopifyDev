@@ -318,7 +318,7 @@
       if (this.lightboxCurrent) this.lightboxCurrent.textContent = String(this.lightboxIndex + 1);
       // Keep the inline gallery on the same frame, so closing the lightbox
       // doesn't jump the shopper back to where they started.
-      this.gallery?.show(this.lightboxIndex);
+      this.gallery?.show(this.lightboxIndex, { smooth: false });
     }
 
     stepLightbox(direction) {
