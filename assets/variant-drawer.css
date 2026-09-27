@@ -518,8 +518,8 @@
   }
 
   .variant-drawer_panel_footer_done {
-    height: auto;
-    padding: 12px;
+    height: 44px;
+    padding: 0 12px;
     font-size: 16px;
     line-height: normal;
   }

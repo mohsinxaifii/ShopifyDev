@@ -194,6 +194,15 @@ class CollectionPage extends HTMLElement {
       input.addEventListener('change', commit);
     });
     paint();
+
+    // Liquid's money filter groups thousands the Western way; match the readout.
+    const symbol = scope.dataset.symbol || '';
+    scope.querySelectorAll('[data-price-preset]').forEach((preset) => {
+      const low = `${symbol}${this.group(preset.dataset.min)}`;
+      preset.textContent = preset.hasAttribute('data-open-ended')
+        ? `${low}+`
+        : `${low} - ${symbol}${this.group(preset.dataset.max)}`;
+    });
   }
 
   applyPreset(preset) {

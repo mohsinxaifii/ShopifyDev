@@ -895,7 +895,8 @@ collection-page:defined .plp-skeleton {
     flex: 1 1 0;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    height: 44px;
+    padding: 0 12px;
     border: 1px solid var(--color-brand, #712242);
     border-radius: 8px;
     font-family: var(--font-secondary--family);
