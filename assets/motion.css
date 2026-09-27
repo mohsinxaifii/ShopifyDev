@@ -25,6 +25,25 @@
      scripted and CSS motion read as one system. */
   --motion-ease: cubic-bezier(0.33, 1, 0.68, 1);
   --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Phone bottom sheets. Mirrors the review sheet (initBottomSheets in
+     animations.js and .review-dialog::backdrop) so the PLP sort/filter sheets
+     and the variant drawer, which are not <dialog>s, slide and dim the same way. */
+  --sheet-enter-duration: 0.4s;
+  --sheet-enter-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --sheet-exit-duration: 0.3s;
+  --sheet-exit-ease: cubic-bezier(0.4, 0, 1, 1);
+  --sheet-scrim-duration: 0.35s;
+  --sheet-scrim: rgba(0, 0, 0, 0.55);
+  --sheet-blur: blur(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sheet-enter-duration: 0.01ms;
+    --sheet-exit-duration: 0.01ms;
+    --sheet-scrim-duration: 0.01ms;
+  }
 }
 
 /* --------------------------------------------------------- scroll reveal */
