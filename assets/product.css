@@ -3068,6 +3068,11 @@ button.pdp_trust_grid_item_inner {
   height: 21.5px;
 }
 
+/* Price difference (Figma 7930:101065): the banner starts 24px under the head. */
+.pdp-sheet[data-sheet='price-difference'] .pdp-sheet_panel_body {
+  padding-top: 24px;
+}
+
 /* ------------------------------------------------- gallery track / add-ons --
    The stage track only exists for the phone strip; on desktop it steps out of
    the way so the slides keep crossfading inside the stage. */
