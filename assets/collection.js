@@ -94,19 +94,27 @@ class CollectionPage extends HTMLElement {
      scroll-reveal never sees it while it is hidden, and motion.css holds every
      unrevealed [data-animate] element at zero opacity. */
   setFiltersOpen(open) {
+    if (open) {
+      this.revealFilters();
+      // Settle the rail at its parked position first, so the sheet slides up
+      // rather than appearing in place.
+      this.querySelector('[data-filters]')?.getBoundingClientRect();
+    }
     this.toggleAttribute('data-filters-open', open);
     document.body.style.overflow = open ? 'hidden' : '';
-    if (open) this.revealFilters();
   }
 
   revealFilters() {
     const rail = this.querySelector('[data-filters]');
     if (!rail) return;
-    // A pending scroll-reveal would otherwise nudge the sheet mid-slide.
+    // The scroll-reveal owns the rail's inline transform and writes an inline
+    // `translate: none`, which would cancel the sheet's slide. Drop it for good.
+    window.ScrollTrigger?.getAll().forEach((trigger) => {
+      if (trigger.trigger === rail) trigger.kill();
+    });
     window.gsap?.killTweensOf(rail);
     rail.classList.add('is-visible');
-    rail.style.removeProperty('opacity');
-    rail.style.removeProperty('transform');
+    ['opacity', 'transform', 'translate'].forEach((prop) => rail.style.removeProperty(prop));
   }
 
   applySort(option) {
