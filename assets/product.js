@@ -53,8 +53,6 @@
 
       this.slides.forEach((slide) => {
         slide.addEventListener('click', () => {
-          // A swipe ends in a click too; it should turn the page, not open the lightbox.
-          if (this.swiped) return;
           this.dispatchEvent(
             new CustomEvent('gallery:open', { bubbles: true, detail: { index: this.index } }),
           );
@@ -64,44 +62,44 @@
       this.setupSwipe();
     }
 
-    /* Phones have dots instead of thumbnails, so the image itself has to page. */
+    /* Phones have dots instead of thumbnails, so the image itself has to page.
+       The track is a native scroll-snap strip there (product.css), so the swipe
+       tracks the finger; this only keeps the dots and the index in step. */
     setupSwipe() {
-      const stage = this.querySelector('.pdp_gallery_stage');
-      if (!stage || this.slides.length < 2) return;
-      let startX = 0;
-      let startY = 0;
-      stage.addEventListener(
-        'touchstart',
-        (event) => {
-          startX = event.touches[0].clientX;
-          startY = event.touches[0].clientY;
-          this.swiped = false;
-        },
-        { passive: true },
-      );
-      stage.addEventListener(
-        'touchend',
-        (event) => {
-          const dx = event.changedTouches[0].clientX - startX;
-          const dy = event.changedTouches[0].clientY - startY;
-          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-          this.swiped = true;
-          const last = this.slides.length - 1;
-          this.show(dx < 0 ? Math.min(this.index + 1, last) : Math.max(this.index - 1, 0));
-          window.setTimeout(() => {
-            this.swiped = false;
-          }, 400);
+      this.phone = window.matchMedia('(max-width: 749px)');
+      this.track = this.querySelector('[data-stage-track]');
+      if (!this.track || this.slides.length < 2) return;
+
+      let frame = 0;
+      this.track.addEventListener(
+        'scroll',
+        () => {
+          if (!this.phone.matches) return;
+          cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(() => {
+            const width = this.track.clientWidth || 1;
+            const index = Math.round(this.track.scrollLeft / width);
+            if (index !== this.index) this.mark(Math.min(Math.max(index, 0), this.slides.length - 1));
+          });
         },
         { passive: true },
       );
     }
 
-    show(index) {
-      if (index < 0 || index >= this.slides.length) return;
+    mark(index) {
       this.index = index;
       this.slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
       this.thumbs.forEach((thumb, i) => thumb.classList.toggle('is-active', i === index));
       this.dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
+    }
+
+    show(index, { smooth = true } = {}) {
+      if (index < 0 || index >= this.slides.length) return;
+      this.mark(index);
+      if (this.phone?.matches && this.track) {
+        this.track.scrollTo({ left: index * this.track.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+        return;
+      }
       this.thumbs[index]?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   }

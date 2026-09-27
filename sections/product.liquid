@@ -115,6 +115,12 @@
     <div class="pdp_gallery" data-animate data-animate-from="left">
       <product-gallery class="pdp_gallery_inner">
         <div class="pdp_gallery_stage">
+          {%- comment -%}
+            The track is `display: contents` on desktop, where the slides crossfade
+            in place; on phones it is a native scroll-snap strip, so a swipe
+            follows the finger instead of jumping a frame at the end.
+          {%- endcomment -%}
+          <div class="pdp_gallery_stage_track" data-stage-track>
           {%- for media in product.media -%}
             {%- liquid
               comment
@@ -154,6 +160,7 @@
               {%- endif -%}
             </button>
           {%- endfor -%}
+          </div>
 
           <div class="pdp_gallery_stage_top">
             {%- if has_compare -%}
