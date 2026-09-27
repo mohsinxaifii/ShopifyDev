@@ -146,10 +146,20 @@
       const nativeClose = dialog.close.bind(dialog);
       let closing = false;
 
+      // `data-motion-phone-fade` dialogs only fade on phones. The PDP image
+      // viewer needs this: clearing a transform off its fixed body at the end
+      // of the scale rebuilds the swipe strip inside it and loses its scroll.
+      const fadeOnly = () =>
+        dialog.hasAttribute('data-motion-phone-fade') && window.matchMedia('(max-width: 749px)').matches;
+
       dialog.showModal = (...args) => {
         nativeShow(...args);
         dialog.classList.remove('is-closing');
         gsap.killTweensOf(target);
+        if (fadeOnly()) {
+          gsap.fromTo(target, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out', clearProps: 'opacity' });
+          return;
+        }
         gsap.fromTo(
           target,
           { opacity: panel ? 1 : 0, ...enter },
@@ -172,7 +182,7 @@
         gsap.killTweensOf(target);
         gsap.to(target, {
           opacity: panel ? 1 : 0,
-          ...enter,
+          ...(fadeOnly() ? {} : enter),
           duration: 0.3,
           ease: 'power2.in',
           onComplete: () => {
