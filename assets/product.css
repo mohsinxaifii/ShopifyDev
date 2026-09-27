@@ -3487,7 +3487,13 @@ button.pdp_trust_grid_item_inner {
   /* The Zinara Difference 7930:112575 */
   .pdp_difference {
     gap: 16px;
+    margin-inline: calc(var(--page-margin) * -1);
     padding: 24px var(--page-margin);
+  }
+
+  .pdp_difference_table :is(.pdp_difference_table_yes, .pdp_difference_table_no) svg {
+    width: 16px;
+    height: 16px;
   }
 
   .pdp_difference_title {
@@ -3531,7 +3537,6 @@ button.pdp_trust_grid_item_inner {
 
   .pdp_pair_card_title {
     gap: 8px;
-    justify-content: center;
     padding-block: 8px;
     font-size: 20px;
     line-height: normal;
