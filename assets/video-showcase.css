@@ -212,187 +212,6 @@
   z-index: 4;
 }
 
-/* Sound toggle, top right under the timeline. Only the playing card shows
-   it; the icon follows the carousel-wide muted state. */
-.video-showcase_wrapper_track_item_sound {
-  position: absolute;
-  top: 24px;
-  right: 10px;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background-color: rgba(0, 0, 0, 0.45);
-  color: #fff;
-  cursor: pointer;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.3s ease,
-    visibility 0.3s ease,
-    background-color 0.2s ease;
-}
-
-.video-showcase_wrapper_track_item.is-active .video-showcase_wrapper_track_item_sound {
-  opacity: 1;
-  visibility: visible;
-}
-
-.video-showcase_wrapper_track_item_sound:hover {
-  background-color: rgba(0, 0, 0, 0.65);
-}
-
-.video-showcase_wrapper_track_item_sound svg {
-  width: 18px;
-  height: 18px;
-}
-
-.video-showcase_wrapper_track_item_sound_icon--unmuted,
-.video-showcase.is-unmuted .video-showcase_wrapper_track_item_sound_icon--muted {
-  display: none;
-}
-
-.video-showcase.is-unmuted .video-showcase_wrapper_track_item_sound_icon--unmuted {
-  display: block;
-}
-
-/* Horizontal drags belong to the carousel; vertical ones still scroll the page. */
-.video-showcase_wrapper_viewport {
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.video-showcase_wrapper_track.is-dragging {
-  cursor: grabbing;
-}
-
-.video-showcase_wrapper_track img,
-.video-showcase_wrapper_track a {
-  -webkit-user-drag: none;
-}
-
-/* Product card floating over the bottom of the video: inset from the card
-   edges, rounded, on a lightly frosted panel. Sits above the optional
-   whole-card link so its title and button stay clickable. */
-.video-showcase_wrapper_track_item_product {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  left: 8px;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  cursor: default;
-}
-
-.video-showcase_wrapper_track_item_product_info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  text-decoration: none;
-}
-
-.video-showcase_wrapper_track_item_product_info_image {
-  flex: 0 0 48px;
-  width: 48px;
-  height: 48px;
-  overflow: hidden;
-  border-radius: 6px;
-  background-color: #f5f0f2;
-}
-
-.video-showcase_wrapper_track_item_product_info_image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.video-showcase_wrapper_track_item_product_info_text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.video-showcase_wrapper_track_item_product_info_title {
-  overflow: hidden;
-  font-family: var(--font-secondary--family);
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--color-text-secondary, #494949);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.video-showcase_wrapper_track_item_product_info_price {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 6px;
-  white-space: nowrap;
-  font-family: var(--font-secondary--family);
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--color-brand, #712242);
-}
-
-.video-showcase_wrapper_track_item_product_info_price_compare {
-  font-weight: 400;
-  font-size: 12px;
-  color: var(--color-icon, #666);
-}
-
-.video-showcase_wrapper_track_item_product_add {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--color-brand, #712242);
-  border-radius: 8px;
-  background-color: var(--color-brand, #712242);
-  color: #fff;
-  font-family: var(--font-secondary--family);
-  font-weight: 600;
-  font-size: 14px;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.video-showcase_wrapper_track_item_product_add:hover {
-  background-color: #5c1b36;
-}
-
-.video-showcase_wrapper_track_item_product_add.is-loading {
-  opacity: 0.7;
-  cursor: progress;
-}
-
-.video-showcase_wrapper_track_item_product_add--disabled {
-  border-color: #e0e0e0;
-  background-color: #e0e0e0;
-  color: var(--color-icon, #666);
-  cursor: not-allowed;
-}
-
 .video-showcase_wrapper_stage_prev,
 .video-showcase_wrapper_stage_next {
   position: absolute;
@@ -462,43 +281,63 @@
     margin-inline: calc(var(--page-margin) * -1);
   }
 
+  /* Resting cards are drawn at 146x275, i.e. the 169x320 card scaled by 0.86.
+     Scaling about the centre pulls each edge in by (169 - 146) / 2 = 11.5px,
+     so a 4.5px layout gap reads as Figma's 16px beside the active card. The
+     script measures centre to centre, so the scale does not upset the step. */
   .video-showcase_wrapper_track {
-    --video-showcase-step: 185px;
-    --video-showcase-gap: 16px;
+    --video-showcase-step: 173.5px;
+    --video-showcase-gap: 4.5px;
     --video-showcase-card-width: 169px;
   }
 
   .video-showcase_wrapper_track_item {
     aspect-ratio: 169 / 320;
+    transform: scale(0.86);
+    transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
   }
 
-  .video-showcase_wrapper_track_item_product {
-    right: 6px;
-    bottom: 6px;
-    left: 6px;
-    gap: 6px;
-    padding: 6px;
-    border-radius: 8px;
+  .video-showcase_wrapper_track_item.is-active {
+    transform: none;
   }
 
-  .video-showcase_wrapper_track_item_product_info {
-    gap: 6px;
+  .video-showcase_wrapper_track_item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.4);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
   }
 
-  .video-showcase_wrapper_track_item_product_info_image {
-    flex-basis: 36px;
-    width: 36px;
-    height: 36px;
+  .video-showcase_wrapper_track_item.is-active::after {
+    opacity: 0;
   }
 
-  .video-showcase_wrapper_track_item_product_info_title,
-  .video-showcase_wrapper_track_item_product_info_price {
-    font-size: 12px;
+  .video-showcase_wrapper_track_item_scrim {
+    display: none;
   }
 
-  .video-showcase_wrapper_track_item_product_add {
-    height: 32px;
-    font-size: 12px;
+  .video-showcase_wrapper_track_item_progress {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* A bare 19px triangle over the dimmed card, no disc behind it. */
+  .video-showcase_wrapper_track_item_play {
+    width: auto;
+    height: auto;
+    background-color: transparent;
+  }
+
+  .video-showcase_wrapper_track_item_play svg {
+    width: 19px;
+    height: 19px;
+    margin-left: 0;
   }
 
   .video-showcase_wrapper_stage_prev,
@@ -526,4 +365,178 @@
 .video-showcase_wrapper_track.is-snapping .video-showcase_wrapper_track_item,
 .video-showcase_wrapper_track.is-snapping .video-showcase_wrapper_track_item * {
   transition: none !important;
+}
+
+/* ------------------------------------------------- product card on a slide */
+
+/* A compact buy row pinned to the bottom of the video. It sits above the
+   whole-card link (z-index 4) so its own link and button stay clickable. */
+.video-showcase_wrapper_track_item_product {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+}
+
+.video-showcase_wrapper_track_item_product_link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+  text-decoration: none;
+  color: inherit;
+}
+
+.video-showcase_wrapper_track_item_product_media {
+  display: block;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+.video-showcase_wrapper_track_item_product_media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-showcase_wrapper_track_item_product_info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.video-showcase_wrapper_track_item_product_info_title {
+  overflow: hidden;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000;
+
+  /* One line only: the card is ~282px wide and the video needs to stay visible. */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.video-showcase_wrapper_track_item_product_info_price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.video-showcase_wrapper_track_item_product_info_price_current {
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-brand, #712242);
+}
+
+.video-showcase_wrapper_track_item_product_info_price_compare {
+  font-family: var(--font-secondary--family);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--color-icon, #666);
+  text-decoration: line-through;
+}
+
+.video-showcase_wrapper_track_item_product_add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-brand, #712242);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.video-showcase_wrapper_track_item_product_add:hover {
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+}
+
+.video-showcase_wrapper_track_item_product_add[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.video-showcase_wrapper_track_item_product_add--disabled {
+  border-color: #cfcfcf;
+  color: var(--color-icon, #666);
+  cursor: default;
+}
+
+/* The tick only appears once the line is in the cart. */
+.video-showcase_wrapper_track_item_product_add_icon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+
+.video-showcase_wrapper_track_item_product_add_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.video-showcase_wrapper_track_item_product_add.is-added {
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+}
+
+.video-showcase_wrapper_track_item_product_add.is-added .video-showcase_wrapper_track_item_product_add_icon {
+  display: inline-flex;
+}
+
+@media screen and (max-width: 749px) {
+  .video-showcase_wrapper_track_item_product {
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .video-showcase_wrapper_track_item_product_media {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .video-showcase_wrapper_track_item_product_add {
+    min-height: 28px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
 }
