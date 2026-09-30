@@ -77,15 +77,16 @@
 .know-your-jewellery_wrapper_grid_vermeil_diagram {
   position: relative;
   width: 100%;
-  aspect-ratio: 536.5 / 238;
+  aspect-ratio: 536.5 / 291;
 }
 
+/* Figma 8106:49989: a square 247px cutaway at (133, 29) in the 536.5x291 box. */
 .know-your-jewellery_wrapper_grid_vermeil_diagram_image {
   position: absolute;
-  left: 25.72%;
-  top: 7.98%;
-  width: 44.58%;
-  height: 92.14%;
+  left: 24.79%;
+  top: 9.97%;
+  width: 46.04%;
+  height: 84.88%;
   display: block;
 }
 
@@ -94,7 +95,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 9.938px 9.938px rgba(0, 0, 0, 0.1));
 }
 
 .know-your-jewellery_wrapper_grid_vermeil_diagram_lines {
@@ -125,19 +125,19 @@
    and neighbouring labels don't run into each other. */
 .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--1 {
   left: 2.98%;
-  top: 12.185%;
+  top: 9.97%;
   width: 30.25%;
 }
 
 .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--2 {
-  left: 49.3%;
-  top: 15.61%;
+  left: 48.56%;
+  top: 12.42%;
   width: 39.39%;
 }
 
 .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--3 {
-  left: 37.95%;
-  top: 89.37%;
+  left: 37.65%;
+  top: 90.34%;
   width: 44.42%;
 }
 
@@ -348,16 +348,6 @@
   max-width: 361px;
   height: 185px;
   margin-inline: auto;
-
-  /* Vertical page scroll stays with the browser; horizontal drags reach the
-     swipe handler in know-your-jewellery.js. */
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_stack img {
-  -webkit-user-drag: none;
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_stack_item {
@@ -370,6 +360,7 @@
   transition:
     margin 0.3s ease,
     transform 0.3s ease,
+    opacity 0.3s ease,
     border-color 0.3s ease;
 }
 
@@ -405,79 +396,53 @@
   pointer-events: none;
 }
 
-/* Deck shuffle: the front card swings out, tucks behind the deck and settles at
-   the back (next); previous runs the same path backwards on the back card. The
-   z-index switch halfway is what carries the card behind the others. */
-.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-sending-back {
-  animation: kyj-card-send-back 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+/* The deck is swiped as well as tapped. The perspective lives here because the
+   cards themselves tip on their Y axis when they leave; `pan-y` keeps the page
+   scrolling while a sideways drag is claimed by the card. */
+.know-your-jewellery_wrapper_grid_diamonds_stack {
+  perspective: 1200px;
+  touch-action: pan-y;
 }
 
-.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-bringing-front {
-  animation: kyj-card-bring-front 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+.know-your-jewellery_wrapper_grid_diamonds_stack_item[data-depth='0'] {
+  cursor: grab;
 }
 
-@keyframes kyj-card-send-back {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-    z-index: 4;
-  }
-
-  35% {
-    transform: translateX(calc(100px * var(--card-stack-swing, 1))) scale(0.96)
-      rotate(calc(4deg * var(--card-stack-swing, 1)));
-    z-index: 4;
-  }
-
-  50% {
-    transform: translateX(calc(70px * var(--card-stack-swing, 1))) scale(0.93)
-      rotate(calc(3deg * var(--card-stack-swing, 1)));
-    z-index: 0;
-  }
-
-  100% {
-    transform: translate(0, 20.57px) rotate(0deg);
-    z-index: 0;
-  }
+/* Under the finger the card tracks 1:1, so easing is dropped for the duration. */
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-dragging {
+  transition: none;
+  cursor: grabbing;
+  transform: translateX(var(--stack-drag-x, 0px)) rotate(var(--stack-drag-rotate, 0deg));
 }
 
-@keyframes kyj-card-bring-front {
-  0% {
-    transform: translate(0, 20.57px) rotate(0deg);
-    z-index: 0;
-  }
+/* Leaving the deck: the card tips away on its vertical axis and fades out,
+   which reads as a flip as the card behind it rises into the front slot. */
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving {
+  z-index: 4;
+  opacity: 0;
+  transition:
+    transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.32s ease;
+}
 
-  50% {
-    transform: translateX(calc(70px * var(--card-stack-swing, -1))) scale(0.93)
-      rotate(calc(3deg * var(--card-stack-swing, -1)));
-    z-index: 0;
-  }
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving--next {
+  transform: translateX(-62%) rotateY(38deg) scale(0.9);
+}
 
-  65% {
-    transform: translateX(calc(100px * var(--card-stack-swing, -1))) scale(0.96)
-      rotate(calc(4deg * var(--card-stack-swing, -1)));
-    z-index: 4;
-  }
-
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-    z-index: 4;
-  }
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving--prev {
+  transform: translateX(62%) rotateY(-38deg) scale(0.9);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .know-your-jewellery_wrapper_grid_diamonds_stack_item.is-sending-back,
-  .know-your-jewellery_wrapper_grid_diamonds_stack_item.is-bringing-front {
-    animation: none;
+  .know-your-jewellery_wrapper_grid_diamonds_stack_item,
+  .know-your-jewellery_wrapper_grid_diamonds_stack_item.is-leaving {
+    transition: none;
   }
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_stack_arrow {
   position: absolute;
-
-  /* Centred on the 164px card by offsetting half the 40px button, not with
-     translateY(-50%): motion.css scales every button:active, which would wipe
-     that transform and drop the arrow 20px on each press. */
-  top: calc(82px - 20px);
+  top: 82px;
   z-index: 4;
   display: flex;
   align-items: center;
@@ -489,6 +454,7 @@
   background: none;
   color: var(--color-brand, #712242);
   cursor: pointer;
+  transform: translateY(-50%);
   transition: opacity 0.2s ease;
 }
 
@@ -535,16 +501,7 @@
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact {
-  padding: 0;
   transform: rotateY(-180deg);
-}
-
-/* The diamond comparison is the back of every myth card; the flip card already
-   draws the border, so the comparison fills it edge to edge. */
-.know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact
-  .know-your-jewellery_wrapper_grid_diamonds_compare {
-  border: none;
-  border-radius: 15px;
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card.is-flipped
@@ -571,6 +528,13 @@
   font-size: 14px;
   line-height: 1.43;
   color: #000;
+}
+
+.know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact
+  .know-your-jewellery_wrapper_grid_diamonds_flip_card_quote {
+  font-family: var(--font-secondary--family);
+  font-style: normal;
+  color: var(--color-text-secondary, #494949);
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card_hint {

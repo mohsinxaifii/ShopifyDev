@@ -25,18 +25,38 @@
                 | image_tag: loading: 'lazy', alt: section.settings.vermeil_title
               }}
             </span>
+          {%- else -%}
+            {%- comment -%}
+              The square plating cutaway from Figma 8106:49989 ships with the
+              theme, so the diagram works before a merchant picks their own.
+            {%- endcomment -%}
+            <span class="know-your-jewellery_wrapper_grid_vermeil_diagram_image">
+              <img
+                src="{{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '480x' }}"
+                srcset="
+                  {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '240x' }} 240w,
+                  {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '480x' }} 480w,
+                  {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '720x' }} 720w
+                "
+                sizes="(max-width: 749px) 66vw, 247px"
+                width="1080"
+                height="1080"
+                loading="lazy"
+                alt="{{ section.settings.vermeil_title | escape }}"
+              >
+            </span>
           {%- endif -%}
 
           <svg
             class="know-your-jewellery_wrapper_grid_vermeil_diagram_lines"
-            viewBox="0 0 536.5 238"
+            viewBox="0 0 536.5 291"
             preserveAspectRatio="none"
             aria-hidden="true"
           >
-            <path d="M178 36.22 L225.78 36.22 L225.78 99.82" />
+            <path d="M178 36.33 L226 36.33 L226 91" />
             <path d="M269.84 60.99 L269.84 100.07" />
-            <path d="M228.76 187.81 L228.76 195.1 L262.88 195.1 L262.88 187.81" />
-            <path d="M245.82 195.1 L245.82 211" />
+            <path d="M213.33 238 L213.33 245.23 L286.33 245.23 L286.33 238" />
+            <path d="M249.83 245.23 L249.83 261" />
           </svg>
 
           {%- comment -%}
