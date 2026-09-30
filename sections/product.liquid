@@ -12,7 +12,6 @@
 {{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
 {{ 'product-card.css' | asset_url | stylesheet_tag }}
 {{ 'product.css' | asset_url | stylesheet_tag }}
-{{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
@@ -116,12 +115,6 @@
     <div class="pdp_gallery" data-animate data-animate-from="left">
       <product-gallery class="pdp_gallery_inner">
         <div class="pdp_gallery_stage">
-          {%- comment -%}
-            The track is `display: contents` on desktop, where the slides crossfade
-            in place; on phones it is a native scroll-snap strip, so a swipe
-            follows the finger instead of jumping a frame at the end.
-          {%- endcomment -%}
-          <div class="pdp_gallery_stage_track" data-stage-track>
           {%- for media in product.media -%}
             {%- liquid
               comment
@@ -161,7 +154,6 @@
               {%- endif -%}
             </button>
           {%- endfor -%}
-          </div>
 
           <div class="pdp_gallery_stage_top">
             {%- if has_compare -%}
@@ -189,20 +181,6 @@
                 <span class="pdp_gallery_stage_bottom_pill">{{ badge }}</span>
               {%- endfor -%}
             </div>
-          {%- endif -%}
-
-          {%- comment -%}
-            Phones only (Figma Mobile 7930:112276): the add-ons prompt is a
-            frosted band along the foot of the image rather than a button under
-            the price.
-          {%- endcomment -%}
-          {%- if addons != blank -%}
-            <button type="button" class="pdp_gallery_stage_addons" data-open="addons">
-              <span>Add-ons available</span>
-              <span class="pdp_gallery_stage_addons_icon" aria-hidden="true">
-                {{- 'icon-caret-right.svg' | inline_asset_content -}}
-              </span>
-            </button>
           {%- endif -%}
         </div>
 
@@ -542,6 +520,29 @@
         <p class="pdp_delivery_result" data-pincode-result hidden></p>
       </section>
 
+      {%- comment -%} Gift sleeve add-on - Figma 7930:96141 {%- endcomment -%}
+      {%- if section.settings.gift_product != blank -%}
+        {%- assign gift = section.settings.gift_product -%}
+        <div class="pdp_gift">
+          <label class="pdp_gift_row">
+            <input
+              type="checkbox"
+              class="pdp_gift_row_check"
+              data-gift-toggle
+              data-variant-id="{{ gift.selected_or_first_available_variant.id }}"
+            >
+            <span class="pdp_gift_row_box" aria-hidden="true">{{ 'icon-tick.svg' | inline_asset_content }}</span>
+            {%- if gift.featured_image -%}
+              <span class="pdp_gift_row_media">
+                {{ gift.featured_image | image_url: width: 56 | image_tag: loading: 'lazy', alt: '' }}
+              </span>
+            {%- endif -%}
+            <span class="pdp_gift_row_label">{{ section.settings.gift_label | default: gift.title }}</span>
+            <span class="pdp_gift_row_price">{%- render 'money', amount: gift.price -%}</span>
+          </label>
+        </div>
+      {%- endif -%}
+
       {%- comment -%} Need help choosing? - Figma 7930:96150 {%- endcomment -%}
       <section class="pdp_help" data-animate>
         <div class="pdp_help_copy">
@@ -717,15 +718,6 @@
               {%- endfor -%}
             {%- endif -%}
           </div>
-          {%- comment -%} Desktop only (Figma 7930:96003): a next arrow over the row's right edge. {%- endcomment -%}
-          <button
-            type="button"
-            class="scroll-carousel_arrow pdp_related_panel_next"
-            data-next
-            aria-label="{{ 'accessibility.next' | t }}"
-          >
-            {{- 'icon-caret-right.svg' | inline_asset_content -}}
-          </button>
           <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
         </scroll-carousel>
 
@@ -842,7 +834,7 @@
               <span class="pdp_button_icon" aria-hidden="true">
                 {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
               </span>
-              <span data-pair-add-label>Add set to cart</span>
+              <span>Add set to cart</span>
             </button>
           </div>
         </section>
@@ -959,7 +951,6 @@
   {%- render 'pdp-offers-sheet', offer_handles: offer_handles -%}
   {%- render 'pdp-addons-sheet',
     addons: addons,
-    product: product,
     hero: section.settings.addons_image,
     whatsapp_url: section.settings.whatsapp_url
   -%}
@@ -1006,17 +997,10 @@
   </script>
 </product-page>
 
-{%- comment -%}
-  The PLP's variant picker, for the product cards further down the page. It
-  sits outside <product-page> so its option groups never mix with the PDP's own.
-{%- endcomment -%}
-{%- render 'variant-drawer' -%}
-
 {% # carousel-scroll defines window.carouselScroll, which scroll-carousel calls %}
 <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'product.js' | asset_url }}" defer="defer"></script>
-<script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {

@@ -47,23 +47,9 @@
 
       <div class="collection_wrapper_filters_groups">
         {%- for filter in collection.filters -%}
-          {%- liquid
-            if filter.type == 'price_range'
-              assign group_count = 0
-              if filter.min_value.value != blank or filter.max_value.value != blank
-                assign group_count = 1
-              endif
-            else
-              assign group_count = filter.active_values.size
-            endif
-          -%}
-          <details class="collection_wrapper_filters_groups_group" data-filter-group open>
+          <details class="collection_wrapper_filters_groups_group" open>
             <summary class="collection_wrapper_filters_groups_group_head">
               <span class="collection_wrapper_filters_groups_group_head_label">{{ filter.label }}</span>
-              {%- comment -%} Phones only: the tab's applied-value count. {%- endcomment -%}
-              {%- if group_count > 0 -%}
-                <span class="collection_wrapper_filters_groups_group_head_count">{{ group_count }}</span>
-              {%- endif -%}
               <span class="collection_wrapper_filters_groups_group_head_icon" aria-hidden="true">
                 <span data-icon-plus>{{ 'icon-faq-plus.svg' | inline_asset_content }}</span>
                 <span data-icon-minus>{{ 'icon-faq-minus.svg' | inline_asset_content }}</span>

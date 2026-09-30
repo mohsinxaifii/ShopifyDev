@@ -7,6 +7,8 @@ class HeaderComponent extends HTMLElement {
     this.searchToggle = this.querySelector('.header_wrapper_actions_search-toggle');
     this.isOpen = false;
 
+    this.bindNavGroups();
+
     this.searchToggle?.addEventListener('click', () => this.toggleSearch());
     this.menuToggle?.addEventListener('click', () => this.open());
     this.closeButton?.addEventListener('click', () => this.close());
@@ -15,6 +17,31 @@ class HeaderComponent extends HTMLElement {
       if (event.key === 'Escape' && this.isOpen) this.close();
       if (event.key === 'Tab' && this.isOpen) this.trapFocus(event);
     });
+  }
+
+  /* Any menu item with children collapses into an accordion (Figma 7930:109338
+     shows one open, 7930:109352 one closed). The caret is a single right-facing
+     chevron that rotates down when the panel opens. */
+  bindNavGroups() {
+    this.querySelectorAll('[data-nav-toggle]').forEach((toggle) => {
+      const group = toggle.closest('[data-nav-group]');
+      const panel = group?.querySelector('[data-nav-panel]');
+      if (!panel) return;
+
+      // Open the branch the shopper is already inside.
+      if (toggle.classList.contains('is-current')) this.setGroup(toggle, panel, true);
+
+      toggle.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') === 'true';
+        this.setGroup(toggle, panel, !open);
+      });
+    });
+  }
+
+  setGroup(toggle, panel, open) {
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+    toggle.closest('[data-nav-group]')?.classList.toggle('is-open', open);
   }
 
   /* Mobile only: the search icon reveals the header's search field under the bar. */

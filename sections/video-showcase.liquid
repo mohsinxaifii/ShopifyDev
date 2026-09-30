@@ -78,73 +78,16 @@
                   ></a>
                 {%- endif -%}
 
-                {%- if block.settings.video_url != blank or block.settings.video != blank -%}
-                  <button
-                    type="button"
-                    class="video-showcase_wrapper_track_item_sound"
-                    data-sound-toggle
-                    aria-label="Unmute video"
-                    data-label-muted="Unmute video"
-                    data-label-unmuted="Mute video"
-                  >
-                    <svg class="video-showcase_wrapper_track_item_sound_icon--muted" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                      <path d="M9.5 3.5 5.5 7H3v6h2.5l4 3.5v-13Z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-                      <path d="m13 7.5 5 5m0-5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                    </svg>
-                    <svg class="video-showcase_wrapper_track_item_sound_icon--unmuted" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                      <path d="M9.5 3.5 5.5 7H3v6h2.5l4 3.5v-13Z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-                      <path d="M13 7.2a4 4 0 0 1 0 5.6M15.3 5a7 7 0 0 1 0 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                    </svg>
-                  </button>
-                {%- endif -%}
-
                 <span class="video-showcase_wrapper_track_item_play" data-play-icon>
                   {{ 'icon-play.svg' | inline_asset_content }}
                 </span>
 
-                {%- assign card_product = block.settings.product -%}
-                {%- if card_product != blank -%}
-                  {%- assign card_variant = card_product.selected_or_first_available_variant -%}
-                  <div class="video-showcase_wrapper_track_item_product" data-product-card>
-                    <a href="{{ card_product.url }}" class="video-showcase_wrapper_track_item_product_info">
-                      <span class="video-showcase_wrapper_track_item_product_info_image">
-                        {%- if card_product.featured_image -%}
-                          {{
-                            card_product.featured_image
-                            | image_url: width: 120
-                            | image_tag: loading: 'lazy', widths: '60,120', sizes: '48px', alt: card_product.featured_image.alt
-                          }}
-                        {%- endif -%}
-                      </span>
-                      <span class="video-showcase_wrapper_track_item_product_info_text">
-                        <span class="video-showcase_wrapper_track_item_product_info_title">{{ card_product.title }}</span>
-                        <span class="video-showcase_wrapper_track_item_product_info_price">
-                          <span>{%- render 'money', amount: card_variant.price -%}</span>
-                          {%- if card_variant.compare_at_price > card_variant.price -%}
-                            <s class="video-showcase_wrapper_track_item_product_info_price_compare">
-                              {%- render 'money', amount: card_variant.compare_at_price -%}
-                            </s>
-                          {%- endif -%}
-                        </span>
-                      </span>
-                    </a>
-
-                    {%- if card_product.available -%}
-                      <button
-                        type="button"
-                        class="video-showcase_wrapper_track_item_product_add"
-                        data-video-add-to-cart
-                        data-variant-id="{{ card_variant.id }}"
-                        data-added-label="{{ 'products.added_to_cart' | t | escape }}"
-                      >
-                        <span data-add-label>{{ 'products.add_to_cart' | t }}</span>
-                      </button>
-                    {%- else -%}
-                      <span class="video-showcase_wrapper_track_item_product_add video-showcase_wrapper_track_item_product_add--disabled">
-                        {{- 'products.sold_out' | t -}}
-                      </span>
-                    {%- endif -%}
-                  </div>
+                {%- comment -%}
+                  Sits above the whole-card link so the card's own controls stay
+                  clickable, and is the last child so it paints over the scrim.
+                {%- endcomment -%}
+                {%- if block.settings.product != blank -%}
+                  {%- render 'video-showcase-product', product: block.settings.product -%}
                 {%- endif -%}
               </div>
             {%- endfor -%}
@@ -173,6 +116,26 @@
       <div class="scroll-carousel_dots" data-dots></div>
     </div>
   </video-showcase>
+
+  {%- liquid
+    assign needs_variant_drawer = false
+    for block in section.blocks
+      assign linked = block.settings.product
+      if linked != blank
+        assign option_count = linked.variants | size
+        if option_count > 1
+          assign needs_variant_drawer = true
+        endif
+      endif
+    endfor
+  -%}
+  {%- if needs_variant_drawer -%}
+    {%- unless request.page_type == 'collection' or request.page_type == 'search' -%}
+      {{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
+      {%- render 'variant-drawer' -%}
+      <script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
+    {%- endunless -%}
+  {%- endif -%}
 
   <script src="{{ 'video-showcase.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
@@ -237,8 +200,8 @@
         {
           "type": "product",
           "id": "product",
-          "label": "Product",
-          "info": "Shows a card along the bottom of the video with the title, price and an add to cart button."
+          "label": "Featured product",
+          "info": "Shows a compact product card along the bottom of the video, with an add to cart."
         }
       ]
     }

@@ -122,9 +122,7 @@
     const { gsap } = window;
     ROOT.classList.add('motion-dialogs');
 
-    // [data-bottom-sheet] dialogs run their own slide (initBottomSheets), so
-    // they are left alone here.
-    root.querySelectorAll('dialog:not([data-motion-bound]):not([data-bottom-sheet])').forEach((dialog) => {
+    root.querySelectorAll('dialog:not([data-motion-bound])').forEach((dialog) => {
       dialog.setAttribute('data-motion-bound', '');
 
       // A drawer travels its own full width, so it starts and ends genuinely
@@ -146,20 +144,10 @@
       const nativeClose = dialog.close.bind(dialog);
       let closing = false;
 
-      // `data-motion-phone-fade` dialogs only fade on phones. The PDP image
-      // viewer needs this: clearing a transform off its fixed body at the end
-      // of the scale rebuilds the swipe strip inside it and loses its scroll.
-      const fadeOnly = () =>
-        dialog.hasAttribute('data-motion-phone-fade') && window.matchMedia('(max-width: 749px)').matches;
-
       dialog.showModal = (...args) => {
         nativeShow(...args);
         dialog.classList.remove('is-closing');
         gsap.killTweensOf(target);
-        if (fadeOnly()) {
-          gsap.fromTo(target, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out', clearProps: 'opacity' });
-          return;
-        }
         gsap.fromTo(
           target,
           { opacity: panel ? 1 : 0, ...enter },
@@ -182,7 +170,7 @@
         gsap.killTweensOf(target);
         gsap.to(target, {
           opacity: panel ? 1 : 0,
-          ...(fadeOnly() ? {} : enter),
+          ...enter,
           duration: 0.3,
           ease: 'power2.in',
           onComplete: () => {
@@ -199,92 +187,6 @@
         closing = false;
         dialog.classList.remove('is-closing');
         gsap.set(target, { clearProps: 'opacity,transform' });
-      });
-    });
-  }
-
-  /* ----------------------------------------------------- bottom sheets */
-
-  /**
-   * Any `<dialog data-bottom-sheet>` is a centred popup on desktop and a sheet
-   * that slides up from the bottom on phones. showModal/close are wrapped so
-   * every caller - a close button, a backdrop click, Esc, or a script calling
-   * dialog.close() - plays the exit before the browser removes the dialog.
-   *
-   * The panel is driven with the Web Animations API rather than a CSS
-   * transition: a transition has to catch the dialog's first styled frame as
-   * it enters the top layer, which is not reliable, while an explicit
-   * from/to animation always plays. It needs no GSAP. The backdrop fade stays
-   * in motion.css, keyed off `.is-open`. Each dialog owns its mobile layout.
-   */
-  const sheetQuery = window.matchMedia('(max-width: 749px)');
-  const SHEET_EASE_IN = 'cubic-bezier(0.22, 1, 0.36, 1)';
-  const SHEET_EASE_OUT = 'cubic-bezier(0.4, 0, 1, 1)';
-
-  function sheetFrames(dialog) {
-    // The sheet only ever slides; the desktop popup scales and fades, and a
-    // `data-bottom-sheet="side"` dialog stays a right-hand sidesheet there.
-    if (sheetQuery.matches) return [{ transform: 'translateY(100%)' }, { transform: 'translateY(0)' }];
-    if (dialog.dataset.bottomSheet === 'side') {
-      return [{ transform: 'translateX(100%)' }, { transform: 'translateX(0)' }];
-    }
-    return [
-      { opacity: 0, transform: 'scale(0.96)' },
-      { opacity: 1, transform: 'scale(1)' },
-    ];
-  }
-
-  function initBottomSheets(root = document) {
-    root.querySelectorAll('dialog[data-bottom-sheet]:not([data-sheet-bound])').forEach((dialog) => {
-      const panel = dialog.firstElementChild;
-      if (!panel || typeof panel.animate !== 'function') return;
-      dialog.setAttribute('data-sheet-bound', '');
-
-      const nativeShow = dialog.showModal.bind(dialog);
-      const nativeClose = dialog.close.bind(dialog);
-      let motion = null;
-      let closing = false;
-
-      const run = (frames, duration, easing) => {
-        motion?.cancel();
-        motion = panel.animate(frames, { duration: reduced.matches ? 0 : duration, easing, fill: 'both' });
-        return motion;
-      };
-
-      dialog.showModal = (...args) => {
-        closing = false;
-        nativeShow(...args);
-        dialog.classList.add('is-open');
-        const entry = run(sheetFrames(dialog), 400, SHEET_EASE_IN);
-        // Drop the held end state so the panel rests on its own styles.
-        entry.finished.then(() => entry.cancel()).catch(() => {});
-      };
-
-      dialog.close = (...args) => {
-        if (!dialog.open || closing) return;
-        closing = true;
-        dialog.classList.remove('is-open');
-        const exit = run(sheetFrames(dialog).reverse(), 300, SHEET_EASE_OUT);
-        exit.finished
-          .then(() => {
-            if (!closing) return;
-            closing = false;
-            nativeClose(...args);
-            exit.cancel();
-          })
-          .catch(() => {});
-      };
-
-      // Esc would drop the dialog instantly; route it through the exit.
-      dialog.addEventListener('cancel', (event) => {
-        event.preventDefault();
-        dialog.close();
-      });
-
-      dialog.addEventListener('close', () => {
-        closing = false;
-        dialog.classList.remove('is-open');
-        motion?.cancel();
       });
     });
   }
@@ -376,8 +278,6 @@
   }
 
   function boot() {
-    initBottomSheets();
-
     if (reduced.matches) {
       revealAll();
       return;
@@ -413,10 +313,7 @@
 
   // Re-run for sections the theme editor swaps in after load.
   if (window.Shopify && window.Shopify.designMode) {
-    document.addEventListener('shopify:section:load', (event) => {
-      initBottomSheets(event.target);
-      init(event.target);
-    });
+    document.addEventListener('shopify:section:load', (event) => init(event.target));
   }
 
   reduced.addEventListener('change', (event) => {

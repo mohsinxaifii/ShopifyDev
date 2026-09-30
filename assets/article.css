@@ -314,6 +314,17 @@
     padding-block: 24px;
   }
 
+  /* Figma Mobile 7930:120547: the dateline and the byline both sit on 22px
+     leading, and the byline is Medium rather than Regular. */
+  .article_wrapper_body_head_meta_line,
+  .article_wrapper_body_head_meta_text_byline {
+    line-height: 22px;
+  }
+
+  .article_wrapper_body_head_meta_text_byline {
+    font-weight: 500;
+  }
+
   .article_wrapper_body_shop_stage_arrow {
     display: none;
   }

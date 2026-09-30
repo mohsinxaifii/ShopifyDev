@@ -17,59 +17,66 @@
 
       <div class="instagram-feed_wrapper_grid" data-animate>
         {%- for block in section.blocks -%}
+          {%- liquid
+            assign has_video = false
+            if block.settings.video_url != blank or block.settings.video != blank
+              assign has_video = true
+            endif
+          -%}
           <a
             href="{{ block.settings.link | default: 'https://instagram.com' }}"
-            class="instagram-feed_wrapper_grid_item"
+            class="instagram-feed_wrapper_grid_item{% if has_video %} instagram-feed_wrapper_grid_item--video{% endif %}"
             target="_blank"
             rel="noopener"
             {{ block.shopify_attributes }}
           >
-            {%- liquid
-              assign has_video = false
-              if block.settings.video_url != blank or block.settings.video != blank
-                assign has_video = true
-              endif
-            -%}
-            {%- if has_video -%}
-              {%- comment -%}
-                Muted, looping, inline - it plays like a reel while on screen and
-                pauses off screen (script below). The image, when set, is the cover.
-              {%- endcomment -%}
-              {%- if block.settings.video_url != blank -%}
-                <video
-                  class="instagram-feed_wrapper_grid_item_video"
-                  src="{{ block.settings.video_url }}#t=0.1"
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                  disableremoteplayback
-                  data-feed-video
-                  {% if block.settings.image %}
-                    poster="{{ block.settings.image | image_url: width: 400 }}"
-                  {% endif %}
-                ></video>
-              {%- else -%}
-                <span class="instagram-feed_wrapper_grid_item_video-wrap" data-feed-video-wrap>
-                  {{
-                    block.settings.video
-                    | video_tag:
-                      class: 'instagram-feed_wrapper_grid_item_video',
-                      muted: true,
-                      loop: true,
-                      playsinline: true,
-                      autoplay: false,
-                      controls: false,
-                      preload: 'metadata',
-                      image_size: '400x'
-                  }}
-                </span>
-              {%- endif -%}
-              <span class="instagram-feed_wrapper_grid_item_badge" aria-hidden="true">
-                {{- 'icon-play.svg' | inline_asset_content -}}
+            {%- comment -%}
+              A tile is either a still or a muted clip. The poster image doubles
+              as the placeholder until the clip is in view and starts itself.
+            {%- endcomment -%}
+            {%- if block.settings.image -%}
+              {{
+                block.settings.image
+                | image_url: width: 600
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '253,400,506,600',
+                  sizes: '(max-width: 749px) 45vw, 253px',
+                  alt: 'Instagram post',
+                  class: 'instagram-feed_wrapper_grid_item_poster'
+              }}
+            {%- endif -%}
+
+            {%- if block.settings.video_url != blank -%}
+              <video
+                class="instagram-feed_wrapper_grid_item_video"
+                data-instagram-video
+                src="{{ block.settings.video_url }}#t=0.1"
+                preload="none"
+                muted
+                loop
+                playsinline
+                disableremoteplayback
+                aria-hidden="true"
+                tabindex="-1"
+                {% if block.settings.image != blank %}
+                  poster="{{ block.settings.image | image_url: width: 600 }}"
+                {% endif %}
+              ></video>
+            {%- elsif block.settings.video != blank -%}
+              <span class="instagram-feed_wrapper_grid_item_video-wrap" data-instagram-video-wrap>
+                {{
+                  block.settings.video
+                  | video_tag:
+                    controls: false,
+                    muted: true,
+                    loop: true,
+                    autoplay: false,
+                    preload: 'none',
+                    image_size: '600x',
+                    class: 'instagram-feed_wrapper_grid_item_video'
+                }}
               </span>
-            {%- elsif block.settings.image -%}
-              {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: 'Instagram post' }}
             {%- endif -%}
           </a>
         {%- endfor -%}
@@ -88,32 +95,7 @@
     </div>
   </section>
 
-  <script>
-    // Video tiles play only while they are on screen, and not at all for
-    // visitors who prefer reduced motion (they keep the cover frame).
-    (() => {
-      const section = document.currentScript?.previousElementSibling;
-      const videos = section ? section.querySelectorAll('video[data-feed-video], [data-feed-video-wrap] video') : [];
-      if (!videos.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      videos.forEach((video) => {
-        video.muted = true;
-      });
-      if (!('IntersectionObserver' in window)) {
-        videos.forEach((video) => video.play().catch(() => {}));
-        return;
-      }
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach(({ target, isIntersecting }) => {
-            if (isIntersecting) target.play().catch(() => {});
-            else target.pause();
-          });
-        },
-        { threshold: 0.4 },
-      );
-      videos.forEach((video) => observer.observe(video));
-    })();
-  </script>
+  <script src="{{ 'instagram-feed.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
 {% schema %}
@@ -164,21 +146,16 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image",
-          "info": "Shown on its own, or as the cover while a video loads."
+          "label": "Image or video cover",
+          "info": "Shown on its own, or as the poster frame for a video below."
         },
         {
           "type": "text",
           "id": "video_url",
           "label": "Video URL (.mp4)",
-          "info": "Paste a hosted MP4 URL. Takes priority over the video picker below."
+          "info": "Plays muted and loops once the tile scrolls into view. Takes priority over the picker below."
         },
-        {
-          "type": "video",
-          "id": "video",
-          "label": "Video (from library)",
-          "info": "Plays muted on a loop while on screen, like a reel."
-        },
+        { "type": "video", "id": "video", "label": "Video (from library)" },
         { "type": "url", "id": "link", "label": "Link to post" }
       ]
     }

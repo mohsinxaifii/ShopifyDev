@@ -11,8 +11,8 @@
 {%- liquid
   comment
     money_without_currency keeps the decimals this design does not show, and the
-    shop's money_format may or may not carry the symbol - so strip it and add it
-    once here. collection.js relabels in Indian digit grouping.
+    shop's money_format carries no symbol - so format whole rupees and add the
+    symbol here.
   endcomment
   assign currency_symbol = cart.currency.symbol
   assign range_max = filter.range_max | divided_by: 100
@@ -31,8 +31,8 @@
   <p class="filter-price_caption">{{ 'collection.selected_price_range' | t }}</p>
   <p class="filter-price_value" data-price-readout>
     {{- currency_symbol -}}
-    {{- min_value | times: 100 | money_without_trailing_zeros | strip_html | remove: currency_symbol }} - {{ currency_symbol -}}
-    {{- max_value | times: 100 | money_without_trailing_zeros | strip_html | remove: currency_symbol -}}
+    {{- min_value | times: 100 | money_without_trailing_zeros | strip_html }} - {{ currency_symbol -}}
+    {{- max_value | times: 100 | money_without_trailing_zeros | strip_html -}}
   </p>
 
   <div class="filter-price_slider">
@@ -94,8 +94,8 @@
           data-max="{{ upper }}"
         >
           {{ currency_symbol -}}
-          {{- lower | times: 100 | money_without_trailing_zeros | strip_html | remove: currency_symbol }} - {{ currency_symbol -}}
-          {{- upper | times: 100 | money_without_trailing_zeros | strip_html | remove: currency_symbol }}
+          {{- lower | times: 100 | money_without_trailing_zeros | strip_html }} - {{ currency_symbol -}}
+          {{- upper | times: 100 | money_without_trailing_zeros | strip_html }}
         </button>
       {%- endif -%}
       {%- assign lower = upper -%}
@@ -108,10 +108,9 @@
         data-price-preset
         data-min="{{ lower }}"
         data-max="{{ range_max }}"
-        data-open-ended
       >
         {{ currency_symbol -}}
-        {{- lower | times: 100 | money_without_trailing_zeros | strip_html | remove: currency_symbol }}+
+        {{- lower | times: 100 | money_without_trailing_zeros | strip_html }}+
       </button>
     {%- endif -%}
   </div>

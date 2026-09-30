@@ -78,9 +78,9 @@
     aria-label="{{ 'accessibility.menu' | t }}"
   >
     {%- comment -%}
-      Figma Mobile 7930:108685 (Sidenav): a full-screen sheet - close button on
-      top, one divided row per menu item, nested menus as accordions (chevron
-      turns from right to down), then login and socials at the foot.
+      Figma Mobile 7930:109326. A full-height white sheet: a close row, the menu
+      as a divided list where any item with children opens as an accordion, and
+      an account/social foot pinned to the bottom.
     {%- endcomment -%}
     <div class="header_drawer_header">
       <button type="button" class="header_drawer_header_close" aria-label="{{ 'accessibility.close_menu' | t }}">
@@ -88,103 +88,122 @@
       </button>
     </div>
 
-    {%- liquid
-      # The burger drawer has its own store menu (Online Store > Navigation),
-      # falling back to the header's main menu when none is picked.
-      assign drawer_menu = section.settings.menu
-      if section.settings.mobile_menu != blank
-        assign drawer_menu = section.settings.mobile_menu
-      endif
-      assign badge_titles = section.settings.menu_badge_items | downcase | split: ','
-    -%}
-    <nav class="header_drawer_nav">
-      <ul class="header_drawer_nav_list">
-        {%- for link in drawer_menu.links -%}
-          {%- liquid
-            assign link_key = link.title | downcase | strip
-            assign has_badge = false
-            for badge_title in badge_titles
-              assign badge_key = badge_title | strip
-              if badge_key != blank and badge_key == link_key
-                assign has_badge = true
+    <div class="header_drawer_body">
+      <nav class="header_drawer_nav">
+        <ul class="header_drawer_nav_list">
+          {%- assign badge_titles = section.settings.new_badge_items | downcase | split: ',' -%}
+          {%- for link in section.settings.menu.links -%}
+            {%- liquid
+              assign has_children = false
+              if link.links != blank
+                assign has_children = true
               endif
-            endfor
-          -%}
-          <li class="header_drawer_nav_list_item">
-            {%- if link.links != blank -%}
-              <details class="header_drawer_nav_group"{% if link.child_active %} open{% endif %}>
-                <summary class="header_drawer_nav_row{% if link.active %} is-current{% endif %}">
-                  <span class="header_drawer_nav_row_label">{{ link.title }}</span>
-                  {%- if has_badge -%}
-                    <span class="header_drawer_nav_row_badge">{{ section.settings.menu_badge_text }}</span>
-                  {%- endif -%}
-                  <span class="header_drawer_nav_row_chevron" aria-hidden="true">
+
+              assign is_new = false
+              assign this_title = link.title | downcase | strip
+              for badge in badge_titles
+                assign badge_title = badge | strip
+                if badge_title != '' and badge_title == this_title
+                  assign is_new = true
+                endif
+              endfor
+            -%}
+            <li
+              class="header_drawer_nav_list_item{% if has_children %} header_drawer_nav_list_item--group{% endif %}"
+              {% if has_children %}
+                data-nav-group
+              {% endif %}
+            >
+              {%- if has_children -%}
+                <button
+                  type="button"
+                  class="header_drawer_nav_list_item_link header_drawer_nav_list_item_toggle{% if link.active or link.child_active %} is-current{% endif %}"
+                  data-nav-toggle
+                  aria-expanded="false"
+                >
+                  <span class="header_drawer_nav_list_item_label">
+                    {{- link.title -}}
+                    {%- if is_new -%}
+                      <span class="header_drawer_nav_list_item_badge">{{ section.settings.new_badge_label }}</span>
+                    {%- endif -%}
+                  </span>
+                  <span class="header_drawer_nav_list_item_caret" aria-hidden="true">
                     {{- 'icon-caret-right.svg' | inline_asset_content -}}
                   </span>
-                </summary>
-                <ul class="header_drawer_nav_sublist">
+                </button>
+
+                <ul class="header_drawer_nav_sublist" data-nav-panel hidden>
                   {%- for childlink in link.links -%}
                     <li>
                       <a
                         href="{{ childlink.url }}"
-                        class="header_drawer_nav_sublist_link{% if childlink.current %} is-current{% endif %}"
-                        {% if childlink.current %}
-                          aria-current="page"
-                        {% endif %}
+                        class="header_drawer_nav_sublist_link{% if childlink.active %} is-current{% endif %}"
                       >
                         {{- childlink.title -}}
                       </a>
                     </li>
                   {%- endfor -%}
                 </ul>
-              </details>
-            {%- else -%}
-              <a
-                href="{{ link.url }}"
-                class="header_drawer_nav_row{% if link.current %} is-current{% endif %}"
-                {% if link.current %}
-                  aria-current="page"
-                {% endif %}
-              >
-                <span class="header_drawer_nav_row_label">{{ link.title }}</span>
-                {%- if has_badge -%}
-                  <span class="header_drawer_nav_row_badge">{{ section.settings.menu_badge_text }}</span>
-                {%- endif -%}
-              </a>
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-      </ul>
+              {%- else -%}
+                <a
+                  href="{{ link.url }}"
+                  class="header_drawer_nav_list_item_link{% if link.active %} is-current{% endif %}"
+                >
+                  <span class="header_drawer_nav_list_item_label">
+                    {{- link.title -}}
+                    {%- if is_new -%}
+                      <span class="header_drawer_nav_list_item_badge">{{ section.settings.new_badge_label }}</span>
+                    {%- endif -%}
+                  </span>
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
 
-      <div class="header_drawer_nav_foot">
-        {%- if customer -%}
-          <a href="{{ routes.account_url }}" class="header_drawer_nav_foot_account">
+      <div class="header_drawer_foot">
+        <a href="{{ routes.account_url }}" class="header_drawer_foot_account">
+          <span class="header_drawer_foot_account_icon" aria-hidden="true">
             {{- 'icon-user.svg' | inline_asset_content -}}
-            <span>{{ 'accessibility.account' | t }}</span>
-          </a>
-        {%- else -%}
-          <a href="{{ routes.account_login_url }}" class="header_drawer_nav_foot_account">
-            {{- 'icon-user.svg' | inline_asset_content -}}
-            <span>Login</span>
-          </a>
-        {%- endif -%}
+          </span>
+          <span>
+            {%- if customer -%}
+              {{ customer.first_name | default: 'Account' }}
+            {%- else -%}
+              {{ 'customer.log_in' | t | default: 'Login' }}
+            {%- endif -%}
+          </span>
+        </a>
 
         {%- if section.settings.instagram_url != blank or section.settings.facebook_url != blank -%}
-          <div class="header_drawer_nav_foot_social">
+          <div class="header_drawer_foot_social">
             {%- if section.settings.instagram_url != blank -%}
-              <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+              <a
+                href="{{ section.settings.instagram_url }}"
+                class="header_drawer_foot_social_link"
+                target="_blank"
+                rel="noopener"
+                aria-label="Instagram"
+              >
                 {{- 'icon-instagram.svg' | inline_asset_content -}}
               </a>
             {%- endif -%}
             {%- if section.settings.facebook_url != blank -%}
-              <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+              <a
+                href="{{ section.settings.facebook_url }}"
+                class="header_drawer_foot_social_link"
+                target="_blank"
+                rel="noopener"
+                aria-label="Facebook"
+              >
                 {{- 'icon-facebook.svg' | inline_asset_content -}}
               </a>
             {%- endif -%}
           </div>
         {%- endif -%}
       </div>
-    </nav>
+    </div>
   </div>
 </header-component>
 
@@ -210,28 +229,30 @@
     },
     {
       "type": "header",
-      "content": "Mobile menu"
-    },
-    {
-      "type": "link_list",
-      "id": "mobile_menu",
-      "label": "Mobile menu",
-      "info": "The burger menu on phones. Edit it in Online Store > Navigation. Nested items open as dropdowns. Falls back to the menu above."
+      "content": "Menu drawer"
     },
     {
       "type": "text",
-      "id": "menu_badge_items",
-      "label": "Menu items with a badge",
-      "info": "Menu item titles, comma separated, e.g. Rakhi Collection, New Arrivals."
+      "id": "new_badge_items",
+      "label": "Menu items to badge",
+      "info": "Comma separated menu item titles, e.g. \"Rakhi Collection, New Arrivals\"."
     },
     {
       "type": "text",
-      "id": "menu_badge_text",
+      "id": "new_badge_label",
       "label": "Badge text",
       "default": "NEW"
     },
-    { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
-    { "type": "url", "id": "facebook_url", "label": "Facebook URL" }
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    }
   ]
 }
 {% endschema %}

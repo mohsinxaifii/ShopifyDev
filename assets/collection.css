@@ -659,7 +659,6 @@ collection-page:defined .plp-skeleton {
 .plp-mobile-bar,
 .plp-sheet-scrim,
 .collection_wrapper_filters_head_close,
-.collection_wrapper_filters_groups_group_head_count,
 .collection_wrapper_filters_footer,
 .collection_wrapper_main_toolbar_sort_menu_head {
   display: none;
@@ -670,47 +669,23 @@ collection-page:defined .plp-skeleton {
     padding-block: 12px 24px;
   }
 
-  /* Both sheets stay laid out and park below the viewport, so they can slide
-     both ways on the same curves as the review sheet (motion.css tokens).
-     `translate` rather than `transform`, so the rail's scroll-reveal tween
-     cannot fight the slide. Visibility flips at the end of the exit. */
-  /* Figma Mobile Filters 7930:118227 fills the screen: a 16px-padded title bar
-     over a hairline, 8px, the two-pane body, 8px, then Clear all | Apply. */
   .collection_wrapper_filters {
-    position: fixed;
-    inset: 0;
-    z-index: 101;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background-color: #fff;
-    overflow: hidden;
-    translate: 0 100%;
-    visibility: hidden;
-    transition:
-      translate var(--sheet-exit-duration) var(--sheet-exit-ease),
-      visibility 0s linear var(--sheet-exit-duration);
+    display: none;
   }
 
   collection-page[data-filters-open] .collection_wrapper_filters {
-    translate: 0 0;
-    visibility: visible;
-    transition:
-      translate var(--sheet-enter-duration) var(--sheet-enter-ease),
-      visibility 0s;
+    position: fixed;
+    inset: 56px 0 0;
+    z-index: 101;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px 12px 0 0;
+    background-color: #fff;
+    overflow: hidden;
   }
 
   .collection_wrapper_filters_head {
-    flex: 0 0 auto;
-    min-height: 0;
-    padding: 16px;
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  .collection_wrapper_filters_head_title {
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 20px;
+    padding: 16px var(--page-margin);
   }
 
   .collection_wrapper_filters_head_clear {
@@ -720,8 +695,8 @@ collection-page:defined .plp-skeleton {
   .collection_wrapper_filters_head_close,
   .collection_wrapper_main_toolbar_sort_menu_head_close {
     display: flex;
-    width: 21.5px;
-    height: 21.5px;
+    width: 22px;
+    height: 22px;
     padding: 0;
     border: 0;
     background: none;
@@ -735,159 +710,17 @@ collection-page:defined .plp-skeleton {
     height: 100%;
   }
 
-  /* Two panes: the groups become a 162px tab column on the brand tint, and only
-     the current group's values show, in their own scroller 12px to its right.
-     collection.js tracks the current tab (.is-current). */
   .collection_wrapper_filters_groups {
-    position: relative;
     flex: 1 1 auto;
-    width: 100%;
-    min-height: 0;
-    margin: 0;
-    overflow: hidden;
-    background: linear-gradient(90deg, #f7f3f5 162px, #fff 162px);
-  }
-
-  .collection_wrapper_filters_groups_group {
-    width: 162px;
-  }
-
-  .collection_wrapper_filters_groups_group_head {
-    gap: 8px;
-    padding: 12px 16px;
-    border-right: 1px solid transparent;
-  }
-
-  .collection_wrapper_filters_groups_group_head_label,
-  .collection_wrapper_filters_groups_group_head_count {
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 20px;
-    color: #494949;
-  }
-
-  .collection_wrapper_filters_groups_group_head_count {
-    display: block;
-    font-size: 14px;
-  }
-
-  .collection_wrapper_filters_groups_group_head_icon {
-    display: none;
-  }
-
-  .collection_wrapper_filters_groups_group.is-current .collection_wrapper_filters_groups_group_head {
-    border-right-color: var(--color-accent, #f0166e);
-    background-color: #fff;
-  }
-
-  .collection_wrapper_filters_groups_group.is-current .collection_wrapper_filters_groups_group_head_label,
-  .collection_wrapper_filters_groups_group.is-current .collection_wrapper_filters_groups_group_head_count {
-    font-weight: 600;
-    color: #000;
-  }
-
-  .collection_wrapper_filters_groups_group_body {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 174px;
-    margin: 0;
-    padding: 0;
     overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-
-  .collection_wrapper_filters_groups_group:not(.is-current) .collection_wrapper_filters_groups_group_body {
-    display: none;
-  }
-
-  .collection_wrapper_filters_groups_none {
-    margin: 0;
-    padding: 16px;
-  }
-
-  /* List values (Figma 7930:118228-118231): 57px rows on hairlines - a bare
-     tick, grey until chosen, then the swatch and a 14px label. */
-  .collection_wrapper_filters .filter-list_item_label {
-    padding: 16px;
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  .collection_wrapper_filters .filter-list_item_label_box {
-    width: 22px;
-    height: 24px;
-    border: 0;
-    border-radius: 0;
-    background: none;
-    color: #c4c4c4;
-  }
-
-  .collection_wrapper_filters .filter-list_item_label_box svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .collection_wrapper_filters .filter-list_item_label_box svg path {
-    fill: currentColor;
-  }
-
-  .collection_wrapper_filters .filter-list_item_label_input:checked + .filter-list_item_label_box {
-    background: none;
-    color: var(--color-accent, #f0166e);
-  }
-
-  .collection_wrapper_filters .filter-list_item_label_text {
-    font-weight: 400;
-    line-height: 22px;
-  }
-
-  .collection_wrapper_filters .filter-list_item_label.is-active .filter-list_item_label_text {
-    font-weight: 600;
-    color: #494949;
-  }
-
-  /* Price (Figma 7930:118227): caption, readout and slider on an 8px inset, then
-     the brackets 24px below as 44px chips. */
-  .collection_wrapper_filters .filter-price {
-    padding-top: 8px;
-  }
-
-  .collection_wrapper_filters .filter-price_caption {
-    font-size: 14px;
-    line-height: 22px;
-  }
-
-  .collection_wrapper_filters .filter-price_value {
-    font-size: 14px;
-    line-height: 22px;
-  }
-
-  .collection_wrapper_filters .filter-price_slider {
-    margin-block: 0;
-  }
-
-  .collection_wrapper_filters .filter-price_presets {
-    margin-top: 22px;
-    padding-bottom: 16px;
-  }
-
-  .collection_wrapper_filters .filter-price_presets_preset {
-    height: 44px;
-    padding: 0 12px;
-    line-height: 20px;
-  }
-
-  .collection_wrapper_filters .filter-price_presets_preset.is-active {
-    font-weight: 600;
-    color: #5e1c37;
+    padding-inline: var(--page-margin);
   }
 
   .collection_wrapper_filters_footer {
     display: flex;
-    flex: 0 0 auto;
     gap: 12px;
-    padding: 12px 16px calc(20px + env(safe-area-inset-bottom));
+    padding: 12px var(--page-margin) 20px;
+    border-top: 1px solid #f2f2f2;
   }
 
   .collection_wrapper_filters_footer_clear,
@@ -896,8 +729,7 @@ collection-page:defined .plp-skeleton {
     flex: 1 1 0;
     align-items: center;
     justify-content: center;
-    height: 44px;
-    padding: 0 12px;
+    padding: 12px;
     border: 1px solid var(--color-brand, #712242);
     border-radius: 8px;
     font-family: var(--font-secondary--family);
@@ -922,29 +754,12 @@ collection-page:defined .plp-skeleton {
     position: fixed;
     inset: 0;
     z-index: 100;
-    display: block;
-    background-color: var(--sheet-scrim);
-    -webkit-backdrop-filter: var(--sheet-blur);
-    backdrop-filter: var(--sheet-blur);
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity var(--sheet-scrim-duration) ease,
-      visibility 0s linear var(--sheet-scrim-duration);
+    background-color: rgba(0, 0, 0, 0.5);
   }
 
   collection-page[data-filters-open] .plp-sheet-scrim,
   collection-page:has([data-sort-menu]:not([hidden])) .plp-sheet-scrim {
-    opacity: 1;
-    visibility: visible;
-    transition:
-      opacity var(--sheet-scrim-duration) ease,
-      visibility 0s;
-  }
-
-  html:has(collection-page[data-filters-open]),
-  html:has(collection-page [data-sort-menu]:not([hidden])) {
-    overflow: hidden;
+    display: block;
   }
 
   /* Only the sort menu survives from the toolbar, as a sheet of its own. */
@@ -963,25 +778,10 @@ collection-page:defined .plp-skeleton {
     z-index: 101;
     gap: 16px;
     min-width: 0;
-    padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+    padding: 16px var(--page-margin) 24px;
     border: 0;
-    border-radius: 24px 24px 0 0;
+    border-radius: 12px 12px 0 0;
     filter: none;
-    translate: 0 0;
-    visibility: visible;
-    transition:
-      translate var(--sheet-enter-duration) var(--sheet-enter-ease),
-      visibility 0s;
-  }
-
-  /* Kept laid out while closed so it can slide back down. */
-  .collection_wrapper_main_toolbar_sort_menu[hidden] {
-    display: flex;
-    translate: 0 100%;
-    visibility: hidden;
-    transition:
-      translate var(--sheet-exit-duration) var(--sheet-exit-ease),
-      visibility 0s linear var(--sheet-exit-duration);
   }
 
   .collection_wrapper_main_toolbar_sort_menu_head {

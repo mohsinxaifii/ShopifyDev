@@ -14,13 +14,6 @@ class CollectionPage extends HTMLElement {
 
     this.grid = this.querySelector('[data-grid]');
     this.sortInput = this.querySelector('[data-sort-input]');
-    this.phone = window.matchMedia('(max-width: 749px)');
-    this.filterTab = 0;
-
-    // Capture phase, so on phones a group title switches tabs before the
-    // accordion handler on the <summary> itself can collapse it.
-    this.addEventListener('click', this.onFilterTab, true);
-    this.syncFilterTabs();
 
     this.form.addEventListener('change', (event) => {
       if (event.target.closest('[data-price-filter]')) return; // price commits on release
@@ -101,50 +94,17 @@ class CollectionPage extends HTMLElement {
      scroll-reveal never sees it while it is hidden, and motion.css holds every
      unrevealed [data-animate] element at zero opacity. */
   setFiltersOpen(open) {
-    if (open) this.revealFilters();
     this.toggleAttribute('data-filters-open', open);
     document.body.style.overflow = open ? 'hidden' : '';
-  }
-
-  /* Phones show the filter groups as tabs (Figma 7930:118227): the titles stack
-     in a column and only the current group's values show beside them. */
-  onFilterTab = (event) => {
-    if (!this.phone.matches) return;
-    const summary = event.target.closest('[data-filter-group] > summary');
-    if (!summary) return;
-    event.preventDefault();
-    event.stopPropagation();
-    this.filterTab = Array.from(this.querySelectorAll('[data-filter-group]')).indexOf(summary.parentElement);
-    this.syncFilterTabs();
-  };
-
-  syncFilterTabs() {
-    const groups = Array.from(this.querySelectorAll('[data-filter-group]'));
-    if (this.filterTab >= groups.length) this.filterTab = 0;
-    groups.forEach((group, index) => {
-      group.classList.toggle('is-current', index === this.filterTab);
-      // A group collapsed on a wider screen would otherwise hide its values.
-      if (this.phone.matches) group.open = true;
-    });
+    if (open) this.revealFilters();
   }
 
   revealFilters() {
     const rail = this.querySelector('[data-filters]');
     if (!rail) return;
-    this.syncFilterTabs();
-    // The scroll-reveal owns the rail's inline transform and writes an inline
-    // `translate: none`, which would cancel the sheet's slide. Drop it for good.
-    window.ScrollTrigger?.getAll().forEach((trigger) => {
-      if (trigger.trigger === rail) trigger.kill();
-    });
-    window.gsap?.killTweensOf(rail);
     rail.classList.add('is-visible');
-    // Clearing those would itself start a transition, so the rail is snapped
-    // to its parked position with transitions off, then the sheet slides from there.
-    rail.style.transition = 'none';
-    ['opacity', 'transform', 'translate', 'rotate', 'scale'].forEach((prop) => rail.style.removeProperty(prop));
-    rail.getBoundingClientRect();
-    rail.style.removeProperty('transition');
+    rail.style.removeProperty('opacity');
+    rail.style.removeProperty('transform');
   }
 
   applySort(option) {
@@ -194,15 +154,6 @@ class CollectionPage extends HTMLElement {
       input.addEventListener('change', commit);
     });
     paint();
-
-    // Liquid's money filter groups thousands the Western way; match the readout.
-    const symbol = scope.dataset.symbol || '';
-    scope.querySelectorAll('[data-price-preset]').forEach((preset) => {
-      const low = `${symbol}${this.group(preset.dataset.min)}`;
-      preset.textContent = preset.hasAttribute('data-open-ended')
-        ? `${low}+`
-        : `${low} - ${symbol}${this.group(preset.dataset.max)}`;
-    });
   }
 
   applyPreset(preset) {
