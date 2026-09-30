@@ -18,6 +18,20 @@
               its unit with a non-breaking space before the label is printed.
             endcomment
             assign badge_text = block.settings.text | replace: ' KT', '&nbsp;KT' | replace: ' Kt', '&nbsp;Kt' | replace: ' kt', '&nbsp;kt'
+
+            comment
+              Everything up to and including the karat mark ("5x thicker 18 KT")
+              stays on one line; only the words after it may wrap.
+            endcomment
+            assign kt_marks = '&nbsp;KT,&nbsp;Kt,&nbsp;kt' | split: ','
+            for mark in kt_marks
+              if badge_text contains mark
+                assign badge_lead = badge_text | split: mark | first
+                assign badge_rest = badge_text | remove_first: badge_lead | remove_first: mark
+                assign badge_text = '<span class="usp-strip_wrapper_pill_item_text_keep">' | append: badge_lead | append: mark | append: '</span>' | append: badge_rest
+                break
+              endif
+            endfor
           -%}
           <div class="usp-strip_wrapper_pill_item" {{ block.shopify_attributes }}>
             {%- if block.settings.image -%}
