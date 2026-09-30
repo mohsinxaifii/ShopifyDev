@@ -548,7 +548,7 @@
   display: none;
 }
 
-/* Figma Mobile 7930:106750: the panels stack edge to edge with no rounded frame
+/* Figma Mobile 8106:52423: the panels stack edge to edge with no rounded frame
    or divider, and the vermeil diagram is re-laid on its 361x238 mobile box -
    photo, callouts and leader lines all move, so each gets its mobile position. */
 @media screen and (max-width: 749px) {
@@ -575,11 +575,12 @@
     aspect-ratio: 361 / 238;
   }
 
+  /* A square 190px cutaway at (80, 23.75). */
   .know-your-jewellery_wrapper_grid_vermeil_diagram_image {
-    left: 16.9%;
-    top: 8.07%;
-    width: 66.25%;
-    height: 92.14%;
+    left: 22.16%;
+    top: 9.98%;
+    width: 52.63%;
+    height: 79.83%;
   }
 
   .know-your-jewellery_wrapper_grid_vermeil_diagram_lines {
@@ -596,10 +597,11 @@
     width: 43.85%;
   }
 
+  /* Runs to the diagram's right edge; Figma's text box overhangs it. */
   .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--2 {
-    left: 51.95%;
-    top: 15.69%;
-    width: 48.05%;
+    left: 50.56%;
+    top: 15.27%;
+    width: 49.44%;
   }
 
   .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--3 {
