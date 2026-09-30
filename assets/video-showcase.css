@@ -41,6 +41,11 @@
   padding-block: 48px;
   margin-block: -48px;
   overflow: hidden;
+
+  /* Horizontal drags are the carousel's swipe; vertical ones scroll the page. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .video-showcase_wrapper_track {
