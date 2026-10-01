@@ -601,27 +601,14 @@
           toggle.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
         );
         if (toggle.matches('[data-addon-toggle]')) this.syncAddonHero();
+        if (toggle.matches('[data-pair-toggle]')) this.syncPair?.();
       });
 
       this.querySelector('[data-addons-done]')?.addEventListener('click', () => {
         this.sheets.get('addons')?.close();
       });
 
-      const pairAdd = this.querySelector('[data-pair-add]');
-      pairAdd?.addEventListener('click', () => {
-        const items = Array.from(
-          this.querySelectorAll('[data-pair-toggle][aria-pressed="true"]'),
-        ).map((button) => ({
-          id: Number(button.closest('[data-pair-item]').dataset.variantId),
-          quantity: 1,
-        }));
-        // Nothing ticked reads as "I want the whole set".
-        const all = Array.from(this.querySelectorAll('[data-pair-item]')).map((item) => ({
-          id: Number(item.dataset.variantId),
-          quantity: 1,
-        }));
-        this.addToCart(items.length > 0 ? items : all, { trigger: pairAdd });
-      });
+      this.initPair();
 
       const diffAdd = this.querySelector('[data-diff-add]');
       diffAdd?.addEventListener('click', async () => {
@@ -638,6 +625,97 @@
           trigger: button,
         });
       });
+    }
+
+    /* --------------------------------------------------- pair beautifully */
+
+    /**
+     * "Pair beautifully with" works off what is actually in the cart, read on
+     * load and after every cart change (the drawer fires cart:updated), so a
+     * piece already in the bag - added here, as part of the set, or removed
+     * again in the drawer - is always shown as it really is.
+     *
+     * - A card's bag icon selects it; a piece already in the cart shows a tick
+     *   and cannot be selected again.
+     * - The button adds the selection, or with nothing selected, every piece
+     *   not yet in the cart (each one's first available variant). Once all of
+     *   them are in, it reads "Set added to cart" and stays disabled.
+     */
+    initPair() {
+      const section = this.querySelector('[data-pair]');
+      const button = section?.querySelector('[data-pair-add]');
+      if (!section || !button) return;
+      const label = button.querySelector('[data-add-label]') || button;
+      const items = Array.from(section.querySelectorAll('[data-pair-item]'));
+      const toggleOf = (item) => item.querySelector('[data-pair-toggle]');
+      let inCart = new Set();
+
+      const pendingItems = () => items.filter((item) => !inCart.has(item.dataset.productId));
+      const selectedItems = () =>
+        pendingItems().filter((item) => toggleOf(item)?.getAttribute('aria-pressed') === 'true');
+
+      this.syncPair = () => {
+        items.forEach((item) => {
+          const added = inCart.has(item.dataset.productId);
+          const toggle = toggleOf(item);
+          item.classList.toggle('is-in-cart', added);
+          if (!toggle) return;
+          toggle.disabled = added;
+          if (added) toggle.setAttribute('aria-pressed', 'false');
+          const title = item.querySelector('.pdp-mini_info_title')?.textContent.trim() || '';
+          toggle.setAttribute('aria-label', added ? `${title} is in your cart` : `Select ${title}`);
+        });
+
+        const pending = pendingItems();
+        const selected = selectedItems();
+        let text;
+        if (pending.length === 0) text = 'Set added to cart';
+        else if (selected.length > 0)
+          text = `Add ${selected.length} item${selected.length > 1 ? 's' : ''} to cart`;
+        else if (pending.length < items.length) text = `Add remaining ${pending.length} to cart`;
+        else text = 'Add set to cart';
+
+        // The shared cart restores this text after its "Added" flash, so it has
+        // to follow the state as well as the visible label does.
+        label.dataset.restLabel = text;
+        const flashing = button.classList.contains('is-loading') || button.classList.contains('is-added');
+        if (!flashing) label.textContent = text;
+        button.disabled = pending.length === 0 || button.classList.contains('is-loading');
+        button.classList.toggle('is-complete', pending.length === 0);
+      };
+
+      const readCart = async () => {
+        try {
+          const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`, {
+            headers: { Accept: 'application/json' },
+          });
+          const cart = await response.json();
+          inCart = new Set((cart.items || []).map((line) => String(line.product_id)));
+        } catch (error) {
+          /* keep the last known state */
+        }
+        this.syncPair();
+      };
+
+      button.addEventListener('click', async () => {
+        const chosen = selectedItems();
+        const lines = (chosen.length > 0 ? chosen : pendingItems()).map((item) => ({
+          id: Number(item.dataset.variantId),
+          quantity: 1,
+        }));
+        if (lines.length === 0) return;
+        const ok = await this.addToCart(lines, { trigger: button });
+        if (ok) {
+          items.forEach((item) => toggleOf(item)?.setAttribute('aria-pressed', 'false'));
+          await readCart();
+        }
+        this.syncPair();
+        // Re-check once the "Added" flash has been restored to the rest label.
+        window.setTimeout(() => this.syncPair(), 1900);
+      });
+
+      document.addEventListener('cart:updated', readCart);
+      readCart();
     }
 
     /* The add-ons hero follows the ticked set. Each preview image lists the

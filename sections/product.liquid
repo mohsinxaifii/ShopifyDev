@@ -873,9 +873,13 @@
                     {{- 'icon-plus.svg' | inline_asset_content -}}
                   </span>
                 {%- endunless -%}
+                {%- comment -%}
+                  The set always adds each piece's first available variant.
+                {%- endcomment -%}
                 <article
                   class="pdp-mini"
                   data-pair-item
+                  data-product-id="{{ item.id }}"
                   data-variant-id="{{ item.selected_or_first_available_variant.id }}"
                 >
                   <a href="{{ item.url }}" class="pdp-mini_media">
@@ -892,9 +896,14 @@
                     class="pdp-mini_add"
                     data-pair-toggle
                     aria-pressed="false"
-                    aria-label="{{ 'products.add_to_cart' | t }} {{ item.title | escape }}"
+                    aria-label="Select {{ item.title | escape }}"
                   >
-                    {{- 'icon-bag.svg' | inline_asset_content -}}
+                    <span class="pdp-mini_add_bag" aria-hidden="true">
+                      {{- 'icon-bag.svg' | inline_asset_content -}}
+                    </span>
+                    <span class="pdp-mini_add_tick" aria-hidden="true">
+                      {{- 'icon-tick.svg' | inline_asset_content -}}
+                    </span>
                   </button>
                   <div class="pdp-mini_info">
                     <span class="pdp-mini_info_price">
@@ -915,7 +924,7 @@
               <span class="pdp_button_icon" aria-hidden="true">
                 {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
               </span>
-              <span>Add set to cart</span>
+              <span data-add-label>Add set to cart</span>
             </button>
           </div>
         </section>

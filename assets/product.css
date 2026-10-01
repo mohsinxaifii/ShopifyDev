@@ -1731,10 +1731,41 @@ button.pdp_trust_grid_item_inner {
   height: 20px;
 }
 
+.pdp-mini_add_bag,
+.pdp-mini_add_tick {
+  display: flex;
+}
+
+.pdp-mini_add_tick {
+  display: none;
+}
+
 .pdp-mini_add[aria-pressed='true'] {
   border-color: var(--pdp-brand);
   background-color: var(--pdp-brand);
   color: var(--pdp-inverse);
+}
+
+/* Already in the cart: a ticked badge that can no longer be selected. */
+.pdp-mini.is-in-cart .pdp-mini_add {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-brand);
+  color: var(--pdp-inverse);
+  cursor: default;
+}
+
+.pdp-mini.is-in-cart .pdp-mini_add_bag {
+  display: none;
+}
+
+.pdp-mini.is-in-cart .pdp-mini_add_tick {
+  display: flex;
+}
+
+.pdp_pair_card_cta:disabled {
+  border-color: #c4c4c4;
+  background-color: #c4c4c4;
+  cursor: default;
 }
 
 .pdp-mini_info {
