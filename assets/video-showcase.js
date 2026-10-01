@@ -30,6 +30,7 @@ class VideoShowcase extends HTMLElement {
     this.applyTransform();
 
     this.bindEvents();
+    this.bindSwipe();
     this.bindProductCards();
     this.observeVisibility();
 
@@ -165,6 +166,90 @@ class VideoShowcase extends HTMLElement {
     });
   }
 
+  /* Drag the track with a finger (or mouse) and it follows; let go past a
+     small threshold and it moves one card, otherwise it springs back. The
+     viewport is `touch-action: pan-y`, so vertical page scrolling still belongs
+     to the browser and a scroll that starts vertical cancels the pointer. */
+  bindSwipe() {
+    const threshold = () => Math.min(50, (this.step || 200) * 0.2);
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+
+    const release = (event, cancelled) => {
+      if (event.pointerId !== pointerId) return;
+      pointerId = null;
+      if (!this.isDragging) return;
+
+      this.isDragging = false;
+      this.track.classList.remove('is-snapping');
+      this.track.classList.add('is-animating');
+
+      // The finger lifting fires a click on whatever it was over; eat it.
+      this.suppressClick = true;
+      setTimeout(() => {
+        this.suppressClick = false;
+      }, 0);
+
+      const offset = this.dragOffset;
+      if (!cancelled && offset <= -threshold()) {
+        this.goTo(this.index + 1);
+      } else if (!cancelled && offset >= threshold()) {
+        this.goTo(this.index - 1);
+      } else {
+        this.dragOffset = 0;
+        this.applyTransform();
+        if (this.pendingNext) this.next();
+      }
+      this.pendingNext = false;
+    };
+
+    this.viewport.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      if (event.target.closest('[data-product-card]')) return;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+    });
+
+    this.viewport.addEventListener('pointermove', (event) => {
+      if (event.pointerId !== pointerId) return;
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+
+      if (!this.isDragging) {
+        if (Math.abs(dx) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx)) {
+          pointerId = null;
+          return;
+        }
+        this.isDragging = true;
+        this.viewport.setPointerCapture?.(pointerId);
+        this.track.classList.remove('is-animating');
+        this.track.classList.add('is-snapping');
+      }
+
+      this.dragOffset = dx;
+      this.applyTransform();
+    });
+
+    this.viewport.addEventListener('pointerup', (event) => release(event, false));
+    this.viewport.addEventListener('pointercancel', (event) => release(event, true));
+
+    // Stop the browser dragging posters and links around as ghost images.
+    this.viewport.addEventListener('dragstart', (event) => event.preventDefault());
+
+    this.addEventListener(
+      'click',
+      (event) => {
+        if (!this.suppressClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+      },
+      true,
+    );
+  }
+
   observeVisibility() {
     if (!('IntersectionObserver' in window)) return;
     this.intersectionObserver = new IntersectionObserver(
@@ -200,7 +285,8 @@ class VideoShowcase extends HTMLElement {
 
   applyTransform() {
     if (!this.step) return;
-    const x = this.viewport.clientWidth / 2 - (this.index * this.step + this.cardWidth / 2);
+    const x =
+      this.viewport.clientWidth / 2 - (this.index * this.step + this.cardWidth / 2) + (this.dragOffset || 0);
     this.track.style.transform = `translate3d(${x}px, 0, 0)`;
   }
 
@@ -240,6 +326,7 @@ class VideoShowcase extends HTMLElement {
 
     // Slide onto the identical copy that keeps the move a single step.
     if (from !== this.index && from >= 0 && from < this.slides.length) {
+      // Any drag offset is kept here so the swap onto the copy stays invisible.
       this.withoutTransition(() => {
         this.index = from;
         this.setActiveVisual(from);
@@ -247,6 +334,7 @@ class VideoShowcase extends HTMLElement {
       });
     }
 
+    this.dragOffset = 0;
     this.index = destination;
     this.track.classList.add('is-animating');
     this.setActiveVisual(destination);
@@ -255,6 +343,11 @@ class VideoShowcase extends HTMLElement {
   }
 
   next() {
+    // A video ending mid-swipe waits for the finger; release() picks it up.
+    if (this.isDragging) {
+      this.pendingNext = true;
+      return;
+    }
     this.goTo(this.index + 1);
   }
 

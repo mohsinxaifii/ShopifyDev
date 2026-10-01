@@ -5,7 +5,8 @@
    also has to close like one: the panel slides back down before the dialog is
    actually closed, and dragging the header down dismisses it. */
 class ReviewModal extends HTMLElement {
-  static CLOSE_MS = 220;
+  // Matches --motion-sheet-out in motion.css.
+  static CLOSE_MS = 300;
   static DISMISS_PX = 96;
 
   connectedCallback() {

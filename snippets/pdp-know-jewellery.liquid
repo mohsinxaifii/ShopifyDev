@@ -49,21 +49,58 @@
       <h4 class="pdp-kj_vermeil_title">{{ material_name }}</h4>
 
       <div class="pdp-kj_vermeil_diagram">
-        {%- if vermeil_image != blank -%}
-          <span class="pdp-kj_vermeil_diagram_image">
+        {%- comment -%}
+          The square plating cutaway from Figma 8106:41948 / 8106:58196 ships
+          with the theme (the home page explainer uses it too); a picked
+          section image still wins.
+        {%- endcomment -%}
+        <span class="pdp-kj_vermeil_diagram_image">
+          {%- if vermeil_image != blank -%}
             {{ vermeil_image | image_url: width: 640 | image_tag: loading: 'lazy', alt: material_name }}
-          </span>
-        {%- endif -%}
+          {%- else -%}
+            <img
+              src="{{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '480x' }}"
+              srcset="
+                {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '240x' }} 240w,
+                {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '480x' }} 480w,
+                {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '720x' }} 720w
+              "
+              sizes="(max-width: 749px) 190px, 247px"
+              width="1080"
+              height="1080"
+              loading="lazy"
+              alt="{{ material_name | escape }}"
+            >
+          {%- endif -%}
+        </span>
 
+        {%- comment -%} Desktop: the 532x238 diagram, Figma 8106:41908. {%- endcomment -%}
         <svg
           class="pdp-kj_vermeil_diagram_lines"
           viewBox="0 0 532 238"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <path d="M286.34 100.45 L286.34 61.36 L376.67 61.36" />
-          <path d="M334.4 100.21 L334.4 36.61 L241.61 36.61" />
-          <path d="M244.76 199 V206.29 H261.82 M278.88 199 V206.29 H261.82 M261.82 206.29 V222.19 H220" />
+          <path d="M149 21 H242 V55" />
+          <path d="M376.5 42 H286.17 V81.09" />
+          <path d="M204 199 V206.23 H240.83 M277.66 199 V206.23 H240.83 M240.83 206.23 V222" />
+        </svg>
+
+        {%- comment -%}
+          Phones: the same 361x238 diagram and leader lines as the home page's
+          know-your-jewellery section (Figma Mobile 8106:52431), so the two
+          explainers read identically.
+        {%- endcomment -%}
+        <svg
+          class="pdp-kj_vermeil_diagram_lines pdp-kj_vermeil_diagram_lines--mobile"
+          viewBox="0 0 361 238"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path d="M113 36.75 L149 36.75 L149 72.75" />
+          <path d="M188 59.75 L188 81.75" />
+          <path d="M151.76 188.03 L151.76 195.32 L185.88 195.32 L185.88 188.03" />
+          <path d="M168.82 195.32 L168.82 211.22" />
         </svg>
 
         {%- for callout in callouts limit: 3 -%}

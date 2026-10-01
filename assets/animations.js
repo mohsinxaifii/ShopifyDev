@@ -20,6 +20,17 @@
 
   const hasGsap = () => typeof window.gsap !== 'undefined';
 
+  /**
+   * Re-measure the scroll reveals after the page changes height. An accordion
+   * collapsing pulls the sections below it up into view, but their triggers
+   * were measured where they used to be, so they would stay invisible until
+   * the shopper scrolled down to the old spot. A refresh fires the ones now
+   * on screen.
+   */
+  function refreshReveals() {
+    window.ScrollTrigger?.refresh();
+  }
+
   /** Show everything and step out of the way. */
   function revealAll(root = document) {
     root.querySelectorAll(`[${REVEAL_ATTR}]`).forEach((el) => el.classList.add(VISIBLE_CLASS));
@@ -144,7 +155,30 @@
       const nativeClose = dialog.close.bind(dialog);
       let closing = false;
 
+      // A dialog marked [data-bottom-sheet] runs the shared sheet slide in CSS
+      // on phones (motion.css --motion-sheet-*), so the tween stays out of it.
+      // Its exit is still played here: .is-closing starts the CSS slide-down and
+      // the real close waits for it. A dialog that already carries .is-closing
+      // (review-modal.js runs its own) has played its exit and closes at once.
+      const sheetQuery = window.matchMedia('(max-width: 749px)');
+      const isOwnSheet = () => dialog.hasAttribute('data-bottom-sheet') && sheetQuery.matches;
+      const closeOwnSheet = (args) => {
+        if (closing || !dialog.open || dialog.classList.contains('is-closing')) {
+          return nativeClose(...args);
+        }
+        closing = true;
+        dialog.classList.add('is-closing');
+        const exitMs =
+          parseFloat(getComputedStyle(dialog).getPropertyValue('--motion-sheet-out')) * 1000 || 300;
+        window.setTimeout(() => {
+          closing = false;
+          nativeClose(...args);
+          dialog.classList.remove('is-closing');
+        }, exitMs);
+      };
+
       dialog.showModal = (...args) => {
+        if (isOwnSheet()) return nativeShow(...args);
         nativeShow(...args);
         dialog.classList.remove('is-closing');
         gsap.killTweensOf(target);
@@ -162,6 +196,7 @@
       };
 
       dialog.close = (...args) => {
+        if (isOwnSheet()) return closeOwnSheet(args);
         if (closing || !dialog.open) return nativeClose(...args);
         closing = true;
         // Lets CSS fade ::backdrop out alongside the panel - a pseudo-element
@@ -238,30 +273,39 @@
           }
 
           details.open = true;
+          gsap.set(body, { overflow: 'hidden' });
+          gsap.fromTo(body, { height: 0 }, { height: 'auto', duration: 0.36, ease: 'power2.out' });
           gsap.fromTo(
             body,
-            { height: 0, opacity: 0 },
+            { opacity: 0 },
             {
-              height: 'auto',
               opacity: 1,
-              duration: 0.36,
-              ease: 'power2.out',
+              duration: 0.3,
+              delay: 0.08,
+              ease: 'power1.out',
               onComplete: () => {
                 gsap.set(body, { clearProps: 'height,opacity,overflow' });
                 details.dataset.motionBusy = 'false';
+                refreshReveals();
               },
             },
           );
         } else {
+          // The contents fade out first and quickly, while the box is still
+          // near full height, then the height closes - clipped, so tall content
+          // such as the Know your jewellery diagrams never spills over the
+          // sections sliding up beneath it.
+          gsap.set(body, { overflow: 'hidden' });
+          gsap.to(body, { opacity: 0, duration: 0.16, ease: 'power1.out' });
           gsap.to(body, {
             height: 0,
-            opacity: 0,
             duration: 0.28,
-            ease: 'power2.in',
+            ease: 'power2.inOut',
             onComplete: () => {
               details.open = false;
               gsap.set(body, { clearProps: 'height,opacity,overflow' });
               details.dataset.motionBusy = 'false';
+              refreshReveals();
             },
           });
         }

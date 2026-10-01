@@ -182,6 +182,11 @@
   color: var(--pdp-accent);
 }
 
+/* Phones only - the add-ons bar over the photo (see the mobile pass). */
+.pdp_gallery_stage_addons {
+  display: none;
+}
+
 .pdp_gallery_stage_bottom {
   position: absolute;
   inset: auto 0 0;
@@ -511,6 +516,28 @@
 
 .pdp_offers_rail .pdp-offer {
   flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* Sideways rails: snap a swipe onto a card, and show they can be dragged with
+   a mouse (product.js initDragScroll). Snapping is lifted mid-drag so the rail
+   follows the pointer instead of jumping between cards. */
+.pdp_offers_rail,
+.pdp_headline_tags,
+.pdp_pair_card_items {
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  cursor: grab;
+}
+
+.pdp_headline_tags_item {
+  scroll-snap-align: start;
+}
+
+:is(.pdp_offers_rail, .pdp_headline_tags, .pdp_pair_card_items).is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+  user-select: none;
 }
 
 .pdp-offer {
@@ -595,7 +622,13 @@
   border: 0;
 }
 
+/* A fieldset draws its legend inside its top border, above the padding, so the
+   12px Figma puts over the label would never appear and the absolutely placed
+   size guide would land beside the values. A floated legend is laid out as
+   ordinary content instead (float itself is ignored in the flex column). */
 .pdp_option_head {
+  float: left;
+  width: 100%;
   display: flex;
   gap: 8px;
   align-items: baseline;
@@ -619,6 +652,13 @@
 
 .pdp_option--guide-only {
   align-items: flex-end;
+}
+
+/* Figma spaces the price card from what follows with the Offers rail's 24px
+   top padding. With no offers, the next row (12px padding of its own) takes a
+   12px margin so the card never butts up against "Metal Color". */
+.pdp_headline + :not(.pdp_offers) {
+  margin-top: 12px;
 }
 
 .pdp_option_guide_icon {
@@ -1176,20 +1216,20 @@ button.pdp_trust_grid_item_inner {
   aspect-ratio: 532 / 238;
 }
 
+/* A square 247px cutaway at (118, -9) on the 532x238 diagram. */
 .pdp-kj_vermeil_diagram_image {
   position: absolute;
-  top: -7.14%;
-  left: 18.42%;
+  top: -3.78%;
+  left: 22.18%;
   display: block;
-  width: 59.96%;
-  height: 122.69%;
+  width: 46.43%;
+  height: 103.78%;
 }
 
 .pdp-kj_vermeil_diagram_image img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 9.938px 9.938px rgba(0, 0, 0, 0.1));
 }
 
 .pdp-kj_vermeil_diagram_lines {
@@ -1217,21 +1257,26 @@ button.pdp_trust_grid_item_inner {
 }
 
 .pdp-kj_vermeil_diagram_callout--1 {
-  top: 3.78%;
-  left: 9.96%;
+  top: 0;
+  left: 5.45%;
   width: 35.96%;
 }
 
 .pdp-kj_vermeil_diagram_callout--2 {
-  top: 15.69%;
-  left: 73.12%;
+  top: 11.76%;
+  left: 71.43%;
   width: 28.63%;
 }
 
 .pdp-kj_vermeil_diagram_callout--3 {
-  top: 90.34%;
-  left: 6.39%;
-  width: 34.27%;
+  top: 94.12%;
+  left: 38.91%;
+  width: auto;
+  white-space: nowrap;
+}
+
+.pdp-kj_vermeil_diagram_lines--mobile {
+  display: none;
 }
 
 .pdp-kj_vermeil_diagram_callout_icon {
@@ -1673,7 +1718,10 @@ button.pdp_trust_grid_item_inner {
   place-items: center;
   width: 32px;
   height: 32px;
-  padding: 8px;
+
+  /* No padding: the 20px icon is centred by the grid in the full 32px box.
+     With 8px padding it only had 16px, got squeezed and sat low. */
+  padding: 0;
   border: 0.667px solid var(--pdp-border);
   border-radius: 8px;
   background-color: #fff;
@@ -1682,14 +1730,48 @@ button.pdp_trust_grid_item_inner {
 }
 
 .pdp-mini_add svg {
+  flex: 0 0 auto;
   width: 20px;
   height: 20px;
+}
+
+.pdp-mini_add_bag,
+.pdp-mini_add_tick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdp-mini_add_tick {
+  display: none;
 }
 
 .pdp-mini_add[aria-pressed='true'] {
   border-color: var(--pdp-brand);
   background-color: var(--pdp-brand);
   color: var(--pdp-inverse);
+}
+
+/* Already in the cart: a ticked badge that can no longer be selected. */
+.pdp-mini.is-in-cart .pdp-mini_add {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-brand);
+  color: var(--pdp-inverse);
+  cursor: default;
+}
+
+.pdp-mini.is-in-cart .pdp-mini_add_bag {
+  display: none;
+}
+
+.pdp-mini.is-in-cart .pdp-mini_add_tick {
+  display: flex;
+}
+
+.pdp_pair_card_cta:disabled {
+  border-color: #c4c4c4;
+  background-color: #c4c4c4;
+  cursor: default;
 }
 
 .pdp-mini_info {
@@ -2169,6 +2251,25 @@ button.pdp_trust_grid_item_inner {
   align-self: flex-start;
 }
 
+/* Care guide image (custom.pdp_care_guide_image), above the care steps. */
+.pdp_accordion_body_media {
+  display: block;
+  margin-bottom: 16px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.pdp_accordion_body_media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Only the phone sheet shows the WhatsApp glyph (see the mobile block). */
+.pdp-sheet_panel_body_cta_icon {
+  display: none;
+}
+
 .pdp-sheet_panel_body_offers {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2504,11 +2605,29 @@ button.pdp_trust_grid_item_inner {
 
 /* Add-ons sidesheet - Figma 7930:100360 */
 
-.pdp-addons_hero img {
-  width: 100%;
+/* The default hero and one image per add-on combination are stacked and
+   crossfade as add-ons are ticked (product.js syncAddonHero). */
+.pdp-addons_hero {
+  position: relative;
+  display: block;
   height: 193px;
+  overflow: hidden;
   border-radius: 12px;
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp-addons_hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pdp-addons_hero img.is-active {
+  opacity: 1;
 }
 
 .pdp-addons_grid {
@@ -2992,3 +3111,472 @@ button.pdp_trust_grid_item_inner {
     padding-bottom: 76px;
   }
 }
+
+/* Figma Mobile 8106:62370: on phones the lightbox drops the arrows and counter
+   for a vertical stack - every image a full-width square on a 16px gap, 12px
+   from the screen edges, scrolled inside the dialog. The close button sticks to
+   the top so it stays in reach however far down the stack the shopper goes. */
+@media screen and (max-width: 749px) {
+  .pdp-lightbox[open] {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-start;
+    padding: 0 12px 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .pdp-lightbox_close {
+    position: sticky;
+    top: 0;
+    right: auto;
+    z-index: 1;
+    flex: 0 0 auto;
+    align-self: flex-end;
+    box-sizing: content-box;
+    padding-top: 16px;
+  }
+
+  .pdp-lightbox_body {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+
+  .pdp-lightbox_body_arrow,
+  .pdp-lightbox_body_stage_counter {
+    display: none;
+  }
+
+  .pdp-lightbox_body_stage {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
+  }
+
+  .pdp-lightbox_body_stage_frame {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+  }
+
+  .pdp-lightbox_body_stage_frame_slide {
+    position: relative;
+    inset: auto;
+    aspect-ratio: 1;
+    visibility: visible;
+    opacity: 1;
+
+    /* Clears the sticky close button when opened on a later image. */
+    scroll-margin-top: 64px;
+  }
+
+  .pdp-lightbox_body_stage_frame_slide :is(img, video, iframe) {
+    object-fit: cover;
+  }
+}
+
+/* Figma Mobile PDP 8106:57854: on phones every PDP sheet - offers, add-ons,
+   price difference, size guide and the SGL certificate - rises from the bottom
+   instead of sliding in from the side or sitting centred. Same shell for all:
+   24px top corners (16px on the certificate), a 16px title row with the 21.5px
+   close, content-height up to 768px, and the shared sheet motion. */
+@media screen and (max-width: 749px) {
+  .pdp-sheet_panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: min(768px, calc(100% - 16px));
+    overflow: hidden;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .pdp-sheet_panel_head_title,
+  .pdp-modal_panel_head_title {
+    line-height: 24px;
+  }
+
+  /* The 21.5px glyph keeps its 8px tap padding without growing the row. */
+  .pdp-sheet_panel_head_close,
+  .pdp-modal_panel_head_close {
+    margin: -8px -8px -8px 0;
+  }
+
+  .pdp-sheet_panel_head_close svg,
+  .pdp-modal_panel_head_close svg {
+    width: 21.5px;
+    height: 21.5px;
+  }
+
+  .pdp-sheet_panel_body {
+    flex: 0 1 auto;
+    padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+
+  /* With a pinned footer, the safe area belongs to the footer instead. */
+  .pdp-sheet_panel_body:has(+ .pdp-sheet_panel_footer) {
+    padding-bottom: 24px;
+  }
+
+  .pdp-sheet_panel_body_offers {
+    gap: 16px;
+  }
+
+  .pdp-sheet_panel_footer {
+    padding-top: 12px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    box-shadow: none;
+  }
+
+  /* Title-to-content spacing differs per sheet in Figma: 12px under Add-ons and
+     Size guide, 24px under All offers and the price difference. */
+  .pdp-sheet_panel_body,
+  .pdp-sheet_panel_body--padded {
+    padding-top: 12px;
+  }
+
+  [data-sheet='offers'] .pdp-sheet_panel_body,
+  [data-sheet='price-difference'] .pdp-sheet_panel_body {
+    padding-top: 24px;
+  }
+
+  /* Add-ons: label, hero and cards run on a single 8px rhythm. */
+  [data-sheet='addons'] .pdp-sheet_panel_body {
+    gap: 8px;
+  }
+
+  /* Size guide: 14px semibold section labels and a full-width WhatsApp CTA. */
+  [data-sheet='size-guide'] .pdp-sheet_panel_body_group_label {
+    font-weight: 600;
+    line-height: 22px;
+  }
+
+  [data-sheet='size-guide'] .pdp-sheet_panel_body_cta {
+    align-self: stretch;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  [data-sheet='size-guide'] .pdp-sheet_panel_body_cta_icon {
+    display: flex;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* The price difference keeps its four facts two-up, as in the design. */
+  .pdp-diff_facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pdp-modal[open] {
+    display: block;
+  }
+
+  .pdp-modal_panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    gap: 16px;
+    width: 100%;
+    max-width: none;
+    max-height: min(768px, calc(100% - 16px));
+    padding: 0 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 16px 16px 0 0;
+    overscroll-behavior: contain;
+  }
+
+  /* `html` matches the specificity of motion.css's no-GSAP side slide, which
+     this has to outrank. */
+  html .pdp-sheet[data-bottom-sheet][open] .pdp-sheet_panel,
+  html .pdp-modal[data-bottom-sheet][open] .pdp-modal_panel {
+    animation: motion-sheet-up var(--motion-sheet-in) var(--motion-sheet-ease);
+  }
+
+  html .pdp-sheet[data-bottom-sheet].is-closing .pdp-sheet_panel,
+  html .pdp-modal[data-bottom-sheet].is-closing .pdp-modal_panel {
+    animation: motion-sheet-down var(--motion-sheet-out) var(--motion-sheet-ease-out) forwards;
+  }
+
+  .pdp-sheet[data-bottom-sheet][open]::backdrop,
+  .pdp-modal[data-bottom-sheet][open]::backdrop {
+    animation: motion-fade var(--motion-sheet-in) ease;
+  }
+
+  .pdp-sheet[data-bottom-sheet].is-closing::backdrop,
+  .pdp-modal[data-bottom-sheet].is-closing::backdrop {
+    animation: motion-fade-out var(--motion-sheet-out) ease forwards;
+  }
+}
+
+/* Figma Mobile PDP 8106:57855 - second pass. */
+@media screen and (max-width: 749px) {
+  /* Gallery foot: "Add-ons available" as a tinted bar over the photo, with the
+     media pills lifted to sit on top of it (8106:57906). */
+  .pdp_gallery_stage_addons {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border: 0;
+    background-color: rgba(141, 92, 9, 0.7);
+    backdrop-filter: blur(3.5px);
+    font-family: var(--font-secondary--family);
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 20px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .pdp_gallery_stage_addons svg {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+  }
+
+  .pdp_gallery_stage:has(.pdp_gallery_stage_addons) .pdp_gallery_stage_bottom {
+    bottom: 32px;
+  }
+
+  .pdp_headline_addons {
+    display: none;
+  }
+
+  /* Price card order (8106:57920): price with the rating chip beside it, the
+     tax note, the calculator, the tags, and the title last. */
+  .pdp_headline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'price rating'
+      'tax tax'
+      'calc calc'
+      'tags tags'
+      'title title';
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .pdp_headline_top {
+    display: contents;
+  }
+
+  .pdp_headline_price {
+    grid-area: price;
+    gap: 8px;
+  }
+
+  .pdp_headline_top_rating {
+    grid-area: rating;
+    align-self: center;
+    font-size: 13px;
+  }
+
+  .pdp_headline_tax {
+    grid-area: tax;
+    margin-top: -8px;
+  }
+
+  .pdp_headline_calculator {
+    grid-area: calc;
+  }
+
+  .pdp_headline_tags {
+    grid-area: tags;
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline: var(--page-margin);
+  }
+
+  .pdp_headline_top_title {
+    grid-area: title;
+    margin-top: -4px;
+  }
+
+  /* Offers rail runs off the right edge of the screen. */
+  .pdp_offers_rail {
+    margin-right: calc(var(--page-margin) * -1);
+    padding-right: var(--page-margin);
+  }
+
+  /* Need help + Delivery: 44-46px controls with 16px type (8106:58070/58052). */
+  .pdp_help_actions .pdp_button {
+    height: 44px;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .pdp_help_actions .pdp_button_icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pdp_delivery_row_input {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .pdp_delivery_row .pdp_button {
+    height: auto;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  /* Why you'll love it: 14px tiles (8106:58099). Long single words such as
+     "Hypoallergenic" break as Figma's "Hypoallerge-nic" does instead of
+     spilling out of the 120px tile. */
+  .pdp_highlights_item_text {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+  }
+
+  /* The room kept for the pinned Add to cart bar belongs at the foot of the
+     page, not between the product and the FAQ below it. */
+  .pdp {
+    padding-bottom: 0;
+  }
+
+  body:has(.pdp) {
+    padding-bottom: 76px;
+  }
+
+  /* Figma 8106:58337: on the product page the FAQ heading sits left, unlike
+     the centred one on the home page. */
+  body:has(.pdp) .faq_wrapper_heading {
+    text-align: left;
+  }
+
+  /* Know your jewellery on phones: the home page's mobile diagram, value for
+     value (know-your-jewellery.css) - a 361x238 box, the 190px cutaway at
+     (80, 23.75), 16px icons, and the callouts where its leader lines end. */
+  .pdp-kj_vermeil_title,
+  .pdp-kj_diamonds_title {
+    font-size: 16px;
+  }
+
+  .pdp-kj_vermeil_diagram {
+    aspect-ratio: 361 / 238;
+  }
+
+  .pdp-kj_vermeil_diagram_image {
+    top: 9.98%;
+    left: 22.16%;
+    width: 52.63%;
+    height: 79.83%;
+  }
+
+  .pdp-kj_vermeil_diagram_lines {
+    display: none;
+  }
+
+  .pdp-kj_vermeil_diagram_lines--mobile {
+    display: block;
+  }
+
+  .pdp-kj_vermeil_diagram_callout--1 {
+    top: 4.94%;
+    left: 3.32%;
+    width: auto;
+  }
+
+  /* The home page's 137px text box, so it breaks after "like" there too. */
+  .pdp-kj_vermeil_diagram_callout--1 .pdp-kj_vermeil_diagram_callout_text {
+    width: 137px;
+  }
+
+  .pdp-kj_vermeil_diagram_callout--2 {
+    top: 15.27%;
+    left: 50.56%;
+    width: 49.44%;
+  }
+
+  .pdp-kj_vermeil_diagram_callout--3 {
+    top: 89.46%;
+    left: 35.07%;
+    width: 64.93%;
+  }
+
+  /* The diagram sits inside the card's 12px padding, so it is ~24px narrower
+     than on the home page; these two stay on one line as they do there. */
+  .pdp-kj_vermeil_diagram_callout--2,
+  .pdp-kj_vermeil_diagram_callout--3 {
+    white-space: nowrap;
+  }
+
+  .pdp-kj_vermeil_diagram_callout_icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .pdp-kj_vermeil_diagram_callout_text {
+    font-size: 14px;
+    line-height: 13.25px;
+  }
+
+  .pdp-kj_vermeil_specs_cell_label {
+    font-size: 10px;
+  }
+
+  .pdp-kj_vermeil_specs_cell_value {
+    font-size: 14px;
+  }
+
+  .pdp-kj_diamonds_compare {
+    gap: 16px;
+  }
+
+  .pdp-kj_diamonds_compare_side_label,
+  .pdp-kj_diamonds_compare_link_text {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .pdp-kj_diamonds_compare_link_arrow {
+    width: 149px;
+  }
+
+  /* You may also like: 168px cards, image + price + title only (8106:58204). */
+  .pdp_related_panel_track > .product-card {
+    flex-basis: 168px;
+    width: 168px;
+  }
+
+  .pdp_related .product-card_info_add {
+    display: none;
+  }
+
+  /* Pair beautifully with: 139px cards that scroll, a third peeking (8106:58275). */
+  .pdp_pair_card_items {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pdp_pair_card_items::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pdp_pair_card_items .pdp-mini {
+    flex: 0 0 139px;
+    scroll-snap-align: start;
+  }
+
+  .pdp_pair_card_items_plus {
+    width: 11.67px;
+    height: 11.67px;
+  }
+}
+

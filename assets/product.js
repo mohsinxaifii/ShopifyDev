@@ -127,9 +127,71 @@
       this.initTabs();
       this.initReviews();
       this.initCart();
+      this.initDragScroll();
       this.recordRecentlyViewed();
 
       this.classList.add('is-ready');
+    }
+
+    /* ------------------------------------------------------- drag to scroll */
+
+    /* The sideways rails hide their scrollbars, so a mouse had no way to move
+       them. Touch already swipes natively (with snap points in CSS); this adds
+       click-and-drag for mice. A drag swallows the click that ends it, so the
+       copy-code buttons inside the offer cards don't fire on release. */
+    initDragScroll() {
+      this.querySelectorAll('.pdp_offers_rail, .pdp_headline_tags, .pdp_pair_card_items').forEach(
+        (rail) => {
+          let startX = 0;
+          let startScroll = 0;
+          let pointerId = null;
+          let dragged = false;
+
+          rail.addEventListener('pointerdown', (event) => {
+            if (event.pointerType !== 'mouse' || event.button !== 0) return;
+            if (rail.scrollWidth <= rail.clientWidth) return;
+            pointerId = event.pointerId;
+            startX = event.clientX;
+            startScroll = rail.scrollLeft;
+            dragged = false;
+          });
+
+          rail.addEventListener('pointermove', (event) => {
+            if (event.pointerId !== pointerId) return;
+            const dx = event.clientX - startX;
+            if (!dragged && Math.abs(dx) < 4) return;
+            if (!dragged) {
+              dragged = true;
+              rail.setPointerCapture(pointerId);
+              rail.classList.add('is-dragging');
+            }
+            rail.scrollLeft = startScroll - dx;
+          });
+
+          const end = (event) => {
+            if (event.pointerId !== pointerId) return;
+            pointerId = null;
+            if (!dragged) return;
+            rail.classList.remove('is-dragging');
+            // Let snapping settle the rail on the nearest card.
+            rail.scrollBy({ left: 0, behavior: 'smooth' });
+          };
+          rail.addEventListener('pointerup', end);
+          rail.addEventListener('pointercancel', end);
+
+          rail.addEventListener(
+            'click',
+            (event) => {
+              if (!dragged) return;
+              event.preventDefault();
+              event.stopPropagation();
+              dragged = false;
+            },
+            true,
+          );
+          rail.addEventListener('dragstart', (event) => event.preventDefault());
+        },
+      );
     }
 
     /* ------------------------------------------------------------ sheets */
@@ -295,6 +357,16 @@
       this.addEventListener('gallery:open', (event) => {
         this.showLightbox(event.detail.index);
         dialog.showModal();
+        // Phones stack every image vertically, so open on the one tapped.
+        // Offsets rather than scrollIntoView: the opening tween is still scaling
+        // the stack, and offsets ignore transforms. 64px clears the sticky close.
+        if (window.matchMedia('(max-width: 749px)').matches) {
+          let top = 0;
+          for (let el = this.lightboxSlides[this.lightboxIndex]; el && el !== dialog; el = el.offsetParent) {
+            top += el.offsetTop;
+          }
+          dialog.scrollTop = Math.max(0, top - 64);
+        }
       });
 
       dialog
@@ -528,27 +600,15 @@
           'aria-pressed',
           toggle.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
         );
+        if (toggle.matches('[data-addon-toggle]')) this.syncAddonHero();
+        if (toggle.matches('[data-pair-toggle]')) this.syncPair?.();
       });
 
       this.querySelector('[data-addons-done]')?.addEventListener('click', () => {
         this.sheets.get('addons')?.close();
       });
 
-      const pairAdd = this.querySelector('[data-pair-add]');
-      pairAdd?.addEventListener('click', () => {
-        const items = Array.from(
-          this.querySelectorAll('[data-pair-toggle][aria-pressed="true"]'),
-        ).map((button) => ({
-          id: Number(button.closest('[data-pair-item]').dataset.variantId),
-          quantity: 1,
-        }));
-        // Nothing ticked reads as "I want the whole set".
-        const all = Array.from(this.querySelectorAll('[data-pair-item]')).map((item) => ({
-          id: Number(item.dataset.variantId),
-          quantity: 1,
-        }));
-        this.addToCart(items.length > 0 ? items : all, { trigger: pairAdd });
-      });
+      this.initPair();
 
       const diffAdd = this.querySelector('[data-diff-add]');
       diffAdd?.addEventListener('click', async () => {
@@ -565,6 +625,126 @@
           trigger: button,
         });
       });
+    }
+
+    /* --------------------------------------------------- pair beautifully */
+
+    /**
+     * "Pair beautifully with" works off what is actually in the cart, read on
+     * load and after every cart change (the drawer fires cart:updated), so a
+     * piece already in the bag - added here, as part of the set, or removed
+     * again in the drawer - is always shown as it really is.
+     *
+     * - A card's bag icon selects it; a piece already in the cart shows a tick
+     *   and cannot be selected again.
+     * - The button adds the selection, or with nothing selected, every piece
+     *   not yet in the cart (each one's first available variant). Once all of
+     *   them are in, it reads "Set added to cart" and stays disabled.
+     */
+    initPair() {
+      const section = this.querySelector('[data-pair]');
+      const button = section?.querySelector('[data-pair-add]');
+      if (!section || !button) return;
+      const label = button.querySelector('[data-add-label]') || button;
+      const items = Array.from(section.querySelectorAll('[data-pair-item]'));
+      const toggleOf = (item) => item.querySelector('[data-pair-toggle]');
+      let inCart = new Set();
+
+      const pendingItems = () => items.filter((item) => !inCart.has(item.dataset.productId));
+      const selectedItems = () =>
+        pendingItems().filter((item) => toggleOf(item)?.getAttribute('aria-pressed') === 'true');
+
+      this.syncPair = () => {
+        items.forEach((item) => {
+          const added = inCart.has(item.dataset.productId);
+          const toggle = toggleOf(item);
+          item.classList.toggle('is-in-cart', added);
+          if (!toggle) return;
+          toggle.disabled = added;
+          if (added) toggle.setAttribute('aria-pressed', 'false');
+          const title = item.querySelector('.pdp-mini_info_title')?.textContent.trim() || '';
+          toggle.setAttribute('aria-label', added ? `${title} is in your cart` : `Select ${title}`);
+        });
+
+        const pending = pendingItems();
+        const selected = selectedItems();
+        let text;
+        if (pending.length === 0) text = 'Set added to cart';
+        else if (selected.length > 0)
+          text = `Add ${selected.length} item${selected.length > 1 ? 's' : ''} to cart`;
+        else if (pending.length < items.length) text = `Add remaining ${pending.length} to cart`;
+        else text = 'Add set to cart';
+
+        // The shared cart restores this text after its "Added" flash, so it has
+        // to follow the state as well as the visible label does.
+        label.dataset.restLabel = text;
+        const flashing = button.classList.contains('is-loading') || button.classList.contains('is-added');
+        if (!flashing) label.textContent = text;
+        button.disabled = pending.length === 0 || button.classList.contains('is-loading');
+        button.classList.toggle('is-complete', pending.length === 0);
+      };
+
+      const readCart = async () => {
+        try {
+          const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`, {
+            headers: { Accept: 'application/json' },
+          });
+          const cart = await response.json();
+          inCart = new Set((cart.items || []).map((line) => String(line.product_id)));
+        } catch (error) {
+          /* keep the last known state */
+        }
+        this.syncPair();
+      };
+
+      button.addEventListener('click', async () => {
+        const chosen = selectedItems();
+        const lines = (chosen.length > 0 ? chosen : pendingItems()).map((item) => ({
+          id: Number(item.dataset.variantId),
+          quantity: 1,
+        }));
+        if (lines.length === 0) return;
+        const ok = await this.addToCart(lines, { trigger: button });
+        if (ok) {
+          items.forEach((item) => toggleOf(item)?.setAttribute('aria-pressed', 'false'));
+          await readCart();
+        }
+        this.syncPair();
+        // Re-check once the "Added" flash has been restored to the rest label.
+        window.setTimeout(() => this.syncPair(), 1900);
+      });
+
+      document.addEventListener('cart:updated', readCart);
+      readCart();
+    }
+
+    /* The add-ons hero follows the ticked set. Each preview image lists the
+       add-on product ids it shows; an exact match wins, otherwise the preview
+       covering the most ticked add-ons without showing an unticked one, and
+       with nothing matching the default hero (tagged "default"). */
+    syncAddonHero() {
+      const hero = this.querySelector('[data-addon-hero]');
+      if (!hero) return;
+      const images = Array.from(hero.querySelectorAll('[data-addon-preview]'));
+      const selected = new Set(
+        Array.from(this.querySelectorAll('[data-addon-toggle][aria-pressed="true"]')).map(
+          (button) => button.dataset.productId,
+        ),
+      );
+
+      let best = images.find((img) => img.dataset.addonPreview === 'default') || null;
+      let bestSize = 0;
+      images.forEach((img) => {
+        if (img.dataset.addonPreview === 'default') return;
+        const ids = (img.dataset.addonPreview || '').split(',').filter(Boolean);
+        if (!ids.length || !ids.every((id) => selected.has(id))) return;
+        if (ids.length > bestSize) {
+          best = img;
+          bestSize = ids.length;
+        }
+      });
+
+      images.forEach((img) => img.classList.toggle('is-active', img === best));
     }
 
     buildItems() {

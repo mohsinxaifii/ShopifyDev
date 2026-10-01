@@ -54,7 +54,16 @@
   assign material_tags = product.metafields.custom.pdp_material_tags.value
   assign media_badges = product.metafields.custom.pdp_media_badges.value
   assign highlights = product.metafields.custom.pdp_highlights.value
-  assign addons = product.metafields.custom.pdp_addons.value
+  comment
+    Add-ons come from the product's add-on set (custom.pdp_addon_set, a
+    pdp_addon_set entry) when it has one: the products on offer, the default
+    hero and a hero per combination of ticked add-ons. Products without a set
+    keep the older custom.pdp_addons list and the section's add-ons image.
+  endcomment
+  assign addon_set = product.metafields.custom.pdp_addon_set.value
+  assign addons = addon_set.addons.value | default: product.metafields.custom.pdp_addons.value
+  assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
+  assign addon_previews = addon_set.previews.value
   assign ugc_videos = product.metafields.custom.pdp_ugc_videos.value
   assign reviews = product.metafields.custom.pdp_reviews.value
   if reviews.size > 0
@@ -66,6 +75,14 @@
     theme writes its own custom.pdp_* copies and never has to edit those.
   endcomment
   assign size_chart = product.metafields.custom.pdp_size_chart.value | default: product.metafields.custom.size_chart.value
+
+  comment
+    The size guide is for rings only ("Vermeil Rings"); a pendant or bracelet
+    carrying a chart from the source store shows no guide link or sheet.
+  endcomment
+  unless product.type contains 'Ring'
+    assign size_chart = blank
+  endunless
   assign detail_lists = product.metafields.custom.pdp_detail_lists.value | default: product.metafields.content.product_details_list.value
 
   assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
@@ -79,6 +96,15 @@
     string and resolved back to metaobjects at render time.
   endcomment
   assign all_offers = shop.metafields.custom.pdp_offers.value
+
+  comment
+    The shop list can be set yet resolve to nothing - when its references
+    point at entries from another store, say - so every discount_offer entry
+    is the fallback. Each entry's own product/collection pinning still applies.
+  endcomment
+  if all_offers == blank or all_offers.size == 0
+    assign all_offers = shop.metaobjects.discount_offer.values
+  endif
   assign offer_handles = ''
   for offer in all_offers
     assign is_match = false
@@ -181,6 +207,17 @@
                 <span class="pdp_gallery_stage_bottom_pill">{{ badge }}</span>
               {%- endfor -%}
             </div>
+          {%- endif -%}
+
+          {%- comment -%}
+            Figma Mobile 8106:57910: on phones "Add-ons available" is a tinted bar
+            across the foot of the photo; desktop keeps it in the price card.
+          {%- endcomment -%}
+          {%- if addons != blank -%}
+            <button type="button" class="pdp_gallery_stage_addons" data-open="addons">
+              <span>Add-ons available</span>
+              {{ 'icon-caret-right.svg' | inline_asset_content }}
+            </button>
           {%- endif -%}
         </div>
 
@@ -333,6 +370,19 @@
         {%- endif -%}
 
         {%- comment -%} Variant options - Figma 7930:96080 (swatches) / 7930:96094 (chips) {%- endcomment -%}
+        {%- liquid
+          comment
+            The size guide sits on the Size row's header. A product with a size
+            chart but no Size option (a chain length, say) hangs it on its last
+            option's header instead, rather than on an empty row of its own.
+          endcomment
+          assign has_size_option = false
+          for option in product.options_with_values
+            if option.name contains 'Size'
+              assign has_size_option = true
+            endif
+          endfor
+        -%}
         {%- for option in product.options_with_values -%}
           {%- liquid
             assign is_swatch = false
@@ -342,6 +392,14 @@
             assign is_size = false
             if option.name contains 'Size'
               assign is_size = true
+            endif
+            assign show_guide = false
+            if size_chart != blank
+              if is_size
+                assign show_guide = true
+              elsif has_size_option == false and forloop.last
+                assign show_guide = true
+              endif
             endif
           -%}
           <fieldset
@@ -359,7 +417,7 @@
               {%- endif -%}
             </legend>
 
-            {%- if is_size and size_chart != blank -%}
+            {%- if show_guide -%}
               {%- assign size_guide_inline = true -%}
               <button type="button" class="pdp_link pdp_option_guide" data-open="size-guide">
                 <span class="pdp_option_guide_icon" aria-hidden="true">
@@ -398,9 +456,8 @@
         {%- endfor -%}
 
         {%- comment -%}
-          A product can carry a size chart without carrying a size option - a
-          chain length, say - and the sidesheet would then be unreachable, so the
-          link falls back to a row of its own.
+          Only reached when the product has no options to hang the guide on, so
+          the sidesheet still has a way in.
         {%- endcomment -%}
         {%- if size_chart != blank and size_guide_inline != true -%}
           <div class="pdp_option pdp_option--guide-only">
@@ -628,6 +685,30 @@
               </span>
             </summary>
             <div class="pdp_accordion_body">
+              {%- comment -%}
+                The care guide entry is shared by every product, so its image is
+                a per-product upload: custom.pdp_care_guide_image.
+              {%- endcomment -%}
+              {%- liquid
+                assign care_image = blank
+                assign list_heading = list.heading | downcase
+                if list_heading contains 'care'
+                  assign care_image = product.metafields.custom.pdp_care_guide_image.value
+                endif
+              -%}
+              {%- if care_image != blank -%}
+                <span class="pdp_accordion_body_media">
+                  {{
+                    care_image
+                    | image_url: width: 1112
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '361,556,722,1112',
+                      sizes: '(max-width: 749px) calc(100vw - 32px), 556px',
+                      alt: list.heading
+                  }}
+                </span>
+              {%- endif -%}
               <dl class="pdp_specs">
                 {%- for item in list.product_details_item.value -%}
                   <div class="pdp_specs_row">
@@ -792,9 +873,13 @@
                     {{- 'icon-plus.svg' | inline_asset_content -}}
                   </span>
                 {%- endunless -%}
+                {%- comment -%}
+                  The set always adds each piece's first available variant.
+                {%- endcomment -%}
                 <article
                   class="pdp-mini"
                   data-pair-item
+                  data-product-id="{{ item.id }}"
                   data-variant-id="{{ item.selected_or_first_available_variant.id }}"
                 >
                   <a href="{{ item.url }}" class="pdp-mini_media">
@@ -811,9 +896,14 @@
                     class="pdp-mini_add"
                     data-pair-toggle
                     aria-pressed="false"
-                    aria-label="{{ 'products.add_to_cart' | t }} {{ item.title | escape }}"
+                    aria-label="Select {{ item.title | escape }}"
                   >
-                    {{- 'icon-bag.svg' | inline_asset_content -}}
+                    <span class="pdp-mini_add_bag" aria-hidden="true">
+                      {{- 'icon-bag.svg' | inline_asset_content -}}
+                    </span>
+                    <span class="pdp-mini_add_tick" aria-hidden="true">
+                      {{- 'icon-tick.svg' | inline_asset_content -}}
+                    </span>
                   </button>
                   <div class="pdp-mini_info">
                     <span class="pdp-mini_info_price">
@@ -834,7 +924,7 @@
               <span class="pdp_button_icon" aria-hidden="true">
                 {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
               </span>
-              <span>Add set to cart</span>
+              <span data-add-label>Add set to cart</span>
             </button>
           </div>
         </section>
@@ -947,11 +1037,14 @@
 
   {%- comment -%} ------------------------------------------------- overlays {%- endcomment -%}
   {%- render 'pdp-lightbox', product: product -%}
-  {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
+  {%- if size_chart != blank -%}
+    {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
+  {%- endif -%}
   {%- render 'pdp-offers-sheet', offer_handles: offer_handles -%}
   {%- render 'pdp-addons-sheet',
     addons: addons,
-    hero: section.settings.addons_image,
+    hero: addons_hero,
+    previews: addon_previews,
     whatsapp_url: section.settings.whatsapp_url
   -%}
   {%- render 'pdp-sgl-modal', product: product, fallback: section.settings.certificate_image -%}

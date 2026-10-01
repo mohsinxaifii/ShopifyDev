@@ -77,15 +77,16 @@
 .know-your-jewellery_wrapper_grid_vermeil_diagram {
   position: relative;
   width: 100%;
-  aspect-ratio: 536.5 / 238;
+  aspect-ratio: 536.5 / 291;
 }
 
+/* Figma 8106:49989: a square 247px cutaway at (133, 29) in the 536.5x291 box. */
 .know-your-jewellery_wrapper_grid_vermeil_diagram_image {
   position: absolute;
-  left: 25.72%;
-  top: 7.98%;
-  width: 44.58%;
-  height: 92.14%;
+  left: 24.79%;
+  top: 9.97%;
+  width: 46.04%;
+  height: 84.88%;
   display: block;
 }
 
@@ -94,7 +95,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 9.938px 9.938px rgba(0, 0, 0, 0.1));
 }
 
 .know-your-jewellery_wrapper_grid_vermeil_diagram_lines {
@@ -125,19 +125,19 @@
    and neighbouring labels don't run into each other. */
 .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--1 {
   left: 2.98%;
-  top: 12.185%;
+  top: 9.97%;
   width: 30.25%;
 }
 
 .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--2 {
-  left: 49.3%;
-  top: 15.61%;
+  left: 48.56%;
+  top: 12.42%;
   width: 39.39%;
 }
 
 .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--3 {
-  left: 37.95%;
-  top: 89.37%;
+  left: 37.65%;
+  top: 90.34%;
   width: 44.42%;
 }
 
@@ -548,7 +548,7 @@
   display: none;
 }
 
-/* Figma Mobile 7930:106750: the panels stack edge to edge with no rounded frame
+/* Figma Mobile 8106:52423: the panels stack edge to edge with no rounded frame
    or divider, and the vermeil diagram is re-laid on its 361x238 mobile box -
    photo, callouts and leader lines all move, so each gets its mobile position. */
 @media screen and (max-width: 749px) {
@@ -575,11 +575,12 @@
     aspect-ratio: 361 / 238;
   }
 
+  /* A square 190px cutaway at (80, 23.75). */
   .know-your-jewellery_wrapper_grid_vermeil_diagram_image {
-    left: 16.9%;
-    top: 8.07%;
-    width: 66.25%;
-    height: 92.14%;
+    left: 22.16%;
+    top: 9.98%;
+    width: 52.63%;
+    height: 79.83%;
   }
 
   .know-your-jewellery_wrapper_grid_vermeil_diagram_lines {
@@ -596,10 +597,11 @@
     width: 43.85%;
   }
 
+  /* Runs to the diagram's right edge; Figma's text box overhangs it. */
   .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--2 {
-    left: 51.95%;
-    top: 15.69%;
-    width: 48.05%;
+    left: 50.56%;
+    top: 15.27%;
+    width: 49.44%;
   }
 
   .know-your-jewellery_wrapper_grid_vermeil_diagram_callout--3 {

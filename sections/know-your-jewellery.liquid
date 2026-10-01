@@ -25,23 +25,43 @@
                 | image_tag: loading: 'lazy', alt: section.settings.vermeil_title
               }}
             </span>
+          {%- else -%}
+            {%- comment -%}
+              The square plating cutaway from Figma 8106:49989 ships with the
+              theme, so the diagram works before a merchant picks their own.
+            {%- endcomment -%}
+            <span class="know-your-jewellery_wrapper_grid_vermeil_diagram_image">
+              <img
+                src="{{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '480x' }}"
+                srcset="
+                  {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '240x' }} 240w,
+                  {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '480x' }} 480w,
+                  {{ 'kyj-gold-vermeil-cutaway.png' | asset_img_url: '720x' }} 720w
+                "
+                sizes="(max-width: 749px) 53vw, 247px"
+                width="1080"
+                height="1080"
+                loading="lazy"
+                alt="{{ section.settings.vermeil_title | escape }}"
+              >
+            </span>
           {%- endif -%}
 
           <svg
             class="know-your-jewellery_wrapper_grid_vermeil_diagram_lines"
-            viewBox="0 0 536.5 238"
+            viewBox="0 0 536.5 291"
             preserveAspectRatio="none"
             aria-hidden="true"
           >
-            <path d="M178 36.22 L225.78 36.22 L225.78 99.82" />
+            <path d="M178 36.33 L226 36.33 L226 91" />
             <path d="M269.84 60.99 L269.84 100.07" />
-            <path d="M228.76 187.81 L228.76 195.1 L262.88 195.1 L262.88 187.81" />
-            <path d="M245.82 195.1 L245.82 211" />
+            <path d="M213.33 238 L213.33 245.23 L286.33 245.23 L286.33 238" />
+            <path d="M249.83 245.23 L249.83 261" />
           </svg>
 
           {%- comment -%}
             The same leader lines re-drawn for the 361x238 mobile diagram
-            (Figma Mobile 7930:106758), where the photo and callouts move.
+            (Figma Mobile 8106:52431), where the photo and callouts move.
           {%- endcomment -%}
           <svg
             class="know-your-jewellery_wrapper_grid_vermeil_diagram_lines know-your-jewellery_wrapper_grid_vermeil_diagram_lines--mobile"
@@ -49,8 +69,8 @@
             preserveAspectRatio="none"
             aria-hidden="true"
           >
-            <path d="M148.8 36.44 L184.08 36.44 L184.08 100.04" />
-            <path d="M192.84 61.2 L192.84 100.29" />
+            <path d="M113 36.75 L149 36.75 L149 72.75" />
+            <path d="M188 59.75 L188 81.75" />
             <path d="M151.76 188.03 L151.76 195.32 L185.88 195.32 L185.88 188.03" />
             <path d="M168.82 195.32 L168.82 211.22" />
           </svg>

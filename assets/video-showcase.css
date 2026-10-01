@@ -41,6 +41,11 @@
   padding-block: 48px;
   margin-block: -48px;
   overflow: hidden;
+
+  /* Horizontal drags are the carousel's swipe; vertical ones scroll the page. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .video-showcase_wrapper_track {
@@ -281,14 +286,63 @@
     margin-inline: calc(var(--page-margin) * -1);
   }
 
+  /* Resting cards are drawn at 146x275, i.e. the 169x320 card scaled by 0.86.
+     Scaling about the centre pulls each edge in by (169 - 146) / 2 = 11.5px,
+     so a 4.5px layout gap reads as Figma's 16px beside the active card. The
+     script measures centre to centre, so the scale does not upset the step. */
   .video-showcase_wrapper_track {
-    --video-showcase-step: 185px;
-    --video-showcase-gap: 16px;
+    --video-showcase-step: 173.5px;
+    --video-showcase-gap: 4.5px;
     --video-showcase-card-width: 169px;
   }
 
   .video-showcase_wrapper_track_item {
     aspect-ratio: 169 / 320;
+    transform: scale(0.86);
+    transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .video-showcase_wrapper_track_item.is-active {
+    transform: none;
+  }
+
+  .video-showcase_wrapper_track_item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.4);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .video-showcase_wrapper_track_item.is-active::after {
+    opacity: 0;
+  }
+
+  .video-showcase_wrapper_track_item_scrim {
+    display: none;
+  }
+
+  .video-showcase_wrapper_track_item_progress {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* A bare 19px triangle over the dimmed card, no disc behind it. */
+  .video-showcase_wrapper_track_item_play {
+    width: auto;
+    height: auto;
+    background-color: transparent;
+  }
+
+  .video-showcase_wrapper_track_item_play svg {
+    width: 19px;
+    height: 19px;
+    margin-left: 0;
   }
 
   .video-showcase_wrapper_stage_prev,

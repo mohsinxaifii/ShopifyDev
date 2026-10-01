@@ -1,5 +1,6 @@
 /* Figma: PLP 7930:102851 - a 435 wide panel on the right, sitting under the
-   announcement strip, with its own scroll and a pinned footer. */
+   announcement strip, with its own scroll and a pinned footer. Phones get a
+   bottom sheet instead; see the max-width: 749px block at the end. */
 .variant-drawer {
   position: fixed;
   inset: 0;
@@ -364,8 +365,157 @@
   white-space: nowrap;
 }
 
-@media screen and (max-width: 479px) {
+/* Figma Mobile 8106:62679: on phones the picker rises as a bottom sheet -
+   24px top corners over a near-black scrim, as tall as its content up to
+   768px, with the "Done" bar pinned beneath the scrolling options. */
+@media screen and (max-width: 749px) {
+  /* The shared sheet timing from motion.css: a slower rise than the drop. */
+  .variant-drawer_scrim {
+    background-color: rgba(0, 0, 0, 0.85);
+    transition: opacity var(--motion-sheet-out) ease;
+  }
+
+  .variant-drawer.is-open .variant-drawer_scrim {
+    transition-duration: var(--motion-sheet-in);
+  }
+
+  .variant-drawer_panel {
+    top: auto;
+    left: 0;
+    width: 100%;
+    max-height: min(768px, calc(100% - 16px));
+    border-radius: 24px 24px 0 0;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform var(--motion-sheet-out) var(--motion-sheet-ease-out);
+  }
+
+  .variant-drawer.is-open .variant-drawer_panel {
+    transform: translateY(0);
+    transition: transform var(--motion-sheet-in) var(--motion-sheet-ease);
+  }
+
+  .variant-drawer_panel_head {
+    padding: 16px 16px 0;
+  }
+
+  .variant-drawer_panel_head_title {
+    line-height: 24px;
+  }
+
+  /* The 21.5px close glyph, without growing the 24px header row. */
+  .variant-drawer_panel_head_close {
+    margin: -8px -8px -8px 0;
+  }
+
+  .variant-drawer_panel_head_close svg {
+    width: 21.5px;
+    height: 21.5px;
+  }
+
+  .variant-drawer_panel_content {
+    padding: 24px 16px 4px;
+    overscroll-behavior: contain;
+  }
+
+  /* Preview card: a square photo over price and a single-line title. */
+  .variant-drawer_panel_body_card {
+    gap: 8px;
+  }
+
   .variant-drawer_panel_body_card_media {
-    height: 260px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .variant-drawer_panel_body_card .product-card_media_top_badge {
+    padding: 2px 6px;
+    font-weight: 500;
+    font-size: 8px;
+    line-height: 16px;
+  }
+
+  .variant-drawer_panel_body_card .product-card_media_rating_value {
+    font-weight: 500;
+    font-size: 10px;
+    line-height: normal;
+    color: #4d4d4d;
+  }
+
+  .variant-drawer_panel_body_card_info_price {
+    gap: 4px;
+  }
+
+  .variant-drawer_panel_body_card .product-card_info_price_current {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: normal;
+  }
+
+  .variant-drawer_panel_body_card .product-card_info_price_compare {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: normal;
+  }
+
+  .variant-drawer_panel_body_card_info_title {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  /* Options: 8px from label to values, a 12px ruler + guide link. */
+  .variant-drawer_panel_body_options_group {
+    gap: 8px;
+  }
+
+  .variant-drawer_panel_body_options_group_head_name {
+    line-height: 24px;
+  }
+
+  .variant-drawer_panel_body_options_group_head_value {
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  .variant-drawer_panel_body_options_group_guide {
+    gap: 6px;
+    align-self: start;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .variant-drawer_panel_body_options_group_guide_icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Swatches: a 24px dot in a 34px ring, inside a 4px tap margin. */
+  .variant-drawer_panel_body_options_group_values_value_swatch {
+    width: 34px;
+    height: 34px;
+    margin: 4px;
+  }
+
+  .variant-drawer_panel_body_options_group_values_value_swatch_dot {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Size chips: 32px circles with 12px numerals. */
+  .variant-drawer_panel_body_options_group_values_value_chip {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    line-height: 22px;
+  }
+
+  .variant-drawer_panel_footer {
+    padding: 12px 16px 20px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+
+  .variant-drawer_panel_footer_done {
+    height: 44px;
+    font-size: 16px;
   }
 }

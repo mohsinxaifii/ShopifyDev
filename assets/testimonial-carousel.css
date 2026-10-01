@@ -409,21 +409,22 @@
     backdrop-filter: none;
   }
 
+  /* The shared sheet timing from motion.css. */
   .review-dialog[open] {
-    animation: review-sheet-in 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+    animation: motion-sheet-up var(--motion-sheet-in) var(--motion-sheet-ease);
   }
 
   .review-dialog[open]::backdrop {
-    animation: review-sheet-backdrop-in 0.28s ease;
+    animation: motion-fade var(--motion-sheet-in) ease;
   }
 
   /* Set by review-modal.js so the sheet can play out before the dialog closes. */
   .review-dialog.is-closing {
-    animation: review-sheet-out 0.22s ease-in forwards;
+    animation: review-sheet-out var(--motion-sheet-out) var(--motion-sheet-ease-out) forwards;
   }
 
   .review-dialog.is-closing::backdrop {
-    animation: review-sheet-backdrop-out 0.22s ease-in forwards;
+    animation: motion-fade-out var(--motion-sheet-out) ease forwards;
   }
 
   /* While a finger is dragging the header the sheet tracks it 1:1. */
@@ -488,39 +489,12 @@
   }
 }
 
-@keyframes review-sheet-in {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
 @keyframes review-sheet-out {
   from {
     transform: translateY(var(--sheet-drag-y, 0px));
   }
   to {
     transform: translateY(100%);
-  }
-}
-
-@keyframes review-sheet-backdrop-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes review-sheet-backdrop-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
   }
 }
 

@@ -5,12 +5,18 @@
   shopper can pick several and commit once with Done - which is also what keeps
   the add-ons in the same cart request as the main product.
 
-  @param {object} addons - products from `custom.pdp_addons`
-  @param {object} [hero] - banner image above the grid
+  The hero above the grid follows the selection: each `pdp_addon_preview`
+  entry pairs a combination of add-on products with an image, and product.js
+  shows the one matching what is ticked (exactly, or else the largest preview
+  wholly inside the selection), falling back to the default hero.
+
+  @param {object} addons - add-on products, from the add-on set or `custom.pdp_addons`
+  @param {object} [hero] - default banner image above the grid
+  @param {object} [previews] - `pdp_addon_preview` entries from the add-on set
   @param {string} [whatsapp_url] - shown above the footer when set
 {%- enddoc -%}
 
-<dialog class="pdp-sheet" data-sheet="addons" scroll-lock aria-labelledby="PdpAddonsTitle">
+<dialog class="pdp-sheet" data-bottom-sheet data-sheet="addons" scroll-lock aria-labelledby="PdpAddonsTitle">
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
       <h2 class="pdp-sheet_panel_head_title" id="PdpAddonsTitle">Add ons</h2>
@@ -27,9 +33,40 @@
     <div class="pdp-sheet_panel_body pdp-sheet_panel_body--padded">
       <div class="pdp-sheet_panel_body_group">
         <p class="pdp-sheet_panel_body_group_label">Elevate your piece with curated add-ons</p>
-        {%- if hero != blank -%}
-          <span class="pdp-addons_hero">
-            {{ hero | image_url: width: 806 | image_tag: loading: 'lazy', widths: '403,806', sizes: '403px', alt: '' }}
+        {%- if hero != blank or previews != blank -%}
+          <span class="pdp-addons_hero" data-addon-hero>
+            {%- if hero != blank -%}
+              {{
+                hero
+                | image_url: width: 806
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '403,806',
+                  sizes: '(max-width: 749px) calc(100vw - 32px), 403px',
+                  alt: '',
+                  class: 'pdp-addons_hero_image is-active',
+                  data-addon-preview: 'default'
+              }}
+            {%- endif -%}
+            {%- for preview in previews -%}
+              {%- assign preview_image = preview.image.value -%}
+              {%- if preview_image != blank -%}
+                {%- capture preview_ids -%}
+                  {%- for item in preview.addons.value -%}{{ item.id }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
+                {%- endcapture -%}
+                {{
+                  preview_image
+                  | image_url: width: 806
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '403,806',
+                    sizes: '(max-width: 749px) calc(100vw - 32px), 403px',
+                    alt: '',
+                    class: 'pdp-addons_hero_image',
+                    data-addon-preview: preview_ids
+                }}
+              {%- endif -%}
+            {%- endfor -%}
           </span>
         {%- endif -%}
       </div>
@@ -53,6 +90,7 @@
               class="pdp-addons_grid_card_toggle"
               data-addon-toggle
               data-variant-id="{{ addon_variant.id }}"
+              data-product-id="{{ addon.id }}"
               aria-pressed="false"
               aria-label="Add {{ addon.title | escape }}"
             >
@@ -70,7 +108,7 @@
         {%- endfor -%}
       </ul>
 
-      {%- if whatsapp_url != blank -%}
+      {% comment %} {%- if whatsapp_url != blank -%}
         <a
           href="{{ whatsapp_url }}"
           class="pdp_button pdp_button--primary pdp_button--compact pdp-sheet_panel_body_cta"
@@ -79,7 +117,7 @@
         >
           Whatsapp us
         </a>
-      {%- endif -%}
+      {%- endif -%} {% endcomment %}
     </div>
 
     <div class="pdp-sheet_panel_footer">

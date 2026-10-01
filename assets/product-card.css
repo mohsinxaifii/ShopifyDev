@@ -281,9 +281,11 @@
   cursor: default;
 }
 
-/* The tick only belongs on the card once the line is actually in the cart. */
+/* Figma 8106:47645: a shopping bag leads "Add to cart"; it swaps for a tick
+   only once the line is actually in the cart. */
 .product-card--grid .product-card_info_add_icon {
-  display: none;
+  display: flex;
+  flex: 0 0 auto;
   width: 20px;
   height: 20px;
 }
@@ -293,7 +295,12 @@
   height: 100%;
 }
 
-.product-card--grid .product-card_info_add.is-added .product-card_info_add_icon {
+.product-card--grid .product-card_info_add_icon--check,
+.product-card--grid .product-card_info_add.is-added .product-card_info_add_icon--bag {
+  display: none;
+}
+
+.product-card--grid .product-card_info_add.is-added .product-card_info_add_icon--check {
   display: flex;
 }
 

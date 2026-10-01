@@ -367,9 +367,11 @@
   }
 }
 
+/* Confirmation stays on brand: the maroon fill the design uses for "Added to
+   cart" (Figma 8106:47644), not a generic success green. */
 :is([data-add-to-cart], [data-add-single], [data-pair-add]).is-added {
-  border-color: #2e7d32;
-  background-color: #2e7d32;
+  border-color: var(--color-brand, #712242);
+  background-color: var(--color-brand, #712242);
   color: #fff;
 }
 

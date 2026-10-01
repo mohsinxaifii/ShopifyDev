@@ -91,7 +91,7 @@
         </legend>
 
         {%- unless is_swatch_option -%}
-          {%- if section.settings.size_guide_url != blank -%}
+          {%- if section.settings.size_guide_url != blank and product.type contains 'Ring' -%}
             <a
               href="{{ section.settings.size_guide_url }}"
               class="variant-drawer_panel_body_options_group_guide"

@@ -71,9 +71,10 @@
         this.hidden = true;
         this.content.replaceChildren();
       };
-      // Wait for the slide-out unless motion is switched off.
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
-      else setTimeout(finish, 280);
+      // Wait out the panel's own exit transition - the side drawer's on desktop,
+      // the bottom sheet's on phones - which reduced motion already shrinks to 0.
+      const exitMs = parseFloat(getComputedStyle(this.panel).transitionDuration) * 1000 || 0;
+      setTimeout(finish, exitMs);
       this.opener?.focus?.();
     }
 
