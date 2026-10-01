@@ -3453,7 +3453,12 @@ button.pdp_trust_grid_item_inner {
   .pdp-kj_vermeil_diagram_callout--1 {
     top: 4.94%;
     left: 3.32%;
-    width: 43.85%;
+    width: auto;
+  }
+
+  /* The home page's 137px text box, so it breaks after "like" there too. */
+  .pdp-kj_vermeil_diagram_callout--1 .pdp-kj_vermeil_diagram_callout_text {
+    width: 137px;
   }
 
   .pdp-kj_vermeil_diagram_callout--2 {
