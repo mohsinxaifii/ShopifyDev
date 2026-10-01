@@ -3377,11 +3377,31 @@ button.pdp_trust_grid_item_inner {
     font-size: 16px;
   }
 
-  /* Why you'll love it: 14px tiles (8106:58099). */
+  /* Why you'll love it: 14px tiles (8106:58099). Long single words such as
+     "Hypoallergenic" break as Figma's "Hypoallerge-nic" does instead of
+     spilling out of the 120px tile. */
   .pdp_highlights_item_text {
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+  }
+
+  /* The room kept for the pinned Add to cart bar belongs at the foot of the
+     page, not between the product and the FAQ below it. */
+  .pdp {
+    padding-bottom: 0;
+  }
+
+  body:has(.pdp) {
+    padding-bottom: 76px;
+  }
+
+  /* Figma 8106:58337: on the product page the FAQ heading sits left, unlike
+     the centred one on the home page. */
+  body:has(.pdp) .faq_wrapper_heading {
+    text-align: left;
   }
 
   /* Know your jewellery on phones (8106:58156): a 337x238 diagram with the
