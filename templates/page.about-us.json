@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "breadcrumb": {
@@ -10,10 +19,11 @@
     "about-hero": {
       "type": "about-hero",
       "settings": {
-        "image": "shopify:\/\/shop_images\/zinara-about-hero.png",
+        "image": "shopify://shop_images/zinara-about-hero.png",
         "eyebrow": "Our moto:",
         "quote": "“Jewellery you'll never take off.”",
-        "mobile_image": "shopify:\/\/shop_images\/zinara-about-hero-mobile.png"
+        "image": "shopify://shop_images/zinara-about-hero.png",
+        "mobile_image": "shopify://shop_images/zinara-about-hero-mobile.png"
       }
     },
     "about-intro": {
@@ -22,22 +32,22 @@
         "column-1": {
           "type": "column",
           "settings": {
-            "image_1": "shopify:\/\/shop_images\/zinara-about-intro-1.png",
-            "image_2": "shopify:\/\/shop_images\/zinara-about-intro-sliver-a.png"
+            "image_1": "shopify://shop_images/zinara-about-intro-1.png",
+            "image_2": "shopify://shop_images/zinara-about-intro-sliver-a.png"
           }
         },
         "column-2": {
           "type": "column",
           "settings": {
-            "image_1": "shopify:\/\/shop_images\/zinara-about-intro-sliver-b.jpg",
-            "image_2": "shopify:\/\/shop_images\/zinara-about-intro-4.png"
+            "image_1": "shopify://shop_images/zinara-about-intro-sliver-b.jpg",
+            "image_2": "shopify://shop_images/zinara-about-intro-4.png"
           }
         },
         "column-3": {
           "type": "column",
           "settings": {
-            "image_1": "shopify:\/\/shop_images\/zinara-about-intro-5.png",
-            "image_2": "shopify:\/\/shop_images\/zinara-about-intro-sliver-c.png"
+            "image_1": "shopify://shop_images/zinara-about-intro-5.png",
+            "image_2": "shopify://shop_images/zinara-about-intro-sliver-c.png"
           }
         }
       },
@@ -66,7 +76,7 @@
           "type": "stat",
           "settings": {
             "icon": "rating",
-            "value": "4.8\/5",
+            "value": "4.8/5",
             "label": "Customer rating"
           }
         },
@@ -89,8 +99,8 @@
     "about-belief": {
       "type": "about-belief",
       "settings": {
-        "image_front": "shopify:\/\/shop_images\/zinara-about-belief-front.png",
-        "image_back": "shopify:\/\/shop_images\/zinara-about-belief-back.png",
+        "image_front": "shopify://shop_images/zinara-about-belief-front.png",
+        "image_back": "shopify://shop_images/zinara-about-belief-back.png",
         "heading": "What we believe",
         "lead": "Thoughtful design. Modern materials. Timeless sparkle.",
         "body": "We believe diamonds should feel personal, powerful, and easy. That’s why our collections are consciously crafted using lab-grown diamonds and set in 18 KT gold vermeil and fine gold - giving you timeless sparkle without the markup or the guilt.\n\nEvery design is made to slip effortlessly into your everyday, adding just the right amount of shine to everything you do."
@@ -102,7 +112,7 @@
         "card-1": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-new-job.png",
+            "image": "shopify://shop_images/zinara-collection-new-job.png",
             "label": "New job, new era",
             "url": ""
           }
@@ -110,15 +120,15 @@
         "card-2": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
+            "image": "shopify://shop_images/zinara-collection-siesta.png",
             "label": "Siesta",
-            "url": "\/collections\/siesta-collection"
+            "url": "/collections/siesta-collection"
           }
         },
         "card-3": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",
             "url": ""
           }
@@ -126,15 +136,15 @@
         "card-4": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-siesta.png",
+            "image": "shopify://shop_images/zinara-collection-siesta.png",
             "label": "Siesta",
-            "url": "\/collections\/siesta-collection"
+            "url": "/collections/siesta-collection"
           }
         },
         "card-5": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-collection-festive.png",
+            "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",
             "url": ""
           }
@@ -158,42 +168,42 @@
         "card-1": {
           "type": "card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-about-story-1.png",
+            "image": "shopify://shop_images/zinara-about-story-1.png",
             "label": "Lifetime free replating"
           }
         },
         "card-2": {
           "type": "card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-about-story-2.png",
+            "image": "shopify://shop_images/zinara-about-story-2.png",
             "label": "7 day free returns"
           }
         },
         "card-3": {
           "type": "card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-about-story-3.png",
+            "image": "shopify://shop_images/zinara-about-story-3.png",
             "label": "Lifetime buyback and exchange"
           }
         },
         "card-4": {
           "type": "card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-about-story-4.png",
+            "image": "shopify://shop_images/zinara-about-story-4.png",
             "label": "Obsession with the Details"
           }
         },
         "card-5": {
           "type": "card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-about-story-5.png",
+            "image": "shopify://shop_images/zinara-about-story-5.png",
             "label": "Handcrafted by Skilled Artisans"
           }
         },
         "card-6": {
           "type": "card",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-about-story-6.png",
+            "image": "shopify://shop_images/zinara-about-story-6.png",
             "label": "Insured and free shipping"
           }
         }
@@ -216,12 +226,13 @@
     "about-founder": {
       "type": "about-founder",
       "settings": {
-        "image": "shopify:\/\/shop_images\/zinara-about-founder.png",
+        "image": "shopify://shop_images/zinara-about-founder.png",
         "heading": "Founder",
         "quote": "“We wanted diamonds to feel less like an occasion, and more like a part of life.”",
         "body": "“Zinara started with a simple question: why should beautiful jewellery spend most of its life in a box? We wanted to create pieces that women could genuinely live in—pieces that feel special, but never too precious to wear.\n\nLab-grown diamonds gave us the opportunity to bring that vision to life in a way that felt modern, considered, and accessible.”",
         "name": "— Harshit Abrol",
-        "role": "Founder, Zinara"
+        "role": "Founder, Zinara",
+        "image": "shopify://shop_images/zinara-about-founder.png"
       }
     },
     "about-contact": {
@@ -248,7 +259,7 @@
           "settings": {
             "icon": "whatsapp",
             "value": "+91-9217975782",
-            "url": "https:\/\/wa.me\/919217975782"
+            "url": "https://wa.me/919217975782"
           }
         }
       },

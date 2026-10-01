@@ -172,7 +172,9 @@
   line-height: 1;
 }
 
-/* Off-canvas menu drawer */
+/* Off-canvas menu drawer - Figma Mobile 7930:108685 (Sidenav). A full-screen
+   sheet that slides in from the left: close button on top, one divided row per
+   menu item, nested menus as accordions, login and socials at the foot. */
 .header_drawer_overlay {
   position: fixed;
   inset: 0;
@@ -182,23 +184,18 @@
   z-index: 100;
 }
 
-/* Figma Mobile 7930:109326. The drawer is a full-bleed white sheet on phones,
-   and stays a side panel on larger screens. --drawer-line is the design's own
-   divider tone, which is a step darker than the theme's --color-border. */
 .header_drawer {
-  --drawer-line: #e6e6e6;
-
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  width: min(393px, 100vw);
-  background-color: var(--color-background, #fff);
+  width: 100%;
+  height: 100dvh;
+  background-color: #fff;
   z-index: 101;
   transform: translateX(-100%);
   display: flex;
   flex-direction: column;
-  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.12);
 }
 
 .header[data-drawer-open='true'] .header_drawer_overlay {
@@ -206,13 +203,13 @@
   visibility: visible;
 }
 
-/* Close row: just the X, left aligned, on its own divided row. */
 .header_drawer_header {
   display: flex;
-  align-items: center;
   flex: 0 0 auto;
-  padding: 16px;
-  border-bottom: 1px solid var(--drawer-line);
+  align-items: center;
+  height: 56px;
+  padding-inline: 16px;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .header_drawer_header_close {
@@ -224,201 +221,152 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-foreground, #000);
+  color: var(--color-icon, #666);
   cursor: pointer;
 }
 
 .header_drawer_header_close svg {
-  width: 100%;
-  height: 100%;
+  width: 24px;
+  height: 24px;
 }
 
-/* The list sits at the top and the account/social block at the bottom, with the
-   list taking any slack so the foot stays pinned. */
-.header_drawer_body {
+.header_drawer_nav {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  justify-content: space-between;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-.header_drawer_nav {
-  flex: 0 0 auto;
-}
-
 .header_drawer_nav_list {
-  list-style: none;
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
 .header_drawer_nav_list_item {
-  border-bottom: 1px solid var(--drawer-line);
+  border-bottom: 1px solid #e6e6e6;
 }
 
-.header_drawer_nav_list_item_link {
+.header_drawer_nav_row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 14px 16px;
-  border: 0;
-  background: none;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 16px;
+  box-sizing: border-box;
   font-family: var(--font-secondary--family);
   font-weight: 500;
   font-size: 12px;
-  line-height: 22px;
-  color: var(--color-text-secondary, #494949);
-  text-align: left;
+  line-height: 16px;
+  color: #222;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.2s ease;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* A row with a caret or a badge is a touch tighter, per the design. */
-.header_drawer_nav_list_item--group > .header_drawer_nav_list_item_link,
-.header_drawer_nav_list_item_link:has(.header_drawer_nav_list_item_badge) {
-  padding-block: 12px;
+.header_drawer_nav_row::-webkit-details-marker {
+  display: none;
 }
 
-.header_drawer_nav_list_item_link:hover {
-  color: var(--color-brand, #712242);
-}
-
-/* The page the shopper is on is picked out in the accent pink and semibold. */
-.header_drawer_nav_list_item_link.is-current {
+.header_drawer_nav_row.is-current {
   font-weight: 600;
-  line-height: 20px;
   color: var(--color-accent, #f0166e);
 }
 
-.header_drawer_nav_list_item_label {
+.header_drawer_nav_row_badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.header_drawer_nav_list_item_badge {
-  flex: 0 0 auto;
-  padding: 2px 6px;
-  border-radius: 4px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 3px;
   background-color: var(--color-brand, #712242);
-  box-shadow: inset 0 2px 3px var(--color-accent, #f0166e);
-  font-family: var(--font-secondary--family);
+  color: #fff;
   font-weight: 500;
   font-size: 8px;
-  line-height: 16px;
-  color: #fff;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
 }
 
-/* One chevron for both states: it points right when shut, down when open. */
-.header_drawer_nav_list_item_caret {
+.header_drawer_nav_row_chevron {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 16px;
-  width: 16px;
-  height: 16px;
+  margin-left: auto;
   color: var(--color-icon, #666);
   transition: transform 0.25s ease;
 }
 
-.header_drawer_nav_list_item_caret svg {
-  width: 100%;
-  height: 100%;
+.header_drawer_nav_row_chevron svg {
+  width: 16px;
+  height: 16px;
 }
 
-.header_drawer_nav_list_item--group.is-open .header_drawer_nav_list_item_caret {
+.header_drawer_nav_group[open] .header_drawer_nav_row_chevron {
   transform: rotate(90deg);
 }
 
+/* Children sit 16px further in, 34px apart, with no dividers of their own. */
 .header_drawer_nav_sublist {
+  margin: -4px 0 0;
+  padding: 0 16px 8px 32px;
   list-style: none;
-  margin: 0;
-  padding: 0 16px 12px;
-}
-
-.header_drawer_nav_sublist li + li {
-  margin-top: 12px;
 }
 
 .header_drawer_nav_sublist_link {
-  display: block;
-
-  /* 16px row padding plus a 16px indent, as in the design. */
-  padding-left: 16px;
+  display: flex;
+  align-items: center;
+  min-height: 34px;
   font-family: var(--font-secondary--family);
   font-weight: 500;
   font-size: 12px;
-  line-height: 22px;
-  color: var(--color-text-secondary, #494949);
+  line-height: 16px;
+  color: #222;
   text-decoration: none;
 }
 
-.header_drawer_nav_sublist_link:hover,
 .header_drawer_nav_sublist_link.is-current {
-  color: var(--color-brand, #712242);
+  font-weight: 600;
+  color: var(--color-accent, #f0166e);
 }
 
-/* Account and socials, pinned to the bottom of the sheet. */
-.header_drawer_foot {
+.header_drawer_nav_foot {
   display: flex;
-  flex: 0 0 auto;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
+  margin-top: auto;
+  padding: 32px 16px calc(24px + env(safe-area-inset-bottom));
 }
 
-.header_drawer_foot_account {
+.header_drawer_nav_foot_account {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-family: var(--font-secondary--family);
   font-weight: 600;
   font-size: 14px;
-  line-height: 22px;
+  line-height: 20px;
   color: var(--color-text-secondary, #494949);
   text-decoration: none;
 }
 
-.header_drawer_foot_account_icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 24px;
+.header_drawer_nav_foot_account svg {
   width: 24px;
   height: 24px;
 }
 
-.header_drawer_foot_account_icon svg {
-  width: 100%;
-  height: 100%;
+.header_drawer_nav_foot_social {
+  display: flex;
+  gap: 16px;
 }
 
-.header_drawer_foot_social {
+.header_drawer_nav_foot_social a {
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header_drawer_foot_social_link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
   color: var(--color-brand, #712242);
 }
 
-.header_drawer_foot_social_link svg {
-  width: 100%;
-  height: 100%;
+.header_drawer_nav_foot_social svg {
+  width: 24px;
+  height: 24px;
 }
 
 @media screen and (max-width: 989px) {

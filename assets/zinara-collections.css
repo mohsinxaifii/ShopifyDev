@@ -23,7 +23,6 @@
   height: auto;
 }
 
-/* The phone grid is a separate, denser vector; only one is ever rendered. */
 .zinara-collections_wave--mobile {
   display: none;
 }
@@ -171,6 +170,18 @@
 /* Figma Mobile 7930:106829: 24/16 padding, a 20px heading, 168x237 cards on a
    16px gap running off both screen edges, 16px serif labels on a 24px line. */
 @media screen and (max-width: 749px) {
+  /* Mobile has its own 394x260 grid (7930:106830) with ~28px cells, mirrored
+     and flush with the bottom. The desktop wave shrinks to an ~80px strip of
+     tiny cells here. */
+  .zinara-collections_wave:not(.zinara-collections_wave--mobile) {
+    display: none;
+  }
+
+  .zinara-collections_wave--mobile {
+    display: block;
+    transform: scaleX(-1);
+  }
+
   .zinara-collections_wrapper {
     padding-block: 24px;
   }
@@ -207,31 +218,5 @@
   .zinara-collections_wrapper_stage_prev,
   .zinara-collections_wrapper_stage_next {
     display: none;
-  }
-
-  /* Figma Mobile 7930:106830: a 260px band of grid sitting just off the bottom
-     edge, bleeding 1px past both sides, and mirrored horizontally. The desktop
-     vector is a different, much wider grid, so it is swapped out rather than
-     scaled down. */
-  .zinara-collections_wave--desktop {
-    display: none;
-  }
-
-  .zinara-collections_wave--mobile {
-    display: block;
-    right: -1px;
-    bottom: 4px;
-    left: -1px;
-    height: 260px;
-
-    /* `-scale-y-100 rotate-180` in the design composes to a horizontal mirror. */
-    transform: scaleX(-1);
-  }
-
-  /* The exported vector carries preserveAspectRatio="none", so it fills the
-     band on wider phones without the grid squares visibly distorting. */
-  .zinara-collections_wave--mobile svg {
-    width: 100%;
-    height: 100%;
   }
 }
