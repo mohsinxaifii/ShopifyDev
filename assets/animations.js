@@ -262,30 +262,39 @@
           }
 
           details.open = true;
+          gsap.set(body, { overflow: 'hidden' });
+          gsap.fromTo(body, { height: 0 }, { height: 'auto', duration: 0.36, ease: 'power2.out' });
           gsap.fromTo(
             body,
-            { height: 0, opacity: 0 },
+            { opacity: 0 },
             {
-              height: 'auto',
               opacity: 1,
-              duration: 0.36,
-              ease: 'power2.out',
+              duration: 0.3,
+              delay: 0.08,
+              ease: 'power1.out',
               onComplete: () => {
                 gsap.set(body, { clearProps: 'height,opacity,overflow' });
                 details.dataset.motionBusy = 'false';
+                refreshReveals();
               },
             },
           );
         } else {
+          // The contents fade out first and quickly, while the box is still
+          // near full height, then the height closes - clipped, so tall content
+          // such as the Know your jewellery diagrams never spills over the
+          // sections sliding up beneath it.
+          gsap.set(body, { overflow: 'hidden' });
+          gsap.to(body, { opacity: 0, duration: 0.16, ease: 'power1.out' });
           gsap.to(body, {
             height: 0,
-            opacity: 0,
             duration: 0.28,
-            ease: 'power2.in',
+            ease: 'power2.inOut',
             onComplete: () => {
               details.open = false;
               gsap.set(body, { clearProps: 'height,opacity,overflow' });
               details.dataset.motionBusy = 'false';
+              refreshReveals();
             },
           });
         }
