@@ -595,7 +595,13 @@
   border: 0;
 }
 
+/* A fieldset draws its legend inside its top border, above the padding, so the
+   12px Figma puts over the label would never appear and the absolutely placed
+   size guide would land beside the values. A floated legend is laid out as
+   ordinary content instead (float itself is ignored in the flex column). */
 .pdp_option_head {
+  float: left;
+  width: 100%;
   display: flex;
   gap: 8px;
   align-items: baseline;
