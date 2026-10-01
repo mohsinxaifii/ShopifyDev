@@ -20,6 +20,17 @@
 
   const hasGsap = () => typeof window.gsap !== 'undefined';
 
+  /**
+   * Re-measure the scroll reveals after the page changes height. An accordion
+   * collapsing pulls the sections below it up into view, but their triggers
+   * were measured where they used to be, so they would stay invisible until
+   * the shopper scrolled down to the old spot. A refresh fires the ones now
+   * on screen.
+   */
+  function refreshReveals() {
+    window.ScrollTrigger?.refresh();
+  }
+
   /** Show everything and step out of the way. */
   function revealAll(root = document) {
     root.querySelectorAll(`[${REVEAL_ATTR}]`).forEach((el) => el.classList.add(VISIBLE_CLASS));
