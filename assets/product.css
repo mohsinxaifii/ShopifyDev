@@ -1718,7 +1718,10 @@ button.pdp_trust_grid_item_inner {
   place-items: center;
   width: 32px;
   height: 32px;
-  padding: 8px;
+
+  /* No padding: the 20px icon is centred by the grid in the full 32px box.
+     With 8px padding it only had 16px, got squeezed and sat low. */
+  padding: 0;
   border: 0.667px solid var(--pdp-border);
   border-radius: 8px;
   background-color: #fff;
@@ -1727,6 +1730,7 @@ button.pdp_trust_grid_item_inner {
 }
 
 .pdp-mini_add svg {
+  flex: 0 0 auto;
   width: 20px;
   height: 20px;
 }
@@ -1734,6 +1738,8 @@ button.pdp_trust_grid_item_inner {
 .pdp-mini_add_bag,
 .pdp-mini_add_tick {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pdp-mini_add_tick {
