@@ -643,7 +643,7 @@
     /* The add-ons hero follows the ticked set. Each preview image lists the
        add-on product ids it shows; an exact match wins, otherwise the preview
        covering the most ticked add-ons without showing an unticked one, and
-       with nothing matching the default hero (the image with an empty list). */
+       with nothing matching the default hero (tagged "default"). */
     syncAddonHero() {
       const hero = this.querySelector('[data-addon-hero]');
       if (!hero) return;
@@ -654,9 +654,10 @@
         ),
       );
 
-      let best = images.find((img) => !img.dataset.addonPreview) || null;
+      let best = images.find((img) => img.dataset.addonPreview === 'default') || null;
       let bestSize = 0;
       images.forEach((img) => {
+        if (img.dataset.addonPreview === 'default') return;
         const ids = (img.dataset.addonPreview || '').split(',').filter(Boolean);
         if (!ids.length || !ids.every((id) => selected.has(id))) return;
         if (ids.length > bestSize) {
