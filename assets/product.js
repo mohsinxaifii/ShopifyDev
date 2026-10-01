@@ -3,7 +3,7 @@
  *
  * One custom element owns the page so the seven overlay states, the gallery and
  * the buy form can share a single variant table and a single cart request - the
- * add-ons and the paired products all have to land in the same
+ * add-ons, the gift sleeve and the paired products all have to land in the same
  * /cart/add.js call, or a shopper who picks three things gets three toasts and
  * three chances for one of them to fail on its own.
  */
@@ -53,6 +53,8 @@
 
       this.slides.forEach((slide) => {
         slide.addEventListener('click', () => {
+          // A swipe ends in a click too; it should turn the page, not open the lightbox.
+          if (this.swiped) return;
           this.dispatchEvent(
             new CustomEvent('gallery:open', { bubbles: true, detail: { index: this.index } }),
           );
@@ -62,44 +64,44 @@
       this.setupSwipe();
     }
 
-    /* Phones have dots instead of thumbnails, so the image itself has to page.
-       The track is a native scroll-snap strip there (product.css), so the swipe
-       tracks the finger; this only keeps the dots and the index in step. */
+    /* Phones have dots instead of thumbnails, so the image itself has to page. */
     setupSwipe() {
-      this.phone = window.matchMedia('(max-width: 749px)');
-      this.track = this.querySelector('[data-stage-track]');
-      if (!this.track || this.slides.length < 2) return;
-
-      let frame = 0;
-      this.track.addEventListener(
-        'scroll',
-        () => {
-          if (!this.phone.matches) return;
-          cancelAnimationFrame(frame);
-          frame = requestAnimationFrame(() => {
-            const width = this.track.clientWidth || 1;
-            const index = Math.round(this.track.scrollLeft / width);
-            if (index !== this.index) this.mark(Math.min(Math.max(index, 0), this.slides.length - 1));
-          });
+      const stage = this.querySelector('.pdp_gallery_stage');
+      if (!stage || this.slides.length < 2) return;
+      let startX = 0;
+      let startY = 0;
+      stage.addEventListener(
+        'touchstart',
+        (event) => {
+          startX = event.touches[0].clientX;
+          startY = event.touches[0].clientY;
+          this.swiped = false;
+        },
+        { passive: true },
+      );
+      stage.addEventListener(
+        'touchend',
+        (event) => {
+          const dx = event.changedTouches[0].clientX - startX;
+          const dy = event.changedTouches[0].clientY - startY;
+          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+          this.swiped = true;
+          const last = this.slides.length - 1;
+          this.show(dx < 0 ? Math.min(this.index + 1, last) : Math.max(this.index - 1, 0));
+          window.setTimeout(() => {
+            this.swiped = false;
+          }, 400);
         },
         { passive: true },
       );
     }
 
-    mark(index) {
+    show(index) {
+      if (index < 0 || index >= this.slides.length) return;
       this.index = index;
       this.slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
       this.thumbs.forEach((thumb, i) => thumb.classList.toggle('is-active', i === index));
       this.dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
-    }
-
-    show(index, { smooth = true } = {}) {
-      if (index < 0 || index >= this.slides.length) return;
-      this.mark(index);
-      if (this.phone?.matches && this.track) {
-        this.track.scrollTo({ left: index * this.track.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
-        return;
-      }
       this.thumbs[index]?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   }
@@ -290,17 +292,15 @@
       this.lightboxCurrent = dialog.querySelector('[data-lightbox-current]');
       this.lightboxIndex = 0;
 
-      this.lightboxFrame = dialog.querySelector('.pdp-lightbox_body_stage_frame');
-      this.phone = window.matchMedia('(max-width: 749px)');
-
       this.addEventListener('gallery:open', (event) => {
         this.showLightbox(event.detail.index);
         dialog.showModal();
-        // The strip only has a width once the dialog is open.
-        requestAnimationFrame(() => this.alignLightbox());
+        // Phones stack every image vertically, so open on the one tapped.
+        if (window.matchMedia('(max-width: 749px)').matches) {
+          dialog.scrollTop = 0;
+          this.lightboxSlides[this.lightboxIndex]?.scrollIntoView({ block: 'start' });
+        }
       });
-
-      this.initLightboxPhone(dialog);
 
       dialog
         .querySelector('[data-lightbox-prev]')
@@ -325,149 +325,11 @@
       if (this.lightboxCurrent) this.lightboxCurrent.textContent = String(this.lightboxIndex + 1);
       // Keep the inline gallery on the same frame, so closing the lightbox
       // doesn't jump the shopper back to where they started.
-      this.gallery?.show(this.lightboxIndex, { smooth: false });
+      this.gallery?.show(this.lightboxIndex);
     }
 
     stepLightbox(direction) {
       this.showLightbox(this.lightboxIndex + direction);
-      this.alignLightbox('smooth');
-    }
-
-    alignLightbox(behavior = 'auto') {
-      if (!this.phone?.matches || !this.lightboxFrame) return;
-      this.lightboxFrame.scrollTo({ left: this.lightboxIndex * this.lightboxFrame.clientWidth, behavior });
-    }
-
-    /**
-     * Phones get a WhatsApp-style viewer (product.css): a black full-screen
-     * strip the shopper swipes through natively, with pinch, double-tap and
-     * drag-to-pan on the image in view. Zooming locks the strip so a pan
-     * inside the image cannot turn the page.
-     */
-    initLightboxPhone(dialog) {
-      const frame = this.lightboxFrame;
-      if (!frame) return;
-
-      let scrollFrame = 0;
-      frame.addEventListener(
-        'scroll',
-        () => {
-          if (!this.phone.matches) return;
-          cancelAnimationFrame(scrollFrame);
-          scrollFrame = requestAnimationFrame(() => {
-            const index = Math.round(frame.scrollLeft / (frame.clientWidth || 1));
-            if (index !== this.lightboxIndex) {
-              reset();
-              this.showLightbox(index);
-            }
-          });
-        },
-        { passive: true },
-      );
-
-      let zoom = { scale: 1, x: 0, y: 0 };
-      let image = null;
-      let start = null;
-      let lastTap = 0;
-      let moved = false;
-
-      const MAX = 4;
-      const apply = (animate = false) => {
-        if (!image) return;
-        image.style.transition = animate ? 'transform 0.25s ease' : 'none';
-        image.style.transform = `translate(${zoom.x}px, ${zoom.y}px) scale(${zoom.scale})`;
-        frame.classList.toggle('is-zoomed', zoom.scale > 1.01);
-      };
-      const clamp = () => {
-        const box = image.parentElement.getBoundingClientRect();
-        const maxX = (box.width * (zoom.scale - 1)) / 2;
-        const maxY = (box.height * (zoom.scale - 1)) / 2;
-        zoom.x = Math.max(-maxX, Math.min(maxX, zoom.x));
-        zoom.y = Math.max(-maxY, Math.min(maxY, zoom.y));
-      };
-      const reset = (animate = false) => {
-        zoom = { scale: 1, x: 0, y: 0 };
-        apply(animate);
-        if (!animate && image) image.style.removeProperty('transform');
-      };
-      const distance = (touches) =>
-        Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
-
-      frame.addEventListener(
-        'touchstart',
-        (event) => {
-          if (!this.phone.matches) return;
-          const next = event.target.closest('[data-lightbox-slide]')?.querySelector('img');
-          if (!next) return;
-          if (next !== image) {
-            reset();
-            image = next;
-          }
-          moved = false;
-          if (event.touches.length === 2) {
-            start = { dist: distance(event.touches), scale: zoom.scale };
-          } else if (event.touches.length === 1) {
-            start = { px: event.touches[0].clientX, py: event.touches[0].clientY, x: zoom.x, y: zoom.y };
-          }
-        },
-        { passive: true },
-      );
-
-      frame.addEventListener(
-        'touchmove',
-        (event) => {
-          if (!this.phone.matches || !image || !start) return;
-          moved = true;
-          if (event.touches.length === 2 && start.dist) {
-            event.preventDefault();
-            zoom.scale = Math.max(1, Math.min(MAX, (start.scale * distance(event.touches)) / start.dist));
-            clamp();
-            apply();
-          } else if (event.touches.length === 1 && zoom.scale > 1.01 && start.px !== undefined) {
-            event.preventDefault();
-            zoom.x = start.x + (event.touches[0].clientX - start.px);
-            zoom.y = start.y + (event.touches[0].clientY - start.py);
-            clamp();
-            apply();
-          }
-        },
-        { passive: false },
-      );
-
-      frame.addEventListener('touchend', (event) => {
-        if (!this.phone.matches || !image) return;
-        if (event.touches.length > 0) {
-          // One finger lifted mid-pinch: carry on as a pan from here.
-          start = { px: event.touches[0].clientX, py: event.touches[0].clientY, x: zoom.x, y: zoom.y };
-          return;
-        }
-        start = null;
-        if (zoom.scale < 1.05) reset(true);
-
-        // Double tap: zoom to 2.5x on the tapped point, or back out.
-        const now = Date.now();
-        if (!moved && now - lastTap < 280) {
-          if (zoom.scale > 1.01) {
-            reset(true);
-          } else {
-            const box = image.parentElement.getBoundingClientRect();
-            const tap = event.changedTouches[0];
-            zoom.scale = 2.5;
-            zoom.x = (box.left + box.width / 2 - tap.clientX) * 1.5;
-            zoom.y = (box.top + box.height / 2 - tap.clientY) * 1.5;
-            clamp();
-            apply(true);
-          }
-          lastTap = 0;
-          return;
-        }
-        lastTap = moved ? 0 : now;
-      });
-
-      dialog.addEventListener('close', () => {
-        reset();
-        image = null;
-      });
     }
 
     /* -------------------------------------------------------------- UGC */
@@ -667,32 +529,17 @@
       this.addEventListener('click', (event) => {
         const toggle = event.target.closest('[data-addon-toggle], [data-pair-toggle]');
         if (!toggle) return;
-        const pressed = toggle.getAttribute('aria-pressed') !== 'true';
-        toggle.setAttribute('aria-pressed', String(pressed));
-        if (toggle.matches('[data-addon-toggle]')) this.syncAddonHero(toggle.dataset.variantId, pressed);
-        if (toggle.matches('[data-pair-toggle]')) this.syncPairCta();
+        toggle.setAttribute(
+          'aria-pressed',
+          toggle.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
+        );
       });
-      this.initAddonHero();
 
       this.querySelector('[data-addons-done]')?.addEventListener('click', () => {
         this.sheets.get('addons')?.close();
       });
 
-      // Product cards on the page (You may also like, Recently viewed) pick
-      // their variant in the same bottom sheet the PLP uses (variant-drawer.js)
-      // instead of following the card link.
-      this.addEventListener('click', (event) => {
-        const cardAdd = event.target.closest('.product-card [data-add-to-cart]');
-        if (!cardAdd) return;
-        event.preventDefault();
-        const drawer = document.querySelector('variant-drawer');
-        const url = cardAdd.closest('.product-card')?.getAttribute('href');
-        if (drawer && url) return drawer.open(url, cardAdd);
-        this.addToCart([{ id: Number(cardAdd.dataset.variantId), quantity: 1 }], { trigger: cardAdd });
-      });
-
       const pairAdd = this.querySelector('[data-pair-add]');
-      this.syncPairCta();
       pairAdd?.addEventListener('click', () => {
         const items = Array.from(
           this.querySelectorAll('[data-pair-toggle][aria-pressed="true"]'),
@@ -725,67 +572,11 @@
       });
     }
 
-    /* The set CTA says what it will add: the whole set until the shopper ticks
-       pieces, then just those. */
-    syncPairCta() {
-      const label = this.querySelector('[data-pair-add-label]');
-      if (!label) return;
-      const picked = this.querySelectorAll('[data-pair-toggle][aria-pressed="true"]').length;
-      label.textContent =
-        picked === 0 ? 'Add set to cart' : `Add ${picked} ${picked === 1 ? 'item' : 'items'} to cart`;
-    }
-
-    /* --------------------------------------------------------- add-ons */
-
-    /* The add-ons banner shows the piece, then each ticked add-on's photo,
-       sliding to the newest pick so the shopper sees what they just added. */
-    initAddonHero() {
-      this.addonHero = this.querySelector('[data-addons-hero]');
-      this.addonDots = this.querySelector('[data-addons-hero-dots]');
-      if (!this.addonHero) return;
-      let frame = 0;
-      this.addonHero.addEventListener(
-        'scroll',
-        () => {
-          cancelAnimationFrame(frame);
-          frame = requestAnimationFrame(() => this.paintAddonDots());
-        },
-        { passive: true },
-      );
-      this.paintAddonDots();
-    }
-
-    addonSlides() {
-      return Array.from(this.addonHero?.children || []).filter((slide) => !slide.hidden);
-    }
-
-    syncAddonHero(variantId, pressed) {
-      const slide = this.addonHero?.querySelector(`[data-hero-for="${variantId}"]`);
-      if (!slide) return;
-      slide.hidden = !pressed;
-      // A newly shown slide moves to the end, so the strip reads in pick order.
-      if (pressed) this.addonHero.append(slide);
-      const target = pressed ? slide : this.addonSlides().at(-1);
-      this.addonHero.scrollTo({ left: target ? target.offsetLeft : 0, behavior: 'smooth' });
-      this.paintAddonDots();
-    }
-
-    paintAddonDots() {
-      if (!this.addonDots) return;
-      const slides = this.addonSlides();
-      if (slides.length < 2) {
-        this.addonDots.replaceChildren();
-        return;
-      }
-      const index = Math.round(this.addonHero.scrollLeft / (this.addonHero.clientWidth || 1));
-      if (this.addonDots.children.length !== slides.length) {
-        this.addonDots.replaceChildren(...slides.map(() => document.createElement('span')));
-      }
-      Array.from(this.addonDots.children).forEach((dot, i) => dot.classList.toggle('is-active', i === index));
-    }
-
     buildItems() {
       const items = [{ id: Number(this.variantInput.value), quantity: 1 }];
+
+      const gift = this.querySelector('[data-gift-toggle]');
+      if (gift?.checked) items.push({ id: Number(gift.dataset.variantId), quantity: 1 });
 
       this.querySelectorAll('[data-addon-toggle][aria-pressed="true"]').forEach((button) => {
         items.push({ id: Number(button.dataset.variantId), quantity: 1 });

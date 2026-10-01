@@ -3005,3 +3005,71 @@ button.pdp_trust_grid_item_inner {
     padding-bottom: 76px;
   }
 }
+
+/* Figma Mobile 8106:62370: on phones the lightbox drops the arrows and counter
+   for a vertical stack - every image a full-width square on a 16px gap, 12px
+   from the screen edges, scrolled inside the dialog. The close button sticks to
+   the top so it stays in reach however far down the stack the shopper goes. */
+@media screen and (max-width: 749px) {
+  .pdp-lightbox[open] {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-start;
+    padding: 0 12px 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .pdp-lightbox_close {
+    position: sticky;
+    top: 0;
+    right: auto;
+    z-index: 1;
+    flex: 0 0 auto;
+    align-self: flex-end;
+    box-sizing: content-box;
+    padding-top: 16px;
+  }
+
+  .pdp-lightbox_body {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+
+  .pdp-lightbox_body_arrow,
+  .pdp-lightbox_body_stage_counter {
+    display: none;
+  }
+
+  .pdp-lightbox_body_stage {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
+  }
+
+  .pdp-lightbox_body_stage_frame {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+  }
+
+  .pdp-lightbox_body_stage_frame_slide {
+    position: relative;
+    inset: auto;
+    aspect-ratio: 1;
+    visibility: visible;
+    opacity: 1;
+
+    /* Clears the sticky close button when opened on a later image. */
+    scroll-margin-top: 64px;
+  }
+
+  .pdp-lightbox_body_stage_frame_slide :is(img, video, iframe) {
+    object-fit: cover;
+  }
+}
+
