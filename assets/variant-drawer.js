@@ -77,6 +77,7 @@
     }
 
     async show(productUrl, trigger) {
+      clearTimeout(this.closeTimer);
       this.hostInOpenDialog();
       this.trigger = trigger;
       this.opener = document.activeElement;
@@ -122,8 +123,11 @@
       };
       // Wait out the panel's own exit transition - the side drawer's on desktop,
       // the bottom sheet's on phones - which reduced motion already shrinks to 0.
+      // Kept so a reopen straight after (the next piece of a set) can cancel it -
+      // otherwise this would hide the new picker as soon as it appeared.
       const exitMs = parseFloat(getComputedStyle(this.panel).transitionDuration) * 1000 || 0;
-      setTimeout(finish, exitMs);
+      clearTimeout(this.closeTimer);
+      this.closeTimer = setTimeout(finish, exitMs);
       this.opener?.focus?.();
     }
 
