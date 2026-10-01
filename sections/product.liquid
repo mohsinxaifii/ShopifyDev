@@ -333,6 +333,19 @@
         {%- endif -%}
 
         {%- comment -%} Variant options - Figma 7930:96080 (swatches) / 7930:96094 (chips) {%- endcomment -%}
+        {%- liquid
+          comment
+            The size guide sits on the Size row's header. A product with a size
+            chart but no Size option (a chain length, say) hangs it on its last
+            option's header instead, rather than on an empty row of its own.
+          endcomment
+          assign has_size_option = false
+          for option in product.options_with_values
+            if option.name contains 'Size'
+              assign has_size_option = true
+            endif
+          endfor
+        -%}
         {%- for option in product.options_with_values -%}
           {%- liquid
             assign is_swatch = false
@@ -342,6 +355,14 @@
             assign is_size = false
             if option.name contains 'Size'
               assign is_size = true
+            endif
+            assign show_guide = false
+            if size_chart != blank
+              if is_size
+                assign show_guide = true
+              elsif has_size_option == false and forloop.last
+                assign show_guide = true
+              endif
             endif
           -%}
           <fieldset
@@ -359,7 +380,7 @@
               {%- endif -%}
             </legend>
 
-            {%- if is_size and size_chart != blank -%}
+            {%- if show_guide -%}
               {%- assign size_guide_inline = true -%}
               <button type="button" class="pdp_link pdp_option_guide" data-open="size-guide">
                 <span class="pdp_option_guide_icon" aria-hidden="true">
@@ -398,9 +419,8 @@
         {%- endfor -%}
 
         {%- comment -%}
-          A product can carry a size chart without carrying a size option - a
-          chain length, say - and the sidesheet would then be unreachable, so the
-          link falls back to a row of its own.
+          Only reached when the product has no options to hang the guide on, so
+          the sidesheet still has a way in.
         {%- endcomment -%}
         {%- if size_chart != blank and size_guide_inline != true -%}
           <div class="pdp_option pdp_option--guide-only">
