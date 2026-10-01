@@ -755,11 +755,28 @@ collection-page:defined .plp-skeleton {
     inset: 0;
     z-index: 100;
     background-color: rgba(0, 0, 0, 0.5);
+    animation: motion-fade var(--motion-sheet-in) ease;
   }
 
   collection-page[data-filters-open] .plp-sheet-scrim,
   collection-page:has([data-sort-menu]:not([hidden])) .plp-sheet-scrim {
     display: block;
+  }
+
+  /* Both sheets slide up the moment they are displayed. collection.js adds
+     .is-closing to play the drop before it actually hides them. */
+  collection-page[data-filters-open] .collection_wrapper_filters,
+  .collection_wrapper_main_toolbar_sort_menu:not([hidden]) {
+    animation: motion-sheet-up var(--motion-sheet-in) var(--motion-sheet-ease);
+  }
+
+  collection-page[data-filters-open] .collection_wrapper_filters.is-closing,
+  .collection_wrapper_main_toolbar_sort_menu.is-closing {
+    animation: motion-sheet-down var(--motion-sheet-out) var(--motion-sheet-ease-out) forwards;
+  }
+
+  collection-page:has(.collection_wrapper_filters.is-closing, [data-sort-menu].is-closing) .plp-sheet-scrim {
+    animation: motion-fade-out var(--motion-sheet-out) ease forwards;
   }
 
   /* Only the sort menu survives from the toolbar, as a sheet of its own. */

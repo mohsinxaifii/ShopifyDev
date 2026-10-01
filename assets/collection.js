@@ -67,18 +67,44 @@ class CollectionPage extends HTMLElement {
   /* ---------------------------------------------------------------- sorting */
 
   toggleSort() {
-    const trigger = this.querySelector('[data-sort-trigger]');
     const menu = this.querySelector('[data-sort-menu]');
-    if (!trigger || !menu) return;
-    const open = trigger.getAttribute('aria-expanded') === 'true';
-    trigger.setAttribute('aria-expanded', String(!open));
-    menu.hidden = open;
+    if (!menu || menu.classList.contains('is-closing')) return;
+    if (!menu.hidden) return this.closeSort();
+    this.querySelector('[data-sort-trigger]')?.setAttribute('aria-expanded', 'true');
+    menu.hidden = false;
   }
 
   closeSort() {
     this.querySelector('[data-sort-trigger]')?.setAttribute('aria-expanded', 'false');
     const menu = this.querySelector('[data-sort-menu]');
-    if (menu) menu.hidden = true;
+    if (!menu || menu.hidden) return;
+    this.dismissSheet(menu, () => {
+      menu.hidden = true;
+    });
+  }
+
+  /* On phones a sheet plays its slide-down (collection.css, .is-closing) before
+     it is really hidden. The desktop dropdown and rail have no exit animation,
+     so they are hidden straight away. */
+  dismissSheet(sheet, done) {
+    if (sheet.classList.contains('is-closing')) return;
+    let timer;
+    const finish = () => {
+      clearTimeout(timer);
+      sheet.removeEventListener('animationend', onEnd);
+      sheet.classList.remove('is-closing');
+      done();
+    };
+    const onEnd = (event) => {
+      if (event.target === sheet) finish();
+    };
+
+    sheet.classList.add('is-closing');
+    const { animationName, animationDuration } = getComputedStyle(sheet);
+    if (!animationName || animationName === 'none') return finish();
+    sheet.addEventListener('animationend', onEnd);
+    // In case the animation is interrupted and never reports its end.
+    timer = setTimeout(finish, parseFloat(animationDuration) * 1000 + 100);
   }
 
   closeSortOnOutsideClick = (event) => {
@@ -94,9 +120,23 @@ class CollectionPage extends HTMLElement {
      scroll-reveal never sees it while it is hidden, and motion.css holds every
      unrevealed [data-animate] element at zero opacity. */
   setFiltersOpen(open) {
-    this.toggleAttribute('data-filters-open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
-    if (open) this.revealFilters();
+    const rail = this.querySelector('[data-filters]');
+    if (rail?.classList.contains('is-closing')) return;
+
+    if (open) {
+      this.setAttribute('data-filters-open', '');
+      document.body.style.overflow = 'hidden';
+      this.revealFilters();
+      return;
+    }
+
+    if (!this.hasAttribute('data-filters-open')) return;
+    const finish = () => {
+      this.removeAttribute('data-filters-open');
+      document.body.style.overflow = '';
+    };
+    if (rail) this.dismissSheet(rail, finish);
+    else finish();
   }
 
   revealFilters() {
