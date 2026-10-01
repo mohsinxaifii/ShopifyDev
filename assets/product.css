@@ -2182,6 +2182,20 @@ button.pdp_trust_grid_item_inner {
   align-self: flex-start;
 }
 
+/* Care guide image (custom.pdp_care_guide_image), above the care steps. */
+.pdp_accordion_body_media {
+  display: block;
+  margin-bottom: 16px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.pdp_accordion_body_media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* Only the phone sheet shows the WhatsApp glyph (see the mobile block). */
 .pdp-sheet_panel_body_cta_icon {
   display: none;

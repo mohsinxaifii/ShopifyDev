@@ -665,6 +665,30 @@
               </span>
             </summary>
             <div class="pdp_accordion_body">
+              {%- comment -%}
+                The care guide entry is shared by every product, so its image is
+                a per-product upload: custom.pdp_care_guide_image.
+              {%- endcomment -%}
+              {%- liquid
+                assign care_image = blank
+                assign list_heading = list.heading | downcase
+                if list_heading contains 'care'
+                  assign care_image = product.metafields.custom.pdp_care_guide_image.value
+                endif
+              -%}
+              {%- if care_image != blank -%}
+                <span class="pdp_accordion_body_media">
+                  {{
+                    care_image
+                    | image_url: width: 1112
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '361,556,722,1112',
+                      sizes: '(max-width: 749px) calc(100vw - 32px), 556px',
+                      alt: list.heading
+                  }}
+                </span>
+              {%- endif -%}
               <dl class="pdp_specs">
                 {%- for item in list.product_details_item.value -%}
                   <div class="pdp_specs_row">
