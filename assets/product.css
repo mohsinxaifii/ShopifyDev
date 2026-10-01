@@ -1271,7 +1271,8 @@ button.pdp_trust_grid_item_inner {
 .pdp-kj_vermeil_diagram_callout--3 {
   top: 94.12%;
   left: 38.91%;
-  width: 34.27%;
+  width: auto;
+  white-space: nowrap;
 }
 
 .pdp-kj_vermeil_diagram_lines--mobile {
