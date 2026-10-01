@@ -296,9 +296,14 @@
         this.showLightbox(event.detail.index);
         dialog.showModal();
         // Phones stack every image vertically, so open on the one tapped.
+        // Offsets rather than scrollIntoView: the opening tween is still scaling
+        // the stack, and offsets ignore transforms. 64px clears the sticky close.
         if (window.matchMedia('(max-width: 749px)').matches) {
-          dialog.scrollTop = 0;
-          this.lightboxSlides[this.lightboxIndex]?.scrollIntoView({ block: 'start' });
+          let top = 0;
+          for (let el = this.lightboxSlides[this.lightboxIndex]; el && el !== dialog; el = el.offsetParent) {
+            top += el.offsetTop;
+          }
+          dialog.scrollTop = Math.max(0, top - 64);
         }
       });
 
