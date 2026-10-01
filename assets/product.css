@@ -1189,20 +1189,20 @@ button.pdp_trust_grid_item_inner {
   aspect-ratio: 532 / 238;
 }
 
+/* A square 247px cutaway at (118, -9) on the 532x238 diagram. */
 .pdp-kj_vermeil_diagram_image {
   position: absolute;
-  top: -7.14%;
-  left: 18.42%;
+  top: -3.78%;
+  left: 22.18%;
   display: block;
-  width: 59.96%;
-  height: 122.69%;
+  width: 46.43%;
+  height: 103.78%;
 }
 
 .pdp-kj_vermeil_diagram_image img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 9.938px 9.938px rgba(0, 0, 0, 0.1));
 }
 
 .pdp-kj_vermeil_diagram_lines {
@@ -1230,21 +1230,25 @@ button.pdp_trust_grid_item_inner {
 }
 
 .pdp-kj_vermeil_diagram_callout--1 {
-  top: 3.78%;
-  left: 9.96%;
+  top: 0;
+  left: 5.45%;
   width: 35.96%;
 }
 
 .pdp-kj_vermeil_diagram_callout--2 {
-  top: 15.69%;
-  left: 73.12%;
+  top: 11.76%;
+  left: 71.43%;
   width: 28.63%;
 }
 
 .pdp-kj_vermeil_diagram_callout--3 {
-  top: 90.34%;
-  left: 6.39%;
+  top: 94.12%;
+  left: 38.91%;
   width: 34.27%;
+}
+
+.pdp-kj_vermeil_diagram_lines--mobile {
+  display: none;
 }
 
 .pdp-kj_vermeil_diagram_callout_icon {
