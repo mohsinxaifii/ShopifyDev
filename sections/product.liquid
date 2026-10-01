@@ -199,6 +199,17 @@
               {%- endfor -%}
             </div>
           {%- endif -%}
+
+          {%- comment -%}
+            Figma Mobile 8106:57910: on phones "Add-ons available" is a tinted bar
+            across the foot of the photo; desktop keeps it in the price card.
+          {%- endcomment -%}
+          {%- if addons != blank -%}
+            <button type="button" class="pdp_gallery_stage_addons" data-open="addons">
+              <span>Add-ons available</span>
+              {{ 'icon-caret-right.svg' | inline_asset_content }}
+            </button>
+          {%- endif -%}
         </div>
 
         {%- comment -%}
