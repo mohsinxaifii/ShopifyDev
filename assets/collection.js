@@ -45,12 +45,8 @@ class CollectionPage extends HTMLElement {
         return this.loadMore(moreLink);
       }
 
-      const addButton = event.target.closest('[data-add-to-cart]');
-      if (addButton) {
-        // The button sits inside the card's <a>, so stop the navigation.
-        event.preventDefault();
-        return this.openVariantDrawer(addButton);
-      }
+      // A card's Add to cart is handled site-wide by variant-drawer.js, which
+      // asks for the variant first.
     });
 
     document.addEventListener('click', this.closeSortOnOutsideClick);
@@ -285,22 +281,6 @@ class CollectionPage extends HTMLElement {
     }
   }
 
-  /* ----------------------------------------------------------- add to cart */
-
-  /* Adding is the drawer's job - metal and size have to be chosen first. */
-  openVariantDrawer(button) {
-    const drawer = document.querySelector('variant-drawer');
-    const productUrl = button.closest('.product-card')?.getAttribute('href');
-    if (!drawer || !productUrl) return this.addToCart(button);
-    drawer.open(productUrl, button);
-  }
-
-  /* Single-variant cards add straight from the grid; anything with options goes
-     through the variant drawer first. Either way the shared cart runs the
-     request and the feedback. */
-  async addToCart(button) {
-    await window.zinaraCart?.add([{ id: Number(button.dataset.variantId), quantity: 1 }], button);
-  }
 }
 
 customElements.define('collection-page', CollectionPage);

@@ -144,6 +144,8 @@
           class="product-card_info_add"
           data-add-to-cart
           data-variant-id="{{ card_variant_id }}"
+          data-variant-count="{{ product.variants.size }}"
+          data-product-url="{{ product.url }}"
           data-product-id="{{ product.id }}"
           data-added-label="{{ 'products.added_to_cart' | t | escape }}"
         >

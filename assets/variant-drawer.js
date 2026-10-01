@@ -1,6 +1,18 @@
 /**
- * The PLP variant drawer. A card's add-to-cart opens this instead of adding
- * straight away, so the shopper picks metal and size first.
+ * The variant picker - a bottom sheet on phones, a side drawer on desktop. It is
+ * rendered once by the layout, and every add-to-cart for a product with more
+ * than one variant goes through it, so nothing is ever added as "whatever the
+ * first variant happens to be":
+ *
+ * - open(url, trigger)  - pick, then Done adds the variant to the cart
+ * - choose(url)         - pick, then Done resolves with the variant (no add);
+ *                         used where several items are added together
+ * - window.zinaraVariants.pick(...) wraps choose() and skips the picker for
+ *   products that only have one variant.
+ *
+ * Opened from inside a modal sheet (add-ons, the UGC lightbox), the picker moves
+ * itself into that dialog for as long as it is open: everything outside the
+ * top-most modal is inert, so it could not be used from where it lives.
  *
  * Contents are fetched per product through the Section Rendering API rather
  * than built here, because swatches, money formatting and image sizing all
@@ -35,6 +47,37 @@
     /* -------------------------------------------------------------- open */
 
     async open(productUrl, trigger) {
+      this.mode = 'add';
+      return this.show(productUrl, trigger);
+    }
+
+    /* Resolves with the chosen variant ({ id, title, ... }) or null if closed. */
+    choose(productUrl) {
+      this.settleChoice(null);
+      this.mode = 'choose';
+      return new Promise((resolve) => {
+        this.resolveChoice = resolve;
+        this.show(productUrl, null);
+      });
+    }
+
+    settleChoice(value) {
+      const resolve = this.resolveChoice;
+      this.resolveChoice = null;
+      resolve?.(value);
+    }
+
+    /* Into the top-most open modal dialog, if there is one; see the header. */
+    hostInOpenDialog() {
+      const dialogs = Array.from(document.querySelectorAll('dialog[open]'));
+      const host = dialogs.reverse().find((dialog) => dialog.matches(':modal'));
+      if (!this.homeParent) this.homeParent = this.parentElement;
+      if (host && this.parentElement !== host) host.append(this);
+      else if (!host && this.parentElement !== this.homeParent) this.homeParent.append(this);
+    }
+
+    async show(productUrl, trigger) {
+      this.hostInOpenDialog();
       this.trigger = trigger;
       this.opener = document.activeElement;
       this.hidden = false;
@@ -58,6 +101,7 @@
       } catch (error) {
         console.error('[variant-drawer] could not load product', error);
         this.close();
+        // Picking was the point, so fall back to the product page to pick there.
         window.location.href = productUrl;
       } finally {
         this.content.removeAttribute('aria-busy');
@@ -65,11 +109,13 @@
     }
 
     close() {
+      this.settleChoice(null);
       this.classList.remove('is-open');
       document.documentElement.style.overflow = '';
       const finish = () => {
         this.hidden = true;
         this.content.replaceChildren();
+        if (this.homeParent && this.parentElement !== this.homeParent) this.homeParent.append(this);
       };
       // Wait out the panel's own exit transition - the side drawer's on desktop,
       // the bottom sheet's on phones - which reduced motion already shrinks to 0.
@@ -121,6 +167,14 @@
 
     async confirm() {
       if (!this.variant) return;
+
+      if (this.mode === 'choose') {
+        const chosen = { ...this.variant, productTitle: this.data?.productTitle };
+        this.settleChoice(chosen);
+        this.close();
+        return;
+      }
+
       this.done.disabled = true;
 
       // The shared cart owns the request, the button's pending/added states, the
@@ -137,4 +191,47 @@
   }
 
   if (!customElements.get('variant-drawer')) customElements.define('variant-drawer', VariantDrawer);
+
+  const drawer = () => document.querySelector('variant-drawer');
+
+  /**
+   * The variant id to add for a product: straight through when it has only one
+   * variant, otherwise whatever the shopper picks (null if they back out).
+   */
+  window.zinaraVariants = {
+    async pick({ productUrl, variantCount, variantId }) {
+      if (Number(variantCount) <= 1 || !productUrl || !drawer()) return Number(variantId) || null;
+      const chosen = await drawer().choose(productUrl);
+      return chosen ? chosen.id : null;
+    },
+    choose(productUrl) {
+      return drawer()?.choose(productUrl) ?? Promise.resolve(null);
+    },
+  };
+
+  /**
+   * Every product card's Add to cart, on every page - collection, search,
+   * wishlist, carousels, the product page's "You may also like". Captured at the
+   * document so it runs before the card's own link navigates or any section
+   * script adds the card's default variant.
+   */
+  document.addEventListener(
+    'click',
+    (event) => {
+      const button = event.target.closest('.product-card [data-add-to-cart]');
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (button.disabled) return;
+
+      const productUrl =
+        button.dataset.productUrl || button.closest('.product-card')?.getAttribute('href');
+      if (Number(button.dataset.variantCount) > 1 && productUrl && drawer()) {
+        drawer().open(productUrl, button);
+        return;
+      }
+      window.zinaraCart?.add([{ id: Number(button.dataset.variantId), quantity: 1 }], button);
+    },
+    true,
+  );
 })();
