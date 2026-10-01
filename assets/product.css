@@ -3253,3 +3253,236 @@ button.pdp_trust_grid_item_inner {
   }
 }
 
+/* Figma Mobile PDP 8106:57855 - second pass. */
+@media screen and (max-width: 749px) {
+  /* Gallery foot: "Add-ons available" as a tinted bar over the photo, with the
+     media pills lifted to sit on top of it (8106:57906). */
+  .pdp_gallery_stage_addons {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border: 0;
+    background-color: rgba(141, 92, 9, 0.7);
+    backdrop-filter: blur(3.5px);
+    font-family: var(--font-secondary--family);
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 20px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .pdp_gallery_stage_addons svg {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+  }
+
+  .pdp_gallery_stage:has(.pdp_gallery_stage_addons) .pdp_gallery_stage_bottom {
+    bottom: 32px;
+  }
+
+  .pdp_headline_addons {
+    display: none;
+  }
+
+  /* Price card order (8106:57920): price with the rating chip beside it, the
+     tax note, the calculator, the tags, and the title last. */
+  .pdp_headline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'price rating'
+      'tax tax'
+      'calc calc'
+      'tags tags'
+      'title title';
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .pdp_headline_top {
+    display: contents;
+  }
+
+  .pdp_headline_price {
+    grid-area: price;
+    gap: 8px;
+  }
+
+  .pdp_headline_top_rating {
+    grid-area: rating;
+    align-self: center;
+    font-size: 13px;
+  }
+
+  .pdp_headline_tax {
+    grid-area: tax;
+    margin-top: -8px;
+  }
+
+  .pdp_headline_calculator {
+    grid-area: calc;
+  }
+
+  .pdp_headline_tags {
+    grid-area: tags;
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline: var(--page-margin);
+  }
+
+  .pdp_headline_top_title {
+    grid-area: title;
+    margin-top: -4px;
+  }
+
+  /* Offers rail runs off the right edge of the screen. */
+  .pdp_offers_rail {
+    margin-right: calc(var(--page-margin) * -1);
+    padding-right: var(--page-margin);
+  }
+
+  /* Need help + Delivery: 44-46px controls with 16px type (8106:58070/58052). */
+  .pdp_help_actions .pdp_button {
+    height: 44px;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .pdp_help_actions .pdp_button_icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pdp_delivery_row_input {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .pdp_delivery_row .pdp_button {
+    height: auto;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  /* Why you'll love it: 14px tiles (8106:58099). */
+  .pdp_highlights_item_text {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  /* Know your jewellery on phones (8106:58156): a 337x238 diagram with the
+     190px cutaway, 10.6px icons and two straight leader drops. */
+  .pdp-kj_vermeil_title,
+  .pdp-kj_diamonds_title {
+    font-size: 16px;
+  }
+
+  .pdp-kj_vermeil_diagram {
+    aspect-ratio: 337 / 238;
+  }
+
+  .pdp-kj_vermeil_diagram_image {
+    top: 13.03%;
+    left: 22.26%;
+    width: 56.38%;
+    height: 79.83%;
+  }
+
+  .pdp-kj_vermeil_diagram_lines {
+    display: none;
+  }
+
+  .pdp-kj_vermeil_diagram_lines--mobile {
+    display: block;
+  }
+
+  .pdp-kj_vermeil_diagram_callout--1 {
+    top: 2.42%;
+    left: 22.03%;
+    width: 53.98%;
+  }
+
+  .pdp-kj_vermeil_diagram_callout--2 {
+    top: 15.69%;
+    left: 55.65%;
+    width: 42.4%;
+  }
+
+  .pdp-kj_vermeil_diagram_callout--3 {
+    top: 94.07%;
+    left: 37.56%;
+    width: 62.44%;
+  }
+
+  .pdp-kj_vermeil_diagram_callout_icon {
+    width: 10.6px;
+    height: 10.6px;
+  }
+
+  .pdp-kj_vermeil_diagram_callout_text {
+    font-size: 14px;
+    line-height: 13.25px;
+  }
+
+  .pdp-kj_vermeil_specs_cell_label {
+    font-size: 10px;
+  }
+
+  .pdp-kj_vermeil_specs_cell_value {
+    font-size: 14px;
+  }
+
+  .pdp-kj_diamonds_compare {
+    gap: 16px;
+  }
+
+  .pdp-kj_diamonds_compare_side_label,
+  .pdp-kj_diamonds_compare_link_text {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .pdp-kj_diamonds_compare_link_arrow {
+    width: 149px;
+  }
+
+  /* You may also like: 168px cards, image + price + title only (8106:58204). */
+  .pdp_related_panel_track > .product-card {
+    flex-basis: 168px;
+    width: 168px;
+  }
+
+  .pdp_related .product-card_info_add {
+    display: none;
+  }
+
+  /* Pair beautifully with: 139px cards that scroll, a third peeking (8106:58275). */
+  .pdp_pair_card_items {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pdp_pair_card_items::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pdp_pair_card_items .pdp-mini {
+    flex: 0 0 139px;
+    scroll-snap-align: start;
+  }
+
+  .pdp_pair_card_items_plus {
+    width: 11.67px;
+    height: 11.67px;
+  }
+}
+
