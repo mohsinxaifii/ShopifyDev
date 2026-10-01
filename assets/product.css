@@ -2182,6 +2182,11 @@ button.pdp_trust_grid_item_inner {
   align-self: flex-start;
 }
 
+/* Only the phone sheet shows the WhatsApp glyph (see the mobile block). */
+.pdp-sheet_panel_body_cta_icon {
+  display: none;
+}
+
 .pdp-sheet_panel_body_offers {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3118,12 +3123,54 @@ button.pdp_trust_grid_item_inner {
     padding-bottom: 24px;
   }
 
-  .pdp-sheet_panel_footer {
-    padding-bottom: calc(18px + env(safe-area-inset-bottom));
-  }
-
   .pdp-sheet_panel_body_offers {
     gap: 16px;
+  }
+
+  .pdp-sheet_panel_footer {
+    padding-top: 12px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    box-shadow: none;
+  }
+
+  /* Title-to-content spacing differs per sheet in Figma: 12px under Add-ons and
+     Size guide, 24px under All offers and the price difference. */
+  .pdp-sheet_panel_body,
+  .pdp-sheet_panel_body--padded {
+    padding-top: 12px;
+  }
+
+  [data-sheet='offers'] .pdp-sheet_panel_body,
+  [data-sheet='price-difference'] .pdp-sheet_panel_body {
+    padding-top: 24px;
+  }
+
+  /* Add-ons: label, hero and cards run on a single 8px rhythm. */
+  [data-sheet='addons'] .pdp-sheet_panel_body {
+    gap: 8px;
+  }
+
+  /* Size guide: 14px semibold section labels and a full-width WhatsApp CTA. */
+  [data-sheet='size-guide'] .pdp-sheet_panel_body_group_label {
+    font-weight: 600;
+    line-height: 22px;
+  }
+
+  [data-sheet='size-guide'] .pdp-sheet_panel_body_cta {
+    align-self: stretch;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  [data-sheet='size-guide'] .pdp-sheet_panel_body_cta_icon {
+    display: flex;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* The price difference keeps its four facts two-up, as in the design. */
+  .pdp-diff_facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .pdp-modal[open] {
