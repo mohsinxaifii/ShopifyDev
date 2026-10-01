@@ -54,7 +54,16 @@
   assign material_tags = product.metafields.custom.pdp_material_tags.value
   assign media_badges = product.metafields.custom.pdp_media_badges.value
   assign highlights = product.metafields.custom.pdp_highlights.value
-  assign addons = product.metafields.custom.pdp_addons.value
+  comment
+    Add-ons come from the product's add-on set (custom.pdp_addon_set, a
+    pdp_addon_set entry) when it has one: the products on offer, the default
+    hero and a hero per combination of ticked add-ons. Products without a set
+    keep the older custom.pdp_addons list and the section's add-ons image.
+  endcomment
+  assign addon_set = product.metafields.custom.pdp_addon_set.value
+  assign addons = addon_set.addons.value | default: product.metafields.custom.pdp_addons.value
+  assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
+  assign addon_previews = addon_set.previews.value
   assign ugc_videos = product.metafields.custom.pdp_ugc_videos.value
   assign reviews = product.metafields.custom.pdp_reviews.value
   if reviews.size > 0
@@ -1025,7 +1034,8 @@
   {%- render 'pdp-offers-sheet', offer_handles: offer_handles -%}
   {%- render 'pdp-addons-sheet',
     addons: addons,
-    hero: section.settings.addons_image,
+    hero: addons_hero,
+    previews: addon_previews,
     whatsapp_url: section.settings.whatsapp_url
   -%}
   {%- render 'pdp-sgl-modal', product: product, fallback: section.settings.certificate_image -%}

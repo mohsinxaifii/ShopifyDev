@@ -2568,11 +2568,29 @@ button.pdp_trust_grid_item_inner {
 
 /* Add-ons sidesheet - Figma 7930:100360 */
 
-.pdp-addons_hero img {
-  width: 100%;
+/* The default hero and one image per add-on combination are stacked and
+   crossfade as add-ons are ticked (product.js syncAddonHero). */
+.pdp-addons_hero {
+  position: relative;
+  display: block;
   height: 193px;
+  overflow: hidden;
   border-radius: 12px;
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp-addons_hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pdp-addons_hero img.is-active {
+  opacity: 1;
 }
 
 .pdp-addons_grid {

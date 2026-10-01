@@ -600,6 +600,7 @@
           'aria-pressed',
           toggle.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
         );
+        if (toggle.matches('[data-addon-toggle]')) this.syncAddonHero();
       });
 
       this.querySelector('[data-addons-done]')?.addEventListener('click', () => {
@@ -637,6 +638,34 @@
           trigger: button,
         });
       });
+    }
+
+    /* The add-ons hero follows the ticked set. Each preview image lists the
+       add-on product ids it shows; an exact match wins, otherwise the preview
+       covering the most ticked add-ons without showing an unticked one, and
+       with nothing matching the default hero (the image with an empty list). */
+    syncAddonHero() {
+      const hero = this.querySelector('[data-addon-hero]');
+      if (!hero) return;
+      const images = Array.from(hero.querySelectorAll('[data-addon-preview]'));
+      const selected = new Set(
+        Array.from(this.querySelectorAll('[data-addon-toggle][aria-pressed="true"]')).map(
+          (button) => button.dataset.productId,
+        ),
+      );
+
+      let best = images.find((img) => !img.dataset.addonPreview) || null;
+      let bestSize = 0;
+      images.forEach((img) => {
+        const ids = (img.dataset.addonPreview || '').split(',').filter(Boolean);
+        if (!ids.length || !ids.every((id) => selected.has(id))) return;
+        if (ids.length > bestSize) {
+          best = img;
+          bestSize = ids.length;
+        }
+      });
+
+      images.forEach((img) => img.classList.toggle('is-active', img === best));
     }
 
     buildItems() {
