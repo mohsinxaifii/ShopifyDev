@@ -109,7 +109,7 @@
   endfor
   assign offer_handles = offer_handles | split: ','
 -%}
-<!--OFFERDEBUG shopmf=[{{ shop.metafields.custom.pdp_offers | json | escape }}] type=[{{ shop.metafields.custom.pdp_offers.type }}] count=[{{ all_offers.size }}] mo_count=[{{ shop.metaobjects.discount_offer.values.size }}] first=[{{ shop.metaobjects.discount_offer.values.first.system.handle }}|{{ shop.metaobjects.discount_offer.values.first.heading }}|{{ shop.metaobjects.discount_offer.values.first.products.value | size }}|{{ shop.metaobjects.discount_offer.values.first.collections.value | size }}] handles=[{{ offer_handles | join: ';' }}] -->
+<!--OFFERDEBUG2 {% for mo in shop.metaobjects.discount_offer.values %}[{{ forloop.index }} h={{ mo.system.handle }} id={{ mo.system.id }} t={{ mo.system.type }} heading={{ mo.heading }} heading2={{ mo['heading'] }} code={{ mo.discount_code }} title={{ mo.title }} name={{ mo.name }}]{% endfor %} raw={{ shop.metafields.custom.pdp_offers.value | size }} -->
 
 <product-page
   class="pdp"
