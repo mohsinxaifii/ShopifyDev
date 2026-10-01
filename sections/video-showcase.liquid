@@ -117,25 +117,6 @@
     </div>
   </video-showcase>
 
-  {%- liquid
-    assign needs_variant_drawer = false
-    for block in section.blocks
-      assign linked = block.settings.product
-      if linked != blank
-        assign option_count = linked.variants | size
-        if option_count > 1
-          assign needs_variant_drawer = true
-        endif
-      endif
-    endfor
-  -%}
-  {%- if needs_variant_drawer -%}
-    {%- unless request.page_type == 'collection' or request.page_type == 'search' -%}
-      {{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
-      {%- render 'variant-drawer' -%}
-      <script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
-    {%- endunless -%}
-  {%- endif -%}
 
   <script src="{{ 'video-showcase.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}

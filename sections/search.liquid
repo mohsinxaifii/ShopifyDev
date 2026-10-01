@@ -14,7 +14,6 @@
 
 {{ 'product-card.css' | asset_url | stylesheet_tag }}
 {{ 'collection.css' | asset_url | stylesheet_tag }}
-{{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
 {{ 'search.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
@@ -253,9 +252,7 @@
   {%- endif -%}
 </collection-page>
 
-{%- render 'variant-drawer' -%}
 
-<script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'search-more.js' | asset_url }}" defer="defer"></script>
 
