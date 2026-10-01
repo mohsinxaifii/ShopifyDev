@@ -26,24 +26,14 @@
   --motion-ease: cubic-bezier(0.33, 1, 0.68, 1);
   --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-  /* Phone bottom sheets. Mirrors the review sheet (initBottomSheets in
-     animations.js and .review-dialog::backdrop) so the PLP sort/filter sheets
-     and the variant drawer, which are not <dialog>s, slide and dim the same way. */
-  --sheet-enter-duration: 0.4s;
-  --sheet-enter-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --sheet-exit-duration: 0.3s;
-  --sheet-exit-ease: cubic-bezier(0.4, 0, 1, 1);
-  --sheet-scrim-duration: 0.35s;
-  --sheet-scrim: rgba(0, 0, 0, 0.55);
-  --sheet-blur: blur(4px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --sheet-enter-duration: 0.01ms;
-    --sheet-exit-duration: 0.01ms;
-    --sheet-scrim-duration: 0.01ms;
-  }
+  /* Every phone bottom sheet - sort, filters, variant picker, review - rises
+     and drops on these, with its scrim fading over the same span. The rise
+     decelerates hard into place; the drop accelerates away and is quicker, so
+     dismissing never feels like waiting. */
+  --motion-sheet-in: 0.42s;
+  --motion-sheet-out: 0.3s;
+  --motion-sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-sheet-ease-out: cubic-bezier(0.4, 0, 1, 1);
 }
 
 /* --------------------------------------------------------- scroll reveal */
@@ -108,17 +98,12 @@ summary:active {
   overflow: hidden;
 }
 
-.product-card_media_image,
-.pdp-mini_media img,
+/* Product images do not zoom on hover: a tap on a phone leaves :hover applied,
+   so the photo stayed stuck zoomed until the shopper tapped somewhere else. */
 .shop-by-category_card img,
 .occasion-showcase_card img,
 .journal_card img {
   transition: transform var(--motion-slow) var(--motion-ease);
-}
-
-.product-card:hover .product-card_media_image,
-.pdp-mini:hover .pdp-mini_media img {
-  transform: scale(1.045);
 }
 
 .product-card:hover {
@@ -231,13 +216,6 @@ summary:active {
   transform: translateY(-3px);
 }
 
-.pdp_gallery_stage_slide img {
-  transition: transform var(--motion-slow) var(--motion-ease);
-}
-
-.pdp_gallery_stage:hover .pdp_gallery_stage_slide.is-active img {
-  transform: scale(1.04);
-}
 
 .scroll-carousel_arrow:active,
 .pdp_gallery_thumbs_arrow:active,
@@ -341,25 +319,23 @@ dialog.is-closing::backdrop {
   }
 }
 
-/**
- * Popup on desktop, bottom sheet on phones - initBottomSheets() in
- * animations.js slides the panel and toggles `.is-open` for the backdrop. The
- * sheet only ever slides; the dimmed backdrop is the one thing that fades.
- * Each dialog still owns its mobile layout (full width, docked to the bottom,
- * rounded top corners).
- */
-dialog[data-bottom-sheet]::backdrop {
-  opacity: 0;
-  animation: none;
-  transition: opacity 0.35s ease;
+/* Bottom sheets travel their own height, so they start fully below the fold. */
+@keyframes motion-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
 }
 
-dialog[data-bottom-sheet].is-open::backdrop {
-  opacity: 1;
+@keyframes motion-sheet-down {
+  to {
+    transform: translateY(100%);
+  }
 }
 
-dialog[data-bottom-sheet] > :first-child {
-  outline: none;
+@keyframes motion-fade-out {
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes motion-scale-in {
@@ -381,6 +357,7 @@ html:not(.motion-dialogs) .variant-drawer[open] .variant-drawer_panel {
   animation: motion-slide-in var(--motion-slow) var(--motion-ease);
 }
 
+html:not(.motion-dialogs) .pdp-modal[open] .pdp-modal_panel,
 html:not(.motion-dialogs) .pdp-lightbox[open] .pdp-lightbox_body,
 html:not(.motion-dialogs) .pdp-ugc-box[open] .pdp-ugc-box_reel {
   animation: motion-scale-in var(--motion-base) var(--motion-ease);
