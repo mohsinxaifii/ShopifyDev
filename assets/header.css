@@ -175,7 +175,7 @@
 /* Off-canvas menu drawer */
 .header_drawer_overlay {
   position: fixed;
-  inset: 0;
+  inset: var(--header-drawer-top, 0) 0 0;
   background-color: rgba(0, 0, 0, 0.4);
   opacity: 0;
   visibility: hidden;
@@ -189,7 +189,7 @@
   --drawer-line: #e6e6e6;
 
   position: fixed;
-  top: 0;
+  top: var(--header-drawer-top, 0);
   left: 0;
   bottom: 0;
   width: min(393px, 100vw);

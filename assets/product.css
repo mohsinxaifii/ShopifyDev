@@ -2709,6 +2709,14 @@ button.pdp_trust_grid_item_inner {
   color: var(--pdp-brand);
 }
 
+/* The variant picked for an add-on with options, under its name. */
+.pdp-addons_grid_card_variant {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--pdp-text-secondary);
+}
+
 .pdp-addons_grid_card_price {
   font-weight: 600;
   font-size: 16px;

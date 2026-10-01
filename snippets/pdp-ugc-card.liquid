@@ -34,6 +34,8 @@
       class="pdp_button pdp_button--primary pdp_button--compact pdp-ugc-card_info_add"
       data-add-single
       data-variant-id="{{ item.selected_or_first_available_variant.id }}"
+      data-variant-count="{{ item.variants.size }}"
+      data-product-url="{{ item.url }}"
       data-added-label="{{ 'products.added_to_cart' | t | escape }}"
     >
       <span class="pdp_button_icon" aria-hidden="true">

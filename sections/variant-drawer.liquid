@@ -147,6 +147,7 @@
         {%- for variant in product.variants -%}
           {
             "id": {{ variant.id }},
+            "title": {{ variant.title | json }},
             "options": {{ variant.options | json }},
             "available": {{ variant.available | json }}
           }{% unless forloop.last %},{% endunless %}

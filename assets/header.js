@@ -52,7 +52,17 @@ class HeaderComponent extends HTMLElement {
     if (open) this.querySelector('[data-suggest-input]')?.focus();
   }
 
+  /* Figma Mobile 8106:54336: the menu opens under the announcement bar, which
+     stays in view. The bar scrolls with the page, so the drawer starts wherever
+     its bottom edge is right now - flush to the top once it has scrolled off. */
+  syncDrawerTop() {
+    const bar = document.querySelector('.announcement-bar');
+    const top = bar ? Math.max(0, Math.round(bar.getBoundingClientRect().bottom)) : 0;
+    this.style.setProperty('--header-drawer-top', `${top}px`);
+  }
+
   open() {
+    this.syncDrawerTop();
     this.isOpen = true;
     this.setAttribute('data-drawer-open', 'true');
     this.menuToggle?.setAttribute('aria-expanded', 'true');

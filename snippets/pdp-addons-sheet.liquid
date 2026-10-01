@@ -90,6 +90,8 @@
               class="pdp-addons_grid_card_toggle"
               data-addon-toggle
               data-variant-id="{{ addon_variant.id }}"
+              data-variant-count="{{ addon.variants.size }}"
+              data-product-url="{{ addon.url }}"
               data-product-id="{{ addon.id }}"
               aria-pressed="false"
               aria-label="Add {{ addon.title | escape }}"
@@ -103,6 +105,7 @@
             </button>
 
             <span class="pdp-addons_grid_card_title">{{ addon.title }}</span>
+            <span class="pdp-addons_grid_card_variant" data-addon-variant hidden></span>
             <span class="pdp-addons_grid_card_price">+{% render 'money', amount: addon.price %}</span>
           </li>
         {%- endfor -%}

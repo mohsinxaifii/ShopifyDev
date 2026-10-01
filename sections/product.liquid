@@ -874,13 +874,16 @@
                   </span>
                 {%- endunless -%}
                 {%- comment -%}
-                  The set always adds each piece's first available variant.
+                  Pieces with options are picked in the variant drawer when the
+                  set is added; single-variant pieces go straight in.
                 {%- endcomment -%}
                 <article
                   class="pdp-mini"
                   data-pair-item
                   data-product-id="{{ item.id }}"
                   data-variant-id="{{ item.selected_or_first_available_variant.id }}"
+                  data-variant-count="{{ item.variants.size }}"
+                  data-product-url="{{ item.url }}"
                 >
                   <a href="{{ item.url }}" class="pdp-mini_media">
                     {%- if item.featured_image -%}

@@ -1,6 +1,5 @@
 {{ 'product-card.css' | asset_url | stylesheet_tag }}
 {{ 'collection.css' | asset_url | stylesheet_tag }}
-{{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
 
 {%- comment -%}
   Figma: PLP 7930:101927 > Frame 1116601646 (7930:101938).
@@ -198,9 +197,7 @@
   {%- render 'plp-mobile-bar', filters: collection.filters -%}
 </collection-page>
 
-{%- render 'variant-drawer' -%}
 
-<script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
 
 <script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
 
