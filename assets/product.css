@@ -3073,3 +3073,96 @@ button.pdp_trust_grid_item_inner {
   }
 }
 
+/* Figma Mobile PDP 8106:57854: on phones every PDP sheet - offers, add-ons,
+   price difference, size guide and the SGL certificate - rises from the bottom
+   instead of sliding in from the side or sitting centred. Same shell for all:
+   24px top corners (16px on the certificate), a 16px title row with the 21.5px
+   close, content-height up to 768px, and the shared sheet motion. */
+@media screen and (max-width: 749px) {
+  .pdp-sheet_panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: min(768px, calc(100% - 16px));
+    overflow: hidden;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .pdp-sheet_panel_head_title,
+  .pdp-modal_panel_head_title {
+    line-height: 24px;
+  }
+
+  /* The 21.5px glyph keeps its 8px tap padding without growing the row. */
+  .pdp-sheet_panel_head_close,
+  .pdp-modal_panel_head_close {
+    margin: -8px -8px -8px 0;
+  }
+
+  .pdp-sheet_panel_head_close svg,
+  .pdp-modal_panel_head_close svg {
+    width: 21.5px;
+    height: 21.5px;
+  }
+
+  .pdp-sheet_panel_body {
+    flex: 0 1 auto;
+    padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+
+  /* With a pinned footer, the safe area belongs to the footer instead. */
+  .pdp-sheet_panel_body:has(+ .pdp-sheet_panel_footer) {
+    padding-bottom: 24px;
+  }
+
+  .pdp-sheet_panel_footer {
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+
+  .pdp-sheet_panel_body_offers {
+    gap: 16px;
+  }
+
+  .pdp-modal[open] {
+    display: block;
+  }
+
+  .pdp-modal_panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    gap: 16px;
+    width: 100%;
+    max-width: none;
+    max-height: min(768px, calc(100% - 16px));
+    padding: 0 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 16px 16px 0 0;
+    overscroll-behavior: contain;
+  }
+
+  /* `html` matches the specificity of motion.css's no-GSAP side slide, which
+     this has to outrank. */
+  html .pdp-sheet[data-bottom-sheet][open] .pdp-sheet_panel,
+  html .pdp-modal[data-bottom-sheet][open] .pdp-modal_panel {
+    animation: motion-sheet-up var(--motion-sheet-in) var(--motion-sheet-ease);
+  }
+
+  html .pdp-sheet[data-bottom-sheet].is-closing .pdp-sheet_panel,
+  html .pdp-modal[data-bottom-sheet].is-closing .pdp-modal_panel {
+    animation: motion-sheet-down var(--motion-sheet-out) var(--motion-sheet-ease-out) forwards;
+  }
+
+  .pdp-sheet[data-bottom-sheet][open]::backdrop,
+  .pdp-modal[data-bottom-sheet][open]::backdrop {
+    animation: motion-fade var(--motion-sheet-in) ease;
+  }
+
+  .pdp-sheet[data-bottom-sheet].is-closing::backdrop,
+  .pdp-modal[data-bottom-sheet].is-closing::backdrop {
+    animation: motion-fade-out var(--motion-sheet-out) ease forwards;
+  }
+}
+

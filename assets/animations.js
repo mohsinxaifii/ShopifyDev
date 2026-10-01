@@ -144,7 +144,30 @@
       const nativeClose = dialog.close.bind(dialog);
       let closing = false;
 
+      // A dialog marked [data-bottom-sheet] runs the shared sheet slide in CSS
+      // on phones (motion.css --motion-sheet-*), so the tween stays out of it.
+      // Its exit is still played here: .is-closing starts the CSS slide-down and
+      // the real close waits for it. A dialog that already carries .is-closing
+      // (review-modal.js runs its own) has played its exit and closes at once.
+      const sheetQuery = window.matchMedia('(max-width: 749px)');
+      const isOwnSheet = () => dialog.hasAttribute('data-bottom-sheet') && sheetQuery.matches;
+      const closeOwnSheet = (args) => {
+        if (closing || !dialog.open || dialog.classList.contains('is-closing')) {
+          return nativeClose(...args);
+        }
+        closing = true;
+        dialog.classList.add('is-closing');
+        const exitMs =
+          parseFloat(getComputedStyle(dialog).getPropertyValue('--motion-sheet-out')) * 1000 || 300;
+        window.setTimeout(() => {
+          closing = false;
+          nativeClose(...args);
+          dialog.classList.remove('is-closing');
+        }, exitMs);
+      };
+
       dialog.showModal = (...args) => {
+        if (isOwnSheet()) return nativeShow(...args);
         nativeShow(...args);
         dialog.classList.remove('is-closing');
         gsap.killTweensOf(target);
@@ -162,6 +185,7 @@
       };
 
       dialog.close = (...args) => {
+        if (isOwnSheet()) return closeOwnSheet(args);
         if (closing || !dialog.open) return nativeClose(...args);
         closing = true;
         // Lets CSS fade ::backdrop out alongside the panel - a pseudo-element

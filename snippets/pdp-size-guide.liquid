@@ -20,7 +20,7 @@
   assign guide_video = product.metafields.custom.pdp_size_guide_video.value | default: product.metafields.custom.size_chart_video.value
 -%}
 
-<dialog class="pdp-sheet" data-sheet="size-guide" data-bottom-sheet="side" scroll-lock aria-labelledby="PdpSizeGuideTitle">
+<dialog class="pdp-sheet" data-bottom-sheet data-sheet="size-guide" scroll-lock aria-labelledby="PdpSizeGuideTitle">
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
       <h2 class="pdp-sheet_panel_head_title" id="PdpSizeGuideTitle">Size guide</h2>
