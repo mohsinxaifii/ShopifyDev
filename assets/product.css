@@ -3423,21 +3423,22 @@ button.pdp_trust_grid_item_inner {
     text-align: left;
   }
 
-  /* Know your jewellery on phones (8106:58156): a 337x238 diagram with the
-     190px cutaway, 10.6px icons and two straight leader drops. */
+  /* Know your jewellery on phones: the home page's mobile diagram, value for
+     value (know-your-jewellery.css) - a 361x238 box, the 190px cutaway at
+     (80, 23.75), 16px icons, and the callouts where its leader lines end. */
   .pdp-kj_vermeil_title,
   .pdp-kj_diamonds_title {
     font-size: 16px;
   }
 
   .pdp-kj_vermeil_diagram {
-    aspect-ratio: 337 / 238;
+    aspect-ratio: 361 / 238;
   }
 
   .pdp-kj_vermeil_diagram_image {
-    top: 13.03%;
-    left: 22.26%;
-    width: 56.38%;
+    top: 9.98%;
+    left: 22.16%;
+    width: 52.63%;
     height: 79.83%;
   }
 
@@ -3450,26 +3451,33 @@ button.pdp_trust_grid_item_inner {
   }
 
   .pdp-kj_vermeil_diagram_callout--1 {
-    top: 2.42%;
-    left: 22.03%;
-    width: 53.98%;
+    top: 4.94%;
+    left: 3.32%;
+    width: 43.85%;
   }
 
   .pdp-kj_vermeil_diagram_callout--2 {
-    top: 15.69%;
-    left: 55.65%;
-    width: 42.4%;
+    top: 15.27%;
+    left: 50.56%;
+    width: 49.44%;
   }
 
   .pdp-kj_vermeil_diagram_callout--3 {
-    top: 94.07%;
-    left: 37.56%;
-    width: 62.44%;
+    top: 89.46%;
+    left: 35.07%;
+    width: 64.93%;
+  }
+
+  /* The diagram sits inside the card's 12px padding, so it is ~24px narrower
+     than on the home page; these two stay on one line as they do there. */
+  .pdp-kj_vermeil_diagram_callout--2,
+  .pdp-kj_vermeil_diagram_callout--3 {
+    white-space: nowrap;
   }
 
   .pdp-kj_vermeil_diagram_callout_icon {
-    width: 10.6px;
-    height: 10.6px;
+    width: 16px;
+    height: 16px;
   }
 
   .pdp-kj_vermeil_diagram_callout_text {
