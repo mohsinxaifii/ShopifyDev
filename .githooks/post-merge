@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# After a pull or merge, warn loudly if it deleted files the theme still uses.
+# A post-merge hook cannot undo the merge, so it only reports.
+"$(git rev-parse --show-toplevel)/.githooks/check-theme-refs.sh" || {
+  echo
+  echo ">>> This pull/merge removed files the theme still references."
+  echo ">>> Restore them (git checkout ORIG_HEAD -- <path>) before running theme dev."
+}
+exit 0

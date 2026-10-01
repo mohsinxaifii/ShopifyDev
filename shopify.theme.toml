@@ -1,0 +1,12 @@
+# Shopify CLI environments for this theme.
+#
+# The live theme (ShopifyDev/main, #191123652890) is connected to this repo's
+# main branch through the Shopify GitHub integration, so it must only ever be
+# updated by `git push`. Running `shopify theme dev` or `theme push` against it
+# uploads this folder straight to the live store - and deletes anything the
+# folder lacks - which the integration then commits back to GitHub.
+#
+# Local preview:   shopify theme dev -e dev
+#   (no theme id here, so the CLI uses your private development theme)
+[environments.dev]
+store = "mohsinxaifi.myshopify.com"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Block a commit or merge that leaves the theme pointing at files that no longer
+# exist (see check-theme-refs.sh). Bypass only knowingly: git commit --no-verify
+exec "$(git rev-parse --show-toplevel)/.githooks/check-theme-refs.sh"
