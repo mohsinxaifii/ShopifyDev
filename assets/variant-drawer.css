@@ -369,8 +369,14 @@
    24px top corners over a near-black scrim, as tall as its content up to
    768px, with the "Done" bar pinned beneath the scrolling options. */
 @media screen and (max-width: 749px) {
+  /* The shared sheet timing from motion.css: a slower rise than the drop. */
   .variant-drawer_scrim {
     background-color: rgba(0, 0, 0, 0.85);
+    transition: opacity var(--motion-sheet-out) ease;
+  }
+
+  .variant-drawer.is-open .variant-drawer_scrim {
+    transition-duration: var(--motion-sheet-in);
   }
 
   .variant-drawer_panel {
@@ -381,10 +387,12 @@
     border-radius: 24px 24px 0 0;
     overflow: hidden;
     transform: translateY(100%);
+    transition: transform var(--motion-sheet-out) var(--motion-sheet-ease-out);
   }
 
   .variant-drawer.is-open .variant-drawer_panel {
     transform: translateY(0);
+    transition: transform var(--motion-sheet-in) var(--motion-sheet-ease);
   }
 
   .variant-drawer_panel_head {
