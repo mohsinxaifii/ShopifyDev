@@ -81,6 +81,9 @@
       this.trigger = trigger;
       this.opener = document.activeElement;
       this.hidden = false;
+      // Restored on close rather than cleared: over a sheet, the page under it
+      // must stay locked.
+      this.previousOverflow = document.documentElement.style.overflow;
       document.documentElement.style.overflow = 'hidden';
       // Let the element paint hidden-to-shown before the transition starts.
       requestAnimationFrame(() => this.classList.add('is-open'));
@@ -111,7 +114,7 @@
     close() {
       this.settleChoice(null);
       this.classList.remove('is-open');
-      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflow = this.previousOverflow || '';
       const finish = () => {
         this.hidden = true;
         this.content.replaceChildren();
