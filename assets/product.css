@@ -511,6 +511,28 @@
 
 .pdp_offers_rail .pdp-offer {
   flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* Sideways rails: snap a swipe onto a card, and show they can be dragged with
+   a mouse (product.js initDragScroll). Snapping is lifted mid-drag so the rail
+   follows the pointer instead of jumping between cards. */
+.pdp_offers_rail,
+.pdp_headline_tags,
+.pdp_pair_card_items {
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  cursor: grab;
+}
+
+.pdp_headline_tags_item {
+  scroll-snap-align: start;
+}
+
+:is(.pdp_offers_rail, .pdp_headline_tags, .pdp_pair_card_items).is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+  user-select: none;
 }
 
 .pdp-offer {

@@ -127,9 +127,71 @@
       this.initTabs();
       this.initReviews();
       this.initCart();
+      this.initDragScroll();
       this.recordRecentlyViewed();
 
       this.classList.add('is-ready');
+    }
+
+    /* ------------------------------------------------------- drag to scroll */
+
+    /* The sideways rails hide their scrollbars, so a mouse had no way to move
+       them. Touch already swipes natively (with snap points in CSS); this adds
+       click-and-drag for mice. A drag swallows the click that ends it, so the
+       copy-code buttons inside the offer cards don't fire on release. */
+    initDragScroll() {
+      this.querySelectorAll('.pdp_offers_rail, .pdp_headline_tags, .pdp_pair_card_items').forEach(
+        (rail) => {
+          let startX = 0;
+          let startScroll = 0;
+          let pointerId = null;
+          let dragged = false;
+
+          rail.addEventListener('pointerdown', (event) => {
+            if (event.pointerType !== 'mouse' || event.button !== 0) return;
+            if (rail.scrollWidth <= rail.clientWidth) return;
+            pointerId = event.pointerId;
+            startX = event.clientX;
+            startScroll = rail.scrollLeft;
+            dragged = false;
+          });
+
+          rail.addEventListener('pointermove', (event) => {
+            if (event.pointerId !== pointerId) return;
+            const dx = event.clientX - startX;
+            if (!dragged && Math.abs(dx) < 4) return;
+            if (!dragged) {
+              dragged = true;
+              rail.setPointerCapture(pointerId);
+              rail.classList.add('is-dragging');
+            }
+            rail.scrollLeft = startScroll - dx;
+          });
+
+          const end = (event) => {
+            if (event.pointerId !== pointerId) return;
+            pointerId = null;
+            if (!dragged) return;
+            rail.classList.remove('is-dragging');
+            // Let snapping settle the rail on the nearest card.
+            rail.scrollBy({ left: 0, behavior: 'smooth' });
+          };
+          rail.addEventListener('pointerup', end);
+          rail.addEventListener('pointercancel', end);
+
+          rail.addEventListener(
+            'click',
+            (event) => {
+              if (!dragged) return;
+              event.preventDefault();
+              event.stopPropagation();
+              dragged = false;
+            },
+            true,
+          );
+          rail.addEventListener('dragstart', (event) => event.preventDefault());
+        },
+      );
     }
 
     /* ------------------------------------------------------------ sheets */
