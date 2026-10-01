@@ -182,6 +182,11 @@
   color: var(--pdp-accent);
 }
 
+/* Phones only - the add-ons bar over the photo (see the mobile pass). */
+.pdp_gallery_stage_addons {
+  display: none;
+}
+
 .pdp_gallery_stage_bottom {
   position: absolute;
   inset: auto 0 0;
