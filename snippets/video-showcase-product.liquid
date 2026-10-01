@@ -1,0 +1,86 @@
+{%- doc -%}
+  The product card that sits along the bottom edge of a curated-trends video.
+
+  Deliberately narrower than `product-card`: the slide is only ~282px wide and
+  the video has to stay readable behind it, so this is a single compact row -
+  thumbnail, title, price over MRP, and an add button.
+
+  @param {object} product - a Shopify product object
+{%- enddoc -%}
+
+{%- liquid
+  comment
+    This shop formats money as a bare "{{amount}}", but the designs show the
+    currency symbol, so prepend it unless the format already carries one.
+  endcomment
+  assign money_symbol = cart.currency.symbol
+  assign price_text = product.price | money_without_trailing_zeros
+  unless price_text contains money_symbol
+    assign price_text = price_text | prepend: money_symbol
+  endunless
+  assign compare_text = product.compare_at_price | money_without_trailing_zeros
+  unless compare_text contains money_symbol
+    assign compare_text = compare_text | prepend: money_symbol
+  endunless
+
+  assign variant_count = product.variants | size
+  assign first_variant = product.selected_or_first_available_variant
+-%}
+
+<div class="video-showcase_wrapper_track_item_product" data-product-card>
+  <a
+    href="{{ product.url }}"
+    class="video-showcase_wrapper_track_item_product_link"
+    tabindex="-1"
+  >
+    <span class="video-showcase_wrapper_track_item_product_media">
+      {%- if product.featured_image -%}
+        {{
+          product.featured_image
+          | image_url: width: 168
+          | image_tag:
+            loading: 'lazy',
+            widths: '56,84,112,168',
+            sizes: '56px',
+            alt: product.featured_image.alt | default: product.title
+        }}
+      {%- endif -%}
+    </span>
+
+    <span class="video-showcase_wrapper_track_item_product_info">
+      <span class="video-showcase_wrapper_track_item_product_info_title">{{ product.title }}</span>
+      <span class="video-showcase_wrapper_track_item_product_info_price">
+        <span class="video-showcase_wrapper_track_item_product_info_price_current">{{ price_text }}</span>
+        {%- if product.compare_at_price > product.price -%}
+          <span class="video-showcase_wrapper_track_item_product_info_price_compare">{{ compare_text }}</span>
+        {%- endif -%}
+      </span>
+    </span>
+  </a>
+
+  {%- if product.available -%}
+    <button
+      type="button"
+      class="video-showcase_wrapper_track_item_product_add"
+      data-add-to-cart
+      data-product-url="{{ product.url }}"
+      data-variant-id="{{ first_variant.id }}"
+      data-variant-count="{{ variant_count }}"
+      data-added-label="{{ 'products.added_to_cart' | t | escape }}"
+      aria-label="{{ 'products.add_to_cart' | t }}: {{ product.title | escape }}"
+    >
+      <span class="video-showcase_wrapper_track_item_product_add_icon" aria-hidden="true">
+        {{- 'icon-check.svg' | inline_asset_content -}}
+      </span>
+      <span class="video-showcase_wrapper_track_item_product_add_label" data-add-label>
+        {{- 'products.add_to_cart' | t -}}
+      </span>
+    </button>
+  {%- else -%}
+    <span
+      class="video-showcase_wrapper_track_item_product_add video-showcase_wrapper_track_item_product_add--disabled"
+    >
+      {{- 'products.sold_out' | t -}}
+    </span>
+  {%- endif -%}
+</div>
