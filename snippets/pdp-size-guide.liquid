@@ -83,7 +83,7 @@
         </div>
       {%- endif -%}
 
-      {%- if whatsapp_url != blank -%}
+      {% comment %} {%- if whatsapp_url != blank -%}
         <a
           href="{{ whatsapp_url }}"
           class="pdp_button pdp_button--primary pdp_button--compact pdp-sheet_panel_body_cta"
@@ -95,7 +95,7 @@
           </span>
           Whatsapp us
         </a>
-      {%- endif -%}
+      {%- endif -%} {% endcomment %}
     </div>
   </div>
 </dialog>
