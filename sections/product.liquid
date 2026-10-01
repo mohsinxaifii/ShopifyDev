@@ -87,6 +87,15 @@
     string and resolved back to metaobjects at render time.
   endcomment
   assign all_offers = shop.metafields.custom.pdp_offers.value
+
+  comment
+    The shop list can be set yet resolve to nothing - when its references
+    point at entries from another store, say - so every discount_offer entry
+    is the fallback. Each entry's own product/collection pinning still applies.
+  endcomment
+  if all_offers == blank or all_offers.size == 0
+    assign all_offers = shop.metaobjects.discount_offer.values
+  endif
   assign offer_handles = ''
   for offer in all_offers
     assign is_match = false
@@ -109,7 +118,6 @@
   endfor
   assign offer_handles = offer_handles | split: ','
 -%}
-<!--OFFERDEBUG2 {% for mo in shop.metaobjects.discount_offer.values %}[{{ forloop.index }} h={{ mo.system.handle }} id={{ mo.system.id }} t={{ mo.system.type }} heading={{ mo.heading }} heading2={{ mo['heading'] }} code={{ mo.discount_code }} title={{ mo.title }} name={{ mo.name }}]{% endfor %} raw={{ shop.metafields.custom.pdp_offers.value | size }} -->
 
 <product-page
   class="pdp"
