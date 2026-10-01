@@ -596,12 +596,15 @@
       this.addEventListener('click', (event) => {
         const toggle = event.target.closest('[data-addon-toggle], [data-pair-toggle]');
         if (!toggle) return;
+        if (toggle.matches('[data-addon-toggle]')) {
+          this.toggleAddon(toggle);
+          return;
+        }
         toggle.setAttribute(
           'aria-pressed',
           toggle.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
         );
-        if (toggle.matches('[data-addon-toggle]')) this.syncAddonHero();
-        if (toggle.matches('[data-pair-toggle]')) this.syncPair?.();
+        this.syncPair?.();
       });
 
       this.querySelector('[data-addons-done]')?.addEventListener('click', () => {
@@ -618,9 +621,16 @@
         if (ok) this.sheets.get('price-difference')?.close();
       });
 
+      // Curated-trends cards: anything with options is picked in the drawer,
+      // which then adds it itself.
       this.addEventListener('click', (event) => {
         const button = event.target.closest('[data-add-single]');
         if (!button) return;
+        const drawer = document.querySelector('variant-drawer');
+        if (Number(button.dataset.variantCount) > 1 && button.dataset.productUrl && drawer) {
+          drawer.open(button.dataset.productUrl, button);
+          return;
+        }
         this.addToCart([{ id: Number(button.dataset.variantId), quantity: 1 }], {
           trigger: button,
         });
@@ -699,10 +709,20 @@
 
       button.addEventListener('click', async () => {
         const chosen = selectedItems();
-        const lines = (chosen.length > 0 ? chosen : pendingItems()).map((item) => ({
-          id: Number(item.dataset.variantId),
-          quantity: 1,
-        }));
+        const pieces = chosen.length > 0 ? chosen : pendingItems();
+
+        // Each piece with options is picked in the drawer, one after another;
+        // backing out of any of them cancels the whole add.
+        const lines = [];
+        for (const item of pieces) {
+          const id = await window.zinaraVariants?.pick({
+            productUrl: item.dataset.productUrl,
+            variantCount: item.dataset.variantCount,
+            variantId: item.dataset.variantId,
+          });
+          if (!id) return;
+          lines.push({ id: Number(id), quantity: 1 });
+        }
         if (lines.length === 0) return;
         const ok = await this.addToCart(lines, { trigger: button });
         if (ok) {
@@ -716,6 +736,31 @@
 
       document.addEventListener('cart:updated', readCart);
       readCart();
+    }
+
+    /* Ticking an add-on that has options asks for the variant first (the
+       drawer opens over the add-ons sheet); backing out leaves it unticked.
+       The chosen variant is what Done / Add to cart later sends. */
+    async toggleAddon(toggle) {
+      const label = toggle.closest('.pdp-addons_grid_card')?.querySelector('[data-addon-variant]');
+      if (toggle.getAttribute('aria-pressed') === 'true') {
+        toggle.setAttribute('aria-pressed', 'false');
+        if (label) label.hidden = true;
+        this.syncAddonHero();
+        return;
+      }
+
+      if (Number(toggle.dataset.variantCount) > 1 && window.zinaraVariants) {
+        const chosen = await window.zinaraVariants.choose(toggle.dataset.productUrl);
+        if (!chosen) return;
+        toggle.dataset.variantId = chosen.id;
+        if (label) {
+          label.textContent = chosen.title;
+          label.hidden = false;
+        }
+      }
+      toggle.setAttribute('aria-pressed', 'true');
+      this.syncAddonHero();
     }
 
     /* The add-ons hero follows the ticked set. Each preview image lists the
