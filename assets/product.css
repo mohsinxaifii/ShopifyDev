@@ -1633,6 +1633,7 @@ button.pdp_trust_grid_item_inner {
   top: 50%;
   left: calc(100% + 8px);
   width: 38px;
+  max-width: none;
   height: auto;
   transform: translateY(-50%);
 }
