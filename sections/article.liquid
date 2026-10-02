@@ -16,6 +16,7 @@
   degrade to nothing and both take a section-level fallback:
   - the aside image -> `article.metafields.custom.aside_image`
   - the inline product row -> `article.metafields.custom.shop_products`
+    (it follows the content, or sits wherever the author writes {{ShopThisStory}})
   See docs/BUILD-PLAN.md for the definitions these want in admin.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/article
@@ -26,18 +27,6 @@
 {{ 'article.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  comment
-    200 words a minute, floored at 1 so a short note reads "1 min" rather than
-    "0 min". Counted by splitting rather than with `number_of_words`, which
-    theme-check does not recognise. Runs of whitespace split into empty tokens
-    and so count slightly high, which is within the noise of an estimate.
-  endcomment
-  assign words = article.content | strip_html | strip_newlines | split: ' ' | size
-  assign read_minutes = words | divided_by: 200
-  if read_minutes < 1
-    assign read_minutes = 1
-  endif
-
   comment
     Filter arguments cannot themselves be filtered, so the fallback has to be
     resolved before it reaches image_tag.
@@ -52,6 +41,52 @@
   assign shop_products = article.metafields.custom.shop_products.value
   if shop_products == blank
     assign shop_products = section.settings.shop_collection.products
+  endif
+
+  comment
+    An author places the product row by writing {{ShopThisStory}} on a line of
+    its own in the article. The editor wraps that line in a <p>, which is
+    unwrapped first so the content splits cleanly between two blocks rather
+    than leaving an empty paragraph's margin either side of the row. Only the
+    first marker is used; any others are dropped. Without one, the row follows
+    the content as before.
+  endcomment
+  assign shop_marker = '{' | append: '{ShopThisStory}' | append: '}'
+  assign shop_marker_spaced = '{' | append: '{ ShopThisStory }' | append: '}'
+  assign shop_marker_p = '<p>' | append: shop_marker | append: '</p>'
+  assign shop_marker_p_br = '<p>' | append: shop_marker | append: '<br></p>'
+  assign shop_marker_div = '<div>' | append: shop_marker | append: '</div>'
+
+  assign content = article.content | replace: shop_marker_spaced, shop_marker
+  assign content = content | replace: shop_marker_p, shop_marker | replace: shop_marker_p_br, shop_marker
+  assign content = content | replace: shop_marker_div, shop_marker
+
+  assign content_before = content
+  assign content_after = ''
+  if content contains shop_marker
+    assign content_before = content | split: shop_marker | first
+    assign content_after = content | remove_first: content_before | remove_first: shop_marker | remove: shop_marker
+
+    comment
+      A marker written mid-paragraph leaves the paragraph's closing tag at the
+      head of the second half, which the browser would turn into an empty <p>.
+    endcomment
+    assign after_head = content_after | strip | slice: 0, 4
+    if after_head == '</p>'
+      assign content_after = content_after | strip | remove_first: '</p>'
+    endif
+  endif
+
+  comment
+    200 words a minute, floored at 1 so a short note reads "1 min" rather than
+    "0 min". Counted by splitting rather than with `number_of_words`, which
+    theme-check does not recognise. Runs of whitespace split into empty tokens
+    and so count slightly high, which is within the noise of an estimate.
+  endcomment
+  assign words = content | remove: shop_marker | strip_html | strip_newlines | split: ' ' | size
+  assign read_minutes = words | divided_by: 200
+  if read_minutes < 1
+    assign read_minutes = 1
   endif
 -%}
 
@@ -90,11 +125,11 @@
       </header>
 
       <div class="article_wrapper_body_content">
-        {{ article.content }}
+        {{ content_before }}
       </div>
 
       {%- if shop_products.size > 0 -%}
-        <scroll-carousel class="article_wrapper_body_shop">
+        <scroll-carousel class="article_wrapper_body_shop{% if content_after != blank %} article_wrapper_body_shop--inline{% endif %}">
           {%- if section.settings.shop_heading != blank -%}
             <h2 class="article_wrapper_body_shop_heading">{{ section.settings.shop_heading }}</h2>
           {%- endif -%}
@@ -127,6 +162,12 @@
         </scroll-carousel>
 
         <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
+      {%- endif -%}
+
+      {%- if content_after != blank -%}
+        <div class="article_wrapper_body_content">
+          {{ content_after }}
+        </div>
       {%- endif -%}
 
       {%- if blog.comments_enabled? -%}

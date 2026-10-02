@@ -165,6 +165,13 @@
   display: block;
 }
 
+/* Placed mid-article with {{ShopThisStory}}: the body's 24px gap alone reads
+   as one more paragraph break, so the row is given extra air either side to
+   set it apart from the copy around it. */
+.article_wrapper_body_shop--inline {
+  margin-block: 16px;
+}
+
 .article_wrapper_body_shop_heading {
   margin: 0 0 12px;
   font-family: var(--font-secondary--family);
