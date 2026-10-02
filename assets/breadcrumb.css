@@ -89,3 +89,34 @@
     white-space: nowrap;
   }
 }
+
+/* Breakpoint-only copies; see the note in breadcrumb.liquid. */
+@media screen and (max-width: 749px) {
+  .breadcrumb--desktop-only {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .breadcrumb--mobile-only {
+    display: none;
+  }
+}
+
+/* Figma Mobile 8106:66173: an article title is too long for the strip, so it
+   is cut with an ellipsis rather than scrolled like the product trail. */
+@media screen and (max-width: 620px) {
+  .breadcrumb--truncate .breadcrumb_list {
+    overflow: hidden;
+  }
+
+  .breadcrumb--truncate .breadcrumb_list_item:last-child {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .breadcrumb--truncate .breadcrumb_list_item_current {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
