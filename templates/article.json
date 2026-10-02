@@ -13,7 +13,8 @@
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": ""
+        "current_label": "",
+        "show_on": "mobile"
       }
     },
     "main": {
@@ -26,7 +27,8 @@
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": ""
+        "current_label": "",
+        "show_on": "desktop"
       }
     },
     "related": {
@@ -101,21 +103,21 @@
         "logo-1": {
           "type": "logo",
           "settings": {
-            "image": "shopify://shop_images/zinara-press-a.png",
+            "image": "shopify:\/\/shop_images\/zinara-press-a.png",
             "height": 35
           }
         },
         "logo-2": {
           "type": "logo",
           "settings": {
-            "image": "shopify://shop_images/zinara-press-b.png",
+            "image": "shopify:\/\/shop_images\/zinara-press-b.png",
             "height": 23
           }
         },
         "logo-3": {
           "type": "logo",
           "settings": {
-            "image": "shopify://shop_images/zinara-press-c.png",
+            "image": "shopify:\/\/shop_images\/zinara-press-c.png",
             "height": 29
           }
         }
@@ -141,3 +143,4 @@
     "featured-in"
   ]
 }
+
