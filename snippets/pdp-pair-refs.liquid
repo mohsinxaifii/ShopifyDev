@@ -1,0 +1,82 @@
+{%- doc -%}
+  Resolves a product's "Pair beautifully with" list and outputs it as
+  comma-separated `handle:variant_id:pinned` refs, for the PDP card and the UGC
+  lightbox rail to look back up with all_products.
+
+  The list is `custom.pdp_pair_products`, a single-line text metafield of
+  comma-separated `product-handle-variant-title` entries, e.g.
+    golden-grace-chain-bracelet-yellow, essence-aura-diamond-ring-yellow-8
+  The variant part is the variant title handleized ("Yellow / 8" -> yellow-8)
+  and can be left off to take the first available variant. Since both halves
+  are hyphenated, each entry is split by trying it whole as a handle first and
+  then peeling one word at a time off the end into the variant title.
+
+  `pinned` is 1 when the entry named its variant, so that piece goes straight
+  into the cart rather than through the variant drawer. Entries that match no
+  product or variant are skipped. Without the metafield, Shopify's
+  complementary-product recommendations are used, unpinned.
+
+  @param {object} product - The product whose pairings to resolve
+{%- enddoc -%}
+
+{%- liquid
+  assign refs = ''
+  assign entries = product.metafields.custom.pdp_pair_products.value | split: ','
+
+  for entry in entries
+    assign entry = entry | strip | downcase
+    if entry == blank
+      continue
+    endif
+
+    assign words = entry | split: '-'
+    assign found_ref = ''
+
+    comment
+      A variant title rarely runs past three words ("yellow-8", "rose-gold-12"),
+      which also keeps the all_products lookups well inside the page's limit.
+    endcomment
+    for variant_words in (0..3)
+      assign handle_words = words.size | minus: variant_words
+      if handle_words < 1
+        break
+      endif
+
+      assign handle = words | slice: 0, handle_words | join: '-'
+      assign candidate = all_products[handle]
+      if candidate.id == blank
+        continue
+      endif
+
+      if variant_words == 0
+        assign found_ref = handle | append: ':' | append: candidate.selected_or_first_available_variant.id | append: ':0'
+        break
+      endif
+
+      assign variant_handle = words | slice: handle_words, variant_words | join: '-'
+      for variant in candidate.variants
+        assign title_handle = variant.title | handleize
+        if title_handle == variant_handle
+          assign found_ref = handle | append: ':' | append: variant.id | append: ':1'
+          break
+        endif
+      endfor
+      if found_ref != ''
+        break
+      endif
+    endfor
+
+    if found_ref != ''
+      assign refs = refs | append: found_ref | append: ','
+    endif
+  endfor
+
+  if refs == ''
+    assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
+    for item in shopify_recs.complementary_products.value
+      assign refs = refs | append: item.handle | append: ':' | append: item.selected_or_first_available_variant.id | append: ':0,'
+    endfor
+  endif
+
+  echo refs
+-%}
