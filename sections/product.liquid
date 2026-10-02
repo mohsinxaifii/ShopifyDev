@@ -86,7 +86,10 @@
   assign detail_lists = product.metafields.custom.pdp_detail_lists.value | default: product.metafields.content.product_details_list.value
 
   assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
-  assign pair_products = product.metafields.custom.pdp_pair_products.value | default: shopify_recs.complementary_products.value
+  capture pair_refs
+    render 'pdp-pair-refs', product: product
+  endcapture
+  assign pair_refs = pair_refs | strip | split: ','
   assign related_products = product.metafields.custom.pdp_related.value | default: shopify_recs.related_products.value
 
   comment
@@ -856,7 +859,7 @@
       {%- endif -%}
 
       {%- comment -%} Pair beautifully with - Figma 7930:96345 {%- endcomment -%}
-      {%- if pair_products != blank -%}
+      {%- if pair_refs.size > 0 -%}
         <section class="pdp_pair" data-pair data-animate>
           <div class="pdp_pair_card">
             <h2 class="pdp_pair_card_title">
@@ -867,7 +870,18 @@
             </h2>
 
             <div class="pdp_pair_card_items">
-              {%- for item in pair_products limit: 3 -%}
+              {%- for pair_ref in pair_refs limit: 3 -%}
+                {%- liquid
+                  assign pair_ref = pair_ref | split: ':'
+                  assign item = all_products[pair_ref[0]]
+                  assign variant_id = pair_ref[1] | plus: 0
+                  assign variant = item.variants | where: 'id', variant_id | first
+                  assign variant_count = item.variants.size
+                  if pair_ref[2] == '1'
+                    assign variant_count = 1
+                  endif
+                  assign item_image = variant.featured_image | default: item.featured_image
+                -%}
                 {%- unless forloop.first -%}
                   <span class="pdp_pair_card_items_plus" aria-hidden="true">
                     {{- 'icon-plus.svg' | inline_asset_content -}}
@@ -875,20 +889,21 @@
                 {%- endunless -%}
                 {%- comment -%}
                   Pieces with options are picked in the variant drawer when the
-                  set is added; single-variant pieces go straight in.
+                  set is added; single-variant pieces, and pieces whose variant
+                  the metafield names, go straight in.
                 {%- endcomment -%}
                 <article
                   class="pdp-mini"
                   data-pair-item
                   data-product-id="{{ item.id }}"
-                  data-variant-id="{{ item.selected_or_first_available_variant.id }}"
-                  data-variant-count="{{ item.variants.size }}"
-                  data-product-url="{{ item.url }}"
+                  data-variant-id="{{ variant.id }}"
+                  data-variant-count="{{ variant_count }}"
+                  data-product-url="{{ variant.url }}"
                 >
-                  <a href="{{ item.url }}" class="pdp-mini_media">
-                    {%- if item.featured_image -%}
+                  <a href="{{ variant.url }}" class="pdp-mini_media">
+                    {%- if item_image -%}
                       {{
-                        item.featured_image
+                        item_image
                         | image_url: width: 340
                         | image_tag: loading: 'lazy', widths: '170,340', sizes: '170px', alt: item.title
                       }}
@@ -910,14 +925,14 @@
                   </button>
                   <div class="pdp-mini_info">
                     <span class="pdp-mini_info_price">
-                      <span class="pdp-mini_info_price_current">{%- render 'money', amount: item.price -%}</span>
-                      {%- if item.compare_at_price > item.price -%}
+                      <span class="pdp-mini_info_price_current">{%- render 'money', amount: variant.price -%}</span>
+                      {%- if variant.compare_at_price > variant.price -%}
                         <span class="pdp-mini_info_price_compare">
-                          {%- render 'money', amount: item.compare_at_price -%}
+                          {%- render 'money', amount: variant.compare_at_price -%}
                         </span>
                       {%- endif -%}
                     </span>
-                    <a href="{{ item.url }}" class="pdp-mini_info_title">{{ item.title }}</a>
+                    <a href="{{ variant.url }}" class="pdp-mini_info_title">{{ item.title }}</a>
                   </div>
                 </article>
               {%- endfor -%}
