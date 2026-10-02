@@ -61,14 +61,28 @@
   </div>
 
   {%- liquid
-    assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
-    assign shoppable = product.metafields.custom.pdp_pair_products.value | default: shopify_recs.complementary_products.value
+    capture pair_refs
+      render 'pdp-pair-refs', product: product
+    endcapture
+    assign pair_refs = pair_refs | strip | split: ','
     assign shop_the_look = product
   -%}
   <div class="pdp-ugc-box_shop">
     <div class="pdp-ugc-box_shop_track">
-      {%- for item in shoppable -%}
-        {%- render 'pdp-ugc-card', item: item -%}
+      {%- for pair_ref in pair_refs -%}
+        {%- liquid
+          assign pair_ref = pair_ref | split: ':'
+          assign item = all_products[pair_ref[0]]
+          assign variant_id = pair_ref[1] | plus: 0
+          assign variant = item.selected_or_first_available_variant
+          for item_variant in item.variants
+            if item_variant.id == variant_id
+              assign variant = item_variant
+              break
+            endif
+          endfor
+          render 'pdp-ugc-card', item: item, variant: variant, pinned: pair_ref[2]
+        -%}
       {%- endfor -%}
       {%- render 'pdp-ugc-card', item: shop_the_look -%}
     </div>

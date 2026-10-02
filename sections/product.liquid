@@ -875,7 +875,13 @@
                   assign pair_ref = pair_ref | split: ':'
                   assign item = all_products[pair_ref[0]]
                   assign variant_id = pair_ref[1] | plus: 0
-                  assign variant = item.variants | where: 'id', variant_id | first
+                  assign variant = item.selected_or_first_available_variant
+                  for item_variant in item.variants
+                    if item_variant.id == variant_id
+                      assign variant = item_variant
+                      break
+                    endif
+                  endfor
                   assign variant_count = item.variants.size
                   if pair_ref[2] == '1'
                     assign variant_count = 1
@@ -898,7 +904,7 @@
                   data-product-id="{{ item.id }}"
                   data-variant-id="{{ variant.id }}"
                   data-variant-count="{{ variant_count }}"
-                  data-product-url="{{ variant.url }}"
+                  data-product-url="{{ item.url }}"
                 >
                   <a href="{{ variant.url }}" class="pdp-mini_media">
                     {%- if item_image -%}
