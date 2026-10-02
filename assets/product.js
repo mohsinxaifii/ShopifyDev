@@ -277,6 +277,7 @@
       this.variantInput.value = match.id;
       this.updatePrice(match);
       this.updateUrl(match);
+      this.updateShipTime(match);
 
       if (match.featuredMediaPosition > 0) this.gallery?.show(match.featuredMediaPosition - 1);
 
@@ -286,6 +287,16 @@
       if (addButton) addButton.disabled = !match.available;
       if (buyButton) buyButton.disabled = !match.available;
       if (label) label.textContent = match.available ? 'Add to cart' : 'Sold out';
+    }
+
+    /* In stock ships in 24 hours; otherwise the product's own ship-time badge,
+       or no pill at all when it has none. */
+    updateShipTime(variant) {
+      const pill = this.querySelector('[data-ship-time]');
+      if (!pill) return;
+      const text = variant.inStock ? pill.dataset.shipFast : pill.dataset.shipDefault;
+      pill.textContent = text || '';
+      pill.hidden = !text;
     }
 
     /* Grey out values that no variant can reach alongside the current picks. */
