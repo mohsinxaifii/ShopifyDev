@@ -345,8 +345,10 @@
     scroll-padding-inline-start: var(--page-margin);
   }
 
-  .article_wrapper_body_shop_stage_arrow,
-  .article_wrapper_body_shop_dots {
+  /* Scoped under the row: scroll-carousel.css is linked again further down the
+     page and would otherwise win the dots back with display: flex. */
+  .article_wrapper_body_shop .article_wrapper_body_shop_stage_arrow,
+  .article_wrapper_body_shop .article_wrapper_body_shop_dots {
     display: none;
   }
 }

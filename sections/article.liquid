@@ -90,6 +90,17 @@
   endif
 
   comment
+    Blank paragraphs at either end of each half would add a line of space to
+    the gap around the row, or above the breadcrumb under the post.
+  endcomment
+  capture content_before
+    render 'trim-blank-paragraphs', html: content_before
+  endcapture
+  capture content_after
+    render 'trim-blank-paragraphs', html: content_after
+  endcapture
+
+  comment
     200 words a minute, floored at 1 so a short note reads "1 min" rather than
     "0 min". Counted by splitting rather than with `number_of_words`, which
     theme-check does not recognise. Runs of whitespace split into empty tokens
