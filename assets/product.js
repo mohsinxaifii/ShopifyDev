@@ -596,15 +596,8 @@
       this.addEventListener('click', (event) => {
         const toggle = event.target.closest('[data-addon-toggle], [data-pair-toggle]');
         if (!toggle) return;
-        if (toggle.matches('[data-addon-toggle]')) {
-          this.toggleAddon(toggle);
-          return;
-        }
-        toggle.setAttribute(
-          'aria-pressed',
-          toggle.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
-        );
-        this.syncPair?.();
+        if (toggle.matches('[data-addon-toggle]')) this.toggleAddon(toggle);
+        else this.togglePair(toggle);
       });
 
       this.querySelector('[data-addons-done]')?.addEventListener('click', () => {
@@ -645,11 +638,12 @@
      * piece already in the bag - added here, as part of the set, or removed
      * again in the drawer - is always shown as it really is.
      *
-     * - A card's bag icon selects it; a piece already in the cart shows a tick
-     *   and cannot be selected again.
+     * - A card's bag icon selects it, asking for the variant first when the
+     *   piece has options (see togglePair); a piece already in the cart shows a
+     *   tick and cannot be selected again.
      * - The button adds the selection, or with nothing selected, every piece
-     *   not yet in the cart (each one's first available variant). Once all of
-     *   them are in, it reads "Set added to cart" and stays disabled.
+     *   not yet in the cart (asking for each one's variant in turn). Once all
+     *   of them are in, it reads "Set added to cart" and stays disabled.
      */
     initPair() {
       const section = this.querySelector('[data-pair]');
@@ -715,18 +709,23 @@
         // backing out of any of them cancels the whole add.
         const lines = [];
         for (const item of pieces) {
-          const id = await window.zinaraVariants?.pick({
-            productUrl: item.dataset.productUrl,
-            variantCount: item.dataset.variantCount,
-            variantId: item.dataset.variantId,
-          });
+          const id = item.dataset.variantPicked
+            ? Number(item.dataset.variantId)
+            : await window.zinaraVariants?.pick({
+                productUrl: item.dataset.productUrl,
+                variantCount: item.dataset.variantCount,
+                variantId: item.dataset.variantId,
+              });
           if (!id) return;
           lines.push({ id: Number(id), quantity: 1 });
         }
         if (lines.length === 0) return;
         const ok = await this.addToCart(lines, { trigger: button });
         if (ok) {
-          items.forEach((item) => toggleOf(item)?.setAttribute('aria-pressed', 'false'));
+          items.forEach((item) => {
+            toggleOf(item)?.setAttribute('aria-pressed', 'false');
+            delete item.dataset.variantPicked;
+          });
           await readCart();
         }
         this.syncPair();
@@ -736,6 +735,29 @@
 
       document.addEventListener('cart:updated', readCart);
       readCart();
+    }
+
+    /* Selecting a paired piece that has options opens the variant drawer
+       straight away, the way add-ons do; backing out leaves it unselected. The
+       variant picked is what the set button later sends, without asking again. */
+    async togglePair(toggle) {
+      const item = toggle.closest('[data-pair-item]');
+      if (!item) return;
+      if (toggle.getAttribute('aria-pressed') === 'true') {
+        toggle.setAttribute('aria-pressed', 'false');
+        delete item.dataset.variantPicked;
+        this.syncPair?.();
+        return;
+      }
+
+      if (Number(item.dataset.variantCount) > 1 && window.zinaraVariants) {
+        const chosen = await window.zinaraVariants.choose(item.dataset.productUrl);
+        if (!chosen) return;
+        item.dataset.variantId = chosen.id;
+        item.dataset.variantPicked = 'true';
+      }
+      toggle.setAttribute('aria-pressed', 'true');
+      this.syncPair?.();
     }
 
     /* Ticking an add-on that has options asks for the variant first (the
