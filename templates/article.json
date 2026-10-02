@@ -126,8 +126,8 @@
     }
   },
   "order": [
-    "breadcrumb",
     "main",
+    "breadcrumb",
     "related",
     "faq",
     "featured-in"
