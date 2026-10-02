@@ -141,7 +141,7 @@
       </div>
 
       {%- if shop_products.size > 0 -%}
-        <scroll-carousel drag class="article_wrapper_body_shop{% if content_after != blank %} article_wrapper_body_shop--inline{% endif %}">
+        <scroll-carousel drag class="article_wrapper_body_shop">
           {%- if section.settings.shop_heading != blank -%}
             <h2 class="article_wrapper_body_shop_heading">{{ section.settings.shop_heading }}</h2>
           {%- endif -%}
@@ -171,6 +171,8 @@
               {{- 'icon-caret-right.svg' | inline_asset_content -}}
             </button>
           </div>
+
+          <div class="scroll-carousel_dots article_wrapper_body_shop_dots" data-dots></div>
         </scroll-carousel>
 
         {% # carousel-scroll defines window.carouselScroll, which scroll-carousel calls %}
