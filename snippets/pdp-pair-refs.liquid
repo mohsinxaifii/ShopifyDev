@@ -24,12 +24,12 @@
   assign entries = product.metafields.custom.pdp_pair_products.value | split: ','
 
   for entry in entries
-    assign entry = entry | strip | downcase
-    if entry == blank
+    assign entry_handle = entry | strip | downcase
+    if entry_handle == blank
       continue
     endif
 
-    assign words = entry | split: '-'
+    assign words = entry_handle | split: '-'
     assign found_ref = ''
 
     comment

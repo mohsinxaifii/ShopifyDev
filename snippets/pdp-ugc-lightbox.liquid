@@ -71,9 +71,9 @@
     <div class="pdp-ugc-box_shop_track">
       {%- for pair_ref in pair_refs -%}
         {%- liquid
-          assign pair_ref = pair_ref | split: ':'
-          assign item = all_products[pair_ref[0]]
-          assign variant_id = pair_ref[1] | plus: 0
+          assign pair_parts = pair_ref | split: ':'
+          assign item = all_products[pair_parts[0]]
+          assign variant_id = pair_parts[1] | plus: 0
           assign variant = item.selected_or_first_available_variant
           for item_variant in item.variants
             if item_variant.id == variant_id
@@ -81,7 +81,7 @@
               break
             endif
           endfor
-          render 'pdp-ugc-card', item: item, variant: variant, pinned: pair_ref[2]
+          render 'pdp-ugc-card', item: item, variant: variant, pinned: pair_parts[2]
         -%}
       {%- endfor -%}
       {%- render 'pdp-ugc-card', item: shop_the_look -%}

@@ -872,9 +872,9 @@
             <div class="pdp_pair_card_items">
               {%- for pair_ref in pair_refs limit: 3 -%}
                 {%- liquid
-                  assign pair_ref = pair_ref | split: ':'
-                  assign item = all_products[pair_ref[0]]
-                  assign variant_id = pair_ref[1] | plus: 0
+                  assign pair_parts = pair_ref | split: ':'
+                  assign item = all_products[pair_parts[0]]
+                  assign variant_id = pair_parts[1] | plus: 0
                   assign variant = item.selected_or_first_available_variant
                   for item_variant in item.variants
                     if item_variant.id == variant_id
@@ -883,7 +883,7 @@
                     endif
                   endfor
                   assign variant_count = item.variants.size
-                  if pair_ref[2] == '1'
+                  if pair_parts[2] == '1'
                     assign variant_count = 1
                   endif
                   assign item_image = variant.featured_image | default: item.featured_image
