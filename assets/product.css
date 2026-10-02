@@ -1612,6 +1612,7 @@ button.pdp_trust_grid_item_inner {
 }
 
 .pdp_difference_table_yes {
+  position: relative;
   color: var(--pdp-yellow-600);
 }
 
@@ -1624,9 +1625,17 @@ button.pdp_trust_grid_item_inner {
   height: 20px;
 }
 
+/* The SGL mark hangs off the right of the tick instead of sharing its box:
+   centred together, the pair pushed this row's tick left of every other tick
+   in the column. */
 .pdp_difference_table_yes img {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 8px);
   width: 38px;
+  max-width: none;
   height: auto;
+  transform: translateY(-50%);
 }
 
 /* Pair beautifully with - Figma 7930:96345 */

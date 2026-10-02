@@ -23,9 +23,13 @@
     section (Figma PDP 7930:95974 shows Home / collection / product), so a middle
     rung is added only there. `collection` is set when the shopper arrived from a
     collection URL; otherwise fall back to the one chosen in settings, then to
-    the product's own first collection.
+    the product's own first collection. An article sits under its blog the
+    same way (Figma 8106:39633: Home / Blogs / article).
   endcomment
   assign parent = null
+  if template.name == 'article'
+    assign parent = blog
+  endif
   if product != blank
     assign parent = collection
     if parent == blank
@@ -37,7 +41,23 @@
   endif
 -%}
 
-<nav class="breadcrumb full-width" aria-label="{{ 'accessibility.breadcrumb' | t }}">
+{%- liquid
+  comment
+    The article page wants the trail in a different place per breakpoint -
+    under the article on desktop, under the navbar on mobile - and sections
+    cannot be reordered by a media query, so the template carries two copies
+    and each shows on one side of the breakpoint only.
+  endcomment
+  assign breadcrumb_class = 'breadcrumb full-width'
+  if section.settings.show_on != 'all'
+    assign breadcrumb_class = breadcrumb_class | append: ' breadcrumb--' | append: section.settings.show_on | append: '-only'
+  endif
+  if template.name == 'article'
+    assign breadcrumb_class = breadcrumb_class | append: ' breadcrumb--truncate'
+  endif
+-%}
+
+<nav class="{{ breadcrumb_class }}" aria-label="{{ 'accessibility.breadcrumb' | t }}">
   <ol class="breadcrumb_list">
     <li class="breadcrumb_list_item">
       <a href="{{ routes.root_url }}" class="breadcrumb_list_item_link">{{ section.settings.home_label }}</a>
@@ -71,6 +91,17 @@
       "id": "parent_collection",
       "label": "Parent collection",
       "info": "Product pages only. Used when the shopper did not arrive from a collection."
+    },
+    {
+      "type": "select",
+      "id": "show_on",
+      "label": "Show on",
+      "options": [
+        { "value": "all", "label": "All screens" },
+        { "value": "desktop", "label": "Desktop only" },
+        { "value": "mobile", "label": "Mobile only" }
+      ],
+      "default": "all"
     }
   ],
   "presets": [{ "name": "Breadcrumb" }]

@@ -115,10 +115,11 @@
   margin-bottom: 0;
 }
 
+/* Figma separates paragraphs with one empty 22px line, not a fixed gap. */
 .article_wrapper_body_content p,
 .article_wrapper_body_content ul,
 .article_wrapper_body_content ol {
-  margin-block: 0 24px;
+  margin-block: 0 22px;
 }
 
 .article_wrapper_body_content h2,
@@ -160,9 +161,14 @@
   font-style: italic;
 }
 
-/* --------------------------------------------------------- shop this story */
+/* --------------------------------------------------------- shop this story
+   Figma 8106:39616: the card row, then the page dots 12px below it. It sits in
+   the body's 24px flow like any other block, whether it follows the content or
+   is placed inside it with {{ShopThisStory}}. */
 .article_wrapper_body_shop {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .article_wrapper_body_shop_heading {
@@ -182,7 +188,7 @@
 
 .article_wrapper_body_shop_stage_track {
   display: flex;
-  gap: 24px;
+  gap: var(--product-card-gap, 24px);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -192,11 +198,14 @@
   display: none;
 }
 
+/* Centred with calc rather than translateY(-50%): scroll-carousel.css owns the
+   arrow's transform for its hover scale, and is linked again further down the
+   page by the related row, so a translate here was dropped on hover and the
+   arrow jumped. */
 .article_wrapper_body_shop_stage_arrow {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 20px);
   z-index: 2;
-  transform: translateY(-50%);
 }
 
 .article_wrapper_body_shop_stage_arrow--prev {
@@ -205,10 +214,6 @@
 
 .article_wrapper_body_shop_stage_arrow--next {
   right: -20px;
-}
-
-.article_wrapper_body_shop_stage_arrow:hover {
-  transform: translateY(-50%) scale(1.05);
 }
 
 /* --------------------------------------------------------------- comments --
@@ -310,8 +315,9 @@
 }
 
 @media screen and (max-width: 749px) {
+  /* Figma Mobile 8106:66179: 16px all round, the same as the page margin. */
   .article_wrapper {
-    padding-block: 24px;
+    padding-block: 16px;
   }
 
   /* Figma Mobile 7930:120547: the dateline and the byline both sit on 22px
@@ -325,7 +331,24 @@
     font-weight: 500;
   }
 
-  .article_wrapper_body_shop_stage_arrow {
+  /* Figma Mobile 8106:66193: 168px cards 4px apart, running out to the screen
+     edge rather than stopping at the margin, with no arrows or dots - the row
+     is swiped. */
+  .article_wrapper_body_shop {
+    --product-card-width: 168px;
+    --product-card-gap: 4px;
+  }
+
+  .article_wrapper_body_shop_stage_track {
+    margin-inline: calc(var(--page-margin) * -1);
+    padding-inline: var(--page-margin);
+    scroll-padding-inline-start: var(--page-margin);
+  }
+
+  /* Scoped under the row: scroll-carousel.css is linked again further down the
+     page and would otherwise win the dots back with display: flex. */
+  .article_wrapper_body_shop .article_wrapper_body_shop_stage_arrow,
+  .article_wrapper_body_shop .article_wrapper_body_shop_dots {
     display: none;
   }
 }

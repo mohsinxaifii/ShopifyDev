@@ -9,17 +9,26 @@
  */
 {
   "sections": {
+    "breadcrumb_mobile": {
+      "type": "breadcrumb",
+      "settings": {
+        "home_label": "Home",
+        "current_label": "",
+        "show_on": "mobile"
+      }
+    },
     "main": {
       "type": "article",
       "settings": {
-        "shop_heading": "Shop this story"
+        "shop_heading": ""
       }
     },
     "breadcrumb": {
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": ""
+        "current_label": "",
+        "show_on": "desktop"
       }
     },
     "related": {
@@ -126,6 +135,7 @@
     }
   },
   "order": [
+    "breadcrumb_mobile",
     "main",
     "breadcrumb",
     "related",

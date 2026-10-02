@@ -53,6 +53,29 @@
   endif
   assign material_tags = product.metafields.custom.pdp_material_tags.value
   assign media_badges = product.metafields.custom.pdp_media_badges.value
+
+  comment
+    Ship time (Figma 8106:57906, "Ships in 2 days"). A variant with stock on
+    hand ships in 24 hours; anything else keeps the product's own "Ships in ..."
+    badge, or shows none if it has none. product.js swaps the text as the
+    variant changes, so the pill is always rendered and hidden when empty.
+  endcomment
+  assign ship_badge = ''
+  assign other_badges = ''
+  for badge in media_badges
+    assign badge_start = badge | strip | downcase | slice: 0, 8
+    if badge_start == 'ships in' and ship_badge == ''
+      assign ship_badge = badge | strip
+    else
+      assign other_badges = other_badges | append: badge | append: '||'
+    endif
+  endfor
+  assign other_badges = other_badges | split: '||'
+  assign ship_fast_label = section.settings.ship_fast_label | default: 'Ships in 24 hours'
+  assign ship_label = ship_badge
+  if current_variant.inventory_quantity > 0
+    assign ship_label = ship_fast_label
+  endif
   assign highlights = product.metafields.custom.pdp_highlights.value
   comment
     Add-ons come from the product's add-on set (custom.pdp_addon_set, a
@@ -86,7 +109,10 @@
   assign detail_lists = product.metafields.custom.pdp_detail_lists.value | default: product.metafields.content.product_details_list.value
 
   assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
-  assign pair_products = product.metafields.custom.pdp_pair_products.value | default: shopify_recs.complementary_products.value
+  capture pair_handles
+    render 'pdp-pair-handles', product: product
+  endcapture
+  assign pair_handles = pair_handles | strip | split: ','
   assign related_products = product.metafields.custom.pdp_related.value | default: shopify_recs.related_products.value
 
   comment
@@ -201,13 +227,22 @@
             </button>
           </div>
 
-          {%- if media_badges != blank -%}
-            <div class="pdp_gallery_stage_bottom">
-              {%- for badge in media_badges -%}
-                <span class="pdp_gallery_stage_bottom_pill">{{ badge }}</span>
-              {%- endfor -%}
-            </div>
-          {%- endif -%}
+          <div class="pdp_gallery_stage_bottom">
+            <span
+              class="pdp_gallery_stage_bottom_pill"
+              data-ship-time
+              data-ship-fast="{{ ship_fast_label | escape }}"
+              data-ship-default="{{ ship_badge | escape }}"
+              {% if ship_label == blank %}
+                hidden
+              {% endif %}
+            >
+              {{- ship_label -}}
+            </span>
+            {%- for badge in other_badges -%}
+              <span class="pdp_gallery_stage_bottom_pill">{{ badge }}</span>
+            {%- endfor -%}
+          </div>
 
           {%- comment -%}
             Figma Mobile 8106:57910: on phones "Add-ons available" is a tinted bar
@@ -856,7 +891,7 @@
       {%- endif -%}
 
       {%- comment -%} Pair beautifully with - Figma 7930:96345 {%- endcomment -%}
-      {%- if pair_products != blank -%}
+      {%- if pair_handles.size > 0 -%}
         <section class="pdp_pair" data-pair data-animate>
           <div class="pdp_pair_card">
             <h2 class="pdp_pair_card_title">
@@ -867,15 +902,17 @@
             </h2>
 
             <div class="pdp_pair_card_items">
-              {%- for item in pair_products limit: 3 -%}
+              {%- for pair_handle in pair_handles limit: 3 -%}
+                {%- assign item = all_products[pair_handle] -%}
                 {%- unless forloop.first -%}
                   <span class="pdp_pair_card_items_plus" aria-hidden="true">
                     {{- 'icon-plus.svg' | inline_asset_content -}}
                   </span>
                 {%- endunless -%}
                 {%- comment -%}
-                  Pieces with options are picked in the variant drawer when the
-                  set is added; single-variant pieces go straight in.
+                  A piece with options is picked in the variant drawer as soon as
+                  it is selected (or, unselected, when the set is added);
+                  single-variant pieces go straight in.
                 {%- endcomment -%}
                 <article
                   class="pdp-mini"
@@ -1073,6 +1110,7 @@
             "id": {{ variant.id }},
             "options": {{ variant.options | json }},
             "available": {{ variant.available | json }},
+            "inStock": {% if variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
             "price": {{ variant.price | json }},
             "priceText": {{ variant.price | money_without_trailing_zeros | json }},
             "compareAt": {{ variant.compare_at_price | json }},
@@ -1109,6 +1147,13 @@
       "id": "tax_note",
       "label": "Price note",
       "default": "Price inclusive of all taxes"
+    },
+    {
+      "type": "text",
+      "id": "ship_fast_label",
+      "label": "In-stock ship time",
+      "default": "Ships in 24 hours",
+      "info": "Shown on the gallery when the selected variant has stock. Otherwise the product's own \"Ships in ...\" badge (custom.pdp_media_badges) is shown."
     },
     {
       "type": "checkbox",

@@ -1,0 +1,46 @@
+{%- doc -%}
+  Outputs a run of rich-text HTML with the blank paragraphs trimmed off both
+  ends. The editor writes a blank line as <p>&nbsp;</p>, which is harmless
+  inside an article but adds a line of dead space wherever the article meets
+  something else - the product row placed with {{ShopThisStory}}, or the
+  breadcrumb below the post.
+
+  A paragraph that holds an image or an embed is never counted as blank.
+
+  @param {string} html - Rich-text HTML, e.g. article.content
+{%- enddoc -%}
+
+{%- liquid
+  assign html = html | strip
+
+  for i in (1..10)
+    assign head = html | slice: 0, 3
+    if head != '<p>' and head != '<p '
+      break
+    endif
+    assign first_p = html | split: '</p>' | first | append: '</p>'
+    assign first_p_text = first_p | strip_html | remove: '&nbsp;' | remove: ' ' | strip
+    if first_p_text != blank or first_p contains '<img' or first_p contains '<iframe' or first_p contains '<video'
+      break
+    endif
+    assign html = html | remove_first: first_p | strip
+  endfor
+
+  for i in (1..10)
+    assign tail = html | slice: -4, 4
+    unless html contains '<p'
+      break
+    endunless
+    if tail != '</p>'
+      break
+    endif
+    assign last_p = html | split: '<p' | last | prepend: '<p'
+    assign last_p_text = last_p | strip_html | remove: '&nbsp;' | remove: ' ' | strip
+    if last_p_text != blank or last_p contains '<img' or last_p contains '<iframe' or last_p contains '<video'
+      break
+    endif
+    assign html = html | remove_last: last_p | strip
+  endfor
+
+  echo html
+-%}

@@ -16,6 +16,7 @@
   degrade to nothing and both take a section-level fallback:
   - the aside image -> `article.metafields.custom.aside_image`
   - the inline product row -> `article.metafields.custom.shop_products`
+    (it follows the content, or sits wherever the author writes {{ShopThisStory}})
   See docs/BUILD-PLAN.md for the definitions these want in admin.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/article
@@ -26,18 +27,6 @@
 {{ 'article.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  comment
-    200 words a minute, floored at 1 so a short note reads "1 min" rather than
-    "0 min". Counted by splitting rather than with `number_of_words`, which
-    theme-check does not recognise. Runs of whitespace split into empty tokens
-    and so count slightly high, which is within the noise of an estimate.
-  endcomment
-  assign words = article.content | strip_html | strip_newlines | split: ' ' | size
-  assign read_minutes = words | divided_by: 200
-  if read_minutes < 1
-    assign read_minutes = 1
-  endif
-
   comment
     Filter arguments cannot themselves be filtered, so the fallback has to be
     resolved before it reaches image_tag.
@@ -52,6 +41,75 @@
   assign shop_products = article.metafields.custom.shop_products.value
   if shop_products == blank
     assign shop_products = section.settings.shop_collection.products
+  endif
+
+  comment
+    An author places the product row by writing {{ShopThisStory}} on a line of
+    its own in the article, and the content is split there into two blocks with
+    the row between them. Only the first marker is used; any others are dropped.
+    Without one, the row follows the content as before.
+
+    The editor wraps that line in tags of its own (<p dir="ltr"><span>...), so
+    the opening tags left dangling at the end of the first half and the closing
+    tags orphaned at the head of the second are trimmed off - otherwise each
+    becomes an empty paragraph with its margin either side of the row.
+  endcomment
+  assign shop_marker = '{' | append: '{ShopThisStory}' | append: '}'
+  assign shop_marker_spaced = '{' | append: '{ ShopThisStory }' | append: '}'
+  assign content = article.content | replace: shop_marker_spaced, shop_marker
+
+  assign content_before = content
+  assign content_after = ''
+  if content contains shop_marker
+    assign content_before = content | split: shop_marker | first | strip
+    assign content_after = content | remove_first: content_before | remove_first: shop_marker | remove: shop_marker
+
+    assign wrapper_tags = 'p,span,div,strong,em,b,i,u' | split: ','
+    for i in (1..6)
+      assign last_tag = content_before | split: '<' | last
+      assign last_tag_name = last_tag | split: ' ' | first | remove: '>'
+      assign last_tag_end = last_tag | slice: -1
+      if wrapper_tags contains last_tag_name and last_tag_end == '>'
+        assign last_tag = '<' | append: last_tag
+        assign content_before = content_before | remove_last: last_tag | strip
+      else
+        break
+      endif
+    endfor
+
+    for i in (1..6)
+      assign content_after = content_after | strip
+      assign after_head = content_after | slice: 0, 3
+      if after_head contains '</' or after_head == '<br'
+        assign first_tag = content_after | split: '>' | first | append: '>'
+        assign content_after = content_after | remove_first: first_tag
+      else
+        break
+      endif
+    endfor
+  endif
+
+  comment
+    Blank paragraphs at either end of each half would add a line of space to
+    the gap around the row, or above the breadcrumb under the post.
+  endcomment
+  capture content_before
+    render 'trim-blank-paragraphs', html: content_before
+  endcapture
+  capture content_after
+    render 'trim-blank-paragraphs', html: content_after
+  endcapture
+
+  comment
+    200 words a minute, floored at 1 so a short note reads "1 min" rather than
+    "0 min". Counted by splitting rather than with `number_of_words`, which
+    theme-check does not recognise. Runs of whitespace split into empty tokens
+    and so count slightly high, which is within the noise of an estimate.
+  endcomment
+  assign words = content | remove: shop_marker | strip_html | strip_newlines | split: ' ' | size
+  assign read_minutes = words | divided_by: 200
+  if read_minutes < 1
+    assign read_minutes = 1
   endif
 -%}
 
@@ -90,11 +148,11 @@
       </header>
 
       <div class="article_wrapper_body_content">
-        {{ article.content }}
+        {{ content_before }}
       </div>
 
       {%- if shop_products.size > 0 -%}
-        <scroll-carousel class="article_wrapper_body_shop">
+        <scroll-carousel drag class="article_wrapper_body_shop">
           {%- if section.settings.shop_heading != blank -%}
             <h2 class="article_wrapper_body_shop_heading">{{ section.settings.shop_heading }}</h2>
           {%- endif -%}
@@ -124,9 +182,19 @@
               {{- 'icon-caret-right.svg' | inline_asset_content -}}
             </button>
           </div>
+
+          <div class="scroll-carousel_dots article_wrapper_body_shop_dots" data-dots></div>
         </scroll-carousel>
 
+        {% # carousel-scroll defines window.carouselScroll, which scroll-carousel calls %}
+        <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
         <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
+      {%- endif -%}
+
+      {%- if content_after != blank -%}
+        <div class="article_wrapper_body_content">
+          {{ content_after }}
+        </div>
       {%- endif -%}
 
       {%- if blog.comments_enabled? -%}
