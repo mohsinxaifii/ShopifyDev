@@ -4,26 +4,13 @@
   the right.
 
   @param {object} item - a Shopify product object
-  @param {object} [variant] - the variant to show and add; defaults to the
-    product's selected or first available one
-  @param {string} [pinned] - '1' when the variant was named outright, so it is
-    added as-is rather than picked in the variant drawer
 {%- enddoc -%}
 
-{%- liquid
-  assign variant = variant | default: item.selected_or_first_available_variant
-  assign variant_count = item.variants.size
-  if pinned == '1'
-    assign variant_count = 1
-  endif
-  assign item_image = variant.featured_image | default: item.featured_image
--%}
-
 <article class="pdp-ugc-card">
-  <a href="{{ variant.url }}" class="pdp-ugc-card_media">
-    {%- if item_image -%}
+  <a href="{{ item.url }}" class="pdp-ugc-card_media">
+    {%- if item.featured_image -%}
       {{
-        item_image
+        item.featured_image
         | image_url: width: 176
         | image_tag: loading: 'lazy', widths: '88,176', sizes: '88px', alt: item.title
       }}
@@ -32,22 +19,22 @@
 
   <div class="pdp-ugc-card_info">
     <span class="pdp-ugc-card_info_price">
-      <span class="pdp-ugc-card_info_price_current">{%- render 'money', amount: variant.price -%}</span>
-      {%- if variant.compare_at_price > variant.price -%}
+      <span class="pdp-ugc-card_info_price_current">{%- render 'money', amount: item.price -%}</span>
+      {%- if item.compare_at_price > item.price -%}
         <span class="pdp-ugc-card_info_price_compare">
-          {%- render 'money', amount: variant.compare_at_price -%}
+          {%- render 'money', amount: item.compare_at_price -%}
         </span>
       {%- endif -%}
     </span>
 
-    <a href="{{ variant.url }}" class="pdp-ugc-card_info_title">{{ item.title }}</a>
+    <a href="{{ item.url }}" class="pdp-ugc-card_info_title">{{ item.title }}</a>
 
     <button
       type="button"
       class="pdp_button pdp_button--primary pdp_button--compact pdp-ugc-card_info_add"
       data-add-single
-      data-variant-id="{{ variant.id }}"
-      data-variant-count="{{ variant_count }}"
+      data-variant-id="{{ item.selected_or_first_available_variant.id }}"
+      data-variant-count="{{ item.variants.size }}"
       data-product-url="{{ item.url }}"
       data-added-label="{{ 'products.added_to_cart' | t | escape }}"
     >
