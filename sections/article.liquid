@@ -45,36 +45,48 @@
 
   comment
     An author places the product row by writing {{ShopThisStory}} on a line of
-    its own in the article. The editor wraps that line in a <p>, which is
-    unwrapped first so the content splits cleanly between two blocks rather
-    than leaving an empty paragraph's margin either side of the row. Only the
-    first marker is used; any others are dropped. Without one, the row follows
-    the content as before.
+    its own in the article, and the content is split there into two blocks with
+    the row between them. Only the first marker is used; any others are dropped.
+    Without one, the row follows the content as before.
+
+    The editor wraps that line in tags of its own (<p dir="ltr"><span>...), so
+    the opening tags left dangling at the end of the first half and the closing
+    tags orphaned at the head of the second are trimmed off - otherwise each
+    becomes an empty paragraph with its margin either side of the row.
   endcomment
   assign shop_marker = '{' | append: '{ShopThisStory}' | append: '}'
   assign shop_marker_spaced = '{' | append: '{ ShopThisStory }' | append: '}'
-  assign shop_marker_p = '<p>' | append: shop_marker | append: '</p>'
-  assign shop_marker_p_br = '<p>' | append: shop_marker | append: '<br></p>'
-  assign shop_marker_div = '<div>' | append: shop_marker | append: '</div>'
-
   assign content = article.content | replace: shop_marker_spaced, shop_marker
-  assign content = content | replace: shop_marker_p, shop_marker | replace: shop_marker_p_br, shop_marker
-  assign content = content | replace: shop_marker_div, shop_marker
 
   assign content_before = content
   assign content_after = ''
   if content contains shop_marker
-    assign content_before = content | split: shop_marker | first
+    assign content_before = content | split: shop_marker | first | strip
     assign content_after = content | remove_first: content_before | remove_first: shop_marker | remove: shop_marker
 
-    comment
-      A marker written mid-paragraph leaves the paragraph's closing tag at the
-      head of the second half, which the browser would turn into an empty <p>.
-    endcomment
-    assign after_head = content_after | strip | slice: 0, 4
-    if after_head == '</p>'
-      assign content_after = content_after | strip | remove_first: '</p>'
-    endif
+    assign wrapper_tags = 'p,span,div,strong,em,b,i,u' | split: ','
+    for i in (1..6)
+      assign last_tag = content_before | split: '<' | last
+      assign last_tag_name = last_tag | split: ' ' | first | remove: '>'
+      assign last_tag_end = last_tag | slice: -1
+      if wrapper_tags contains last_tag_name and last_tag_end == '>'
+        assign last_tag = '<' | append: last_tag
+        assign content_before = content_before | remove_last: last_tag | strip
+      else
+        break
+      endif
+    endfor
+
+    for i in (1..6)
+      assign content_after = content_after | strip
+      assign after_head = content_after | slice: 0, 3
+      if after_head contains '</' or after_head == '<br'
+        assign first_tag = content_after | split: '>' | first | append: '>'
+        assign content_after = content_after | remove_first: first_tag
+      else
+        break
+      endif
+    endfor
   endif
 
   comment
@@ -129,7 +141,7 @@
       </div>
 
       {%- if shop_products.size > 0 -%}
-        <scroll-carousel class="article_wrapper_body_shop{% if content_after != blank %} article_wrapper_body_shop--inline{% endif %}">
+        <scroll-carousel drag class="article_wrapper_body_shop{% if content_after != blank %} article_wrapper_body_shop--inline{% endif %}">
           {%- if section.settings.shop_heading != blank -%}
             <h2 class="article_wrapper_body_shop_heading">{{ section.settings.shop_heading }}</h2>
           {%- endif -%}
@@ -161,6 +173,8 @@
           </div>
         </scroll-carousel>
 
+        {% # carousel-scroll defines window.carouselScroll, which scroll-carousel calls %}
+        <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
         <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
       {%- endif -%}
 

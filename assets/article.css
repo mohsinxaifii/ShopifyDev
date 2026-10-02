@@ -199,11 +199,14 @@
   display: none;
 }
 
+/* Centred with calc rather than translateY(-50%): scroll-carousel.css owns the
+   arrow's transform for its hover scale, and is linked again further down the
+   page by the related row, so a translate here was dropped on hover and the
+   arrow jumped. */
 .article_wrapper_body_shop_stage_arrow {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 20px);
   z-index: 2;
-  transform: translateY(-50%);
 }
 
 .article_wrapper_body_shop_stage_arrow--prev {
@@ -212,10 +215,6 @@
 
 .article_wrapper_body_shop_stage_arrow--next {
   right: -20px;
-}
-
-.article_wrapper_body_shop_stage_arrow:hover {
-  transform: translateY(-50%) scale(1.05);
 }
 
 /* --------------------------------------------------------------- comments --

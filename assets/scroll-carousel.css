@@ -66,3 +66,15 @@
 [data-track].is-scrolling {
   scroll-snap-type: none;
 }
+
+/* Opt-in mouse dragging (`<scroll-carousel drag>`). Touch already swipes the
+   native scroll; this only gives a mouse the same gesture. */
+scroll-carousel[drag] [data-track] {
+  cursor: grab;
+}
+
+[data-track].is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+  user-select: none;
+}

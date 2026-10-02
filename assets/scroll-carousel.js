@@ -21,6 +21,7 @@
 
       if (this.loop) this.buildLoop();
       this.buildDots();
+      if (this.hasAttribute('drag')) this.enableDrag();
 
       this.track.addEventListener(
         'scroll',
@@ -212,6 +213,76 @@
 
     scrollTrackTo(left) {
       window.carouselScroll.to(this.track, left);
+    }
+
+    /* ---------------------------------------------------------------- drag */
+
+    /* Mouse only: touch and trackpads already scroll the track natively. Snapping
+       is suspended while the pointer holds the track, and on release the track
+       glides to the nearest card instead of being re-snapped in one jump. A
+       drag past a few pixels swallows the click that follows, so letting go
+       over a card does not open it. */
+    enableDrag() {
+      const track = this.track;
+      let pointerId = null;
+      let startX = 0;
+      let startLeft = 0;
+      let moved = false;
+
+      track.addEventListener('dragstart', (event) => event.preventDefault());
+
+      track.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'mouse' || event.button !== 0) return;
+        pointerId = event.pointerId;
+        startX = event.clientX;
+        startLeft = track.scrollLeft;
+        moved = false;
+        this.dragged = false;
+      });
+
+      track.addEventListener('pointermove', (event) => {
+        if (event.pointerId !== pointerId) return;
+        const dx = event.clientX - startX;
+        if (!moved) {
+          if (Math.abs(dx) < 5) return;
+          moved = true;
+          this.dragged = true;
+          if (track.carouselTween) {
+            cancelAnimationFrame(track.carouselTween);
+            track.carouselTween = null;
+            track.classList.remove('is-scrolling');
+          }
+          track.setPointerCapture(pointerId);
+          track.classList.add('is-dragging');
+        }
+        track.scrollLeft = startLeft - dx;
+      });
+
+      const release = (event) => {
+        if (event.pointerId !== pointerId) return;
+        pointerId = null;
+        if (!moved) return;
+
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        const target = Math.min(this.scrollOffsetOf(this.nearestIndex()), maxScroll);
+        // Start the glide first: it sets is-scrolling, which keeps snapping off
+        // once is-dragging comes away.
+        this.scrollTrackTo(target);
+        track.classList.remove('is-dragging');
+      };
+      track.addEventListener('pointerup', release);
+      track.addEventListener('pointercancel', release);
+
+      track.addEventListener(
+        'click',
+        (event) => {
+          if (!this.dragged) return;
+          event.preventDefault();
+          event.stopPropagation();
+          this.dragged = false;
+        },
+        true,
+      );
     }
 
     /* ---------------------------------------------------------------- dots */
