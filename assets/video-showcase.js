@@ -32,6 +32,7 @@ class VideoShowcase extends HTMLElement {
     this.bindEvents();
     this.bindSwipe();
     this.bindProductCards();
+    this.initPopup();
     this.observeVisibility();
 
     // Wait for layout to settle (fonts/images) before trusting the measurement.
@@ -82,6 +83,7 @@ class VideoShowcase extends HTMLElement {
 
   disconnectedCallback() {
     this.stopTicker();
+    this.stopPopupTicker();
     this.detachVideo();
     this.resizeObserver?.disconnect();
     this.intersectionObserver?.disconnect();
@@ -141,7 +143,8 @@ class VideoShowcase extends HTMLElement {
     this.slides.forEach((slide, i) => {
       slide.addEventListener('click', (event) => {
         if (event.target.closest('a')) return;
-        if (i === this.index) this.togglePlayback();
+        if (this.popup) this.openPopup(Number(slide.dataset.index) || 0);
+        else if (i === this.index) this.togglePlayback();
         else this.goTo(i);
       });
     });
@@ -456,6 +459,7 @@ class VideoShowcase extends HTMLElement {
   }
 
   resumeCurrent() {
+    if (this.popupOpen) return;
     if (this.isPaused || !this.isVisible || document.hidden || !this.currentSlide) return;
     if (this.currentVideo) {
       this.currentVideo.play().catch(() => {});
@@ -512,6 +516,230 @@ class VideoShowcase extends HTMLElement {
     if (!this.progressBar) return;
     const clamped = Math.min(Math.max(ratio, 0), 1);
     this.progressBar.style.width = `${clamped * 100}%`;
+  }
+
+  /* --------------------------------------------------------------- popup */
+
+  /* Tapping a card opens every clip as a reel (Figma 8106:46859 / 8106:61387).
+     The inline carousel holds still underneath until the popup closes. Clips
+     get their `src` only once they are on screen, as the active clip or one of
+     its neighbours, so opening the popup never downloads the whole set. */
+  initPopup() {
+    this.popup = this.querySelector('[data-popup]');
+    if (!this.popup) return;
+
+    this.popupSlides = Array.from(this.popup.querySelectorAll('[data-popup-slide]'));
+    this.popupShops = Array.from(this.popup.querySelectorAll('[data-popup-shop]'));
+    this.popupIndex = 0;
+    this.popupMuted = false;
+    this.popup.classList.toggle('is-single', this.popupSlides.length < 2);
+
+    this.popupSlides.forEach((slide) => {
+      slide.querySelector('video')?.addEventListener('ended', () => {
+        if (this.popupOpen && slide.classList.contains('is-active')) this.showPopup(this.popupIndex + 1);
+      });
+    });
+
+    this.popup.addEventListener('click', (event) => {
+      if (performance.now() - (this.popupSwipedAt || 0) < 400) return;
+
+      if (event.target.closest('[data-popup-close]')) {
+        this.popup.close();
+        return;
+      }
+      if (event.target.closest('[data-popup-prev]')) {
+        this.showPopup(this.popupIndex - 1);
+        return;
+      }
+      if (event.target.closest('[data-popup-next]')) {
+        this.showPopup(this.popupIndex + 1);
+        return;
+      }
+      if (event.target.closest('[data-popup-sound]')) {
+        this.setPopupMuted(!this.popupMuted);
+        return;
+      }
+
+      const add = event.target.closest('[data-popup-add]');
+      if (add) {
+        event.preventDefault();
+        this.addProduct(add);
+        return;
+      }
+
+      const slide = event.target.closest('[data-popup-slide]');
+      if (slide) {
+        const index = this.popupSlides.indexOf(slide);
+        if (index === this.popupIndex) this.togglePopupPlayback();
+        else this.showPopup(index);
+        return;
+      }
+
+      // Anything else is the dark space around the reel.
+      if (!event.target.closest('a, button, .video-showcase-popup_shop_card')) this.popup.close();
+    });
+
+    this.popup.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') this.showPopup(this.popupIndex - 1);
+      if (event.key === 'ArrowRight') this.showPopup(this.popupIndex + 1);
+    });
+
+    this.popup.addEventListener('close', () => this.onPopupClose());
+    this.bindPopupSwipe();
+  }
+
+  /* A sideways swipe on the clip changes clip; the stage is `touch-action:
+     pan-y`, so a vertical drag is still the browser's to handle. */
+  bindPopupSwipe() {
+    const stage = this.popup.querySelector('[data-popup-stage]');
+    if (!stage) return;
+    let startX = null;
+    let startY = 0;
+
+    stage.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') return;
+      startX = event.clientX;
+      startY = event.clientY;
+    });
+
+    stage.addEventListener('pointerup', (event) => {
+      if (startX === null) return;
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+      startX = null;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      this.popupSwipedAt = performance.now();
+      this.showPopup(this.popupIndex + (dx < 0 ? 1 : -1));
+    });
+
+    stage.addEventListener('pointercancel', () => {
+      startX = null;
+    });
+  }
+
+  openPopup(index) {
+    if (!this.popup || this.popup.open) return;
+    this.popupOpen = true;
+    this.pauseCurrent();
+
+    // The popup only ever opens from a tap, which lets the clip play with sound.
+    this.setPopupMuted(false);
+    this.popup.showModal();
+    this.showPopup(index);
+    this.startPopupTicker();
+  }
+
+  onPopupClose() {
+    this.popupOpen = false;
+    this.stopPopupTicker();
+    this.popupSlides.forEach((slide) => {
+      slide.querySelector('video')?.pause();
+      slide.classList.remove('is-paused');
+    });
+    this.resumeCurrent();
+  }
+
+  showPopup(index) {
+    const total = this.popupSlides.length;
+    if (!total) return;
+    this.popupIndex = ((index % total) + total) % total;
+
+    const prev = (this.popupIndex - 1 + total) % total;
+    const next = (this.popupIndex + 1) % total;
+
+    this.popupSlides.forEach((slide, i) => {
+      const isActive = i === this.popupIndex;
+      const isPrev = !isActive && total > 2 && i === prev;
+      const isNext = !isActive && total > 1 && i === next;
+      slide.classList.toggle('is-active', isActive);
+      slide.classList.toggle('is-prev', isPrev);
+      slide.classList.toggle('is-near', isPrev || isNext);
+      slide.classList.remove('is-paused');
+
+      const video = slide.querySelector('video');
+      if (!video) return;
+
+      if ((isActive || isPrev || isNext) && !video.getAttribute('src') && slide.dataset.src) {
+        // #t=0.1 makes a resting neighbour show its first frame, not black.
+        video.preload = 'metadata';
+        video.src = `${slide.dataset.src}#t=0.1`;
+      }
+
+      if (isActive) {
+        video.muted = this.popupMuted;
+        video.preload = 'auto';
+        try {
+          video.currentTime = 0;
+        } catch (error) {
+          /* metadata not ready yet - playback still starts from the beginning */
+        }
+        video.play().catch(() => {
+          // Sound was refused (e.g. iOS low-power mode); play silently instead.
+          this.setPopupMuted(true);
+          video.play().catch(() => slide.classList.add('is-paused'));
+        });
+      } else {
+        video.pause();
+        try {
+          if (video.currentTime > 0.1) video.currentTime = 0.1;
+        } catch (error) {
+          /* nothing loaded to rewind */
+        }
+      }
+    });
+
+    this.popupShops.forEach((shop) => {
+      const isActive = Number(shop.dataset.index) === this.popupIndex;
+      shop.hidden = !isActive;
+      if (isActive) shop.scrollLeft = 0;
+    });
+
+    this.setPopupProgress(0);
+  }
+
+  togglePopupPlayback() {
+    const slide = this.popupSlides[this.popupIndex];
+    const video = slide?.querySelector('video');
+    if (!video) return;
+
+    if (video.paused) video.play().catch(() => {});
+    else video.pause();
+    slide.classList.toggle('is-paused', !video.paused);
+  }
+
+  setPopupMuted(muted) {
+    this.popupMuted = muted;
+    this.popup.classList.toggle('is-muted', muted);
+
+    const video = this.popupSlides[this.popupIndex]?.querySelector('video');
+    if (video && this.popupOpen) video.muted = muted;
+
+    this.popup.querySelectorAll('[data-popup-sound]').forEach((button) => {
+      button.setAttribute('aria-label', muted ? button.dataset.labelUnmute : button.dataset.labelMute);
+    });
+  }
+
+  startPopupTicker() {
+    this.stopPopupTicker();
+    const tick = () => {
+      this.popupTickerId = requestAnimationFrame(tick);
+      const video = this.popupSlides[this.popupIndex]?.querySelector('video');
+      if (video && Number.isFinite(video.duration) && video.duration > 0) {
+        this.setPopupProgress(video.currentTime / video.duration);
+      }
+    };
+    this.popupTickerId = requestAnimationFrame(tick);
+  }
+
+  stopPopupTicker() {
+    if (this.popupTickerId) cancelAnimationFrame(this.popupTickerId);
+    this.popupTickerId = null;
+  }
+
+  setPopupProgress(ratio) {
+    const bar = this.popupSlides[this.popupIndex]?.querySelector('[data-popup-progress]');
+    if (!bar) return;
+    bar.style.width = `${Math.min(Math.max(ratio, 0), 1) * 100}%`;
   }
 }
 
