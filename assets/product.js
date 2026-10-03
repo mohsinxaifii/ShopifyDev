@@ -244,7 +244,8 @@
      * A phone bottom sheet that opens at its designed height (capped at 768px)
      * and, when the shopper scrolls it, first rises until its top is 15px from
      * the top of the screen and only then scrolls its own content. Pulling
-     * down from the top of the content lowers it again.
+     * down from the top of the content lowers it again; a sheet let go
+     * part-way finishes the move in the direction it was going.
      *
      * A touch is either the sheet's or the content's for its whole length: one
      * that starts by moving the sheet carries straight on into the content once
