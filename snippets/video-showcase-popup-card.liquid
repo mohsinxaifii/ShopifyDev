@@ -23,16 +23,16 @@
 
   <div class="video-showcase-popup_shop_card_info">
     <div class="video-showcase-popup_shop_card_info_text">
-      <span class="video-showcase-popup_shop_card_info_price">
-      <span class="video-showcase-popup_shop_card_info_price_current">
-        {%- render 'money', amount: item.price -%}
-      </span>
-      {%- if item.compare_at_price > item.price -%}
-        <span class="video-showcase-popup_shop_card_info_price_compare">
-          {%- render 'money', amount: item.compare_at_price -%}
+      <span class="video-showcase-popup_shop_card_info_text_price">
+        <span class="video-showcase-popup_shop_card_info_text_price_current">
+          {%- render 'money', amount: item.price -%}
         </span>
-      {%- endif -%}
-    </span>
+        {%- if item.compare_at_price > item.price -%}
+          <span class="video-showcase-popup_shop_card_info_text_price_compare">
+            {%- render 'money', amount: item.compare_at_price -%}
+          </span>
+        {%- endif -%}
+      </span>
 
       <a href="{{ item.url }}" class="video-showcase-popup_shop_card_info_text_title">{{ item.title }}</a>
     </div>
