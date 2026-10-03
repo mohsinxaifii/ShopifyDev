@@ -122,10 +122,15 @@
       its neighbours rest either side, and the products tagged on that clip sit
       in a rail underneath. Only the clips on screen get a `src`, so opening it
       doesn't start every video downloading at once.
+
+      `data-motion-bound` keeps animations.js's generic dialog tween off it:
+      video-showcase.js runs its own entrance and exit, growing the clip out
+      of the tapped card and back.
     {%- endcomment -%}
     <dialog
       class="video-showcase-popup"
       data-popup
+      data-motion-bound
       scroll-lock
       aria-label="{{ section.settings.heading | default: 'Videos' | escape }}"
     >
@@ -135,7 +140,7 @@
         data-popup-close
         aria-label="{{ 'accessibility.close' | t }}"
       >
-        {{- 'icon-close.svg' | inline_asset_content -}}
+        {{- 'icon-x.svg' | inline_asset_content -}}
       </button>
 
       <div class="video-showcase-popup_body">
@@ -312,6 +317,13 @@
           "id": "product",
           "label": "Featured product",
           "info": "Shows a compact product card along the bottom of the video, with an add to cart."
+        },
+        {
+          "type": "product_list",
+          "id": "products",
+          "label": "Popup products",
+          "limit": 10,
+          "info": "Shown in a row under the video when it is opened in the popup. Leave empty to use the featured product."
         }
       ]
     }
