@@ -686,6 +686,9 @@ class VideoShowcase extends HTMLElement {
     // The popup only ever opens from a tap, which lets the clip play with sound.
     this.setPopupMuted(false);
     this.popup.showModal();
+    // Focus the dialog itself rather than its first button, so opening with a
+    // tap doesn't ring the close button; arrow keys still reach it from here.
+    this.popup.focus({ preventScroll: true });
     this.showPopup(index);
     this.startPopupTicker();
 
