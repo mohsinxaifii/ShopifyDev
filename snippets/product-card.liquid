@@ -24,9 +24,12 @@
   if product.compare_at_price > product.price
     assign is_price_drop = true
   endif
-  if product.tags contains 'Ready to ship'
-    assign is_ready_to_ship = true
-  endif
+  for card_variant_item in product.variants
+    if card_variant_item.inventory_quantity > 0
+      assign is_ready_to_ship = true
+      break
+    endif
+  endfor
 
   assign card_image_alt = product.featured_image.alt | default: product.title
 
@@ -77,12 +80,12 @@
     {%- endif -%}
 
     <span class="product-card_media_top">
-      {%- if feature_badge != blank -%}
+      {%- if is_ready_to_ship -%}
+        <span class="product-card_media_top_badge product-card_media_top_badge--ready">Ready to ship</span>
+      {%- elsif feature_badge != blank -%}
         <span class="product-card_media_top_badge product-card_media_top_badge--feature">{{ feature_badge }}</span>
       {%- elsif is_price_drop -%}
         <span class="product-card_media_top_badge product-card_media_top_badge--price-drop">Price drop</span>
-      {%- elsif is_ready_to_ship -%}
-        <span class="product-card_media_top_badge product-card_media_top_badge--ready">Ready to ship</span>
       {%- else -%}
         <span></span>
       {%- endif -%}
