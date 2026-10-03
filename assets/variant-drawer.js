@@ -28,6 +28,12 @@
       this.addEventListener('click', (event) => {
         if (event.target.closest('[data-drawer-close]')) return this.close();
         if (event.target.closest('[data-drawer-done]')) return this.confirm();
+        // Off to the product page: let the link navigate, but close as we go so
+        // coming Back doesn't land on a page still locked under the picker.
+        // A modified click opens a new tab, where this page stays put.
+        if (event.target.closest('[data-pdp-link]')) {
+          if (!(event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1)) this.close();
+        }
       });
 
       this.addEventListener('change', (event) => {
@@ -168,6 +174,13 @@
       const variant = this.matchingVariant();
       this.variant = variant;
       if (this.done) this.done.disabled = !variant || !variant.available;
+
+      // The product links open the page on the variant being picked here.
+      const card = this.querySelector('[data-pdp-url]');
+      if (card) {
+        const href = variant ? `${card.dataset.pdpUrl}?variant=${variant.id}` : card.dataset.pdpUrl;
+        card.querySelectorAll('[data-pdp-link]').forEach((link) => link.setAttribute('href', href));
+      }
     }
 
     /* ----------------------------------------------------------- confirm */
