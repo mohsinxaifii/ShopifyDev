@@ -92,10 +92,6 @@
   cursor: pointer;
 }
 
-.video-showcase_wrapper_track_item.is-active {
-  cursor: default;
-}
-
 .video-showcase_wrapper_track_item_media,
 .video-showcase_wrapper_track_item_video-wrap {
   position: absolute;
@@ -550,9 +546,10 @@
 
 /* Figma 8106:47512 (desktop) / 8106:61858 (mobile). The active clip is drawn at
    318x518 with 246x465 neighbours, all scaled down together on short screens so
-   the product rail below always fits. */
+   the product rail below always fits. The reel spans 1.5637x the active
+   height plus its two 12px gaps, which caps it on narrower tablets too. */
 .video-showcase-popup {
-  --popup-active-h: min(518px, calc(100dvh - 182px));
+  --popup-active-h: min(518px, calc(100dvh - 182px), calc((100vw - 104px) / 1.5637));
   --popup-active-w: calc(var(--popup-active-h) * 318 / 518);
   --popup-side-h: calc(var(--popup-active-h) * 464.667 / 518);
   --popup-side-w: calc(var(--popup-side-h) * 246 / 464.667);
