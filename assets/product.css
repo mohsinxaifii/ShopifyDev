@@ -3230,8 +3230,8 @@ button.pdp_trust_grid_item_inner {
     border-radius: 24px 24px 0 0;
   }
 
-  /* A sheet that rises on scroll (product.js initExpandingSheet) eases to
-     whichever end it was nearer when the finger lifts. */
+  /* A sheet that rises on scroll (product.js initExpandingSheet) eases the
+     rest of the way, in the direction it was moving, when the finger lifts. */
   .pdp-sheet_panel.is-settling {
     transition: max-height 0.32s var(--motion-sheet-ease);
   }
