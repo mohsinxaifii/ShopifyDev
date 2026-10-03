@@ -84,6 +84,9 @@
       // Arrives after the page's reveal pass has run, so show it outright
       // rather than leaving it at the hidden starting state.
       showcase.querySelectorAll('[data-animate]').forEach((node) => node.classList.add('is-visible'));
+      // The page can give the borrowed section its own heading.
+      const heading = showcase.querySelector('.video-showcase_wrapper_heading');
+      if (heading && this.dataset.heading) heading.textContent = this.dataset.heading;
       // Editor hooks belong to the home page's blocks, not to this page.
       showcase.querySelectorAll('[data-shopify-editor-block]').forEach((node) => {
         node.removeAttribute('data-shopify-editor-block');

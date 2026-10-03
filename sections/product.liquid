@@ -12,6 +12,7 @@
 {{ 'scroll-carousel.css' | asset_url | stylesheet_tag }}
 {{ 'product-card.css' | asset_url | stylesheet_tag }}
 {{ 'product.css' | asset_url | stylesheet_tag }}
+{{ 'video-showcase.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
@@ -87,7 +88,6 @@
   assign addons = addon_set.addons.value | default: product.metafields.custom.pdp_addons.value
   assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
   assign addon_previews = addon_set.previews.value
-  assign ugc_videos = product.metafields.custom.pdp_ugc_videos.value
   assign reviews = product.metafields.custom.pdp_reviews.value
   if reviews.size > 0
     assign rating_count = reviews.size
@@ -935,37 +935,18 @@
         </section>
       {%- endif -%}
 
-      {%- comment -%} Curated trends (UGC) - Figma 7930:96394 {%- endcomment -%}
-      {%- if ugc_videos != blank -%}
-        <section class="pdp_ugc" data-animate>
-          <h2 class="pdp_section_title pdp_section_title--lg">{{ section.settings.ugc_heading }}</h2>
-          <scroll-carousel class="pdp_ugc_carousel">
-            <div class="pdp_ugc_carousel_track" data-track>
-              {%- for video in ugc_videos -%}
-                <button
-                  type="button"
-                  class="pdp_ugc_carousel_track_item"
-                  data-open="ugc"
-                  data-index="{{ forloop.index0 }}"
-                  aria-label="Play video {{ forloop.index }}"
-                >
-                  {%- if video.preview_image -%}
-                    {{
-                      video.preview_image
-                      | image_url: width: 430
-                      | image_tag: loading: 'lazy', widths: '215,430', sizes: '215px', alt: ''
-                    }}
-                  {%- endif -%}
-                  <span class="pdp_ugc_carousel_track_item_play" aria-hidden="true">
-                    {{- 'icon-play.svg' | inline_asset_content -}}
-                  </span>
-                </button>
-              {%- endfor -%}
-            </div>
-            <div class="pdp_ugc_carousel_dots scroll-carousel_dots" data-dots></div>
-          </scroll-carousel>
-        </section>
-      {%- endif -%}
+      {%- comment -%}
+        Curated trends: the home page's video showcase, same videos and
+        products, edited once in the home page's "Curated trends" section.
+        curated-videos.js fetches it in when it nears the viewport; until then
+        (or if the home page has none) the slot stays hidden.
+      {%- endcomment -%}
+      <curated-videos
+        class="pdp_curated"
+        data-src="{{ routes.root_url }}"
+        data-heading="{{ section.settings.ugc_heading | escape }}"
+        hidden
+      ></curated-videos>
 
       {%- comment -%} Customer reviews - Figma 7930:96415 {%- endcomment -%}
       <section class="pdp_reviews" id="pdp-reviews" data-animate>
@@ -1061,7 +1042,6 @@
     diamond_image: section.settings.diamond_image,
     sgl_logo: section.settings.sgl_logo
   -%}
-  {%- render 'pdp-ugc-lightbox', product: product, videos: ugc_videos -%}
 
   {%- comment -%}
     Variant lookup for the JS. `/products/x.js` carries none of the money
@@ -1100,6 +1080,8 @@
 <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'scroll-carousel.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'product.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'video-showcase.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'curated-videos.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {
@@ -1181,11 +1163,16 @@
       "label": "Heading",
       "default": "Pair beautifully with"
     },
-    { "type": "header", "content": "Curated trends" },
+    {
+      "type": "header",
+      "content": "Curated trends",
+      "info": "Shows the videos and products from the Curated trends section on the home page."
+    },
     {
       "type": "text",
       "id": "ugc_heading",
       "label": "Heading",
+      "info": "Leave empty to use the home page heading.",
       "default": "Curated trends for you"
     },
     { "type": "header", "content": "Reviews" },
