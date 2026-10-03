@@ -594,11 +594,17 @@
   background: none;
   color: #fff;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease;
 }
 
 .video-showcase-popup_close:hover {
   transform: rotate(90deg);
+}
+
+.video-showcase-popup_close:active {
+  scale: 0.9;
 }
 
 .video-showcase-popup_body {
@@ -614,6 +620,7 @@
 }
 
 .video-showcase-popup_body_reel_stage {
+  position: relative;
   display: flex;
   gap: 12px;
   align-items: flex-start;
@@ -623,6 +630,7 @@
 .video-showcase-popup_body_reel_stage_slide {
   position: relative;
   display: none;
+  transition: filter 0.25s ease;
   flex: 0 0 auto;
   width: var(--popup-side-w);
   height: var(--popup-side-h);
@@ -636,6 +644,17 @@
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
+  z-index: 1;
+}
+
+/* A clip on its way out, pinned by the script where it last stood while it
+   slides off and fades. It sits under the clips taking its place. */
+.video-showcase-popup_body_reel_stage_slide.is-leaving {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  margin: 0;
+  pointer-events: none;
 }
 
 .video-showcase-popup_body_reel_stage_slide.is-active,
@@ -650,11 +669,16 @@
 }
 
 .video-showcase-popup_body_reel_stage_slide.is-active {
+  z-index: 2;
   width: var(--popup-active-w);
   height: var(--popup-active-h);
   margin-top: 0;
   border-radius: 13.725px;
   cursor: default;
+}
+
+.video-showcase-popup_body_reel_stage_slide.is-near:hover {
+  filter: brightness(1.15);
 }
 
 /* Resting neighbours are dimmed under a 40% scrim. */
@@ -664,11 +688,12 @@
   inset: 0;
   z-index: 1;
   background-color: rgba(0, 0, 0, 0.4);
+  transition: opacity 0.45s ease;
   pointer-events: none;
 }
 
 .video-showcase-popup_body_reel_stage_slide.is-active::after {
-  content: none;
+  opacity: 0;
 }
 
 .video-showcase-popup_body_reel_stage_slide_video {
@@ -690,12 +715,21 @@
   display: flex;
   color: rgba(255, 255, 255, 0.7);
   transform: translate(-50%, -50%);
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
 
 .video-showcase-popup_body_reel_stage_slide.is-active:not(.is-paused)
   .video-showcase-popup_body_reel_stage_slide_play {
-  display: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.6);
+}
+
+.video-showcase-popup_body_reel_stage_slide.is-active.is-paused .video-showcase-popup_body_reel_stage_slide_play {
+  color: #fff;
+  transform: translate(-50%, -50%) scale(1.6);
 }
 
 .video-showcase-popup_body_reel_stage_slide_top {
@@ -704,15 +738,24 @@
   right: 0;
   left: 0;
   z-index: 2;
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 17.156px;
   align-items: flex-end;
   padding: 8px 8px 0;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
 }
 
 .video-showcase-popup_body_reel_stage_slide.is-active .video-showcase-popup_body_reel_stage_slide_top {
-  display: flex;
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity 0.35s ease 0.25s,
+    visibility 0s;
 }
 
 .video-showcase-popup_body_reel_stage_slide_top_progress {
@@ -740,10 +783,28 @@
   background: none;
   color: #fff;
   cursor: pointer;
+  transition: scale 0.2s ease;
 }
 
+.video-showcase-popup_body_reel_stage_slide_top_sound:hover {
+  scale: 1.12;
+}
+
+.video-showcase-popup_body_reel_stage_slide_top_sound:active {
+  scale: 0.9;
+}
+
+/* Each icon pops in as it takes over from the other. */
 .video-showcase-popup_body_reel_stage_slide_top_sound span {
   display: flex;
+  animation: video-showcase-popup-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes video-showcase-popup-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 }
 
 .video-showcase-popup_body_reel_stage_slide_top_sound_off,
@@ -769,10 +830,16 @@
   background-color: #fff;
   color: var(--color-brand, #712242);
   cursor: pointer;
-  transform: translateY(-50%);
+  translate: 0 -50%;
   transition:
     background-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    scale 0.2s ease,
+    opacity 0.25s ease;
+}
+
+.video-showcase-popup_body_reel_arrow:active {
+  scale: 0.92;
 }
 
 .video-showcase-popup_body_reel_arrow--prev {
@@ -794,6 +861,9 @@
 
 /* The rail starts at the active clip's left edge and runs off to the right. */
 .video-showcase-popup_shop {
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s ease;
   width: 100%;
   padding-left: calc(50% - var(--popup-active-w) / 2);
   overflow-x: auto;
@@ -824,9 +894,20 @@
   border-radius: 12px;
   background-color: #fff;
   box-sizing: border-box;
+  transition:
+    translate 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.video-showcase-popup_shop_card:hover {
+  translate: 0 -3px;
+  border-color: var(--color-brand, #712242);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 }
 
 .video-showcase-popup_shop_card_media {
+  overflow: hidden;
   display: block;
   flex: 0 0 85px;
   align-self: stretch;
@@ -838,6 +919,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: scale 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.video-showcase-popup_shop_card:hover .video-showcase-popup_shop_card_media img {
+  scale: 1.08;
 }
 
 .video-showcase-popup_shop_card_info {
@@ -908,11 +994,21 @@
   line-height: 20px;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    scale 0.15s ease;
 }
 
 .video-showcase-popup_shop_card_info_add:hover {
   background-color: #5a1b34;
+}
+
+.video-showcase-popup_shop_card_info_add:active {
+  scale: 0.97;
+}
+
+.video-showcase-popup_shop_card_info_add.is-added .video-showcase-popup_shop_card_info_add_icon {
+  animation: video-showcase-popup-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .video-showcase-popup_shop_card_info_add[disabled] {
@@ -941,6 +1037,30 @@
 
 .video-showcase-popup_shop_card_info_add--disabled:hover {
   background-color: #f2f2f2;
+}
+
+/* The exit: the clips are animated by the script; the chrome around them
+   fades here, and the shared dialog rule in motion.css fades the backdrop. */
+.video-showcase-popup.is-closing .video-showcase-popup_close,
+.video-showcase-popup.is-closing .video-showcase-popup_body_reel_arrow {
+  opacity: 0;
+}
+
+.video-showcase-popup.is-closing .video-showcase-popup_shop {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.video-showcase-popup.is-closing {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-showcase-popup *,
+  .video-showcase-popup *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /* Mobile 8106:61858: the X sits top right above a single 334x545 clip with the
