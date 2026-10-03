@@ -299,6 +299,7 @@
       /* ------------------------------------------------------------ touch */
 
       let lastY = null;
+      let lastDelta = 0;
       let owned = null; // null = undecided, true = we drive it, false = browser
 
       body.addEventListener(
@@ -321,6 +322,7 @@
           const delta = lastY - y; // positive: finger moving up, content scrolling down
           lastY = y;
           if (delta === 0) return;
+          lastDelta = delta;
 
           if (owned === null) {
             const canRise = delta > 0 && height < max;
@@ -342,8 +344,9 @@
         lastY = null;
         if (!owned) return;
         owned = null;
-        // A sheet left part-way settles to whichever end it is nearer.
-        if (height > base && height < max) setHeight(height - base > (max - base) / 2 ? max : base, true);
+        // A sheet left part-way carries on the way it was going, so even a
+        // short swipe up takes it to the top rather than dropping back.
+        if (height > base && height < max) setHeight(lastDelta > 0 ? max : base, true);
       };
       body.addEventListener('touchend', release);
       body.addEventListener('touchcancel', release);
