@@ -82,10 +82,10 @@
     <span class="product-card_media_top">
       {%- if is_ready_to_ship -%}
         <span class="product-card_media_top_badge product-card_media_top_badge--ready">Ready to ship</span>
-      {%- elsif feature_badge != blank -%}
-        <span class="product-card_media_top_badge product-card_media_top_badge--feature">{{ feature_badge }}</span>
       {%- elsif is_price_drop -%}
         <span class="product-card_media_top_badge product-card_media_top_badge--price-drop">Price drop</span>
+      {%- elsif feature_badge != blank -%}
+        <span class="product-card_media_top_badge product-card_media_top_badge--feature">{{ feature_badge }}</span>
       {%- else -%}
         <span></span>
       {%- endif -%}
