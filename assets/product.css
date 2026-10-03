@@ -2456,6 +2456,12 @@ button.pdp_trust_grid_item_inner {
   object-fit: contain;
 }
 
+/* Many product shots are transparent PNGs; without this they would sit on the
+   dark overlay. Applies to the phone stack too. */
+.pdp-lightbox_body_stage_frame_slide img {
+  background-color: #fff;
+}
+
 .pdp-lightbox_body_stage_counter {
   flex: 0 0 auto;
   font-weight: 600;
