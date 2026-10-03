@@ -20,7 +20,9 @@
  * it follows them between devices. The first time an account is seen in this
  * browser, whatever was saved here as a guest is merged in; after that the
  * account's list wins, so removing an item on one device removes it
- * everywhere. Without an account the wishlist stays in this browser only.
+ * everywhere - unless a save from this browser failed, in which case this
+ * browser's list is the newest and is saved on the next visit. Without an
+ * account the wishlist stays in this browser only.
  */
 (() => {
   const STORAGE_KEY = 'zinara:wishlist';
@@ -75,8 +77,8 @@
   let pushTimer = null;
 
   /* Saves are batched: a burst of heart taps becomes one request. A save that
-     fails marks the list dirty, so the next visit merges instead of letting
-     the older account copy overwrite what was changed here. */
+     fails leaves the list marked dirty, so the next visit saves this browser's
+     list instead of letting the older account copy overwrite it. */
   function schedulePush() {
     if (!account) return;
     setSyncState({ ...syncState(), customer: String(account.customer), dirty: true });
@@ -115,11 +117,14 @@
     const local = read();
     const state = syncState();
     const firstTimeHere = state.customer !== String(account.customer);
-    const merge = firstTimeHere || state.dirty;
 
-    /* Merge keeps this browser's order and adds anything only the account has;
-       otherwise the account's list is taken as it is. */
-    const next = merge ? [...local, ...remote.filter((handle) => !local.includes(handle))] : remote;
+    /* First login in this browser: the guest list and the account's are
+       merged (this browser's order, then anything only the account has).
+       An unsaved change from last time: this browser's list is the newest, so
+       it is kept as it is and saved. Otherwise the account's list wins. */
+    let next = remote;
+    if (firstTimeHere) next = [...local, ...remote.filter((handle) => !local.includes(handle))];
+    else if (state.dirty) next = local;
 
     if (JSON.stringify(next) !== JSON.stringify(local)) {
       write(next, { push: false });
