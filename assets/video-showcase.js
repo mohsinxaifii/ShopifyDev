@@ -143,7 +143,7 @@ class VideoShowcase extends HTMLElement {
     this.slides.forEach((slide, i) => {
       slide.addEventListener('click', (event) => {
         if (event.target.closest('a')) return;
-        if (this.popup) this.openPopup(Number(slide.dataset.index) || 0);
+        if (this.popup) this.openPopup(Number(slide.dataset.index) || 0, slide);
         else if (i === this.index) this.togglePlayback();
         else this.goTo(i);
       });
@@ -523,20 +523,29 @@ class VideoShowcase extends HTMLElement {
   /* Tapping a card opens every clip as a reel (Figma 8106:46859 / 8106:61387).
      The inline carousel holds still underneath until the popup closes. Clips
      get their `src` only once they are on screen, as the active clip or one of
-     its neighbours, so opening the popup never downloads the whole set. */
+     its neighbours, so opening the popup never downloads the whole set.
+
+     Motion is FLIP throughout: each change measures where the clips are, moves
+     them to their new places in one go, then plays them back from the old
+     places. Opening grows the active clip out of the tapped card and closing
+     shrinks it back in. */
   initPopup() {
     this.popup = this.querySelector('[data-popup]');
     if (!this.popup) return;
 
+    this.popupStage = this.popup.querySelector('[data-popup-stage]');
     this.popupSlides = Array.from(this.popup.querySelectorAll('[data-popup-slide]'));
     this.popupShops = Array.from(this.popup.querySelectorAll('[data-popup-shop]'));
     this.popupIndex = 0;
     this.popupMuted = false;
     this.popup.classList.toggle('is-single', this.popupSlides.length < 2);
 
+    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.phoneQuery = window.matchMedia('(max-width: 749px)');
+
     this.popupSlides.forEach((slide) => {
       slide.querySelector('video')?.addEventListener('ended', () => {
-        if (this.popupOpen && slide.classList.contains('is-active')) this.showPopup(this.popupIndex + 1);
+        if (this.popupOpen && slide.classList.contains('is-active')) this.stepPopup(1);
       });
     });
 
@@ -544,15 +553,15 @@ class VideoShowcase extends HTMLElement {
       if (performance.now() - (this.popupSwipedAt || 0) < 400) return;
 
       if (event.target.closest('[data-popup-close]')) {
-        this.popup.close();
+        this.closePopup();
         return;
       }
       if (event.target.closest('[data-popup-prev]')) {
-        this.showPopup(this.popupIndex - 1);
+        this.stepPopup(-1);
         return;
       }
       if (event.target.closest('[data-popup-next]')) {
-        this.showPopup(this.popupIndex + 1);
+        this.stepPopup(1);
         return;
       }
       if (event.target.closest('[data-popup-sound]')) {
@@ -569,57 +578,109 @@ class VideoShowcase extends HTMLElement {
 
       const slide = event.target.closest('[data-popup-slide]');
       if (slide) {
-        const index = this.popupSlides.indexOf(slide);
-        if (index === this.popupIndex) this.togglePopupPlayback();
-        else this.showPopup(index);
+        if (slide.classList.contains('is-active')) this.togglePopupPlayback();
+        else this.stepPopup(slide.classList.contains('is-prev') ? -1 : 1);
         return;
       }
 
       // Anything else is the dark space around the reel.
-      if (!event.target.closest('a, button, .video-showcase-popup_shop_card')) this.popup.close();
+      if (!event.target.closest('a, button, [data-popup-shop]')) this.closePopup();
     });
 
     this.popup.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowLeft') this.showPopup(this.popupIndex - 1);
-      if (event.key === 'ArrowRight') this.showPopup(this.popupIndex + 1);
+      if (event.key === 'ArrowLeft') this.stepPopup(-1);
+      if (event.key === 'ArrowRight') this.stepPopup(1);
+    });
+
+    // Esc would close the dialog outright; play the exit first.
+    this.popup.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      this.closePopup();
     });
 
     this.popup.addEventListener('close', () => this.onPopupClose());
     this.bindPopupSwipe();
   }
 
-  /* A sideways swipe on the clip changes clip; the stage is `touch-action:
-     pan-y`, so a vertical drag is still the browser's to handle. */
-  bindPopupSwipe() {
-    const stage = this.popup.querySelector('[data-popup-stage]');
-    if (!stage) return;
-    let startX = null;
-    let startY = 0;
-
-    stage.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse') return;
-      startX = event.clientX;
-      startY = event.clientY;
-    });
-
-    stage.addEventListener('pointerup', (event) => {
-      if (startX === null) return;
-      const dx = event.clientX - startX;
-      const dy = event.clientY - startY;
-      startX = null;
-      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-      this.popupSwipedAt = performance.now();
-      this.showPopup(this.popupIndex + (dx < 0 ? 1 : -1));
-    });
-
-    stage.addEventListener('pointercancel', () => {
-      startX = null;
-    });
+  get popupAnimates() {
+    return !this.reducedMotion?.matches && typeof Element.prototype.animate === 'function';
   }
 
-  openPopup(index) {
+  /* The active clip follows the finger, and letting go past a threshold
+     carries straight on into the next clip from wherever it was dropped. The
+     stage is `touch-action: pan-y`, so a vertical drag still scrolls. */
+  bindPopupSwipe() {
+    if (!this.popupStage) return;
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let dragX = 0;
+    let dragging = false;
+
+    const activeSlide = () => this.popupSlides[this.popupIndex];
+
+    this.popupStage.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' || this.popupClosing) return;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      dragX = 0;
+      dragging = false;
+    });
+
+    this.popupStage.addEventListener('pointermove', (event) => {
+      if (event.pointerId !== pointerId) return;
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+
+      if (!dragging) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx)) {
+          pointerId = null;
+          return;
+        }
+        dragging = true;
+        activeSlide()?.getAnimations().forEach((animation) => animation.cancel());
+      }
+
+      // Past the last clip there is nowhere to go, so the drag stiffens.
+      dragX = this.popupSlides.length > 1 ? dx : dx * 0.3;
+      const slide = activeSlide();
+      if (slide) slide.style.transform = `translateX(${dragX}px)`;
+    });
+
+    const release = (event, cancelled) => {
+      if (event.pointerId !== pointerId) return;
+      pointerId = null;
+      if (!dragging) return;
+      dragging = false;
+      this.popupSwipedAt = performance.now();
+
+      const slide = activeSlide();
+      if (!cancelled && this.popupSlides.length > 1 && Math.abs(dragX) >= 50) {
+        // showPopup() measures the slide with the drag still applied.
+        this.stepPopup(dragX < 0 ? 1 : -1);
+        return;
+      }
+
+      if (!slide) return;
+      slide.style.transform = '';
+      if (this.popupAnimates) {
+        slide.animate([{ transform: `translateX(${dragX}px)` }, { transform: 'none' }], {
+          duration: 320,
+          easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
+        });
+      }
+    };
+
+    this.popupStage.addEventListener('pointerup', (event) => release(event, false));
+    this.popupStage.addEventListener('pointercancel', (event) => release(event, true));
+  }
+
+  openPopup(index, source) {
     if (!this.popup || this.popup.open) return;
     this.popupOpen = true;
+    this.popupClosing = false;
     this.pauseCurrent();
 
     // The popup only ever opens from a tap, which lets the clip play with sound.
@@ -627,23 +688,185 @@ class VideoShowcase extends HTMLElement {
     this.popup.showModal();
     this.showPopup(index);
     this.startPopupTicker();
+
+    if (!this.popupAnimates) return;
+
+    const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
+    const active = this.popupSlides[this.popupIndex];
+    const from = source?.getBoundingClientRect();
+
+    if (active && from?.width) {
+      active.animate(
+        [
+          { transformOrigin: 'top left', transform: this.flipTransform(from, active.getBoundingClientRect()) },
+          { transformOrigin: 'top left', transform: 'none' },
+        ],
+        { duration: 560, easing },
+      );
+    } else if (active) {
+      active.animate(
+        [
+          { opacity: 0, transform: 'scale(0.92)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 420, easing },
+      );
+    }
+
+    // Neighbours slide in from behind the active clip.
+    this.popupSlides.forEach((slide) => {
+      if (!slide.classList.contains('is-near')) return;
+      const side = slide.classList.contains('is-prev') ? 1 : -1;
+      slide.animate(
+        [
+          { opacity: 0, transform: `translateX(${side * 48}px) scale(0.94)` },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 520, delay: 120, easing, fill: 'backwards' },
+      );
+    });
+
+    this.popup
+      .querySelectorAll('.video-showcase-popup_close, .video-showcase-popup_body_reel_arrow')
+      .forEach((control) =>
+        control.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: 320,
+          delay: 260,
+          easing: 'ease-out',
+          fill: 'backwards',
+        }),
+      );
+
+    this.animatePopupShop(220);
+  }
+
+  /* The exit mirrors the entrance: the inline carousel is first moved onto the
+     clip being watched, so the active clip can shrink back into its card. */
+  closePopup() {
+    if (!this.popup?.open || this.popupClosing) return;
+    if (!this.popupAnimates) {
+      this.popup.close();
+      return;
+    }
+
+    this.popupClosing = true;
+    this.popup.classList.add('is-closing');
+    this.syncCarouselToPopup();
+
+    const easing = 'cubic-bezier(0.55, 0, 0.45, 1)';
+    const active = this.popupSlides[this.popupIndex];
+    const card = this.slides?.[this.index];
+    const to = card?.getBoundingClientRect();
+    const onScreen = to && to.width && to.bottom > 0 && to.top < window.innerHeight;
+    const finishes = [];
+
+    if (active) {
+      active.getAnimations().forEach((animation) => animation.cancel());
+      active.style.transform = '';
+      const keyframes = onScreen
+        ? [
+            { transformOrigin: 'top left', transform: 'none', opacity: 1 },
+            { transformOrigin: 'top left', transform: this.flipTransform(to, active.getBoundingClientRect()), opacity: 1, offset: 0.85 },
+            { transformOrigin: 'top left', transform: this.flipTransform(to, active.getBoundingClientRect()), opacity: 0 },
+          ]
+        : [
+            { opacity: 1, transform: 'none' },
+            { opacity: 0, transform: 'scale(0.92)' },
+          ];
+      finishes.push(active.animate(keyframes, { duration: 420, easing, fill: 'forwards' }).finished);
+    }
+
+    this.popupSlides.forEach((slide) => {
+      if (!slide.classList.contains('is-near')) return;
+      const side = slide.classList.contains('is-prev') ? 1 : -1;
+      slide.animate(
+        [
+          { opacity: 1, transform: 'none' },
+          { opacity: 0, transform: `translateX(${side * 48}px) scale(0.94)` },
+        ],
+        { duration: 300, easing, fill: 'forwards' },
+      );
+    });
+
+    Promise.all(finishes)
+      .catch(() => {})
+      .then(() => this.popup.close());
+  }
+
+  syncCarouselToPopup() {
+    if (!this.slides?.length || this.index % this.count === this.popupIndex) return;
+    this.withoutTransition(() => {
+      this.index = this.nearestIndexFor(this.popupIndex);
+      this.setActiveVisual(this.index);
+      this.applyTransform();
+    });
+    this.carouselMoved = true;
   }
 
   onPopupClose() {
     this.popupOpen = false;
+    this.popupClosing = false;
+    this.popup.classList.remove('is-closing');
     this.stopPopupTicker();
     this.popupSlides.forEach((slide) => {
       slide.querySelector('video')?.pause();
       slide.classList.remove('is-paused');
+      this.clearPopupSlide(slide);
     });
-    this.resumeCurrent();
+
+    // A carousel moved onto another clip starts that clip afresh.
+    if (this.carouselMoved) {
+      this.carouselMoved = false;
+      this.startSlide(this.index);
+    } else {
+      this.resumeCurrent();
+    }
   }
 
-  showPopup(index) {
+  /* `translate + scale` that puts an element whose box is `to` over `from`. */
+  flipTransform(from, to) {
+    const dx = from.left - to.left;
+    const dy = from.top - to.top;
+    const sx = from.width / to.width;
+    const sy = from.height / to.height;
+    return `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+  }
+
+  clearPopupSlide(slide) {
+    slide.getAnimations().forEach((animation) => animation.cancel());
+    slide.classList.remove('is-leaving');
+    slide.style.removeProperty('transform');
+    slide.style.removeProperty('left');
+    slide.style.removeProperty('top');
+    slide.style.removeProperty('width');
+    slide.style.removeProperty('height');
+  }
+
+  stepPopup(direction) {
+    if (this.popupClosing) return;
+    this.showPopup(this.popupIndex + direction, direction);
+  }
+
+  showPopup(index, direction = 0) {
     const total = this.popupSlides.length;
     if (!total) return;
-    this.popupIndex = ((index % total) + total) % total;
 
+    const animate = direction !== 0 && total > 1 && this.popupOpen && this.popupAnimates;
+    const isShown = (slide) => slide.classList.contains('is-active') || slide.classList.contains('is-near');
+
+    // First: where every clip on screen is right now, mid-animation or
+    // mid-drag included, so a change made in a hurry never jumps.
+    const before = new Map();
+    if (animate) {
+      this.popupSlides.forEach((slide) => {
+        if (isShown(slide) || slide.classList.contains('is-leaving')) {
+          before.set(slide, slide.getBoundingClientRect());
+        }
+      });
+    }
+    this.popupSlides.forEach((slide) => this.clearPopupSlide(slide));
+
+    this.popupIndex = ((index % total) + total) % total;
     const prev = (this.popupIndex - 1 + total) % total;
     const next = (this.popupIndex + 1) % total;
 
@@ -688,13 +911,92 @@ class VideoShowcase extends HTMLElement {
       }
     });
 
+    if (animate) this.animatePopupSlides(before, direction);
+
     this.popupShops.forEach((shop) => {
       const isActive = Number(shop.dataset.index) === this.popupIndex;
       shop.hidden = !isActive;
       if (isActive) shop.scrollLeft = 0;
     });
+    if (animate) this.animatePopupShop(80);
 
     this.setPopupProgress(0);
+  }
+
+  /* Last, Invert, Play. A clip that stays on screen glides (and grows or
+     shrinks) from its old box to its new one; a clip arriving slides in from
+     the side it is coming from; a clip leaving is pinned where it was and
+     carries on out the other side while it fades. */
+  animatePopupSlides(before, direction) {
+    const phone = this.phoneQuery.matches;
+    const options = { duration: phone ? 420 : 560, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' };
+    const stageBox = this.popupStage.getBoundingClientRect();
+    const isShown = (slide) => slide.classList.contains('is-active') || slide.classList.contains('is-near');
+
+    this.popupSlides.forEach((slide) => {
+      const first = before.get(slide);
+
+      if (isShown(slide)) {
+        const last = slide.getBoundingClientRect();
+        if (first && last.width) {
+          slide.animate(
+            [
+              { transformOrigin: 'top left', transform: this.flipTransform(first, last) },
+              { transformOrigin: 'top left', transform: 'none' },
+            ],
+            options,
+          );
+        } else {
+          const shift = phone ? last.width + 24 : last.width * 0.6;
+          slide.animate(
+            [
+              { opacity: 0, transform: `translateX(${direction * shift}px) scale(0.94)` },
+              { opacity: 1, transform: 'none' },
+            ],
+            options,
+          );
+        }
+        return;
+      }
+
+      if (!first) return;
+      slide.classList.add('is-leaving');
+      slide.style.left = `${first.left - stageBox.left}px`;
+      slide.style.top = `${first.top - stageBox.top}px`;
+      slide.style.width = `${first.width}px`;
+      slide.style.height = `${first.height}px`;
+
+      const shift = phone ? first.width + 24 : first.width * 0.6;
+      const leaving = slide.animate(
+        [
+          { opacity: 1, transform: 'none' },
+          { opacity: 0, transform: `translateX(${-direction * shift}px) scale(0.94)` },
+        ],
+        { ...options, fill: 'forwards' },
+      );
+      leaving.onfinish = () => this.clearPopupSlide(slide);
+    });
+  }
+
+  /* The rail's cards follow the clip in, one after another. */
+  animatePopupShop(delay = 0) {
+    if (!this.popupAnimates) return;
+    const shop = this.popupShops.find((item) => !item.hidden);
+    shop?.querySelectorAll('.video-showcase-popup_shop_card').forEach((card, i) => {
+      card.getAnimations().forEach((animation) => animation.cancel());
+      card.animate(
+        [
+          { opacity: 0, transform: 'translateX(32px)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        {
+          duration: 460,
+          delay: delay + Math.min(i, 5) * 60,
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+          fill: 'backwards',
+        },
+      );
+    });
   }
 
   togglePopupPlayback() {
@@ -704,7 +1006,7 @@ class VideoShowcase extends HTMLElement {
 
     if (video.paused) video.play().catch(() => {});
     else video.pause();
-    slide.classList.toggle('is-paused', !video.paused);
+    slide.classList.toggle('is-paused', video.paused);
   }
 
   setPopupMuted(muted) {
