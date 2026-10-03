@@ -666,8 +666,13 @@
   display: block;
 }
 
-/* The reel wraps, so the clip on the left can be the last one in the document.
-   `order` puts it back on the correct side without reordering the markup. */
+/* The reel wraps, so its three clips can sit in any order in the document -
+   on the last clip the one to its right is the first in the markup. Every
+   position is set explicitly so the active clip is always the middle one. */
+.video-showcase-popup_body_reel_stage_slide.is-near {
+  order: 1;
+}
+
 .video-showcase-popup_body_reel_stage_slide.is-prev {
   order: -1;
 }
