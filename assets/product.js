@@ -211,6 +211,8 @@
         dialog.addEventListener('click', (event) => {
           if (event.target === dialog) dialog.close();
         });
+
+        if (dialog.hasAttribute('data-sheet-expand')) this.initExpandingSheet(dialog);
       });
 
       this.addEventListener('click', (event) => {
@@ -236,6 +238,130 @@
 
     openSheet(name) {
       this.sheets.get(name)?.showModal();
+    }
+
+    /**
+     * A phone bottom sheet that opens at its designed height (capped at 768px)
+     * and, when the shopper scrolls it, first rises until its top is 15px from
+     * the top of the screen and only then scrolls its own content. Pulling
+     * down from the top of the content lowers it again.
+     *
+     * A touch is either the sheet's or the content's for its whole length: one
+     * that starts by moving the sheet carries straight on into the content once
+     * the sheet is up (scrolled by hand, since the browser was told not to),
+     * so a single swipe reads as one motion.
+     */
+    initExpandingSheet(dialog) {
+      const panel = dialog.querySelector('.pdp-sheet_panel');
+      const body = dialog.querySelector('.pdp-sheet_panel_body');
+      if (!panel || !body) return;
+
+      const phone = window.matchMedia('(max-width: 749px)');
+      const TOP_GAP = 15;
+      let base = 0; // height the sheet opened at
+      let height = 0; // height it is at now
+      let max = 0; // height with its top 15px from the top of the screen
+
+      const measure = () => {
+        panel.style.removeProperty('max-height');
+        base = panel.getBoundingClientRect().height;
+        // Everything the content needs, but never past 15px from the top.
+        const natural = panel.scrollHeight - body.clientHeight + body.scrollHeight;
+        max = Math.max(base, Math.min(dialog.clientHeight - TOP_GAP, natural));
+        height = base;
+      };
+
+      const setHeight = (value, settle = false) => {
+        height = Math.min(max, Math.max(base, value));
+        panel.classList.toggle('is-settling', settle);
+        panel.style.maxHeight = `${height}px`;
+      };
+
+      // Move the sheet by `delta` (positive = up). Returns what it could not
+      // absorb, for the content to scroll instead.
+      const moveSheet = (delta) => {
+        const before = height;
+        setHeight(height + delta);
+        return delta - (height - before);
+      };
+
+      dialog.addEventListener('toggle', () => {
+        if (!dialog.open) {
+          panel.classList.remove('is-settling');
+          panel.style.removeProperty('max-height');
+          return;
+        }
+        body.scrollTop = 0;
+        if (phone.matches) requestAnimationFrame(measure);
+      });
+
+      /* ------------------------------------------------------------ touch */
+
+      let lastY = null;
+      let owned = null; // null = undecided, true = we drive it, false = browser
+
+      body.addEventListener(
+        'touchstart',
+        (event) => {
+          if (!phone.matches || event.touches.length !== 1) return;
+          lastY = event.touches[0].clientY;
+          owned = null;
+          panel.classList.remove('is-settling');
+        },
+        { passive: true },
+      );
+
+      body.addEventListener(
+        'touchmove',
+        (event) => {
+          if (lastY === null) return;
+          const y = event.touches[0].clientY;
+          const delta = lastY - y; // positive: finger moving up, content scrolling down
+          lastY = y;
+          if (delta === 0) return;
+
+          if (owned === null) {
+            const canRise = delta > 0 && height < max;
+            const canLower = delta < 0 && height > base && body.scrollTop <= 0;
+            owned = canRise || canLower;
+          }
+          if (!owned || !event.cancelable) return;
+
+          event.preventDefault();
+          const rest = moveSheet(delta);
+          // Up and still swiping: the rest of the swipe scrolls the content.
+          if (rest > 0) body.scrollTop += rest;
+        },
+        { passive: false },
+      );
+
+      const release = () => {
+        if (lastY === null) return;
+        lastY = null;
+        if (!owned) return;
+        owned = null;
+        // A sheet left part-way settles to whichever end it is nearer.
+        if (height > base && height < max) setHeight(height - base > (max - base) / 2 ? max : base, true);
+      };
+      body.addEventListener('touchend', release);
+      body.addEventListener('touchcancel', release);
+
+      /* ------------------------------------------------------ wheel / pad */
+
+      body.addEventListener(
+        'wheel',
+        (event) => {
+          if (!phone.matches || !event.deltaY) return;
+          const rising = event.deltaY > 0 && height < max;
+          const lowering = event.deltaY < 0 && height > base && body.scrollTop <= 0;
+          if (!rising && !lowering) return;
+          event.preventDefault();
+          panel.classList.remove('is-settling');
+          const rest = moveSheet(event.deltaY);
+          if (rest > 0) body.scrollTop += rest;
+        },
+        { passive: false },
+      );
     }
 
     /* ----------------------------------------------------------- options */
