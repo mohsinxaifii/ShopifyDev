@@ -2267,10 +2267,10 @@ button.pdp_trust_grid_item_inner {
   align-self: flex-start;
 }
 
-/* Care guide image (custom.pdp_care_guide_image), above the care steps. */
+/* Care guide image (custom.pdp_care_guide_image) - the guide's only content
+   when it is set, so it takes no gap below. */
 .pdp_accordion_body_media {
   display: block;
-  margin-bottom: 16px;
   overflow: hidden;
   border-radius: 8px;
 }
