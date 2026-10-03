@@ -3,9 +3,10 @@
   separated, for the PDP card and the UGC lightbox rail to look up with
   all_products.
 
-  The list is `custom.pdp_pair_products`, a single-line text metafield of
-  comma-separated product handles, e.g.
+  The list is `custom.pdp_pair_products`: on the dev store a single-line text
+  metafield of comma-separated product handles, e.g.
     golden-grace-chain-bracelet, lustrous-horizon-studs
+  and on the live store a product list. Both are read.
   The variant is not part of it: a piece with options is picked in the variant
   drawer when the shopper selects it. Handles that match no product are
   skipped. Without the metafield, Shopify's complementary-product
@@ -16,17 +17,28 @@
 
 {%- liquid
   assign handles = ''
-  assign entries = product.metafields.custom.pdp_pair_products.value | split: ','
+  assign pair_field = product.metafields.custom.pdp_pair_products
 
-  for entry in entries
-    assign entry_handle = entry | strip | downcase
-    if entry_handle == blank
-      continue
-    endif
-    if all_products[entry_handle].id != blank
-      assign handles = handles | append: entry_handle | append: ','
-    endif
-  endfor
+  comment
+    The live store defines the same metafield as a product list rather than
+    text, so either shape is read: a list gives products directly.
+  endcomment
+  if pair_field.type contains 'product_reference'
+    for item in pair_field.value
+      assign handles = handles | append: item.handle | append: ','
+    endfor
+  else
+    assign entries = pair_field.value | split: ','
+    for entry in entries
+      assign entry_handle = entry | strip | downcase
+      if entry_handle == blank
+        continue
+      endif
+      if all_products[entry_handle].id != blank
+        assign handles = handles | append: entry_handle | append: ','
+      endif
+    endfor
+  endif
 
   if handles == ''
     assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']

@@ -127,6 +127,7 @@
       this.initTabs();
       this.initReviews();
       this.initCart();
+      this.initReviewForm();
       this.initDragScroll();
       this.recordRecentlyViewed();
 
@@ -593,6 +594,156 @@
           video.play().catch(() => {});
         } else {
           video.pause();
+        }
+      });
+    }
+
+    /* ----------------------------------------------------- review form */
+
+    /**
+     * "Write a review" (snippets/pdp-review-sheet.liquid). Checked here first so
+     * the shopper sees what is missing without a round trip, then posted as
+     * multipart to the inventory server, which stores the photos and hands the
+     * review to Judge.me. Photos are limited to what Judge.me accepts: five
+     * images of up to 10MB each.
+     */
+    initReviewForm() {
+      const form = this.querySelector('[data-review-form]');
+      if (!form) return;
+      const dialog = form.closest('dialog');
+      const fields = form.querySelector('[data-review-fields]');
+      const done = form.querySelector('[data-review-done]');
+      const status = form.querySelector('[data-review-status]');
+      const submit = form.querySelector('[data-review-submit]');
+      const submitLabel = form.querySelector('[data-review-submit-label]');
+      const closeButton = form.querySelector('[data-review-close]');
+      const photoInput = form.querySelector('[data-review-photo-input]');
+      const photoList = form.querySelector('[data-review-photos]');
+      const MAX_PHOTOS = 5;
+      const MAX_BYTES = 10 * 1024 * 1024;
+      let photos = [];
+
+      const showError = (name, message) => {
+        const node = form.querySelector(`[data-error-for="${name}"]`);
+        if (!node) return;
+        node.textContent = message;
+        node.hidden = !message;
+      };
+      const clearErrors = () => form.querySelectorAll('[data-error-for]').forEach((node) => (node.hidden = true));
+
+      const renderPhotos = () => {
+        photoList.querySelectorAll('[data-review-photo]').forEach((node) => {
+          URL.revokeObjectURL(node.dataset.url);
+          node.remove();
+        });
+        photos.forEach((file, index) => {
+          const url = URL.createObjectURL(file);
+          const item = document.createElement('span');
+          item.className = 'pdp-review-form_photos_item';
+          item.dataset.reviewPhoto = '';
+          item.dataset.url = url;
+          item.innerHTML = `<img src="${url}" alt=""><button type="button" class="pdp-review-form_photos_remove" aria-label="Remove photo ${index + 1}">&times;</button>`;
+          item.querySelector('button').addEventListener('click', () => {
+            photos.splice(index, 1);
+            renderPhotos();
+          });
+          photoList.insertBefore(item, photoList.lastElementChild);
+        });
+        photoList.lastElementChild.hidden = photos.length >= MAX_PHOTOS;
+      };
+
+      photoInput?.addEventListener('change', () => {
+        const picked = Array.from(photoInput.files || []);
+        photoInput.value = '';
+        const tooBig = picked.filter((file) => file.size > MAX_BYTES);
+        const fitting = picked.filter((file) => file.size <= MAX_BYTES && /^image\/(jpeg|png|webp)$/.test(file.type));
+        const overflow = photos.length + fitting.length > MAX_PHOTOS;
+        photos = photos.concat(fitting).slice(0, MAX_PHOTOS);
+        const node = form.querySelector('[data-error-for="photos"]');
+        if (node) {
+          const notes = [];
+          if (tooBig.length) notes.push('Photos must be under 10MB each.');
+          if (picked.length - tooBig.length > fitting.length) notes.push('Only JPG, PNG or WebP photos can be added.');
+          if (overflow) notes.push('Up to 5 photos.');
+          node.textContent = notes.join(' ');
+          node.hidden = notes.length === 0;
+        }
+        renderPhotos();
+      });
+
+      const validate = () => {
+        clearErrors();
+        let firstInvalid = null;
+        const flag = (name, element) => {
+          form.querySelector(`[data-error-for="${name}"]`).hidden = false;
+          firstInvalid = firstInvalid || element;
+        };
+        if (!form.querySelector('input[name="rating"]:checked')) flag('rating', form.querySelector('input[name="rating"]'));
+        const name = form.elements.name;
+        if (!name.value.trim()) flag('name', name);
+        const email = form.elements.email;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) flag('email', email);
+        const body = form.elements.body;
+        if (body.value.trim().length < 10) flag('body', body);
+        firstInvalid?.focus();
+        return !firstInvalid;
+      };
+
+      const reset = () => {
+        form.reset();
+        photos = [];
+        renderPhotos();
+        clearErrors();
+        status.hidden = true;
+        fields.hidden = false;
+        done.hidden = true;
+        submit.hidden = false;
+        closeButton.hidden = true;
+      };
+      dialog?.addEventListener('close', () => {
+        // Keep a half-written review if the sheet was just dismissed; start
+        // over only once one has been sent.
+        if (!done.hidden) reset();
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (submit.disabled || !validate()) return;
+
+        const data = new FormData(form);
+        data.delete('photos[]');
+        photos.forEach((file) => data.append('photos[]', file, file.name));
+
+        submit.disabled = true;
+        submitLabel.textContent = 'Sending…';
+        status.hidden = true;
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: data,
+            headers: { Accept: 'application/json' },
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.ok === false) {
+            // Field errors from the server land on the matching field.
+            Object.entries(result.errors || {}).forEach(([key, messages]) => {
+              showError(key.split('.')[0], [].concat(messages)[0]);
+            });
+            throw new Error(result.message || `${response.status}`);
+          }
+          fields.hidden = true;
+          done.hidden = false;
+          submit.hidden = true;
+          closeButton.hidden = false;
+        } catch (error) {
+          status.textContent =
+            error.message && !/^\d+$/.test(error.message) && error.message !== 'Failed to fetch'
+              ? error.message
+              : 'Your review could not be sent. Please try again in a moment.';
+          status.hidden = false;
+        } finally {
+          submit.disabled = false;
+          submitLabel.textContent = 'Submit review';
         }
       });
     }

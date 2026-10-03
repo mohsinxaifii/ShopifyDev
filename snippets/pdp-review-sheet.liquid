@@ -1,0 +1,198 @@
+{%- doc -%}
+  "Write a review" sheet - the same shell as the other PDP sheets (side drawer
+  on desktop, bottom sheet on phones). The form posts to the review endpoint
+  on the inventory server (product section setting `review_endpoint`), which
+  stores any photos and passes the review on to Judge.me with the private API
+  token, so no token ever reaches the browser. Judge.me's own moderation then
+  decides when it is published.
+
+  @param {object} product - a Shopify product object
+  @param {string} endpoint - URL the form posts to
+{%- enddoc -%}
+
+<dialog
+  class="pdp-sheet"
+  data-bottom-sheet
+  data-sheet="review"
+  scroll-lock
+  aria-labelledby="PdpReviewTitle"
+>
+  <div class="pdp-sheet_panel">
+    <div class="pdp-sheet_panel_head">
+      <h2 class="pdp-sheet_panel_head_title" id="PdpReviewTitle">Write a review</h2>
+      <button
+        type="button"
+        class="pdp-sheet_panel_head_close"
+        data-sheet-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <form
+      class="pdp-review-form"
+      action="{{ endpoint }}"
+      method="post"
+      enctype="multipart/form-data"
+      novalidate
+      data-review-form
+    >
+      <div class="pdp-sheet_panel_body pdp-review-form_body" data-review-fields>
+        <div class="pdp-review-form_product">
+          {%- if product.featured_image -%}
+            {{
+              product.featured_image
+              | image_url: width: 112
+              | image_tag: loading: 'lazy', widths: '56,112', sizes: '56px', alt: '', class: 'pdp-review-form_product_image'
+            }}
+          {%- endif -%}
+          <p class="pdp-review-form_product_title">{{ product.title }}</p>
+        </div>
+
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="hidden" name="product_handle" value="{{ product.handle }}">
+        <input type="hidden" name="product_title" value="{{ product.title | escape }}">
+
+        <fieldset class="pdp-review-form_rating" data-review-rating>
+          <legend class="pdp-review-form_label">
+            Your rating <span class="pdp-review-form_required" aria-hidden="true">*</span>
+          </legend>
+          <div class="pdp-review-form_rating_stars">
+            {%- for i in (1..5) reversed -%}
+              <input
+                type="radio"
+                class="pdp-review-form_rating_input"
+                name="rating"
+                value="{{ i }}"
+                id="PdpReviewRating{{ i }}"
+                required
+              >
+              <label
+                class="pdp-review-form_rating_star"
+                for="PdpReviewRating{{ i }}"
+                title="{{ i }} star{% if i > 1 %}s{% endif %}"
+              >
+                <span class="visually-hidden">{{ i }} star{% if i > 1 %}s{% endif %}</span>
+                {{- 'icon-star.svg' | inline_asset_content -}}
+              </label>
+            {%- endfor -%}
+          </div>
+          <p class="pdp-review-form_error" data-error-for="rating" hidden>Please choose a rating.</p>
+        </fieldset>
+
+        <div class="pdp-review-form_row">
+          <label class="pdp-review-form_field">
+            <span class="pdp-review-form_label">
+              Name <span class="pdp-review-form_required" aria-hidden="true">*</span>
+            </span>
+            <input
+              type="text"
+              class="pdp-review-form_input"
+              name="name"
+              maxlength="100"
+              autocomplete="name"
+              required
+            >
+            <span class="pdp-review-form_error" data-error-for="name" hidden>Please enter your name.</span>
+          </label>
+
+          <label class="pdp-review-form_field">
+            <span class="pdp-review-form_label">
+              Email <span class="pdp-review-form_required" aria-hidden="true">*</span>
+            </span>
+            <input
+              type="email"
+              class="pdp-review-form_input"
+              name="email"
+              maxlength="190"
+              autocomplete="email"
+              required
+            >
+            <span class="pdp-review-form_error" data-error-for="email" hidden>Please enter a valid email.</span>
+          </label>
+        </div>
+
+        <label class="pdp-review-form_field">
+          <span class="pdp-review-form_label">Review title</span>
+          <input type="text" class="pdp-review-form_input" name="title" maxlength="150">
+        </label>
+
+        <label class="pdp-review-form_field">
+          <span class="pdp-review-form_label">
+            Your review <span class="pdp-review-form_required" aria-hidden="true">*</span>
+          </span>
+          <textarea
+            class="pdp-review-form_input pdp-review-form_input--area"
+            name="body"
+            rows="5"
+            minlength="10"
+            maxlength="5000"
+            required
+          ></textarea>
+          <span class="pdp-review-form_error" data-error-for="body" hidden>
+            Please write at least 10 characters.
+          </span>
+        </label>
+
+        <div class="pdp-review-form_field">
+          <span class="pdp-review-form_label">Photos (optional, up to 5)</span>
+          <div class="pdp-review-form_photos" data-review-photos>
+            <label class="pdp-review-form_photos_add">
+              <input
+                type="file"
+                class="visually-hidden"
+                name="photos[]"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                data-review-photo-input
+              >
+              <span aria-hidden="true">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+              <span class="visually-hidden">Add photos</span>
+            </label>
+          </div>
+          <span class="pdp-review-form_error" data-error-for="photos" hidden></span>
+        </div>
+
+        {%- comment -%} Honeypot: left empty by people, filled by bots. {%- endcomment -%}
+        <label class="pdp-review-form_trap" aria-hidden="true">
+          Website <input type="text" name="website" tabindex="-1" autocomplete="off">
+        </label>
+
+        <p class="pdp-review-form_note">
+          Your email is only used to verify your review and is never shown.
+        </p>
+        <p class="pdp-review-form_status" data-review-status role="alert" hidden></p>
+      </div>
+
+      <div class="pdp-review-form_done" data-review-done hidden>
+        <span class="pdp-review-form_done_icon" aria-hidden="true">
+          {{- 'icon-check.svg' | inline_asset_content -}}
+        </span>
+        <p class="pdp-review-form_done_title">Thank you for your review!</p>
+        <p class="pdp-review-form_done_text">
+          It will appear on this page once it has been checked, usually within a day.
+        </p>
+      </div>
+
+      <div class="pdp-sheet_panel_footer">
+        <button
+          type="submit"
+          class="pdp_button pdp_button--primary pdp-review-form_submit"
+          data-review-submit
+        >
+          <span data-review-submit-label>Submit review</span>
+        </button>
+        <button
+          type="button"
+          class="pdp_button pdp_button--outline pdp-review-form_submit"
+          data-sheet-close
+          data-review-close
+          hidden
+        >
+          Close
+        </button>
+      </div>
+    </form>
+  </div>
+</dialog>

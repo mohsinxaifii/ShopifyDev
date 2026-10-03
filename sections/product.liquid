@@ -951,12 +951,23 @@
       <section class="pdp_reviews" id="pdp-reviews" data-animate>
         <div class="pdp_reviews_head">
           <h2 class="pdp_section_title">Customer reviews</h2>
-          <a
-            href="{{ section.settings.review_url | default: routes.root_url }}"
-            class="pdp_button pdp_button--primary pdp_button--compact"
-          >
-            Write a review
-          </a>
+          {%- comment -%}
+            With a review endpoint set, the button opens the in-theme review
+            form (pdp-review-sheet); without one it falls back to the link.
+          {%- endcomment -%}
+          {%- if section.settings.review_endpoint != blank -%}
+            <button
+              type="button"
+              class="pdp_button pdp_button--primary pdp_button--compact"
+              data-open="review"
+            >
+              Write a review
+            </button>
+          {%- elsif section.settings.review_url != blank -%}
+            <a href="{{ section.settings.review_url }}" class="pdp_button pdp_button--primary pdp_button--compact">
+              Write a review
+            </a>
+          {%- endif -%}
         </div>
 
         {%- if average_rating > 0 -%}
@@ -1022,6 +1033,9 @@
 
   {%- comment -%} ------------------------------------------------- overlays {%- endcomment -%}
   {%- render 'pdp-lightbox', product: product -%}
+  {%- if section.settings.review_endpoint != blank -%}
+    {%- render 'pdp-review-sheet', product: product, endpoint: section.settings.review_endpoint -%}
+  {%- endif -%}
   {%- if size_chart != blank -%}
     {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
   {%- endif -%}
@@ -1175,7 +1189,18 @@
       "default": "Curated trends for you"
     },
     { "type": "header", "content": "Reviews" },
-    { "type": "url", "id": "review_url", "label": "Write a review link" },
+    {
+      "type": "text",
+      "id": "review_endpoint",
+      "label": "Review form endpoint",
+      "info": "URL of the review endpoint on the inventory server, e.g. https://your-domain/api/reviews. When set, Write a review opens the review form."
+    },
+    {
+      "type": "url",
+      "id": "review_url",
+      "label": "Write a review link",
+      "info": "Used only when no review form endpoint is set."
+    },
     {
       "type": "range",
       "id": "reviews_shown",
