@@ -1,0 +1,59 @@
+{%- doc -%}
+  One shoppable card in the curated-videos popup rail. Figma 8106:47524 - the
+  thumbnail runs the full card height on the left, with price over MRP, the
+  title and an add button stacked on the right.
+
+  @param {object} item - a Shopify product object
+{%- enddoc -%}
+
+<article class="video-showcase-popup_shop_card">
+  <a href="{{ item.url }}" class="video-showcase-popup_shop_card_media" tabindex="-1">
+    {%- if item.featured_image -%}
+      {{
+        item.featured_image
+        | image_url: width: 255
+        | image_tag:
+          loading: 'lazy',
+          widths: '85,170,255',
+          sizes: '85px',
+          alt: item.featured_image.alt | default: item.title
+      }}
+    {%- endif -%}
+  </a>
+
+  <div class="video-showcase-popup_shop_card_info">
+    <span class="video-showcase-popup_shop_card_info_price">
+      <span class="video-showcase-popup_shop_card_info_price_current">
+        {%- render 'money', amount: item.price -%}
+      </span>
+      {%- if item.compare_at_price > item.price -%}
+        <span class="video-showcase-popup_shop_card_info_price_compare">
+          {%- render 'money', amount: item.compare_at_price -%}
+        </span>
+      {%- endif -%}
+    </span>
+
+    <a href="{{ item.url }}" class="video-showcase-popup_shop_card_info_title">{{ item.title }}</a>
+
+    {%- if item.available -%}
+      <button
+        type="button"
+        class="video-showcase-popup_shop_card_info_add"
+        data-popup-add
+        data-product-url="{{ item.url }}"
+        data-variant-id="{{ item.selected_or_first_available_variant.id }}"
+        data-variant-count="{{ item.variants.size }}"
+        data-added-label="{{ 'products.added_to_cart' | t | escape }}"
+      >
+        <span class="video-showcase-popup_shop_card_info_add_icon" aria-hidden="true">
+          {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+        </span>
+        <span data-add-label>{{ 'products.add_to_cart' | t }}</span>
+      </button>
+    {%- else -%}
+      <span class="video-showcase-popup_shop_card_info_add video-showcase-popup_shop_card_info_add--disabled">
+        {{- 'products.sold_out' | t -}}
+      </span>
+    {%- endif -%}
+  </div>
+</article>
