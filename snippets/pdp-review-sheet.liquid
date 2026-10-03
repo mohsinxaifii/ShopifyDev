@@ -1,10 +1,10 @@
 {%- doc -%}
   "Write a review" sheet - the same shell as the other PDP sheets (side drawer
-  on desktop, bottom sheet on phones). The form posts to the review endpoint
-  on the inventory server (product section setting `review_endpoint`), which
-  stores any photos and passes the review on to Judge.me with the private API
-  token, so no token ever reaches the browser. Judge.me's own moderation then
-  decides when it is published.
+  on desktop, bottom sheet on phones). The form posts to submit.php of the
+  zinara-reviews app on your server (product section setting
+  `review_endpoint`), which stores any photos and passes the review on to
+  Judge.me. Judge.me's own moderation decides when it is published, and the
+  app's sync then shows it in the Customer reviews section.
 
   @param {object} product - a Shopify product object
   @param {string} endpoint - URL the form posts to

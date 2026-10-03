@@ -603,8 +603,8 @@
     /**
      * "Write a review" (snippets/pdp-review-sheet.liquid). Checked here first so
      * the shopper sees what is missing without a round trip, then posted as
-     * multipart to the inventory server, which stores the photos and hands the
-     * review to Judge.me. Photos are limited to what Judge.me accepts: five
+     * multipart to the zinara-reviews app (submit.php), which stores the photos
+     * and hands the review to Judge.me. Photos are limited to what Judge.me accepts: five
      * images of up to 10MB each.
      */
     initReviewForm() {
