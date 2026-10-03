@@ -14,7 +14,11 @@
   max-height: 100dvh;
   margin: 0;
   padding: 0;
+
+  /* `clip`, not `hidden`, so focusing into the panel while it is still off
+     to the side can't scroll the dialog and undo the slide (see product.css). */
   overflow: hidden;
+  overflow: clip;
   border: 0;
   background: transparent;
   color: var(--color-foreground, #000);

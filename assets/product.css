@@ -2151,7 +2151,14 @@ button.pdp_trust_grid_item_inner {
   max-height: 100dvh;
   margin: 0;
   padding: 0;
+
+  /* `clip`, not `hidden`: a hidden box is still a scroll container. Opening
+     focuses the close button while the panel is still parked off-screen for
+     its entrance, and the browser scrolled the dialog to reveal it - which
+     cancelled the slide (the sheet popped up) and left an offset that a swipe
+     then scrolled away before the sheet's own content would move. */
   overflow: hidden;
+  overflow: clip;
   border: 0;
   background: transparent;
   color: var(--pdp-text);
