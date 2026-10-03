@@ -115,6 +115,135 @@
 
       <div class="scroll-carousel_dots" data-dots></div>
     </div>
+
+    {%- comment -%}
+      Figma 8106:46859 (desktop) / 8106:61387 (mobile): tapping a card opens
+      the videos as a reel - the chosen clip plays with sound in the middle,
+      its neighbours rest either side, and the products tagged on that clip sit
+      in a rail underneath. Only the clips on screen get a `src`, so opening it
+      doesn't start every video downloading at once.
+    {%- endcomment -%}
+    <dialog
+      class="video-showcase-popup"
+      data-popup
+      scroll-lock
+      aria-label="{{ section.settings.heading | default: 'Videos' | escape }}"
+    >
+      <button
+        type="button"
+        class="video-showcase-popup_close"
+        data-popup-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+
+      <div class="video-showcase-popup_body">
+        <div class="video-showcase-popup_body_reel">
+          <button
+            type="button"
+            class="video-showcase-popup_body_reel_arrow video-showcase-popup_body_reel_arrow--prev"
+            data-popup-prev
+            aria-label="{{ 'accessibility.previous' | t }}"
+          >
+            {{- 'icon-caret-left.svg' | inline_asset_content -}}
+          </button>
+
+          <div class="video-showcase-popup_body_reel_stage" data-popup-stage>
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign popup_src = block.settings.video_url
+                assign popup_poster = ''
+                if block.settings.cover_image != blank
+                  assign popup_poster = block.settings.cover_image | image_url: width: 720
+                elsif block.settings.video != blank
+                  assign popup_poster = block.settings.video.preview_image | image_url: width: 720
+                endif
+                if popup_src == blank and block.settings.video != blank
+                  for source in block.settings.video.sources
+                    if source.mime_type == 'video/mp4'
+                      assign popup_src = source.url
+                      break
+                    endif
+                  endfor
+                endif
+              -%}
+              <div
+                class="video-showcase-popup_body_reel_stage_slide"
+                data-popup-slide
+                data-index="{{ forloop.index0 }}"
+                data-src="{{ popup_src }}"
+              >
+                <video
+                  class="video-showcase-popup_body_reel_stage_slide_video"
+                  playsinline
+                  disableremoteplayback
+                  preload="none"
+                  {% if popup_poster != blank %}
+                    poster="{{ popup_poster }}"
+                  {% endif %}
+                ></video>
+
+                <span class="video-showcase-popup_body_reel_stage_slide_play" aria-hidden="true">
+                  {{- 'icon-play-reel.svg' | inline_asset_content -}}
+                </span>
+
+                <div class="video-showcase-popup_body_reel_stage_slide_top">
+                  <span class="video-showcase-popup_body_reel_stage_slide_top_progress" aria-hidden="true">
+                    <span class="video-showcase-popup_body_reel_stage_slide_top_progress_bar" data-popup-progress></span>
+                  </span>
+
+                  <button
+                    type="button"
+                    class="video-showcase-popup_body_reel_stage_slide_top_sound"
+                    data-popup-sound
+                    data-label-mute="{{ 'accessibility.mute' | t | escape }}"
+                    data-label-unmute="{{ 'accessibility.unmute' | t | escape }}"
+                    aria-label="{{ 'accessibility.mute' | t }}"
+                  >
+                    <span class="video-showcase-popup_body_reel_stage_slide_top_sound_on">
+                      {{- 'icon-speaker-high.svg' | inline_asset_content -}}
+                    </span>
+                    <span class="video-showcase-popup_body_reel_stage_slide_top_sound_off">
+                      {{- 'icon-speaker-slash.svg' | inline_asset_content -}}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          <button
+            type="button"
+            class="video-showcase-popup_body_reel_arrow video-showcase-popup_body_reel_arrow--next"
+            data-popup-next
+            aria-label="{{ 'accessibility.next' | t }}"
+          >
+            {{- 'icon-caret-right.svg' | inline_asset_content -}}
+          </button>
+        </div>
+
+        {%- comment -%}
+          One rail per clip, shown with its clip. "Popup products" wins; a block
+          without any falls back to its featured product.
+        {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          <div class="video-showcase-popup_shop" data-popup-shop data-index="{{ forloop.index0 }}" hidden>
+            {%- if block.settings.products != blank -%}
+              <div class="video-showcase-popup_shop_track">
+                {%- for item in block.settings.products -%}
+                  {%- render 'video-showcase-popup-card', item: item -%}
+                {%- endfor -%}
+              </div>
+            {%- elsif block.settings.product != blank -%}
+              <div class="video-showcase-popup_shop_track">
+                {%- render 'video-showcase-popup-card', item: block.settings.product -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </dialog>
   </video-showcase>
 
 
