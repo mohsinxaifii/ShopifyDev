@@ -33,7 +33,9 @@
     "follow_us": "Follow us on",
     "breadcrumb": "Breadcrumb",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "mute": "Mute",
+    "unmute": "Unmute"
   },
   "404": {
     "title": "404",
