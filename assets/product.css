@@ -3002,8 +3002,12 @@ button.pdp_trust_grid_item_inner {
     padding-block: 0 24px;
   }
 
+  /* 12px under the dots (or the photo, with one image) before the price row,
+     as in 8106:57899 - the price card itself has no top padding on phones, so
+     without this the 38px "Save" badge butts up against the dots. */
   .pdp_gallery {
     margin-inline: calc(var(--page-margin) * -1);
+    padding-bottom: 12px;
     background-color: var(--pdp-yellow-50);
   }
 
