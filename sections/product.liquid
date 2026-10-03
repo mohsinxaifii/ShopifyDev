@@ -877,17 +877,15 @@
                   </span>
                 {%- endunless -%}
                 {%- comment -%}
-                  A piece with options is picked in the variant drawer as soon as
-                  it is selected (or, unselected, when the set is added);
-                  single-variant pieces go straight in.
+                  No variant picking here: each piece goes in as its first
+                  available variant. A piece with nothing available has no id
+                  and is left out of the set.
                 {%- endcomment -%}
                 <article
                   class="pdp-mini"
                   data-pair-item
                   data-product-id="{{ item.id }}"
-                  data-variant-id="{{ item.selected_or_first_available_variant.id }}"
-                  data-variant-count="{{ item.variants.size }}"
-                  data-product-url="{{ item.url }}"
+                  data-variant-id="{{ item.first_available_variant.id }}"
                 >
                   <a href="{{ item.url }}" class="pdp-mini_media">
                     {%- if item.featured_image -%}

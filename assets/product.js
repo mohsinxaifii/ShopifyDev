@@ -782,12 +782,12 @@
      * piece already in the bag - added here, as part of the set, or removed
      * again in the drawer - is always shown as it really is.
      *
-     * - A card's bag icon selects it, asking for the variant first when the
-     *   piece has options (see togglePair); a piece already in the cart shows a
+     * - A card's bag icon selects it; a piece already in the cart shows a
      *   tick and cannot be selected again.
      * - The button adds the selection, or with nothing selected, every piece
-     *   not yet in the cart (asking for each one's variant in turn). Once all
-     *   of them are in, it reads "Set added to cart" and stays disabled.
+     *   not yet in the cart. Each goes in as its first available variant - no
+     *   picker. Once all of them are in, it reads "Set added to cart" and stays
+     *   disabled.
      */
     initPair() {
       const section = this.querySelector('[data-pair]');
@@ -849,27 +849,14 @@
         const chosen = selectedItems();
         const pieces = chosen.length > 0 ? chosen : pendingItems();
 
-        // Each piece with options is picked in the drawer, one after another;
-        // backing out of any of them cancels the whole add.
-        const lines = [];
-        for (const item of pieces) {
-          const id = item.dataset.variantPicked
-            ? Number(item.dataset.variantId)
-            : await window.zinaraVariants?.pick({
-                productUrl: item.dataset.productUrl,
-                variantCount: item.dataset.variantCount,
-                variantId: item.dataset.variantId,
-              });
-          if (!id) return;
-          lines.push({ id: Number(id), quantity: 1 });
-        }
+        const lines = pieces
+          .map((item) => Number(item.dataset.variantId))
+          .filter((id) => id > 0)
+          .map((id) => ({ id, quantity: 1 }));
         if (lines.length === 0) return;
         const ok = await this.addToCart(lines, { trigger: button });
         if (ok) {
-          items.forEach((item) => {
-            toggleOf(item)?.setAttribute('aria-pressed', 'false');
-            delete item.dataset.variantPicked;
-          });
+          items.forEach((item) => toggleOf(item)?.setAttribute('aria-pressed', 'false'));
           await readCart();
         }
         this.syncPair();
@@ -881,26 +868,11 @@
       readCart();
     }
 
-    /* Selecting a paired piece that has options opens the variant drawer
-       straight away, the way add-ons do; backing out leaves it unselected. The
-       variant picked is what the set button later sends, without asking again. */
-    async togglePair(toggle) {
-      const item = toggle.closest('[data-pair-item]');
-      if (!item) return;
-      if (toggle.getAttribute('aria-pressed') === 'true') {
-        toggle.setAttribute('aria-pressed', 'false');
-        delete item.dataset.variantPicked;
-        this.syncPair?.();
-        return;
-      }
-
-      if (Number(item.dataset.variantCount) > 1 && window.zinaraVariants) {
-        const chosen = await window.zinaraVariants.choose(item.dataset.productUrl);
-        if (!chosen) return;
-        item.dataset.variantId = chosen.id;
-        item.dataset.variantPicked = 'true';
-      }
-      toggle.setAttribute('aria-pressed', 'true');
+    /* Selecting a paired piece just marks it; the set button sends its first
+       available variant. */
+    togglePair(toggle) {
+      const pressed = toggle.getAttribute('aria-pressed') === 'true';
+      toggle.setAttribute('aria-pressed', String(!pressed));
       this.syncPair?.();
     }
 
