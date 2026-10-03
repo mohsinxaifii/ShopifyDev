@@ -89,6 +89,27 @@
         contactCopied: {{ 'contact.copied' | t | json }},
       };
     </script>
+    {%- comment -%}
+      Wishlist sync (wishlist.js <-> zinara-wishlist on the server). For a
+      logged-in customer, Liquid signs "<customer id>:<time>" with the secret
+      kept in the shop metafield zinara_wishlist.signing_secret, so the server
+      can trust which customer is asking. The secret itself is never output.
+    {%- endcomment -%}
+    {%- if customer and settings.wishlist_endpoint != blank -%}
+      {%- assign wishlist_secret = shop.metafields.zinara_wishlist.signing_secret.value -%}
+      {%- if wishlist_secret != blank -%}
+        {%- assign wishlist_ts = 'now' | date: '%s' -%}
+        {%- capture wishlist_payload -%}{{ customer.id }}:{{ wishlist_ts }}{%- endcapture -%}
+        <script>
+          window.zinaraWishlistAccount = {
+            endpoint: {{ settings.wishlist_endpoint | json }},
+            customer: {{ customer.id | json }},
+            ts: {{ wishlist_ts | json }},
+            sig: {{ wishlist_payload | hmac_sha256: wishlist_secret | json }},
+          };
+        </script>
+      {%- endif -%}
+    {%- endif -%}
     <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
 

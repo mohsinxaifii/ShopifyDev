@@ -141,5 +141,20 @@
         "default": 4
       }
     ]
+  },
+  {
+    "name": "Wishlist sync",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Keeps a logged-in customer's wishlist on their account, so it follows them to every device. Needs the zinara-wishlist app on your server, set up with setup.php."
+      },
+      {
+        "type": "text",
+        "id": "wishlist_endpoint",
+        "label": "Wishlist sync endpoint",
+        "info": "URL of wishlist.php on your server, e.g. https://your-domain/zinara-wishlist/wishlist.php. Leave empty to keep wishlists in the browser only."
+      }
+    ]
   }
 ]
