@@ -22,7 +22,8 @@
   </a>
 
   <div class="video-showcase-popup_shop_card_info">
-    <span class="video-showcase-popup_shop_card_info_price">
+    <div class="video-showcase-popup_shop_card_info_text">
+      <span class="video-showcase-popup_shop_card_info_price">
       <span class="video-showcase-popup_shop_card_info_price_current">
         {%- render 'money', amount: item.price -%}
       </span>
@@ -33,7 +34,8 @@
       {%- endif -%}
     </span>
 
-    <a href="{{ item.url }}" class="video-showcase-popup_shop_card_info_title">{{ item.title }}</a>
+      <a href="{{ item.url }}" class="video-showcase-popup_shop_card_info_text_title">{{ item.title }}</a>
+    </div>
 
     {%- if item.available -%}
       <button
