@@ -1849,8 +1849,8 @@ button.pdp_trust_grid_item_inner {
 
 .pdp_curated .video-showcase_wrapper_heading {
   font-weight: 600;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 20px;
+  line-height: 22px;
   color: var(--pdp-text-secondary, #494949);
   text-align: left;
 }
@@ -1889,6 +1889,20 @@ button.pdp_trust_grid_item_inner {
   background-color: transparent;
 }
 
+/* Figma's 24px Play at 70% white, sitting 5px below the card's centre. */
+.pdp_curated .video-showcase_wrapper_track_item_play {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pdp_curated .video-showcase_wrapper_track_item_play_glyph {
+  display: none;
+}
+
+.pdp_curated .video-showcase_wrapper_track_item_play_glyph--reel {
+  display: flex;
+}
+
 .pdp_curated .video-showcase_wrapper_track_item_play svg {
   width: 24px;
   height: 24px;
@@ -1899,9 +1913,16 @@ button.pdp_trust_grid_item_inner {
   margin-top: -4px;
 }
 
+/* Phones (8106:58315): a 16/24 title, and the active card centred in a row
+   that has 8px of left padding, so it sits 4px right of true centre. */
 @media screen and (max-width: 749px) {
   .pdp_curated .video-showcase {
     --video-showcase-align: center;
+  }
+
+  .pdp_curated .video-showcase_wrapper_heading {
+    font-size: 16px;
+    line-height: 24px;
   }
 }
 

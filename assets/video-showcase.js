@@ -286,8 +286,9 @@ class VideoShowcase extends HTMLElement {
     this.cardWidth = this.step - gap;
 
     // Where the active card sits. Centred by default; a host can set
-    // `--video-showcase-align: second` to park it in the second slot instead,
-    // `--video-showcase-inset` in from the left edge (the product page does).
+    // `--video-showcase-align: second` to park it in the second slot instead.
+    // `--video-showcase-inset` is left padding before the row (the product
+    // page uses 8px), which the centred layout also allows for.
     const own = getComputedStyle(this);
     this.alignSecond = own.getPropertyValue('--video-showcase-align').trim() === 'second';
     this.inset = parseFloat(own.getPropertyValue('--video-showcase-inset')) || 0;
@@ -295,9 +296,10 @@ class VideoShowcase extends HTMLElement {
 
   applyTransform() {
     if (!this.step) return;
+    // Centred within whatever is left after the inset (none on the home page).
     const activeLeft = this.alignSecond
       ? this.inset + this.step
-      : this.viewport.clientWidth / 2 - this.cardWidth / 2;
+      : (this.viewport.clientWidth + this.inset) / 2 - this.cardWidth / 2;
     const x = activeLeft - this.index * this.step + (this.dragOffset || 0);
     this.track.style.transform = `translate3d(${x}px, 0, 0)`;
   }

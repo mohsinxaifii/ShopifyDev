@@ -78,8 +78,18 @@
                   ></a>
                 {%- endif -%}
 
+                {%- comment -%}
+                  Two glyphs: the home page shows the first; the product page,
+                  which borrows this section (curated-videos.js), shows the
+                  second - the 24px Play from its own design (8106:42073).
+                {%- endcomment -%}
                 <span class="video-showcase_wrapper_track_item_play" data-play-icon>
-                  {{ 'icon-play.svg' | inline_asset_content }}
+                  <span class="video-showcase_wrapper_track_item_play_glyph">
+                    {{- 'icon-play.svg' | inline_asset_content -}}
+                  </span>
+                  <span class="video-showcase_wrapper_track_item_play_glyph video-showcase_wrapper_track_item_play_glyph--reel">
+                    {{- 'icon-play-reel.svg' | inline_asset_content -}}
+                  </span>
                 </span>
 
                 {%- comment -%}
