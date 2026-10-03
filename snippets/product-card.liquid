@@ -48,12 +48,20 @@
   endunless
   assign average_rating = product.metafields.reviews.rating.value
 
+  comment
+    The grid card is not a fixed 266px: it is a third of the results column on
+    desktop (wider than 266px on big screens), half the screen on tablets and
+    the full width below 600px (collection.css). `sizes` follows that so phones
+    don't stretch a 266px-wide file across a ~360px card.
+  endcomment
   if is_grid
-    assign media_sizes = '266px'
-    assign media_widths = '266,399,532'
+    assign media_sizes = '(min-width: 990px) 340px, (min-width: 600px) calc(50vw - 40px), calc(100vw - 32px)'
+    assign media_widths = '266,360,533,720,940,1080'
+    assign media_src_width = 1080
   else
     assign media_sizes = '240px'
     assign media_widths = '240,360,480'
+    assign media_src_width = 540
   endif
 -%}
 
@@ -69,7 +77,7 @@
     {%- if product.featured_image -%}
       {{
         product.featured_image
-        | image_url: width: 540
+        | image_url: width: media_src_width
         | image_tag:
           loading: 'lazy',
           widths: media_widths,

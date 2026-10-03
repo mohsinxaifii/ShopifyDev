@@ -6,16 +6,22 @@
   @param {object} item - a Shopify product object
 {%- enddoc -%}
 
+{%- comment -%}
+  The slot is 85px wide but ~118px tall and the photo covers it, so a square
+  photo is drawn ~118px wide (wider still for landscape ones). `sizes` says
+  160px so a 2x/3x screen picks a file at least that sharp, not one cut for
+  85px and stretched.
+{%- endcomment -%}
 <article class="video-showcase-popup_shop_card">
   <a href="{{ item.url }}" class="video-showcase-popup_shop_card_media" tabindex="-1">
     {%- if item.featured_image -%}
       {{
         item.featured_image
-        | image_url: width: 255
+        | image_url: width: 480
         | image_tag:
           loading: 'lazy',
-          widths: '85,170,255',
-          sizes: '85px',
+          widths: '160,240,320,480',
+          sizes: '160px',
           alt: item.featured_image.alt | default: item.title
       }}
     {%- endif -%}
