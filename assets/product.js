@@ -798,7 +798,10 @@
       const toggleOf = (item) => item.querySelector('[data-pair-toggle]');
       let inCart = new Set();
 
-      const pendingItems = () => items.filter((item) => !inCart.has(item.dataset.productId));
+      // A piece with nothing available has no variant to add, so it is never
+      // part of the set (and its bag icon stays disabled).
+      const available = (item) => Number(item.dataset.variantId) > 0;
+      const pendingItems = () => items.filter((item) => available(item) && !inCart.has(item.dataset.productId));
       const selectedItems = () =>
         pendingItems().filter((item) => toggleOf(item)?.getAttribute('aria-pressed') === 'true');
 
@@ -808,7 +811,7 @@
           const toggle = toggleOf(item);
           item.classList.toggle('is-in-cart', added);
           if (!toggle) return;
-          toggle.disabled = added;
+          toggle.disabled = added || !available(item);
           if (added) toggle.setAttribute('aria-pressed', 'false');
           const title = item.querySelector('.pdp-mini_info_title')?.textContent.trim() || '';
           toggle.setAttribute('aria-label', added ? `${title} is in your cart` : `Select ${title}`);
@@ -820,7 +823,7 @@
         if (pending.length === 0) text = 'Set added to cart';
         else if (selected.length > 0)
           text = `Add ${selected.length} item${selected.length > 1 ? 's' : ''} to cart`;
-        else if (pending.length < items.length) text = `Add remaining ${pending.length} to cart`;
+        else if (pending.length < items.filter(available).length) text = `Add remaining ${pending.length} to cart`;
         else text = 'Add set to cart';
 
         // The shared cart restores this text after its "Added" flash, so it has
@@ -849,10 +852,7 @@
         const chosen = selectedItems();
         const pieces = chosen.length > 0 ? chosen : pendingItems();
 
-        const lines = pieces
-          .map((item) => Number(item.dataset.variantId))
-          .filter((id) => id > 0)
-          .map((id) => ({ id, quantity: 1 }));
+        const lines = pieces.map((item) => ({ id: Number(item.dataset.variantId), quantity: 1 }));
         if (lines.length === 0) return;
         const ok = await this.addToCart(lines, { trigger: button });
         if (ok) {
