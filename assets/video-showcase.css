@@ -194,6 +194,15 @@
   margin-left: 2px;
 }
 
+.video-showcase_wrapper_track_item_play_glyph {
+  display: flex;
+}
+
+/* The product page's glyph; shown only there (product.css .pdp_curated). */
+.video-showcase_wrapper_track_item_play_glyph--reel {
+  display: none;
+}
+
 .video-showcase_wrapper_track_item.is-active .video-showcase_wrapper_track_item_play,
 .video-showcase_wrapper_track_item.is-playing .video-showcase_wrapper_track_item_play {
   opacity: 0;
