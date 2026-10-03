@@ -13,9 +13,21 @@
  * URL the cards are fetched from, and a numeric id cannot. Anything stored
  * under the old id-based scheme is dropped on read instead of being fetched and
  * 404ing forever.
+ *
+ * Account sync: when a customer is logged in and the theme has a wishlist
+ * endpoint, layout/theme.liquid sets window.zinaraWishlistAccount and the list
+ * is also kept on their customer record by the zinara-wishlist server app, so
+ * it follows them between devices. The first time an account is seen in this
+ * browser, whatever was saved here as a guest is merged in; after that the
+ * account's list wins, so removing an item on one device removes it
+ * everywhere - unless a save from this browser failed, in which case this
+ * browser's list is the newest and is saved on the next visit. Without an
+ * account the wishlist stays in this browser only.
  */
 (() => {
   const STORAGE_KEY = 'zinara:wishlist';
+  const SYNC_KEY = 'zinara:wishlist:account';
+  const account = window.zinaraWishlistAccount || null;
 
   /* ------------------------------------------------------------------ store */
 
@@ -33,7 +45,7 @@
     return stored.filter((entry) => typeof entry === 'string' && /\D/.test(entry));
   }
 
-  function write(handles) {
+  function write(handles, { push = true } = {}) {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(handles));
     } catch (error) {
@@ -41,6 +53,88 @@
          won't persist past this page. */
     }
     document.dispatchEvent(new CustomEvent('wishlist:change', { detail: { handles } }));
+    if (push) schedulePush();
+  }
+
+  /* ------------------------------------------------------------- account */
+
+  function syncState() {
+    try {
+      return JSON.parse(window.localStorage.getItem(SYNC_KEY)) || {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function setSyncState(state) {
+    try {
+      window.localStorage.setItem(SYNC_KEY, JSON.stringify(state));
+    } catch (error) {
+      /* nothing to do - the next visit merges instead of replacing */
+    }
+  }
+
+  let pushTimer = null;
+
+  /* Saves are batched: a burst of heart taps becomes one request. A save that
+     fails leaves the list marked dirty, so the next visit saves this browser's
+     list instead of letting the older account copy overwrite it. */
+  function schedulePush() {
+    if (!account) return;
+    setSyncState({ ...syncState(), customer: String(account.customer), dirty: true });
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(push, 600);
+  }
+
+  async function push() {
+    try {
+      const response = await fetch(account.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ customer: account.customer, ts: account.ts, sig: account.sig, handles: read() }),
+        keepalive: true,
+      });
+      if (!response.ok) throw new Error(`${response.status}`);
+      setSyncState({ customer: String(account.customer), dirty: false });
+    } catch (error) {
+      /* stays dirty; merged on the next page view */
+    }
+  }
+
+  async function pull() {
+    if (!account) return;
+    let remote;
+    try {
+      const query = new URLSearchParams({ customer: account.customer, ts: account.ts, sig: account.sig });
+      const response = await fetch(`${account.endpoint}?${query}`, { headers: { Accept: 'application/json' } });
+      if (!response.ok) return;
+      remote = (await response.json()).handles;
+    } catch (error) {
+      return;
+    }
+    if (!Array.isArray(remote)) return;
+
+    const local = read();
+    const state = syncState();
+    const firstTimeHere = state.customer !== String(account.customer);
+
+    /* First login in this browser: the guest list and the account's are
+       merged (this browser's order, then anything only the account has).
+       An unsaved change from last time: this browser's list is the newest, so
+       it is kept as it is and saved. Otherwise the account's list wins. */
+    let next = remote;
+    if (firstTimeHere) next = [...local, ...remote.filter((handle) => !local.includes(handle))];
+    else if (state.dirty) next = local;
+
+    if (JSON.stringify(next) !== JSON.stringify(local)) {
+      write(next, { push: false });
+      document.dispatchEvent(new CustomEvent('wishlist:synced'));
+    }
+    if (JSON.stringify(next) !== JSON.stringify(remote)) {
+      schedulePush();
+    } else {
+      setSyncState({ customer: String(account.customer), dirty: false });
+    }
   }
 
   function keyOf(button) {
@@ -94,7 +188,10 @@
      PDP heart and a card's heart for the same product never disagree. */
   document.addEventListener('wishlist:change', () => syncAll());
 
-  document.addEventListener('DOMContentLoaded', () => syncAll());
+  document.addEventListener('DOMContentLoaded', () => {
+    syncAll();
+    pull();
+  });
   if (window.Shopify && window.Shopify.designMode) {
     document.addEventListener('shopify:section:load', (event) => syncAll(event.target));
   }
@@ -113,6 +210,10 @@
       /* Un-hearting a card on this page should take it out of the grid, not
          just grey out its heart. */
       document.addEventListener('wishlist:change', () => this.prune());
+
+      /* The account's list arrived and differs from this browser's: draw the
+         grid again from the merged list. */
+      document.addEventListener('wishlist:synced', () => this.render());
 
       this.render();
     }

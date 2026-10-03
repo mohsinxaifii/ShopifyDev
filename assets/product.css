@@ -2406,6 +2406,278 @@ button.pdp_trust_grid_item_inner {
   width: 100%;
 }
 
+/* Write a review sheet (snippets/pdp-review-sheet.liquid). Same shell as the
+   other sheets; the form wraps the body and the footer so the submit button
+   stays pinned while the fields scroll. */
+.pdp-review-form {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pdp-review-form_body {
+  gap: 20px;
+}
+
+.pdp-review-form_product {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pdp-review-form_product_image {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp-review-form_product_title {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text);
+}
+
+.pdp-review-form_rating {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.pdp-review-form_label {
+  display: block;
+  margin-bottom: 8px;
+  padding: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp-review-form_required {
+  color: var(--pdp-brand);
+}
+
+/* Stars are written 5..1 and laid out reversed, so "this star and every star
+   before it" is the hovered/checked label plus its following siblings. */
+.pdp-review-form_rating_stars {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 6px;
+}
+
+.pdp-review-form_rating_input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pdp-review-form_rating_star {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  color: var(--pdp-border);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    scale 0.15s ease;
+}
+
+.pdp-review-form_rating_star svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pdp-review-form_rating_input:checked ~ .pdp-review-form_rating_star,
+.pdp-review-form_rating_star:hover,
+.pdp-review-form_rating_star:hover ~ .pdp-review-form_rating_star {
+  color: var(--pdp-yellow-600);
+}
+
+.pdp-review-form_rating_star:active {
+  scale: 0.9;
+}
+
+.pdp-review-form_rating_input:focus-visible + .pdp-review-form_rating_star {
+  outline: 2px solid var(--pdp-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.pdp-review-form_row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pdp-review-form_field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pdp-review-form_input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+  font: inherit;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--pdp-text);
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.pdp-review-form_input:focus {
+  border-color: var(--pdp-brand);
+  outline: none;
+}
+
+.pdp-review-form_input--area {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.pdp-review-form_photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pdp-review-form_photos_item,
+.pdp-review-form_photos_add {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.pdp-review-form_photos_item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp-review-form_photos_add {
+  border: 1px dashed var(--pdp-border-dark);
+  color: var(--pdp-brand);
+  cursor: pointer;
+}
+
+.pdp-review-form_photos_add svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pdp-review-form_photos_remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+}
+
+.pdp-review-form_error,
+.pdp-review-form_status {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: #c62828;
+}
+
+.pdp-review-form_status {
+  margin: 0;
+  font-size: 14px;
+}
+
+.pdp-review-form_note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--pdp-muted);
+}
+
+/* Bots fill every input; people never see this one. */
+.pdp-review-form_trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.pdp-review-form_done {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.pdp-review-form_done_icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background-color: var(--pdp-surface-medium);
+  color: var(--pdp-brand);
+}
+
+.pdp-review-form_done_icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.pdp-review-form_done_title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--pdp-text);
+}
+
+.pdp-review-form_done_text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp-review-form_submit {
+  width: 100%;
+}
+
+@media screen and (max-width: 749px) {
+  .pdp-review-form_row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .pdp-table {
   width: 100%;
   border-collapse: collapse;
