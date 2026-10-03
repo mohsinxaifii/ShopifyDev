@@ -262,13 +262,17 @@
       let height = 0; // height it is at now
       let max = 0; // height with its top 15px from the top of the screen
 
+      // Measured on the first touch rather than on open, so images that load
+      // after the sheet appears are counted. The ceiling is re-read on every
+      // gesture for the same reason.
       const measure = () => {
-        panel.style.removeProperty('max-height');
-        base = panel.getBoundingClientRect().height;
+        if (!base) {
+          base = panel.getBoundingClientRect().height;
+          height = base;
+        }
         // Everything the content needs, but never past 15px from the top.
         const natural = panel.scrollHeight - body.clientHeight + body.scrollHeight;
         max = Math.max(base, Math.min(dialog.clientHeight - TOP_GAP, natural));
-        height = base;
       };
 
       const setHeight = (value, settle = false) => {
@@ -285,14 +289,11 @@
         return delta - (height - before);
       };
 
-      dialog.addEventListener('toggle', () => {
-        if (!dialog.open) {
-          panel.classList.remove('is-settling');
-          panel.style.removeProperty('max-height');
-          return;
-        }
+      dialog.addEventListener('close', () => {
+        panel.classList.remove('is-settling');
+        panel.style.removeProperty('max-height');
         body.scrollTop = 0;
-        if (phone.matches) requestAnimationFrame(measure);
+        base = 0;
       });
 
       /* ------------------------------------------------------------ touch */
@@ -304,6 +305,7 @@
         'touchstart',
         (event) => {
           if (!phone.matches || event.touches.length !== 1) return;
+          measure();
           lastY = event.touches[0].clientY;
           owned = null;
           panel.classList.remove('is-settling');
@@ -352,6 +354,7 @@
         'wheel',
         (event) => {
           if (!phone.matches || !event.deltaY) return;
+          measure();
           const rising = event.deltaY > 0 && height < max;
           const lowering = event.deltaY < 0 && height > base && body.scrollTop <= 0;
           if (!rising && !lowering) return;
