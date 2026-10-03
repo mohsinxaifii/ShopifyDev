@@ -92,10 +92,6 @@
   object-fit: cover;
 }
 
-.occasion-showcase_wrapper_track_item:hover .occasion-showcase_wrapper_track_item_image {
-  transform: translateY(-4px);
-}
-
 .occasion-showcase_wrapper_track_item_label {
   font-family: var(--font-secondary--family);
   font-weight: 600;

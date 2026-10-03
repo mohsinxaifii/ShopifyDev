@@ -120,11 +120,6 @@
     transform 0.3s ease;
 }
 
-.journal_wrapper_stage_track_item_card:hover {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
 .journal_wrapper_stage_track_item_card_image {
   display: block;
   width: 100%;

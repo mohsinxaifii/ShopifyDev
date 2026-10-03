@@ -106,16 +106,6 @@ summary:active {
   transition: transform var(--motion-slow) var(--motion-ease);
 }
 
-.product-card:hover {
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-  transform: translateY(-3px);
-}
-
-.product-card_info_add:hover,
-.pdp-mini_add:hover {
-  transform: translateY(-1px);
-}
-
 .product-card_media_top_wishlist:hover,
 .product-card_info_price_wishlist:hover,
 .pdp_gallery_stage_top_wishlist:hover {
@@ -140,7 +130,6 @@ summary:active {
 .collection_wrapper_main_more_button:hover,
 .search_empty_form_submit:hover,
 .variant-drawer_panel_footer_done:hover {
-  transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(113, 34, 66, 0.22);
 }
 
@@ -180,7 +169,6 @@ summary:active {
 .pdp_option_values_value_chip:hover,
 .category-nav_list_item_link:hover {
   border-color: var(--color-brand, #712242);
-  transform: translateY(-2px);
 }
 
 .pdp_option_values_value_swatch:hover {
@@ -211,11 +199,6 @@ summary:active {
     transform var(--motion-base) var(--motion-ease);
 }
 
-.pdp_gallery_thumbs_track_item:hover,
-.pdp_ugc_carousel_track_item:hover {
-  transform: translateY(-3px);
-}
-
 
 .scroll-carousel_arrow:active,
 .pdp_gallery_thumbs_arrow:active,
@@ -243,8 +226,6 @@ summary:active {
 .pdp-offer:hover,
 .pdp-addons_grid_card:hover {
   border-color: var(--color-brand, #712242);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
 .pdp-offer_code:hover,
@@ -378,7 +359,6 @@ html:not(.motion-dialogs) .pdp-ugc-box[open] .pdp-ugc-box_reel {
 
 .header_wrapper_actions_link:hover,
 .header_wrapper_brand_menu-toggle:hover {
-  transform: translateY(-2px);
   color: var(--color-brand, #712242);
 }
 

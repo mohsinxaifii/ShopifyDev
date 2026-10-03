@@ -98,10 +98,6 @@
   margin-left: 1px;
 }
 
-.instagram-feed_wrapper_grid_item:hover {
-  transform: translateY(-4px);
-}
-
 /* Figma: Contact us 7930:94765. The same band with a 16px stack and four tiles
    that share the full 1136px row (266 wide at 309/414) instead of capping at 253. */
 .instagram-feed--fill .instagram-feed_wrapper {

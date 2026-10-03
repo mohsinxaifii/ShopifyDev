@@ -62,11 +62,6 @@
   object-fit: cover;
 }
 
-.shop-by-category_wrapper_grid_item:hover .shop-by-category_wrapper_grid_item_image {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-}
-
 .shop-by-category_wrapper_grid_item_label {
   font-family: var(--font-secondary--family);
   font-weight: 500;
