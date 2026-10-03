@@ -284,12 +284,21 @@ class VideoShowcase extends HTMLElement {
       ? second.left + second.width / 2 - (first.left + first.width / 2)
       : first.width + gap;
     this.cardWidth = this.step - gap;
+
+    // Where the active card sits. Centred by default; a host can set
+    // `--video-showcase-align: second` to park it in the second slot instead,
+    // `--video-showcase-inset` in from the left edge (the product page does).
+    const own = getComputedStyle(this);
+    this.alignSecond = own.getPropertyValue('--video-showcase-align').trim() === 'second';
+    this.inset = parseFloat(own.getPropertyValue('--video-showcase-inset')) || 0;
   }
 
   applyTransform() {
     if (!this.step) return;
-    const x =
-      this.viewport.clientWidth / 2 - (this.index * this.step + this.cardWidth / 2) + (this.dragOffset || 0);
+    const activeLeft = this.alignSecond
+      ? this.inset + this.step
+      : this.viewport.clientWidth / 2 - this.cardWidth / 2;
+    const x = activeLeft - this.index * this.step + (this.dragOffset || 0);
     this.track.style.transform = `translate3d(${x}px, 0, 0)`;
   }
 

@@ -1824,6 +1824,87 @@ button.pdp_trust_grid_item_inner {
 
 /* Curated trends - Figma 7930:96394 */
 
+/* Curated trends, borrowed from the home page's video showcase
+   (curated-videos.js) and restyled to the PDP design, Figma 8106:58315: a
+   16px left-aligned title, 215x320 cards on a 16px gap at full size, a 6px
+   timeline, dots 16px below and no arrows. Phones keep the active card
+   centred with its neighbours running off both edges; in the desktop column
+   it sits in the second slot, one card in from an 8px inset, with the next
+   card cut by the column edge. The home page gutter is dropped - the column
+   already has one. */
+.pdp_curated {
+  display: block;
+}
+
+.pdp_curated .video-showcase {
+  --video-showcase-align: second;
+  --video-showcase-inset: 8px;
+}
+
+.pdp_curated .video-showcase_wrapper {
+  align-items: stretch;
+  gap: 20px;
+  padding: 24px 0;
+}
+
+.pdp_curated .video-showcase_wrapper_heading {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--pdp-text-secondary, #494949);
+  text-align: left;
+}
+
+.pdp_curated .video-showcase_wrapper_track {
+  --video-showcase-step: 231px;
+  --video-showcase-gap: 16px;
+  --video-showcase-card-width: 215px;
+}
+
+.pdp_curated .video-showcase_wrapper_track_item,
+.pdp_curated .video-showcase_wrapper_track_item.is-active {
+  aspect-ratio: 215 / 320;
+  border-radius: 8px;
+  transform: none;
+}
+
+.pdp_curated .video-showcase_wrapper_track_item::after,
+.pdp_curated .video-showcase_wrapper_track_item_scrim,
+.pdp_curated .video-showcase_wrapper_stage_prev,
+.pdp_curated .video-showcase_wrapper_stage_next {
+  display: none;
+}
+
+.pdp_curated .video-showcase_wrapper_track_item_progress {
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.pdp_curated .video-showcase_wrapper_track_item_play {
+  width: auto;
+  height: auto;
+  background-color: transparent;
+}
+
+.pdp_curated .video-showcase_wrapper_track_item_play svg {
+  width: 24px;
+  height: 24px;
+  margin-left: 0;
+}
+
+.pdp_curated .video-showcase_wrapper .scroll-carousel_dots {
+  margin-top: -4px;
+}
+
+@media screen and (max-width: 749px) {
+  .pdp_curated .video-showcase {
+    --video-showcase-align: center;
+  }
+}
+
 .pdp_ugc {
   display: flex;
   flex-direction: column;

@@ -8,8 +8,9 @@
  * in here; video-showcase.js then runs it exactly as it runs on the home page.
  * The fetch waits until the section is close to the viewport, and the markup
  * is kept for a few minutes per tab so moving between products doesn't refetch
- * the home page every time. If the home page has no such section, this stays
- * hidden.
+ * the home page every time. Until then - or for good, if the home page has no
+ * such section - it is empty and takes no space. (It is never `hidden`: a
+ * hidden element is never "near the viewport", so it would never load.)
  */
 (() => {
   const CACHE_KEY = 'curated-videos:v1';
@@ -93,7 +94,6 @@
       });
 
       this.replaceChildren(document.importNode(showcase, true));
-      this.hidden = false;
     }
   }
 

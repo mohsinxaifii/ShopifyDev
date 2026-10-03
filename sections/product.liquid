@@ -939,13 +939,12 @@
         Curated trends: the home page's video showcase, same videos and
         products, edited once in the home page's "Curated trends" section.
         curated-videos.js fetches it in when it nears the viewport; until then
-        (or if the home page has none) the slot stays hidden.
+        (or if the home page has none) the slot is empty.
       {%- endcomment -%}
       <curated-videos
         class="pdp_curated"
         data-src="{{ routes.root_url }}"
         data-heading="{{ section.settings.ugc_heading | escape }}"
-        hidden
       ></curated-videos>
 
       {%- comment -%} Customer reviews - Figma 7930:96415 {%- endcomment -%}
