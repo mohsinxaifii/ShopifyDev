@@ -231,8 +231,18 @@
 
         {%- comment -%}
           One rail per clip, shown with its clip. "Popup products" wins; a block
-          without any falls back to its featured product.
+          without any falls back to its featured product, and one with neither
+          borrows a run of products from the fallback collection. Each clip
+          starts its run somewhere else, and the start moves on daily, so the
+          clips don't all show the same pieces.
         {%- endcomment -%}
+        {%- liquid
+          assign fallback_source = section.settings.fallback_collection | default: collections.all
+          assign fallback_products = fallback_source.products
+          assign fallback_size = fallback_products.size
+          assign fallback_want = 4 | at_most: fallback_size
+          assign fallback_seed = 'now' | date: '%j' | times: 7
+        -%}
         {%- for block in section.blocks -%}
           <div class="video-showcase-popup_shop" data-popup-shop data-index="{{ forloop.index0 }}" hidden>
             {%- if block.settings.products != blank -%}
@@ -244,6 +254,22 @@
             {%- elsif block.settings.product != blank -%}
               <div class="video-showcase-popup_shop_track">
                 {%- render 'video-showcase-popup-card', item: block.settings.product -%}
+              </div>
+            {%- elsif section.settings.fill_empty and fallback_want > 0 -%}
+              {%- liquid
+                assign fallback_start = forloop.index0 | times: 5 | plus: fallback_seed | modulo: fallback_size
+                assign fallback_tail = fallback_size | minus: fallback_start | at_most: fallback_want
+                assign fallback_wrap = fallback_want | minus: fallback_tail
+              -%}
+              <div class="video-showcase-popup_shop_track">
+                {%- for item in fallback_products offset: fallback_start limit: fallback_tail -%}
+                  {%- render 'video-showcase-popup-card', item: item -%}
+                {%- endfor -%}
+                {%- if fallback_wrap > 0 -%}
+                  {%- for item in fallback_products limit: fallback_wrap -%}
+                    {%- render 'video-showcase-popup-card', item: item -%}
+                  {%- endfor -%}
+                {%- endif -%}
               </div>
             {%- endif -%}
           </div>
@@ -292,6 +318,23 @@
       "step": 1,
       "unit": "s",
       "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Popup products"
+    },
+    {
+      "type": "checkbox",
+      "id": "fill_empty",
+      "label": "Fill videos without products",
+      "info": "A video with no popup or featured product shows 4 products from the collection below, a different set on each video.",
+      "default": true
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "Fallback collection",
+      "info": "Leave empty to use all products."
     }
   ],
   "blocks": [
