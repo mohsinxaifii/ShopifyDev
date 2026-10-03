@@ -631,6 +631,12 @@
       };
       const clearErrors = () => form.querySelectorAll('[data-error-for]').forEach((node) => (node.hidden = true));
 
+      // A field's message goes as soon as the shopper starts fixing it.
+      form.addEventListener('input', (event) => {
+        const key = event.target.name?.replace('[]', '');
+        if (key && key !== 'photos') showError(key, '');
+      });
+
       const renderPhotos = () => {
         photoList.querySelectorAll('[data-review-photo]').forEach((node) => {
           URL.revokeObjectURL(node.dataset.url);
