@@ -402,6 +402,30 @@
     true,
   );
 
+  /* ------------------------------------------------- accordions (details) */
+
+  /* `toggle` does not bubble, but a capture listener still sees it - and it
+     fires however the <details> was opened (GSAP in faq.js, or the browser's
+     own toggle when GSAP is missing). Only openings count. */
+  document.addEventListener(
+    'toggle',
+    (event) => {
+      const details = event.target;
+      if (!(details instanceof HTMLDetailsElement) || !details.open) return;
+
+      if (details.matches('.faq_wrapper_list_item')) {
+        const list = Array.from(document.querySelectorAll('.faq_wrapper_list_item'));
+        send('faq_expand', {
+          question: textOf(details.querySelector('.faq_wrapper_list_item_summary_question')),
+          faq_position: list.indexOf(details) + 1,
+        });
+      } else if (details.matches('[data-track-info]')) {
+        send('info_expand', { section_name: details.dataset.trackInfo });
+      }
+    },
+    true,
+  );
+
   /* ------------------------------------------------------- page-level events */
 
   function onReady(fn) {
