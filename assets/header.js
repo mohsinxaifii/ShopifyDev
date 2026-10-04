@@ -144,7 +144,6 @@ class HeaderComponent extends HTMLElement {
   /* Mobile only: the search icon reveals the header's search field under the bar. */
   toggleSearch() {
     const open = this.getAttribute('data-search-open') !== 'true';
-    if (open) window.zinaraTrack?.('search_open', { click_location: 'header_icon' });
     this.setAttribute('data-search-open', String(open));
     this.searchToggle.setAttribute('aria-expanded', String(open));
     if (open) this.querySelector('[data-suggest-input]')?.focus();
