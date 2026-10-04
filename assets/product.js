@@ -72,37 +72,22 @@
       this.setupSwipe();
     }
 
-    /* Phones have dots instead of thumbnails, so the image itself has to page. */
+    /* The photo itself pages: a finger swipe on phones (which have dots, not
+       thumbnails) and a mouse drag on desktop - assets/swipe.js. Buttons over
+       the photo (wishlist, add-ons) keep their own clicks, and the click that
+       ends a drag never opens the lightbox. */
     setupSwipe() {
       const stage = this.querySelector('.pdp_gallery_stage');
       if (!stage || this.slides.length < 2) return;
-      let startX = 0;
-      let startY = 0;
-      stage.addEventListener(
-        'touchstart',
-        (event) => {
-          startX = event.touches[0].clientX;
-          startY = event.touches[0].clientY;
-          this.swiped = false;
-        },
-        { passive: true },
-      );
-      stage.addEventListener(
-        'touchend',
-        (event) => {
-          const dx = event.changedTouches[0].clientX - startX;
-          const dy = event.changedTouches[0].clientY - startY;
-          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-          this.swiped = true;
-          const last = this.slides.length - 1;
-          this.show(dx < 0 ? Math.min(this.index + 1, last) : Math.max(this.index - 1, 0));
+      window.zinaraSwipe?.(stage, {
+        ignore: 'button, a',
+        onSwipe: (direction) => {
+          const next = Math.min(Math.max(this.index + direction, 0), this.slides.length - 1);
+          if (next === this.index) return;
+          this.show(next);
           this.trackMedia('swipe');
-          window.setTimeout(() => {
-            this.swiped = false;
-          }, 400);
         },
-        { passive: true },
-      );
+      });
     }
 
     /* product_media_interaction for a shopper's own move - not for the
@@ -557,6 +542,15 @@
           }
           dialog.scrollTop = Math.max(0, top - 64);
         }
+      });
+
+      // Desktop shows one image at a time: drag or swipe it to page. (Phones
+      // stack every image to scroll through, so there is nothing to page.)
+      window.zinaraSwipe?.(dialog.querySelector('.pdp-lightbox_body_stage'), {
+        onSwipe: (direction) => {
+          if (window.matchMedia('(max-width: 749px)').matches) return;
+          this.stepLightbox(direction);
+        },
       });
 
       dialog
