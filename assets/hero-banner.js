@@ -34,8 +34,10 @@ class HeroBannerSlideshow extends HTMLElement {
     this.currentIndex = (index + this.slides.length) % this.slides.length;
     this.slides.forEach((slide, i) => {
       slide.classList.toggle('is-active', i === this.currentIndex);
-      const link = slide.querySelector('a');
-      if (link) link.tabIndex = i === this.currentIndex ? 0 : -1;
+      // The slide link and the button: only the visible slide's are tabbable.
+      slide.querySelectorAll('a').forEach((link) => {
+        link.tabIndex = i === this.currentIndex ? 0 : -1;
+      });
     });
     this.dots.forEach((dot, i) => {
       dot.classList.toggle('is-active', i === this.currentIndex);

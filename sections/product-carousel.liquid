@@ -2,7 +2,21 @@
 {{ 'product-carousel.css' | asset_url | stylesheet_tag }}
 
 {%- if section.blocks.size > 0 -%}
-  {%- assign track_section = section.id | split: '__' | last | replace: '-', '_' -%}
+  {%- liquid
+    assign track_section = section.id | split: '__' | last | replace: '-', '_'
+
+    comment
+      A tab with no collection would open onto an empty row, so it is left out;
+      the first tab that has one opens first and feeds "View all".
+    endcomment
+    assign first_tab = null
+    for block in section.blocks
+      if block.settings.collection != blank
+        assign first_tab = block
+        break
+      endif
+    endfor
+  -%}
   <product-carousel class="product-carousel full-width" data-analytics-section="{{ track_section }}">
     <div class="product-carousel_wrapper">
       {%- if section.settings.heading != blank -%}
@@ -12,13 +26,15 @@
       <div class="product-carousel_wrapper_controls" data-animate>
         <div class="product-carousel_wrapper_controls_tabs" role="tablist">
           {%- for block in section.blocks -%}
+            {%- if block.settings.collection == blank -%}{%- continue -%}{%- endif -%}
+            {%- assign is_first_tab = false -%}
+            {%- if block.id == first_tab.id -%}{%- assign is_first_tab = true -%}{%- endif -%}
             <button
               type="button"
-              class="product-carousel_wrapper_controls_tabs_tab{% if forloop.first %} is-active{% endif %}"
-              data-tab-index="{{ forloop.index0 }}"
+              class="product-carousel_wrapper_controls_tabs_tab{% if is_first_tab %} is-active{% endif %}"
               data-collection-url="{{ block.settings.collection.url }}"
               role="tab"
-              aria-selected="{{ forloop.first }}"
+              aria-selected="{{ is_first_tab }}"
               {{ block.shopify_attributes }}
             >
               {{ block.settings.label }}
@@ -27,7 +43,7 @@
         </div>
 
         <a
-          href="{{ section.blocks.first.settings.collection.url }}"
+          href="{{ first_tab.settings.collection.url }}"
           class="product-carousel_wrapper_controls_view-all"
           data-view-all-link
           data-analytics="section_cta_click"
@@ -40,12 +56,12 @@
 
       <div class="product-carousel_wrapper_stage">
         {%- for block in section.blocks -%}
+          {%- if block.settings.collection == blank -%}{%- continue -%}{%- endif -%}
           <div
-            class="product-carousel_wrapper_stage_panel{% if forloop.first %} is-active{% endif %}"
-            data-panel-index="{{ forloop.index0 }}"
-            {% if forloop.first == false %}
+            class="product-carousel_wrapper_stage_panel{% if block.id == first_tab.id %} is-active{% endif %}"
+            {% unless block.id == first_tab.id %}
               hidden
-            {% endif %}
+            {% endunless %}
           >
             <div class="product-carousel_wrapper_stage_panel_track">
               {%- for product in block.settings.collection.products limit: block.settings.product_limit -%}
@@ -76,7 +92,7 @@
 
       {%- if section.settings.show_bottom_link -%}
         <a
-          href="{{ section.blocks.first.settings.collection.url }}"
+          href="{{ first_tab.settings.collection.url }}"
           class="product-carousel_wrapper_bottom-link"
           data-view-all-link
           data-analytics="section_cta_click"

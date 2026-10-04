@@ -279,3 +279,42 @@
 .product-carousel_wrapper_stage_panel_track.is-scrolling {
   scroll-snap-type: none;
 }
+
+/* product-carousel.js hides the arrows when the open tab has nothing to page
+   through; their display rule would otherwise outrank [hidden]. */
+.product-carousel_wrapper_stage_prev[hidden],
+.product-carousel_wrapper_stage_next[hidden] {
+  display: none;
+}
+
+/* Tablet: the tab chips and "View all" stay on one sideways-scrolling line, as
+   on phones (wrapped, "View all" dropped to a line of its own), and the arrows
+   - which hang 20px outside the row and covered the cards at this width - give
+   way to swiping and dragging. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .product-carousel_wrapper_controls {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .product-carousel_wrapper_controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-carousel_wrapper_controls_tabs {
+    flex-wrap: nowrap;
+  }
+
+  .product-carousel_wrapper_controls_tabs_tab,
+  .product-carousel_wrapper_controls_view-all {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .product-carousel_wrapper_stage_prev,
+  .product-carousel_wrapper_stage_next {
+    display: none;
+  }
+}

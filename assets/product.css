@@ -1116,6 +1116,24 @@ button.pdp_trust_grid_item_inner {
   color: var(--pdp-text-secondary);
 }
 
+/* Rich text from the admin editor (the product description, accordion blocks). */
+.pdp_accordion_body--rte :is(p, ul, ol) {
+  margin: 0 0 12px;
+}
+
+.pdp_accordion_body--rte :is(ul, ol) {
+  padding-inline-start: 20px;
+}
+
+.pdp_accordion_body--rte > :last-child {
+  margin-bottom: 0;
+}
+
+.pdp_accordion_body--rte img {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Why you'll love it - Figma 7930:96158 */
 
 .pdp_highlights {

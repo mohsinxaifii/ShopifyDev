@@ -50,6 +50,7 @@
     <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
       <div class="collection_wrapper_filters_head">
         <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
+        {%- if analytics_filter_count > 0 -%}
         <a
           href="{{ collection.url }}?sort_by={{ sort_by }}"
           class="collection_wrapper_filters_head_clear"
@@ -59,6 +60,7 @@
         >
           {{- 'collection.clear_all' | t -}}
         </a>
+        {%- endif -%}
         <button
           type="button"
           class="collection_wrapper_filters_head_close"
@@ -101,6 +103,7 @@
         whose footer clears everything or closes it - filters already apply live.
       {%- endcomment -%}
       <div class="collection_wrapper_filters_footer">
+        {%- if analytics_filter_count > 0 -%}
         <a
           href="{{ collection.url }}?sort_by={{ sort_by }}"
           class="collection_wrapper_filters_footer_clear"
@@ -110,6 +113,7 @@
         >
           {{- 'collection.clear_all' | t -}}
         </a>
+        {%- endif -%}
         <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-close>
           {{- 'collection.apply' | t -}}
         </button>
@@ -117,6 +121,8 @@
     </aside>
 
     <div class="collection_wrapper_main">
+      {%- comment -%} The design shows no title; this one is for search engines and screen readers. {%- endcomment -%}
+      <h1 class="visually-hidden">{{ collection.title }}</h1>
       <div class="collection_wrapper_main_toolbar">
         <p class="collection_wrapper_main_toolbar_count">
           {{- 'collection.product_count' | t: count: collection.products_count -}}
@@ -156,6 +162,8 @@
                 </button>
               </div>
               {%- for option in collection.sort_options -%}
+                {%- comment -%} "Most relevant" only means something for a search. {%- endcomment -%}
+                {%- if option.value == 'relevance' and option.value != sort_by -%}{%- continue -%}{%- endif -%}
                 <button
                   type="button"
                   class="collection_wrapper_main_toolbar_sort_menu_item{% if option.value == sort_by %} is-active{% endif %}"

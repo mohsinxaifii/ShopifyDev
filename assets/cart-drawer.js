@@ -295,9 +295,37 @@
     };
   }
 
+  /* When KwikCart closes it "restores" the page's overflow by writing
+     `overflow-y: <value> !important` straight onto <html> and <body>. An inline
+     !important outranks every stylesheet rule, so from then on no dialog,
+     sheet or menu could stop the page scrolling behind it (critical.css locks
+     with html:has(dialog[scroll-lock][open])). That leftover is removed as soon
+     as it appears. KwikCart's own lock while open (overflow-y: hidden, without
+     !important) is left alone. */
+  function clearKwikCartOverflow() {
+    const strip = (element) => {
+      if (element?.style.getPropertyPriority('overflow-y') === 'important') {
+        element.style.removeProperty('overflow-y');
+      }
+    };
+    const targets = [document.documentElement, document.body];
+    targets.forEach(strip);
+    new MutationObserver((records) => records.forEach((record) => strip(record.target))).observe(
+      document.documentElement,
+      { attributes: true, attributeFilter: ['style'], subtree: false },
+    );
+    if (document.body) {
+      new MutationObserver((records) => records.forEach((record) => strip(record.target))).observe(document.body, {
+        attributes: true,
+        attributeFilter: ['style'],
+      });
+    }
+  }
+
   function boot() {
     window.zinaraCart = new ZinaraCart();
     watchKwikCartRequests();
+    clearKwikCartOverflow();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

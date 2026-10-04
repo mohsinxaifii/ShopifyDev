@@ -138,7 +138,11 @@
 
   const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  // Cards far down a collection only ask Judge.me once they near the screen.
+  /* Cards far down a collection only ask Judge.me once they near the screen.
+     The rating itself is display: none until it has something to show, and a
+     box that is not rendered never intersects - so what is watched is the
+     element it sits in (the card's photo, the product headline). */
+  const waiting = new Map(); // watched parent -> ratings inside it
   const observer =
     'IntersectionObserver' in window
       ? new IntersectionObserver(
@@ -146,12 +150,23 @@
             entries.forEach((entry) => {
               if (!entry.isIntersecting) return;
               observer.unobserve(entry.target);
-              entry.target.load();
+              (waiting.get(entry.target) || []).forEach((rating) => rating.load());
+              waiting.delete(entry.target);
             });
           },
           { rootMargin: '300px' },
         )
       : null;
+
+  function watch(rating) {
+    const target = rating.parentElement;
+    if (!observer || !target) return rating.load();
+    if (!waiting.has(target)) {
+      waiting.set(target, []);
+      observer.observe(target);
+    }
+    waiting.get(target).push(rating);
+  }
 
   /* ---------------------------------------------------- <judgeme-rating> */
 
@@ -162,12 +177,7 @@
   class JudgemeRating extends HTMLElement {
     connectedCallback() {
       if (this.loaded || !this.dataset.handle) return;
-      if (observer) observer.observe(this);
-      else this.load();
-    }
-
-    disconnectedCallback() {
-      observer?.unobserve(this);
+      watch(this);
     }
 
     async load() {

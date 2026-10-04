@@ -110,7 +110,11 @@
       if (direction > 0) {
         destination = current >= maxScroll - 1 ? 0 : Math.min(target, maxScroll);
       } else {
-        destination = current <= 1 ? maxScroll : Math.max(target, 0);
+        // Back to the page boundary below, not one page-width back from
+        // wherever the last page stopped: a last page that is only partly full
+        // ends short of a boundary, and stepping a full width back from there
+        // landed mid-page.
+        destination = current <= 1 ? maxScroll : Math.max(Math.floor((current - 1) / distance) * distance, 0);
       }
 
       window.carouselScroll.to(track, destination);
@@ -118,6 +122,12 @@
 
     buildDots() {
       const track = this.activePanel;
+      // Arrows only when the open tab has more cards than fit (a tab whose
+      // collection is empty, or short, has nothing to page through).
+      const scrollable = Boolean(track && track.scrollWidth - track.clientWidth > 1);
+      [this.prevButton, this.nextButton].forEach((button) => {
+        if (button) button.hidden = !scrollable;
+      });
       if (!track || !this.dotsContainer) return;
 
       const pageWidth = track.clientWidth;

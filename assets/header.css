@@ -15,32 +15,33 @@
    header so the search dropdown still covers it. The announcement selector is
    deliberately more specific than search-suggest.css's `position: relative`
    rule, which would otherwise unstick it while search is open. */
-.shopify-section--announcement-bar:has(+ .shopify-section--header > [data-sticky='scroll-up']),
-.shopify-section--announcement-bar:has(+ .shopify-section--header > [data-sticky='always']) {
+/* header.js marks the three sections it keeps sticky with data-sticky-part
+   (bar / header / nav), so this does not depend on them being next to each
+   other in the page - an app inserting something between them would
+   otherwise quietly leave one behind. Hiding uses the `translate` property,
+   not `transform`, so it cannot clash with a transform another script sets. */
+.shopify-section[data-sticky-part] {
   position: sticky;
+  transition: translate var(--motion-base, 0.3s) var(--motion-ease, ease);
+}
+
+.shopify-section[data-sticky-part='bar'] {
   top: 0;
   z-index: 61;
-  transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
 }
 
-.shopify-section--header:has(> [data-sticky='scroll-up']),
-.shopify-section--header:has(> [data-sticky='always']) {
-  position: sticky;
+.shopify-section[data-sticky-part='header'] {
   top: var(--announcement-height, 0px);
   z-index: 60;
-  transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
 }
 
-.shopify-section--header:has(> [data-sticky='scroll-up']) + .shopify-section--category-nav,
-.shopify-section--header:has(> [data-sticky='always']) + .shopify-section--category-nav {
-  position: sticky;
+.shopify-section[data-sticky-part='nav'] {
   top: calc(var(--announcement-height, 0px) + var(--header-height, 0px));
   z-index: 59;
-  transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
 }
 
-.shopify-section.is-header-hidden {
-  transform: translateY(calc(-1 * var(--header-group-height, 100%)));
+.shopify-section[data-sticky-part].is-header-hidden {
+  translate: 0 calc(-1 * var(--header-group-height, 100%));
 }
 
 .header {

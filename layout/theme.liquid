@@ -168,7 +168,12 @@
       behind it either way.
     {% endcomment %}
     <script src="{{ 'skeleton.js' | asset_url }}" defer="defer"></script>
-      {% # KwikPass: GoKwik's phone-OTP login, as on the live theme %}
-    {% render 'kwikpass' %}
+      {%- comment -%}
+      KwikPass (GoKwik's phone-OTP login) comes from its app embed (Theme
+      settings > App embeds), which also hooks every /account link and the
+      wishlist's ?kp_login. The theme must not render its own copy as well: two
+      copies declare the same globals, the second dies with a SyntaxError, and
+      the login never opens.
+    {%- endcomment -%}
   </body>
 </html>

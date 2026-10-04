@@ -92,3 +92,68 @@
     color: #000;
   }
 }
+
+/* Policy pages (sections/policy.liquid): several policies as accordions, in
+   the PDP accordions' style - a divided list, a plus that turns into a cross. */
+.policy_list {
+  display: flex;
+  flex-direction: column;
+  max-width: 820px;
+  border-top: 1px solid var(--color-border, #e0e0e0);
+}
+
+.policy_list_item {
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+  scroll-margin-top: calc(var(--header-sticky-offset, 0px) + 16px);
+}
+
+.policy_list_item_summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 16px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.policy_list_item_summary::-webkit-details-marker {
+  display: none;
+}
+
+.policy_list_item_summary_sign {
+  display: flex;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--color-brand, #712242);
+  transition: transform 0.2s ease;
+}
+
+.policy_list_item_summary_sign svg {
+  width: 100%;
+  height: 100%;
+}
+
+.policy_list_item[open] .policy_list_item_summary_sign {
+  transform: rotate(45deg);
+}
+
+.policy_list_item_body {
+  padding-bottom: 20px;
+}
+
+/* The ported policy text uses <h1> for its own titles; inside a page they read
+   as sub-headings. */
+.page_wrapper_content h1 {
+  margin-block: 24px 12px;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.25;
+  color: #000;
+}

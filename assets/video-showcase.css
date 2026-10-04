@@ -1102,3 +1102,17 @@
     display: none;
   }
 }
+
+/* Desktop: the product strip is centred under the clip instead of starting at
+   the clip's left edge - started there, four cards ran off the right of the
+   screen. It still scrolls (and drags) when it really cannot fit. */
+@media screen and (min-width: 750px) {
+  .video-showcase-popup_shop {
+    padding-inline: 24px;
+  }
+
+  .video-showcase-popup_shop_track {
+    margin-inline: auto;
+    padding-right: 0;
+  }
+}
