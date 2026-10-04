@@ -7,9 +7,9 @@
  *     One slide shown at a time (hero banner, announcement strip, product
  *     gallery, lightbox). A horizontal drag - mouse or finger - past a
  *     threshold calls onSwipe(1) for next or onSwipe(-1) for previous. The
- *     element gets `touch-action: pan-y`, so a finger moving up or down still
- *     scrolls the page, and a gesture that starts mostly vertical is left to
- *     the page altogether.
+ *     element gets `touch-action: pan-y pinch-zoom`, so a finger moving up or
+ *     down still scrolls the page and two fingers still zoom, and a gesture
+ *     that starts mostly vertical is left to the page altogether.
  *
  *   zinaraDragScroll(track, { settle })
  *     A natively scrolling row of cards (product carousels, the Instagram row).
@@ -49,7 +49,7 @@
   window.zinaraSwipe = function zinaraSwipe(element, { onSwipe, threshold = 40, ignore } = {}) {
     if (!element || element.dataset.swipeBound) return;
     element.dataset.swipeBound = 'true';
-    element.style.touchAction = 'pan-y';
+    element.style.touchAction = 'pan-y pinch-zoom';
     const swallowClick = clickGuard(element);
 
     let pointerId = null;

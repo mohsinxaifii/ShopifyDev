@@ -60,9 +60,9 @@
       });
 
       this.slides.forEach((slide) => {
+        // The click that ends a swipe never gets here (setupSwipe), so a swipe
+        // turns the page rather than opening the lightbox.
         slide.addEventListener('click', () => {
-          // A swipe ends in a click too; it should turn the page, not open the lightbox.
-          if (this.swiped) return;
           this.dispatchEvent(
             new CustomEvent('gallery:open', { bubbles: true, detail: { index: this.index } }),
           );
