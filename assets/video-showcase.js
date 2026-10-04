@@ -547,6 +547,8 @@ class VideoShowcase extends HTMLElement {
     this.popupStage = this.popup.querySelector('[data-popup-stage]');
     this.popupSlides = Array.from(this.popup.querySelectorAll('[data-popup-slide]'));
     this.popupShops = Array.from(this.popup.querySelectorAll('[data-popup-shop]'));
+    // A mouse drags the product strip like a finger swipes it.
+    this.popupShops.forEach((shop) => window.zinaraDragScroll?.(shop));
     this.popupIndex = 0;
     this.popupMuted = false;
     this.popup.classList.toggle('is-single', this.popupSlides.length < 2);
@@ -605,8 +607,9 @@ class VideoShowcase extends HTMLElement {
         return;
       }
 
-      // Anything else is the dark space around the reel.
-      if (!event.target.closest('a, button, [data-popup-shop]')) this.closePopup();
+      // Anything else is the dark space around the reel - including the gaps
+      // around the product cards, which are the strip's but not a card's.
+      if (!event.target.closest('a, button, .video-showcase-popup_shop_card')) this.closePopup();
     });
 
     this.popup.addEventListener('keydown', (event) => {

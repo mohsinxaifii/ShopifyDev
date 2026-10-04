@@ -104,7 +104,9 @@
       const root = window.Shopify?.routes?.root || '/';
       const url =
         `${root}search/suggest.json?q=${encodeURIComponent(term)}` +
-        `&resources[type]=product,query&resources[limit]=${LIMIT}` +
+        // limit_scope=each: without it the limit is shared by both types, so
+        // the query suggestions crowded the products down to one.
+        `&resources[type]=product,query&resources[limit]=${LIMIT}&resources[limit_scope]=each` +
         `&resources[options][unavailable_products]=last`;
 
       try {
