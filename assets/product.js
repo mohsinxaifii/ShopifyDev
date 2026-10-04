@@ -929,8 +929,29 @@
 
       const buyNow = this.querySelector('[data-buy-now]');
       buyNow?.addEventListener('click', async () => {
+        const item = this.currentItem();
+        window.zinaraTrack?.('buy_now_click', {
+          currency: window.zinaraAnalyticsConfig?.currency,
+          value: item?.price,
+          items: item ? [item] : [],
+        });
         const ok = await this.addToCart(this.buildItems(), { trigger: buyNow });
-        if (ok) window.location.href = `${window.Shopify?.routes?.root || '/'}checkout`;
+        if (!ok) return;
+        // Buy now skips the cart for GoKwik's checkout, which Shopify's pixels
+        // never see - so begin_checkout goes from here (analytics.js), capped
+        // so tracking can never hold up checkout.
+        await Promise.race([
+          window.zinaraAnalytics?.beginCheckout?.('buy_now'),
+          new Promise((resolve) => setTimeout(resolve, 800)),
+        ]);
+        window.location.href = `${window.Shopify?.routes?.root || '/'}checkout`;
+      });
+
+      this.querySelector('[data-gift-toggle]')?.addEventListener('change', (event) => {
+        window.zinaraTrack?.('gift_sleeve_toggle', {
+          selected: event.target.checked,
+          price: Number(event.target.dataset.price) || undefined,
+        });
       });
 
       // Add-ons and paired products are selections, not immediate adds, so the
@@ -1079,10 +1100,17 @@
        The chosen variant is what Done / Add to cart later sends. */
     async toggleAddon(toggle) {
       const label = toggle.closest('.pdp-addons_grid_card')?.querySelector('[data-addon-variant]');
+      const track = (action) =>
+        window.zinaraTrack?.('addon_select', {
+          addon_name: toggle.dataset.addonName,
+          addon_price: Number(toggle.dataset.addonPrice) || undefined,
+          action,
+        });
       if (toggle.getAttribute('aria-pressed') === 'true') {
         toggle.setAttribute('aria-pressed', 'false');
         if (label) label.hidden = true;
         this.syncAddonHero();
+        track('remove');
         return;
       }
 
@@ -1097,6 +1125,7 @@
       }
       toggle.setAttribute('aria-pressed', 'true');
       this.syncAddonHero();
+      track('add');
     }
 
     /* The add-ons hero follows the ticked set. Each preview image lists the
@@ -1126,6 +1155,21 @@
       });
 
       images.forEach((img) => img.classList.toggle('is-active', img === best));
+    }
+
+    /** The GA4 item for the variant picked right now (analytics). */
+    currentItem() {
+      const base = window.zinaraAnalyticsConfig?.product?.item;
+      const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
+      if (!base || !variant) return base || null;
+      const { item_variant: omitted, ...rest } = base;
+      return {
+        ...rest,
+        item_id: variant.sku || String(variant.id),
+        ...(variant.title && variant.title !== 'Default Title' ? { item_variant: variant.title } : {}),
+        price: variant.price / 100,
+        discount: variant.compareAt > variant.price ? (variant.compareAt - variant.price) / 100 : 0,
+      };
     }
 
     buildItems() {

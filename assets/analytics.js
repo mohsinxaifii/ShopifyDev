@@ -459,6 +459,23 @@
     return { ...item, index, item_list_name: listName };
   }
 
+  // "Pair beautifully with": a piece's link inside the set.
+  document.addEventListener(
+    'click',
+    (event) => {
+      const link = event.target.closest?.('[data-pair-item] a[href]');
+      if (!link) return;
+      const piece = link.closest('[data-pair-item]');
+      const pieces = Array.from(piece.parentElement.querySelectorAll('[data-pair-item]'));
+      send('set_item_click', {
+        source_product_id: config.product?.id,
+        clicked_product_id: piece.dataset.productId,
+        position: pieces.indexOf(piece) + 1,
+      });
+    },
+    true,
+  );
+
   const CARD_LISTS = [
     // [container selector, list id, list name, extra event]
     ['[data-panel="also-like"]', 'you_may_also_like', 'You may also like', 'recommendation_click'],
@@ -734,6 +751,19 @@
       index,
     }));
   }
+
+  /** Buy now: the cart was just changed, so it is read fresh first. */
+  window.zinaraAnalytics.beginCheckout = async (location) => {
+    if (!config.beginCheckout) return;
+    await refreshCart();
+    if (!cart.lines?.length) return;
+    send('begin_checkout', {
+      currency: cart.currency || config.currency,
+      value: cart.value,
+      items: cartItems(cart.lines),
+      click_location: location,
+    });
+  };
 
   if (config.beginCheckout) {
     document.addEventListener('zinara:checkout-intent', (event) => {

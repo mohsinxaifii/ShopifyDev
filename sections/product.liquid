@@ -654,6 +654,7 @@
               class="pdp_gift_row_check"
               data-gift-toggle
               data-variant-id="{{ gift.selected_or_first_available_variant.id }}"
+              data-price="{{ gift.price | divided_by: 100.0 }}"
             >
             <span class="pdp_gift_row_box" aria-hidden="true">{{ 'icon-tick.svg' | inline_asset_content }}</span>
             {%- if gift.featured_image -%}
@@ -1094,6 +1095,8 @@
             "available": {{ variant.available | json }},
             "inStock": {% if variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
             "price": {{ variant.price | json }},
+            "sku": {{ variant.sku | json }},
+            "title": {{ variant.title | json }},
             "priceText": {{ variant.price | money_without_trailing_zeros | json }},
             "compareAt": {{ variant.compare_at_price | json }},
             "compareText": {{ variant.compare_at_price | money_without_trailing_zeros | json }},
