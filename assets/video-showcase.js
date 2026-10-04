@@ -702,6 +702,7 @@ class VideoShowcase extends HTMLElement {
     this.popup.focus({ preventScroll: true });
     this.showPopup(index);
     this.startPopupTicker();
+    this.trackPopup(index);
 
     if (!this.popupAnimates) return;
 
@@ -859,6 +860,22 @@ class VideoShowcase extends HTMLElement {
   stepPopup(direction) {
     if (this.popupClosing) return;
     this.showPopup(this.popupIndex + direction, direction);
+  }
+
+  /* Analytics: ugc_video_open for the clip it opened on, and 25/50/75/100%
+     progress for every clip played in the popup (each reported once). */
+  trackPopup(index) {
+    const slide = this.popupSlides[index];
+    if (!slide) return;
+    const params = (item) => ({
+      video_id: item.dataset.analyticsVideoId,
+      tagged_product_id: item.dataset.analyticsTaggedProductId || undefined,
+    });
+    window.zinaraTrack?.('ugc_video_open', { ...params(slide), position: index + 1 });
+    this.popupSlides.forEach((item) => {
+      const video = item.querySelector('video');
+      if (video) window.zinaraAnalytics?.trackVideoProgress(video, () => params(item));
+    });
   }
 
   showPopup(index, direction = 0) {
