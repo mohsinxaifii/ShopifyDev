@@ -77,8 +77,9 @@
 
 /* ---------------------------------------------------------------- gallery */
 
-/* --header-sticky-offset is the sticky header's height while it is on screen
-   (header.js), so the gallery rides below it instead of under it. */
+/* --header-sticky-offset is the height of the sticky announcement bar, header
+   and category bar while they are on screen (header.js), so the gallery rides
+   below them instead of under them. */
 .pdp_gallery {
   position: sticky;
   top: calc(24px + var(--header-sticky-offset, 0px));

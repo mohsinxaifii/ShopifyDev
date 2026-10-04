@@ -1,36 +1,46 @@
 /* ---------------------------------------------------------- sticky header --
-   The section wrapper sticks, not the header inside it, because sticky only
-   works against the wrapper's own parent (body). "On scroll up" hides it with
-   a translate while scrolling down and brings it back on any scroll up -
-   header.js flips .is-header-hidden. The shown state is `transform: none`, not
-   translateY(0): any transform would become the containing block for the
-   position: fixed menu drawer inside, pinning it to the header instead of the
-   screen. */
+   The announcement bar, the header and the category bar stick as one block:
+   all three slide away while the shopper scrolls down and all three come back
+   on any scroll up (header.js flips .is-header-hidden on each and measures the
+   heights below). They are three separate sections, so each wrapper sticks on
+   its own - stacked by `top` - and each hides by the whole block's height, which
+   always clears it off screen.
+
+   The shown state is `transform: none`, not translateY(0): any transform would
+   become the containing block for the position: fixed menu drawer inside the
+   header, pinning it to the header instead of the screen.
+
+   z-index: the announcement bar and header stay above the search scrim (40 in
+   search-suggest.css) as the design asks; the category bar sits under the
+   header so the search dropdown still covers it. The announcement selector is
+   deliberately more specific than search-suggest.css's `position: relative`
+   rule, which would otherwise unstick it while search is open. */
+.shopify-section--announcement-bar:has(+ .shopify-section--header > [data-sticky='scroll-up']),
+.shopify-section--announcement-bar:has(+ .shopify-section--header > [data-sticky='always']) {
+  position: sticky;
+  top: 0;
+  z-index: 61;
+  transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
+}
+
 .shopify-section--header:has(> [data-sticky='scroll-up']),
 .shopify-section--header:has(> [data-sticky='always']) {
   position: sticky;
-  top: 0;
+  top: var(--announcement-height, 0px);
   z-index: 60;
   transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
 }
 
-.shopify-section--header.is-header-hidden {
-  transform: translateY(-100%);
-}
-
-/* The category bar (its own section, straight after the header) sticks right
-   under it and leaves and returns with it. --header-height is set by header.js.
-   It sits one layer below the header so the search dropdown still covers it. */
 .shopify-section--header:has(> [data-sticky='scroll-up']) + .shopify-section--category-nav,
 .shopify-section--header:has(> [data-sticky='always']) + .shopify-section--category-nav {
   position: sticky;
-  top: var(--header-height, 0px);
+  top: calc(var(--announcement-height, 0px) + var(--header-height, 0px));
   z-index: 59;
   transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
 }
 
-.shopify-section--category-nav.is-header-hidden {
-  transform: translateY(calc(-100% - var(--header-height, 0px)));
+.shopify-section.is-header-hidden {
+  transform: translateY(calc(-1 * var(--header-group-height, 100%)));
 }
 
 .header {
