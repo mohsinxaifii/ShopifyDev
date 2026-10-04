@@ -105,3 +105,18 @@
     line-height: 22px;
   }
 }
+
+/* Tablet: the four tiles share one row, as on phones - wrapped at this width
+   they broke 3 + 1, leaving the last tile alone on its own row. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .shop-by-category_wrapper_grid {
+    flex-wrap: nowrap;
+    gap: 16px;
+  }
+
+  .shop-by-category_wrapper_grid_item {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+  }
+}
