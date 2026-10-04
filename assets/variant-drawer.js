@@ -75,6 +75,23 @@
       resolve?.(value);
     }
 
+    /* The drawer is a popover (snippets/variant-drawer.liquid): shown, it sits
+       in the browser's top layer, above everything on the page whatever its
+       z-index. Inside an open modal dialog (hostInOpenDialog, which runs first)
+       it is a descendant of that dialog, so it stays usable, and being shown
+       after it, it stacks above it. Browsers without popovers keep the plain
+       fixed positioning. */
+    setTopLayer(on) {
+      if (typeof this.showPopover !== 'function') return;
+      const showing = this.matches(':popover-open');
+      try {
+        if (on && !showing) this.showPopover();
+        else if (!on && showing) this.hidePopover();
+      } catch (error) {
+        // Already in the requested state.
+      }
+    }
+
     /* Into the top-most open modal dialog, if there is one; see the header. */
     hostInOpenDialog() {
       const dialogs = Array.from(document.querySelectorAll('dialog[open]'));
@@ -90,6 +107,7 @@
       this.trigger = trigger;
       this.opener = document.activeElement;
       this.hidden = false;
+      this.setTopLayer(true);
       // Restored on close rather than cleared: over a sheet, the page under it
       // must stay locked.
       this.previousOverflow = document.documentElement.style.overflow;
@@ -129,6 +147,7 @@
       this.classList.remove('is-open');
       document.documentElement.style.overflow = this.previousOverflow || '';
       const finish = () => {
+        this.setTopLayer(false);
         this.hidden = true;
         this.content.replaceChildren();
         if (this.homeParent && this.parentElement !== this.homeParent) this.homeParent.append(this);
