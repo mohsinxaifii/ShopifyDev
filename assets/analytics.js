@@ -15,8 +15,10 @@
  *   - view_item, add_to_cart and search from the plan are left to the apps.
  *   - view_item_list goes to Meta only (the Meta app has no equivalent).
  *   - begin_checkout is the exception the plan calls for: checkout runs on
- *     GoKwik, where Shopify's pixels cannot see it, so the theme sends it -
- *     switchable in theme settings in case checkout ever moves back to Shopify.
+ *     GoKwik, where Shopify's pixels cannot see it. It is sent only for a
+ *     click GoKwik actually took over (a native checkout is the apps'), and
+ *     only to the platforms GoKwik does not already report to itself
+ *     (settings > Gokwik: its FB pixel / GA4 ID).
  *   - purchase / refund / cancel / RTO stay server-side, as the plan says.
  *
  * Everything else in the plan is sent from here, to GA4 as the plan's event
@@ -252,7 +254,7 @@
     }
   }
   document.addEventListener('cart:updated', refreshCart);
-  if (config.beginCheckout && cart.count > 0) refreshCart();
+  if (cart.count > 0) refreshCart();
 
   function globals() {
     return {
@@ -296,7 +298,8 @@
     return payload;
   }
 
-  function send(name, input = {}) {
+  /** `routing` can switch a platform off for this one call ({ ga, meta }). */
+  function send(name, input = {}, routing = {}) {
     const plan = spec(name);
     if (!plan) {
       console.warn(`[analytics] "${name}" is not in the tracking plan`);
@@ -323,10 +326,10 @@
     }
     const payload = { ...base, ...params };
 
-    if (gaId && plan.ga && typeof window.gtag === 'function') {
+    if (gaId && plan.ga && routing.ga !== false && typeof window.gtag === 'function') {
       window.gtag('event', name, { ...payload, send_to: gaId });
     }
-    if (pixelId && plan.meta && typeof window.fbq === 'function') {
+    if (pixelId && plan.meta && routing.meta !== false && typeof window.fbq === 'function') {
       const metaData = metaPayload(payload);
       if (plan.meta === 'custom') window.fbq('trackCustom', name, metaData);
       else window.fbq('track', plan.meta, metaData);
@@ -752,29 +755,37 @@
     }));
   }
 
-  /** Buy now: the cart was just changed, so it is read fresh first. */
-  window.zinaraAnalytics.beginCheckout = async (location) => {
-    if (!config.beginCheckout) return;
-    await refreshCart();
-    if (!cart.lines?.length) return;
-    send('begin_checkout', {
-      currency: cart.currency || config.currency,
-      value: cart.value,
-      items: cartItems(cart.lines),
-      click_location: location,
-    });
-  };
+  /* Checkout and Buy now clicks, announced by snippets/analytics-config.liquid
+     ahead of GoKwik (which stops the click for everyone after it).
 
-  if (config.beginCheckout) {
-    document.addEventListener('zinara:checkout-intent', (event) => {
-      // Buy now sends its own begin_checkout with the item it just added.
-      if (event.detail?.location === 'buy_now' || !cart.lines?.length) return;
-      send('begin_checkout', {
-        currency: cart.currency || config.currency,
-        value: cart.value,
-        items: cartItems(cart.lines),
-        click_location: event.detail?.location,
-      });
-    });
-  }
+     buy_now_click always. begin_checkout only when GoKwik took the click -
+     Shopify's own checkout is reported by the apps - and only to whichever
+     platform GoKwik is not already reporting to. Buy now checks out the one
+     product on the page; the cart's checkout button checks out the cart, read
+     from the snapshot kept in step with every cart change (there is no time
+     to fetch it while the browser leaves). */
+  document.addEventListener('zinara:checkout-intent', (event) => {
+    const { location, gokwik } = event.detail || {};
+    let items = [];
+    let value = 0;
+
+    if (location === 'buy_now') {
+      const item = window.zinaraPdp?.currentItem?.() || config.product?.item;
+      if (item) {
+        items = [item];
+        value = item.price;
+        send('buy_now_click', { currency: config.currency, value, items });
+      }
+    } else if (cart.lines?.length) {
+      items = cartItems(cart.lines);
+      value = cart.value;
+    }
+
+    if (!gokwik) return;
+    send(
+      'begin_checkout',
+      { currency: cart.currency || config.currency, value, items, click_location: location },
+      { ga: !config.gokwik?.ga4, meta: !config.gokwik?.meta },
+    );
+  });
 })();
