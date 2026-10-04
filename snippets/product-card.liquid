@@ -46,7 +46,6 @@
   unless compare_text contains money_symbol
     assign compare_text = compare_text | prepend: money_symbol
   endunless
-  assign average_rating = product.metafields.reviews.rating.value
 
   comment
     The grid card is not a fixed 266px: it is a third of the results column on
@@ -113,12 +112,13 @@
       {%- endunless -%}
     </span>
 
-    {%- if average_rating > 0 -%}
+    {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
+    <judgeme-rating data-handle="{{ product.handle }}" hidden>
       <span class="product-card_media_rating">
         {{ 'icon-star.svg' | inline_asset_content }}
-        <span class="product-card_media_rating_value">{{ average_rating | round: 1 }}</span>
+        <span class="product-card_media_rating_value" data-judgeme-value></span>
       </span>
-    {%- endif -%}
+    </judgeme-rating>
   </span>
 
   <span class="product-card_info">

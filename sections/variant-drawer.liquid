@@ -26,7 +26,6 @@
       break
     endif
   endfor
-  assign average_rating = product.metafields.reviews.rating.value
   assign current = product.selected_or_first_available_variant
 -%}
 
@@ -60,12 +59,13 @@
         {%- endif -%}
       </span>
 
-      {%- if average_rating > 0 -%}
+      {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
+      <judgeme-rating data-handle="{{ product.handle }}" hidden>
         <span class="product-card_media_rating">
           {{ 'icon-star.svg' | inline_asset_content }}
-          <span class="product-card_media_rating_value">{{ average_rating | round: 1 }}</span>
+          <span class="product-card_media_rating_value" data-judgeme-value></span>
         </span>
-      {%- endif -%}
+      </judgeme-rating>
     </a>
 
     <span class="variant-drawer_panel_body_card_info">
