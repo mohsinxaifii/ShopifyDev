@@ -27,14 +27,21 @@ class HeaderComponent extends HTMLElement {
      scrolls down, and slides back in on any scroll up. It is never hidden
      while the menu drawer or the search field is open.
 
-     --header-sticky-offset on <html> is the header's height whenever it is
-     stuck and on screen, 0 otherwise, for other sticky elements to sit below. */
+     The category bar section right after the header sticks beneath it and
+     hides and returns with it (header.css).
+
+     On <html>: --header-height is the header's own height, for the category
+     bar to stick under; --header-sticky-offset is the height of everything
+     stuck on screen (header + category bar), 0 when hidden, for other sticky
+     elements to sit below. */
   setupSticky() {
     const mode = this.dataset.sticky;
     this.section = this.closest('.shopify-section');
     if (!this.section || (mode !== 'scroll-up' && mode !== 'always')) return;
 
     const root = document.documentElement;
+    const next = this.section.nextElementSibling;
+    this.nav = next?.classList.contains('shopify-section--category-nav') ? next : null;
     // Ignore jitter (trackpads, iOS bounce) so the header does not flicker.
     const THRESHOLD = 6;
     let lastY = Math.max(0, window.scrollY);
@@ -49,7 +56,9 @@ class HeaderComponent extends HTMLElement {
     const update = () => {
       ticking = false;
       const y = Math.max(0, window.scrollY);
-      const height = this.section.offsetHeight;
+      const headerHeight = this.section.offsetHeight;
+      // offsetHeight is 0 where the category bar is display: none (phones).
+      const height = headerHeight + (this.nav ? this.nav.offsetHeight : 0);
       // Where the header sits in the page before it sticks: below the
       // announcement bar, which scrolls away normally.
       const previous = this.section.previousElementSibling;
@@ -67,6 +76,8 @@ class HeaderComponent extends HTMLElement {
       if (Math.abs(y - lastY) > THRESHOLD || !stuck) lastY = y;
 
       this.section.classList.toggle('is-header-hidden', hidden);
+      this.nav?.classList.toggle('is-header-hidden', hidden);
+      root.style.setProperty('--header-height', `${headerHeight}px`);
       root.style.setProperty('--header-sticky-offset', stuck && !hidden ? `${height}px` : '0px');
     };
 
@@ -78,11 +89,16 @@ class HeaderComponent extends HTMLElement {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
+    // The header changes height without a scroll too (the phone search field).
+    if ('ResizeObserver' in window) new ResizeObserver(onScroll).observe(this.section);
     // Tabbing into a hidden header should bring it back.
-    this.addEventListener('focusin', () => {
+    const reveal = () => {
       this.section.classList.remove('is-header-hidden');
+      this.nav?.classList.remove('is-header-hidden');
       onScroll();
-    });
+    };
+    this.addEventListener('focusin', reveal);
+    this.nav?.addEventListener('focusin', reveal);
     update();
   }
 

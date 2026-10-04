@@ -1,3 +1,38 @@
+/* ---------------------------------------------------------- sticky header --
+   The section wrapper sticks, not the header inside it, because sticky only
+   works against the wrapper's own parent (body). "On scroll up" hides it with
+   a translate while scrolling down and brings it back on any scroll up -
+   header.js flips .is-header-hidden. The shown state is `transform: none`, not
+   translateY(0): any transform would become the containing block for the
+   position: fixed menu drawer inside, pinning it to the header instead of the
+   screen. */
+.shopify-section--header:has(> [data-sticky='scroll-up']),
+.shopify-section--header:has(> [data-sticky='always']) {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
+}
+
+.shopify-section--header.is-header-hidden {
+  transform: translateY(-100%);
+}
+
+/* The category bar (its own section, straight after the header) sticks right
+   under it and leaves and returns with it. --header-height is set by header.js.
+   It sits one layer below the header so the search dropdown still covers it. */
+.shopify-section--header:has(> [data-sticky='scroll-up']) + .shopify-section--category-nav,
+.shopify-section--header:has(> [data-sticky='always']) + .shopify-section--category-nav {
+  position: sticky;
+  top: var(--header-height, 0px);
+  z-index: 59;
+  transition: transform var(--motion-base, 0.3s) var(--motion-ease, ease);
+}
+
+.shopify-section--category-nav.is-header-hidden {
+  transform: translateY(calc(-100% - var(--header-height, 0px)));
+}
+
 .header {
   position: relative;
   width: 100%;
