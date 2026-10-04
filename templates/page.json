@@ -17,13 +17,8 @@
       }
     },
     "main": {
-      "type": "blog",
-      "settings": {
-        "featured_heading": "Featured",
-        "featured_count": 3,
-        "grid_heading": "More articles",
-        "articles_per_page": 12
-      }
+      "type": "page",
+      "settings": {}
     },
     "faq": {
       "type": "faq",

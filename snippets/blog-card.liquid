@@ -17,6 +17,8 @@
   @param {string} [variant] - 'grid' (default) or 'featured'
   @param {string} [tag_label] - overrides the pill copy
   @param {string} [heading_level] - wraps the title in this tag instead of a span
+  @param {string} [section_name] - analytics: the list the card sits in
+  @param {number} [position] - analytics: the card's place in that list
 {%- enddoc -%}
 
 {%- liquid
@@ -26,7 +28,16 @@
 -%}
 
 <article class="blog-card blog-card--{{ card_variant }}">
-  <a class="blog-card_link" href="{{ article.url }}">
+  <a
+    class="blog-card_link"
+    href="{{ article.url }}"
+    data-analytics="blog_card_click blog_select"
+    data-analytics-article-id="{{ article.id }}"
+    data-analytics-article-title="{{ article.title | escape }}"
+    data-analytics-section-name="{{ section_name | default: 'blog_list' }}"
+    data-analytics-card-type="{{ card_variant }}"
+    data-analytics-position="{{ position }}"
+  >
     <span class="blog-card_media">
       {%- if pill != blank -%}
         <span class="blog-card_media_tags">

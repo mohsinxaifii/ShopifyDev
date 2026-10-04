@@ -1,0 +1,94 @@
+/* Store pages without a template of their own (sections/page.liquid): the
+   heading and type follow the article page, on the same white band and page
+   width as the wishlist. */
+
+.page {
+  display: block;
+  width: 100%;
+  background-color: #fff;
+}
+
+.page_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding: 32px var(--page-margin) 48px;
+}
+
+.page_wrapper_title {
+  margin: 0;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.219;
+  color: var(--color-text-secondary, #494949);
+}
+
+.page_wrapper_content {
+  max-width: 820px;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.571;
+  color: var(--color-text-secondary, #494949);
+}
+
+.page_wrapper_content > :first-child {
+  margin-top: 0;
+}
+
+.page_wrapper_content > :last-child {
+  margin-bottom: 0;
+}
+
+.page_wrapper_content p,
+.page_wrapper_content ul,
+.page_wrapper_content ol {
+  margin-block: 0 22px;
+}
+
+.page_wrapper_content h2,
+.page_wrapper_content h3,
+.page_wrapper_content h4 {
+  margin-block: 24px 12px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #000;
+}
+
+.page_wrapper_content ul,
+.page_wrapper_content ol {
+  padding-inline-start: 20px;
+}
+
+.page_wrapper_content a {
+  color: var(--color-brand, #712242);
+}
+
+.page_wrapper_content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* KwikPass draws the account inside its own shadow root; this only gives it
+   room while it loads. */
+.page_wrapper_account {
+  min-height: 60vh;
+}
+
+@media screen and (max-width: 749px) {
+  .page_wrapper {
+    gap: 16px;
+    padding-block: 24px 32px;
+  }
+
+  .page_wrapper_title {
+    font-size: 20px;
+    line-height: normal;
+    color: #000;
+  }
+}

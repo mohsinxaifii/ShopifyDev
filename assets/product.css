@@ -943,6 +943,10 @@ button.pdp_trust_grid_item_inner {
   color: var(--pdp-text-secondary);
 }
 
+.pdp_delivery_result.is-invalid {
+  color: #c62828;
+}
+
 /* Gift sleeve - Figma 7930:96141 */
 
 .pdp_gift {

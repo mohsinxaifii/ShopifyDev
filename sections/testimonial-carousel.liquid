@@ -20,6 +20,10 @@
                 assign product_title = block.settings.product_title
                 assign product_url = block.settings.product_url
               endif
+              assign review_product_id = product.id | default: ''
+              if review_product_id == blank and product_url contains '/products/'
+                assign review_product_id = product_url | split: '/products/' | last | split: '?' | first
+              endif
             -%}
 
             <review-modal class="testimonial-carousel_wrapper_track_card" {{ block.shopify_attributes }}>
@@ -48,6 +52,10 @@
                       type="button"
                       class="testimonial-carousel_wrapper_track_card_row_content_quote_more"
                       data-review-open
+                      data-analytics="review_card_open"
+                      data-analytics-review-id="{{ block.id }}"
+                      data-analytics-product-id="{{ review_product_id }}"
+                      data-analytics-rating="{{ block.settings.rating }}"
                     >
                       {{- 'accessibility.read_more' | t -}}
                     </button>
@@ -107,6 +115,9 @@
                           <a
                             href="{{ product_url }}"
                             class="testimonial-carousel_wrapper_track_card_row_content_product"
+                            data-analytics="review_product_click"
+                            data-analytics-review-id="{{ block.id }}"
+                            data-analytics-product-id="{{ review_product_id }}"
                           >
                             {{- product_title -}}
                           </a>

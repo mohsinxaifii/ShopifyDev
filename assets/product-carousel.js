@@ -21,10 +21,13 @@
       // Bind every panel, not just the one open at start: switching tabs swaps
       // the track, and a listener left on the old one stops updating the dots.
       this.panels.forEach((panel) => {
-        panel
-          .querySelector('.product-carousel_wrapper_stage_panel_track')
-          ?.addEventListener('scroll', () => this.updateActiveDot(), { passive: true });
+        const track = panel.querySelector('.product-carousel_wrapper_stage_panel_track');
+        track?.addEventListener('scroll', () => this.updateActiveDot(), { passive: true });
+        // A mouse drags the row like a finger swipes it (assets/swipe.js).
+        window.zinaraDragScroll?.(track);
       });
+      // The tab chips scroll sideways on phones; same gesture for a mouse.
+      window.zinaraDragScroll?.(this.querySelector('.product-carousel_wrapper_controls'));
 
       this.buildDots();
 
@@ -61,6 +64,11 @@
     selectTab(index) {
       if (index === this.activeIndex) return;
       this.activeIndex = index;
+      window.zinaraTrack?.('product_tab_select', {
+        section_name: this.dataset.analyticsSection,
+        tab_name: this.tabs[index]?.textContent.trim(),
+        tab_position: index + 1,
+      });
 
       this.tabs.forEach((tab, i) => {
         tab.classList.toggle('is-active', i === index);

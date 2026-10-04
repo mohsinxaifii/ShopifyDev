@@ -31,6 +31,10 @@
             <a
               href="{{ block.settings.url | default: '#' }}"
               class="zinara-collections_wrapper_track_item"
+              data-analytics="collection_click"
+              data-analytics-collection-name="{{ block.settings.label | escape }}"
+              data-analytics-section-name="zinara_collections"
+              data-analytics-position="{{ forloop.index }}"
               {{ block.shopify_attributes }}
             >
               <span class="zinara-collections_wrapper_track_item_image">
@@ -68,7 +72,12 @@
 
       <div class="scroll-carousel_dots" data-dots></div>
 
-      <a href="{{ section.blocks.first.settings.url | default: '#' }}" class="zinara-collections_wrapper_link">
+      <a
+        href="{{ section.blocks.first.settings.url | default: '#' }}"
+        class="zinara-collections_wrapper_link"
+        data-analytics="section_cta_click"
+        data-analytics-section-name="zinara_collections"
+      >
         {{- 'accessibility.view_all' | t -}}
       </a>
     </div>

@@ -18,6 +18,11 @@
   };
 
   const init = () => {
+    // On phones the tiles are a sideways row: a mouse drags it like a finger.
+    document
+      .querySelectorAll('.instagram-feed_wrapper_grid')
+      .forEach((grid) => window.zinaraDragScroll?.(grid));
+
     const videos = Array.from(document.querySelectorAll(SELECTOR));
     if (!videos.length) return;
 

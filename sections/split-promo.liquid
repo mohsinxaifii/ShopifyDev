@@ -4,6 +4,7 @@
   <div class="split-promo_left" data-animate>
     <div
       class="split-promo_left_card"
+      data-analytics-view="custom_design"
       {% if section.settings.left_image %}
         style="background-image: url({{ section.settings.left_image | image_url: width: 1200 }})"
       {% endif %}
@@ -13,7 +14,13 @@
           <h2 class="split-promo_left_card_content_text_heading">{{ section.settings.left_heading }}</h2>
           <p class="split-promo_left_card_content_text_subheading">{{ section.settings.left_subheading }}</p>
         </div>
-        <a href="{{ section.settings.left_button_url | default: '#' }}" class="split-promo_button">
+        <a
+          href="{{ section.settings.left_button_url | default: '#' }}"
+          class="split-promo_button"
+          data-analytics="section_cta_click{% if section.settings.left_button_url contains 'get-your-own-design' %} custom_design_start{% endif %}"
+          data-analytics-section-name="custom_design"
+          data-analytics-click-location="home_split_promo"
+        >
           <span class="split-promo_button_icon">{{ 'icon-pencil.svg' | inline_asset_content }}</span>
           {{ section.settings.left_button_label }}
         </a>
@@ -24,6 +31,7 @@
   <div class="split-promo_right" data-animate>
     <div
       class="split-promo_right_card{% if section.settings.right_image_mobile %} split-promo_right_card--mobile-image{% endif %}"
+      data-analytics-view="about"
     >
       {%- comment -%}
         Figma Mobile 7930:106898 swaps the tilted pair for one landscape photo
@@ -48,7 +56,12 @@
       </div>
       <div class="split-promo_right_card_content">
         <h2 class="split-promo_right_card_content_heading">{{ section.settings.right_heading }}</h2>
-        <a href="{{ section.settings.right_button_url | default: '#' }}" class="split-promo_button">
+        <a
+          href="{{ section.settings.right_button_url | default: '#' }}"
+          class="split-promo_button"
+          data-analytics="section_cta_click"
+          data-analytics-section-name="about"
+        >
           {{ section.settings.right_button_label }}
         </a>
       </div>

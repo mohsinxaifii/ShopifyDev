@@ -43,7 +43,12 @@
             {%- endif -%}
 
             {%- if block.settings.link != blank -%}
-              <a href="{{ block.settings.link }}" class="announcement-bar_wrapper_track_slide_text">
+              <a
+                href="{{ block.settings.link }}"
+                class="announcement-bar_wrapper_track_slide_text"
+                data-analytics="announcement_bar_click"
+                data-analytics-message-text="{{ block.settings.text | strip_html | escape }}"
+              >
                 {{ block.settings.text }}
               </a>
             {%- else -%}

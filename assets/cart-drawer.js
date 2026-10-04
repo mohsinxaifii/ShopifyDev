@@ -14,6 +14,23 @@
 (() => {
   const root = () => window.Shopify?.routes?.root || '/';
 
+  /*
+   * KwikCart - GoKwik's side cart, switched on by its app embed as on the live
+   * theme. When it is on the page it is the cart: this file still makes every
+   * add, but shows KwikCart instead of the theme's drawer. The header cart
+   * icon needs nothing from here - KwikCart binds it itself and stops the
+   * click before it reaches the listener in bindGlobal.
+   */
+  const kwikCart = () => typeof window.openGokwikSideCart === 'function';
+
+  /* `zinara:cart-added` with the lines a confirmed /cart/add.js returned - for
+     ad pixels that have no Shopify app (assets/openai-ads.js). /cart/add.js
+     answers with the line itself, or with { items } for several. */
+  function announceAdded(body) {
+    const items = Array.isArray(body?.items) ? body.items : body?.variant_id ? [body] : [];
+    if (items.length) document.dispatchEvent(new CustomEvent('zinara:cart-added', { detail: { items } }));
+  }
+
   class ZinaraCart {
     constructor() {
       this.dialog = document.querySelector('[data-cart-drawer]');
@@ -80,6 +97,20 @@
     /* -------------------------------------------------------------- state */
 
     open() {
+      if (kwikCart()) {
+        // A modal <dialog> (the curated-videos reel, a product sheet) lives in
+        // the browser's top layer, above anything KwikCart can stack, so the
+        // cart would open hidden behind it. Close those first, as the theme's
+        // own drawer - itself a modal - never had to.
+        document.querySelectorAll('dialog[open]').forEach((dialog) => {
+          if (dialog !== this.dialog && dialog.matches(':modal')) dialog.close();
+        });
+        // Pick up the line just added before sliding in.
+        Promise.resolve(window.refreshSideCart?.())
+          .catch(() => {})
+          .finally(() => window.openGokwikSideCart());
+        return;
+      }
       if (!this.dialog || this.dialog.open) return;
       this.dialog.showModal();
     }
@@ -111,6 +142,7 @@
           const body = await response.json().catch(() => ({}));
           throw new Error(body.description || `${response.status}`);
         }
+        announceAdded(await response.json().catch(() => null));
 
         // Only after the cart has confirmed: refresh, then show the result.
         await this.refresh();
@@ -231,8 +263,41 @@
     }
   }
 
+  /* Lines changed inside KwikCart (quantity, remove, its upsells) go through
+     its own requests, so the header count and everything listening for
+     cart:updated would fall behind. Its cart calls are watched instead and the
+     theme re-reads the cart once they settle. The theme's own requests use
+     fetch, not XHR, so this never loops back on itself. */
+  function watchKwikCartRequests() {
+    const CART_CALL = /\/cart\/(add|change|update|clear)(\.js)?(\?|$)/;
+    let timer = null;
+    const settle = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => window.zinaraCart?.refresh(), 300);
+    };
+    const open = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+      if (CART_CALL.test(String(url))) {
+        this.addEventListener('loadend', settle);
+        // KwikCart's own adds (the product form's Add to cart) count as adds too.
+        if (/\/cart\/add/.test(String(url))) {
+          this.addEventListener('load', () => {
+            if (this.status < 200 || this.status > 299) return;
+            try {
+              announceAdded(JSON.parse(this.responseText));
+            } catch (error) {
+              // Not JSON (a form post): nothing to report.
+            }
+          });
+        }
+      }
+      return open.call(this, method, url, ...rest);
+    };
+  }
+
   function boot() {
     window.zinaraCart = new ZinaraCart();
+    watchKwikCartRequests();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

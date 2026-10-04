@@ -93,6 +93,8 @@
               data-variant-count="{{ addon.variants.size }}"
               data-product-url="{{ addon.url }}"
               data-product-id="{{ addon.id }}"
+              data-addon-name="{{ addon.title | escape }}"
+              data-addon-price="{{ addon_variant.price | divided_by: 100.0 }}"
               aria-pressed="false"
               aria-label="Add {{ addon.title | escape }}"
             >

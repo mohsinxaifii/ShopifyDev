@@ -22,6 +22,7 @@
       type="button"
       class="pdp-offer_code"
       data-copy-code="{{ offer.discount_code | escape }}"
+      data-offer-id="{{ offer.system.handle | default: offer.heading | escape }}"
       aria-label="Copy code {{ offer.discount_code | escape }}"
     >
       <span class="pdp-offer_code_icon" aria-hidden="true">{{ 'icon-copy.svg' | inline_asset_content }}</span>

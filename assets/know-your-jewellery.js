@@ -1,12 +1,29 @@
+/* Analytics (know_your_jewellery_interaction): the deck's first card is the
+   lab-grown comparison, the flip cards are myth / fact. */
+function trackJewelleryCard(item, action) {
+  const stack = item?.closest('card-stack');
+  const items = stack ? Array.from(stack.querySelectorAll('[data-stack-item]')) : [];
+  window.zinaraTrack?.('know_your_jewellery_interaction', {
+    card_name: item?.matches('flip-card') ? 'myth_fact' : 'lab_grown',
+    action,
+    card_index: items.indexOf(item) + 1,
+  });
+}
+
 class FlipCard extends HTMLElement {
   connectedCallback() {
-    this.addEventListener('click', () => this.classList.toggle('is-flipped'));
+    this.addEventListener('click', () => this.flip());
     this.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        this.classList.toggle('is-flipped');
+        this.flip();
       }
     });
+  }
+
+  flip() {
+    this.classList.toggle('is-flipped');
+    if (this.classList.contains('is-flipped')) trackJewelleryCard(this, 'tap_reveal');
   }
 }
 
@@ -21,15 +38,15 @@ class CardStack extends HTMLElement {
 
     this.items.forEach((item, index) => {
       item.addEventListener('click', () => {
-        if (index !== this.activeIndex) this.goTo(index);
+        if (index !== this.activeIndex) this.goTo(index, undefined, 'flip');
       });
     });
 
     this.querySelectorAll('[data-prev]').forEach((button) =>
-      button.addEventListener('click', () => this.goTo(this.activeIndex - 1, -1)),
+      button.addEventListener('click', () => this.goTo(this.activeIndex - 1, -1, 'flip')),
     );
     this.querySelectorAll('[data-next]').forEach((button) =>
-      button.addEventListener('click', () => this.goTo(this.activeIndex + 1, 1)),
+      button.addEventListener('click', () => this.goTo(this.activeIndex + 1, 1, 'flip')),
     );
 
     this.bindSwipe(this.querySelector('.know-your-jewellery_wrapper_grid_diamonds_stack'));
@@ -70,7 +87,7 @@ class CardStack extends HTMLElement {
       if (Math.abs(dx) < threshold || Math.abs(dx) < Math.abs(dy)) return;
       swiped = true;
       // The card swings out on the side the finger is moving towards.
-      this.goTo(this.activeIndex + (dx < 0 ? 1 : -1), dx < 0 ? -1 : 1);
+      this.goTo(this.activeIndex + (dx < 0 ? 1 : -1), dx < 0 ? -1 : 1, 'drag');
     });
 
     surface.addEventListener('pointercancel', () => {
@@ -91,8 +108,9 @@ class CardStack extends HTMLElement {
 
   /* Stepping forward sends the front card out to the side, behind the deck and
      down to the back; stepping back plays that in reverse on the back card.
-     `swing` is the side the card swings out on: 1 right, -1 left. */
-  goTo(index, swing) {
+     `swing` is the side the card swings out on: 1 right, -1 left. `action` is
+     how the shopper moved the deck, for analytics. */
+  goTo(index, swing, action) {
     const total = this.items.length;
     const next = (index + total) % total;
     if (next === this.activeIndex || this.animating) return;
@@ -121,6 +139,7 @@ class CardStack extends HTMLElement {
     this.items.forEach((item) => item.classList.remove('is-flipped'));
     this.activeIndex = next;
     this.updateDepths();
+    if (action) trackJewelleryCard(this.items[next], action);
 
     if (this.dotsContainer) {
       Array.from(this.dotsContainer.children).forEach((dot, i) => dot.classList.toggle('is-active', i === next));
@@ -146,7 +165,7 @@ class CardStack extends HTMLElement {
       dot.className = 'scroll-carousel_dot';
       if (index === this.activeIndex) dot.classList.add('is-active');
       dot.setAttribute('aria-label', `Show card ${index + 1}`);
-      dot.addEventListener('click', () => this.goTo(index));
+      dot.addEventListener('click', () => this.goTo(index, undefined, 'flip'));
       this.dotsContainer.appendChild(dot);
     });
   }

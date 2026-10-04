@@ -4,9 +4,24 @@
 .variant-drawer {
   position: fixed;
   inset: 0;
-  /* Above the sticky header (60 in header.css). */
+  /* Shown in the browser's top layer while open (a popover, see
+     variant-drawer.js), so nothing on the page can cover it. The z-index only
+     matters where popovers are unsupported: above the sticky header (60). */
   z-index: 70;
   display: block;
+}
+
+/* Undo the browser's default popover box (centred, bordered, padded, sized to
+   content); the drawer fills the screen as before. */
+.variant-drawer[popover] {
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: visible;
 }
 
 .variant-drawer[hidden] {

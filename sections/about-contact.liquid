@@ -38,6 +38,9 @@
             <a
               href="{{ block.settings.url | default: '#' }}"
               class="about-contact_wrapper_body_channels_card"
+              data-analytics="contact_click"
+              data-analytics-contact-method="{% if block.settings.icon == 'phone' %}call{% else %}{{ block.settings.icon }}{% endif %}"
+              data-analytics-click-location="{{ template.suffix | default: template.name | replace: '-', '_' }}_page"
               {% if block.settings.copy_on_click %}
                 data-copy="{{ block.settings.value | escape }}"
               {% endif %}

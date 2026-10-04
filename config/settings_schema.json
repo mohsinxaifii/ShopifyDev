@@ -4,8 +4,8 @@
     "theme_name": "Zinara",
     "theme_version": "0.1.0",
     "theme_author": "Zinara",
-    "theme_documentation_url": "https:\/\/help.shopify.com\/manual\/online-store\/themes",
-    "theme_support_url": "https:\/\/support.shopify.com\/"
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://support.shopify.com/"
   },
   {
     "name": "t:general.header",
@@ -169,6 +169,199 @@
         "id": "judgeme_public_token",
         "label": "Judge.me public API token",
         "info": "Judge.me admin > Settings > Integrations > View API tokens. Use the Public token (never the Private one). Leave empty to hide ratings and reviews."
+      }
+    ]
+  },
+  {
+    "name": "Tracking",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Sends the events in the Zinara event tracking plan to GA4 and Meta. Page views, product views, searches, add to cart and Shopify checkout events are left to the Google & YouTube and Facebook & Instagram apps, and GoKwik checkout events to GoKwik wherever its own tracking is set up (settings > Gokwik), so nothing is counted twice."
+      },
+      {
+        "type": "text",
+        "id": "ga4_measurement_id",
+        "label": "GA4 measurement ID",
+        "default": "G-9HTXCELBNX",
+        "info": "The same ID the Google & YouTube app uses. Leave empty to send nothing to GA4."
+      },
+      {
+        "type": "text",
+        "id": "meta_pixel_id",
+        "label": "Meta pixel ID",
+        "default": "1058880252490692",
+        "info": "The same pixel the Facebook & Instagram app uses. Leave empty to send nothing to Meta."
+      },
+      {
+        "type": "checkbox",
+        "id": "analytics_debug",
+        "label": "Log events to the browser console",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Gokwik",
+    "settings": [
+      {
+        "type": "text",
+        "id": "mid",
+        "label": "Merchant Id"
+      },
+      {
+        "type": "header",
+        "content": "Select environment"
+      },
+      {
+        "type": "select",
+        "id": "envType",
+        "label": "Environment",
+        "options": [
+          {
+            "value": "qa",
+            "label": "QA"
+          },
+          {
+            "value": "sandbox",
+            "label": "Sandbox"
+          },
+          {
+            "value": "production",
+            "label": "Production"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "hideFlow",
+        "label": "Button hide without disable",
+        "info": "To hide only button without disable Gokwik flow",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Data Tracking"
+      },
+      {
+        "type": "text",
+        "id": "ga4Gokwik",
+        "label": "Enter Google Analytics ID (GA4)",
+        "placeholder": "Starts with GA- ...."
+      },
+      {
+        "type": "text",
+        "id": "fbpixel",
+        "label": "FB Pixel"
+      },
+      {
+        "type": "text",
+        "id": "snapPixel",
+        "label": "Snapchat Pixel"
+      },
+      {
+        "type": "header",
+        "content": "Checkout Button"
+      },
+      {
+        "type": "checkbox",
+        "id": "goEnable",
+        "label": "Enable Checkout Interception",
+        "info": "GoKwik will intercept native checkout buttons automatically",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "checkoutSubText",
+        "label": "Checkout Button Sub Text",
+        "placeholder": "e.g. ₹100 Off on prepaid orders",
+        "info": "Leave blank to hide sub text on checkout button"
+      },
+      {
+        "type": "checkbox",
+        "id": "checkoutEnableLogo",
+        "label": "Show Payment Icons on Checkout Button",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "checkoutEnableBanner",
+        "label": "Show Checkout Sub Text as Banner (above button)",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Buy Now Button"
+      },
+      {
+        "type": "checkbox",
+        "id": "goBuynowEnable",
+        "label": "Enable Buy Now Interception",
+        "info": "GoKwik will intercept native buy now buttons automatically",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "buyNowText",
+        "label": "Buy Now Button Text",
+        "default": "Buy It Now"
+      },
+      {
+        "type": "text",
+        "id": "buyNowSubText",
+        "label": "Buy Now Button Sub Text",
+        "placeholder": "e.g. ₹100 Off on prepaid orders",
+        "info": "Leave blank to hide sub text on buy now button"
+      },
+      {
+        "type": "checkbox",
+        "id": "buyNowEnableLogo",
+        "label": "Show Payment Icons on Buy Now Button",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "buyNowEnableBanner",
+        "label": "Show Buy Now Sub Text as Banner (above button)",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Other Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "enableIntlFlow",
+        "label": "Enable International Flow"
+      }
+    ]
+  },
+  {
+    "name": "OpenAI Ads",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "ChatGPT Ads measurement pixel. Sends page and product views, items added, checkout started, and a copy of every event the theme sends to Meta (assets/openai-ads.js)."
+      },
+      {
+        "type": "checkbox",
+        "id": "openai_ads_enabled",
+        "label": "Enable OpenAI Ads pixel",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "openai_ads_pixel_id",
+        "label": "Pixel ID",
+        "default": "GNxEfvYwDmKGWysLzjYCTt",
+        "info": "From OpenAI Ads Manager > Conversions > Data sources."
+      },
+      {
+        "type": "checkbox",
+        "id": "openai_ads_debug",
+        "label": "Debug logging",
+        "default": true,
+        "info": "Logs every event to the browser console as [openai-ads]. Turn off once the Event Stream in Ads Manager shows the events."
       }
     ]
   }

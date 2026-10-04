@@ -67,6 +67,12 @@
 /* The design leaves the announcement strip lit above the open field - it sits in
    its own section, so it has to be raised alongside the header rather than with
    it. */
+/* The sticky category bar (header.css, z-index 59) would otherwise sit above
+   the scrim and stay lit; it belongs to the page that is dimmed. */
+html.search-suggest-open .shopify-section.shopify-section--category-nav {
+  z-index: 39;
+}
+
 .search-suggest-open .shopify-section--announcement-bar {
   position: relative;
   z-index: 50;

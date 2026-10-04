@@ -1,0 +1,154 @@
+{%- doc -%}
+  Event tracking set-up for assets/analytics.js (read its header for who sends
+  which event). Rendered in <head> before content_for_header, so that:
+
+  - window.zinaraTrack exists from the first byte as a queue - a component that
+    tracks something before analytics.js has loaded is replayed, not lost;
+  - the checkout click is observed ahead of GoKwik, whose own capture listener
+    stops the click from reaching anything registered after it.
+
+  Nothing here sends data by itself; analytics.js does, and only when an ID is
+  set in theme settings > Tracking.
+{%- enddoc -%}
+{%- liquid
+  case template.name
+    when 'index'
+      assign page_type = 'home'
+    when 'collection'
+      assign page_type = 'collection'
+    when 'product'
+      assign page_type = 'product'
+    when 'search'
+      assign page_type = 'search'
+    when 'list-collections'
+      assign page_type = 'all_collections'
+    when 'blog'
+      assign page_type = 'blog_list'
+    when 'article'
+      assign page_type = 'blog'
+    when '404'
+      assign page_type = '404'
+    when 'cart'
+      assign page_type = 'cart'
+    when 'page'
+      case template.suffix
+        when 'wishlist'
+          assign page_type = 'wishlist'
+        when 'get-your-own-design'
+          assign page_type = 'custom_design'
+        when 'contact'
+          assign page_type = 'contact'
+        when 'about-us'
+          assign page_type = 'about'
+        else
+          assign page_type = 'page'
+      endcase
+    else
+      assign page_type = template.name
+  endcase
+
+  comment
+    A GA4 ID is "G-" and one block of letters/digits; anything else (the live
+    settings carry "G-G-9HTXCELBNX") means GoKwik is not sending to GA4.
+  endcomment
+  assign gk_ga4 = settings.ga4Gokwik | strip | upcase
+  assign gk_ga4_start = gk_ga4 | slice: 0, 2
+  assign gk_ga4_parts = gk_ga4 | split: '-' | size
+  assign gk_ga4_valid = false
+  if gk_ga4_start == 'G-' and gk_ga4_parts == 2 and gk_ga4.size > 4
+    assign gk_ga4_valid = true
+  endif
+
+  assign customer_type = 'new'
+  if customer and customer.orders_count > 0
+    assign customer_type = 'returning'
+  endif
+-%}
+<script>
+  window.zinaraTrackQueue = window.zinaraTrackQueue || [];
+  window.zinaraTrack =
+    window.zinaraTrack ||
+    function (name, params) {
+      window.zinaraTrackQueue.push([name, params || {}]);
+    };
+
+  window.zinaraAnalyticsConfig = {
+    ga4Id: {{ settings.ga4_measurement_id | strip | json }},
+    metaPixelId: {{ settings.meta_pixel_id | strip | json }},
+    {%- comment -%}
+      Which checkout events GoKwik already sends itself: a pixel set in its
+      settings means it sends InitiateCheckout to Meta; a well-formed GA4 ID
+      means it sends begin_checkout to GA4. The theme fills in only the rest.
+    {%- endcomment -%}
+    gokwik: {
+      meta: {% if settings.fbpixel != blank %}true{% else %}false{% endif %},
+      ga4: {{ gk_ga4_valid }},
+    },
+    kwikpass: true,
+    debug: {{ settings.analytics_debug | json }},
+    pageType: {{ page_type | json }},
+    currency: {{ cart.currency.iso_code | json }},
+    loggedIn: {% if customer %}true{% else %}false{% endif %},
+    customerType: {{ customer_type | json }},
+    {%- comment -%} The plan asks for a hashed customer ID, never a phone number or email. {%- endcomment -%}
+    userId: {% if customer %}{{ customer.id | append: '' | sha256 | json }}{% else %}null{% endif %},
+    cart: { value: {{ cart.total_price | divided_by: 100.0 }}, count: {{ cart.item_count }} },
+    {%- if template.name == 'product' %}
+      product: {
+        id: {{ product.id | append: '' | json }},
+        handle: {{ product.handle | json }},
+        type: {{ product.type | json }},
+        item: {% render 'analytics-item', product: product %},
+      },
+    {%- endif -%}
+    {%- if template.name == 'collection' %}
+      itemList: {
+        id: {{ collection.handle | json }},
+        name: {{ collection.title | json }},
+        results: {{ collection.products_count }},
+        items: [
+          {%- for list_product in collection.products limit: 20 -%}
+            {%- render 'analytics-item', product: list_product, index: forloop.index0, list_name: collection.title -%}
+            {%- unless forloop.last %},{% endunless -%}
+          {%- endfor -%}
+        ],
+      },
+    {%- endif -%}
+    {%- if template.name == 'search' %}
+      search: { terms: {{ search.terms | json }}, results: {{ search.results_count | default: 0 }} },
+    {%- endif -%}
+    {%- if template.name == 'article' %}
+      article: {
+        title: {{ article.title | json }},
+        category: {{ article.tags.first | default: blog.title | json }},
+        author: {{ article.author | json }},
+        published: {{ article.published_at | date: '%Y-%m-%d' | json }},
+      },
+    {%- endif %}
+  };
+
+  {%- comment -%}
+    Capture phase on window, registered before GoKwik's script: GoKwik clones
+    the checkout buttons and stops the click once it has claimed it, so this is
+    the only listener guaranteed to see it. It just announces the intent;
+    analytics.js sends begin_checkout.
+  {%- endcomment %}
+  window.addEventListener(
+    'click',
+    function (event) {
+      var target = event.target.closest && event.target.closest('[name="checkout"], [data-checkout-intent]');
+      if (!target || target.disabled) return;
+      var location = target.getAttribute('data-checkout-intent') || (target.closest('cart-drawer, .cart-drawer') ? 'cart_drawer' : 'cart_page');
+      document.dispatchEvent(
+        new CustomEvent('zinara:checkout-intent', {
+          // gokwik-marge marks a button GoKwik has taken over (snippets/gokwik.liquid).
+          detail: { location: location, gokwik: target.classList.contains('gokwik-marge') },
+        })
+      );
+    },
+    true
+  );
+</script>
+{%- if settings.ga4_measurement_id != blank or settings.meta_pixel_id != blank -%}
+  <script src="{{ 'analytics.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}

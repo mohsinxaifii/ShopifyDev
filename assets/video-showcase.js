@@ -560,7 +560,18 @@ class VideoShowcase extends HTMLElement {
       });
     });
 
+    /* The variant picker moves itself into this dialog while it is open (see
+       variant-drawer.js), so its clicks and keys land here too - they are the
+       picker's, not the reel's. Without this, choosing a variant read as a
+       click on the empty space around the reel and closed everything. */
+    const inPicker = (event) => Boolean(event.target.closest?.('variant-drawer'));
+    const pickerOpen = () => {
+      const picker = this.popup.querySelector('variant-drawer');
+      return Boolean(picker && !picker.hidden);
+    };
+
     this.popup.addEventListener('click', (event) => {
+      if (inPicker(event)) return;
       if (performance.now() - (this.popupSwipedAt || 0) < 400) return;
 
       if (event.target.closest('[data-popup-close]')) {
@@ -599,13 +610,17 @@ class VideoShowcase extends HTMLElement {
     });
 
     this.popup.addEventListener('keydown', (event) => {
+      // Arrow keys move between swatches inside the picker.
+      if (inPicker(event)) return;
       if (event.key === 'ArrowLeft') this.stepPopup(-1);
       if (event.key === 'ArrowRight') this.stepPopup(1);
     });
 
-    // Esc would close the dialog outright; play the exit first.
+    // Esc would close the dialog outright; play the exit first. With the
+    // picker open, Esc is the picker's (it closes itself) - the reel stays.
     this.popup.addEventListener('cancel', (event) => {
       event.preventDefault();
+      if (pickerOpen()) return;
       this.closePopup();
     });
 
@@ -630,8 +645,9 @@ class VideoShowcase extends HTMLElement {
 
     const activeSlide = () => this.popupSlides[this.popupIndex];
 
+    // A finger swipes the reel and a mouse drags it the same way.
     this.popupStage.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse' || this.popupClosing) return;
+      if ((event.pointerType === 'mouse' && event.button !== 0) || this.popupClosing) return;
       pointerId = event.pointerId;
       startX = event.clientX;
       startY = event.clientY;
@@ -651,6 +667,8 @@ class VideoShowcase extends HTMLElement {
           return;
         }
         dragging = true;
+        // Keep receiving the moves once the pointer leaves the clip.
+        this.popupStage.setPointerCapture?.(pointerId);
         activeSlide()?.getAnimations().forEach((animation) => animation.cancel());
       }
 
@@ -686,6 +704,8 @@ class VideoShowcase extends HTMLElement {
 
     this.popupStage.addEventListener('pointerup', (event) => release(event, false));
     this.popupStage.addEventListener('pointercancel', (event) => release(event, true));
+    // Stop a mouse drag picking up the video poster as a ghost image.
+    this.popupStage.addEventListener('dragstart', (event) => event.preventDefault());
   }
 
   openPopup(index, source) {
@@ -702,6 +722,7 @@ class VideoShowcase extends HTMLElement {
     this.popup.focus({ preventScroll: true });
     this.showPopup(index);
     this.startPopupTicker();
+    this.trackPopup(index);
 
     if (!this.popupAnimates) return;
 
@@ -859,6 +880,22 @@ class VideoShowcase extends HTMLElement {
   stepPopup(direction) {
     if (this.popupClosing) return;
     this.showPopup(this.popupIndex + direction, direction);
+  }
+
+  /* Analytics: ugc_video_open for the clip it opened on, and 25/50/75/100%
+     progress for every clip played in the popup (each reported once). */
+  trackPopup(index) {
+    const slide = this.popupSlides[index];
+    if (!slide) return;
+    const params = (item) => ({
+      video_id: item.dataset.analyticsVideoId,
+      tagged_product_id: item.dataset.analyticsTaggedProductId || undefined,
+    });
+    window.zinaraTrack?.('ugc_video_open', { ...params(slide), position: index + 1 });
+    this.popupSlides.forEach((item) => {
+      const video = item.querySelector('video');
+      if (video) window.zinaraAnalytics?.trackVideoProgress(video, () => params(item));
+    });
   }
 
   showPopup(index, direction = 0) {

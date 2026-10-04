@@ -2,7 +2,8 @@
 {{ 'product-carousel.css' | asset_url | stylesheet_tag }}
 
 {%- if section.blocks.size > 0 -%}
-  <product-carousel class="product-carousel full-width">
+  {%- assign track_section = section.id | split: '__' | last | replace: '-', '_' -%}
+  <product-carousel class="product-carousel full-width" data-analytics-section="{{ track_section }}">
     <div class="product-carousel_wrapper">
       {%- if section.settings.heading != blank -%}
         <h2 class="product-carousel_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
@@ -29,6 +30,8 @@
           href="{{ section.blocks.first.settings.collection.url }}"
           class="product-carousel_wrapper_controls_view-all"
           data-view-all-link
+          data-analytics="section_cta_click"
+          data-analytics-section-name="{{ track_section }}"
         >
           {{ 'accessibility.view_all' | t }}
           {{ 'icon-caret-right.svg' | inline_asset_content }}
@@ -76,6 +79,8 @@
           href="{{ section.blocks.first.settings.collection.url }}"
           class="product-carousel_wrapper_bottom-link"
           data-view-all-link
+          data-analytics="section_cta_click"
+          data-analytics-section-name="{{ track_section }}"
         >
           {{ 'accessibility.view_all' | t }}
         </a>

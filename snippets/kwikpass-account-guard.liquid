@@ -1,0 +1,54 @@
+{%- doc -%}
+  Keeps KwikPass from dropping shoppers onto their account page uninvited.
+
+  KwikPass signs a returning shopper in by itself (single sign-on, from any
+  page - the home page included) and, because the store has its custom
+  account page switched on, then sends them to /pages/kp-account. Nobody asked
+  to go there, so it reads as a jump to a strange page.
+
+  A visit to the account page counts as wanted when the shopper clicked
+  something that leads to an account in the last ten minutes (the header
+  icon, the menu's Login, any /account link), when they came from another
+  account page, or when there is no referring page at all (a bookmark, a
+  typed URL, an email link). Anything else is KwikPass's own redirect: the
+  shopper - now signed in - goes straight back to the page they were on.
+{%- enddoc -%}
+<script>
+  (function () {
+    var KEY = 'zinara:account-intent';
+    var TTL = 10 * 60 * 1000;
+    var ACCOUNT_PATH = /\/account|kp-account|customer_authentication/;
+
+    // Remember account intent - captured, so no handler can hide the click.
+    document.addEventListener(
+      'click',
+      function (event) {
+        var link = event.target.closest && event.target.closest('a[href]');
+        if (!link || !ACCOUNT_PATH.test(link.getAttribute('href') || '')) return;
+        try {
+          sessionStorage.setItem(KEY, String(Date.now()));
+        } catch (error) {}
+      },
+      true
+    );
+
+    {%- if page.handle == 'kp-account' %}
+      var at = 0;
+      try {
+        at = Number(sessionStorage.getItem(KEY)) || 0;
+      } catch (error) {}
+      if (Date.now() - at < TTL) return;
+
+      var referrer = document.referrer;
+      if (!referrer || referrer.indexOf(window.location.origin) !== 0) return;
+
+      var back = new URL(referrer);
+      if (ACCOUNT_PATH.test(back.pathname)) return;
+      // The wishlist's sign-in adds these to open KwikPass; the shopper is
+      // signed in now, so they must not open it again.
+      back.searchParams.delete('kp_login');
+      back.searchParams.delete('kp_redirect');
+      window.location.replace(back.pathname + back.search + back.hash);
+    {%- endif %}
+  })();
+</script>

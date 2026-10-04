@@ -58,6 +58,8 @@
           <div
             class="hero-banner_wrapper_track_slide{% if forloop.first %} is-active{% endif %}"
             data-slide-index="{{ forloop.index0 }}"
+            data-banner-id="{{ block.id }}"
+            data-banner-name="{{ block.settings.heading | default: block.settings.image.alt | default: block.settings.button_label | strip_html | escape }}"
             {{ block.shopify_attributes }}
           >
             {%- liquid
@@ -114,6 +116,10 @@
                   <a
                     href="{{ block.settings.button_url | default: '#' }}"
                     class="hero-banner_wrapper_track_slide_content_button"
+                    data-analytics="home_banner_click"
+                    data-analytics-banner-id="{{ block.id }}"
+                    data-analytics-banner-name="{{ block.settings.heading | default: block.settings.image.alt | default: block.settings.button_label | strip_html | escape }}"
+                    data-analytics-banner-position="{{ forloop.index }}"
                   >
                     {{ block.settings.button_label }}
                   </a>

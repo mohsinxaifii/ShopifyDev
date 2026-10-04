@@ -56,7 +56,12 @@
         {%- assign shown = 0 -%}
         {%- for related in source.articles limit: fetch_limit -%}
           {%- if related.id != article.id and shown < wanted -%}
-            {%- render 'blog-card', article: related, heading_level: 'h3' -%}
+            {%- render 'blog-card',
+              article: related,
+              heading_level: 'h3',
+              section_name: 'more_articles',
+              position: forloop.index
+            -%}
             {%- assign shown = shown | plus: 1 -%}
           {%- endif -%}
         {%- endfor -%}

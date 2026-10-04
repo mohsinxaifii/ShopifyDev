@@ -1,0 +1,60 @@
+{%- doc -%}
+  One entry of the GA4 `items` array, as JSON - the "Items Array" tab of the
+  event tracking plan. Used by layout/theme.liquid (PDP, lists) and by the
+  data-analytics-item attribute on product cards (assets/analytics.js).
+
+  item_category3 is the product's first collection other than "All", and
+  item_category5 (sub-category / occasion) is left out: the shop has no field
+  for either yet.
+
+  @param {object} product - a Shopify product object
+  @param {object} [variant] - defaults to the selected or first available variant
+  @param {number} [index] - position in a list (list events only)
+  @param {string} [list_name] - the list it was seen in (list events only)
+  @param {number} [quantity] - defaults to 1
+{%- enddoc -%}
+{%- liquid
+  assign item_variant = variant | default: product.selected_or_first_available_variant
+  assign item_id = item_variant.sku | default: item_variant.id
+  assign item_price = item_variant.price | divided_by: 100.0
+  assign item_discount = 0
+  if item_variant.compare_at_price > item_variant.price
+    assign item_discount = item_variant.compare_at_price | minus: item_variant.price | divided_by: 100.0
+  endif
+
+  assign metal = product.metafields.custom.pdp_material_name.value
+  assign base_metal = product.metafields.custom.pdp_base_metal.value
+  if metal != blank and base_metal != blank
+    assign metal = metal | append: ' on ' | append: base_metal
+  endif
+  assign stone = product.metafields.custom.pdp_stone_name.value
+
+  assign item_collection = ''
+  for item_col in product.collections
+    unless item_col.handle == 'all' or item_col.handle == 'frontpage'
+      assign item_collection = item_col.title
+      break
+    endunless
+  endfor
+
+  assign variant_title = ''
+  unless item_variant.title == 'Default Title'
+    assign variant_title = item_variant.title
+  endunless
+-%}
+{
+  "item_id": {{ item_id | append: '' | json }},
+  "item_name": {{ product.title | json }},
+  "item_brand": "Zinara",
+  "item_category": {{ product.type | json }}
+  {%- if metal != blank %}, "item_category2": {{ metal | json }}{% endif -%}
+  {%- if item_collection != blank %}, "item_category3": {{ item_collection | json }}{% endif -%}
+  {%- if stone != blank %}, "item_category4": {{ stone | json }}{% endif -%}
+  {%- if variant_title != blank %}, "item_variant": {{ variant_title | json }}{% endif -%},
+  "price": {{ item_price }},
+  "discount": {{ item_discount }},
+  "quantity": {{ quantity | default: 1 }}
+  {%- if index != blank %}, "index": {{ index }}{% endif -%}
+  {%- if list_name != blank %}, "item_list_name": {{ list_name | json }}{% endif %},
+  "product_id": {{ product.id | append: '' | json }}
+}

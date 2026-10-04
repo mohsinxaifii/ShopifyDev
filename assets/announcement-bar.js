@@ -15,6 +15,11 @@ class AnnouncementBarCarousel extends HTMLElement {
 
     this.prevButton?.addEventListener('click', () => this.goTo(this.currentIndex - 1, true));
     this.nextButton?.addEventListener('click', () => this.goTo(this.currentIndex + 1, true));
+    // Drag with a mouse or swipe with a finger to change message (assets/swipe.js).
+    window.zinaraSwipe?.(this, {
+      threshold: 30,
+      onSwipe: (direction) => this.goTo(this.currentIndex + direction, true),
+    });
     this.addEventListener('mouseenter', () => this.stopAutoplay());
     this.addEventListener('mouseleave', () => this.startAutoplay());
     this.addEventListener('focusin', () => this.stopAutoplay());

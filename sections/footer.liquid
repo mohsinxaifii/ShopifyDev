@@ -15,7 +15,15 @@
             <ul class="footer_wrapper_top_columns_col_list">
               {%- for link in section.settings.quick_links.links -%}
                 <li>
-                  <a href="{{ link.url }}" class="footer_wrapper_top_columns_col_list_link">{{ link.title }}</a>
+                  <a
+                    href="{{ link.url }}"
+                    class="footer_wrapper_top_columns_col_list_link"
+                    data-analytics="footer_link_click"
+                    data-analytics-link-text="{{ link.title | escape }}"
+                    data-analytics-link-group="quick_links"
+                  >
+                    {{- link.title -}}
+                  </a>
                 </li>
               {%- endfor -%}
             </ul>
@@ -28,7 +36,15 @@
             <ul class="footer_wrapper_top_columns_col_list">
               {%- for link in section.settings.policy_links.links -%}
                 <li>
-                  <a href="{{ link.url }}" class="footer_wrapper_top_columns_col_list_link">{{ link.title }}</a>
+                  <a
+                    href="{{ link.url }}"
+                    class="footer_wrapper_top_columns_col_list_link"
+                    data-analytics="footer_link_click"
+                    data-analytics-link-text="{{ link.title | escape }}"
+                    data-analytics-link-group="policies"
+                  >
+                    {{- link.title -}}
+                  </a>
                 </li>
               {%- endfor -%}
             </ul>
@@ -43,6 +59,11 @@
                 <a
                   href="tel:{{ section.settings.phone }}"
                   class="footer_wrapper_top_columns_col_list_link footer_wrapper_top_columns_col_list_link--icon"
+                  data-analytics="footer_link_click contact_click"
+                  data-analytics-link-text="phone"
+                  data-analytics-link-group="contact"
+                  data-analytics-contact-method="call"
+                  data-analytics-click-location="footer"
                 >
                   {{ 'icon-phone.svg' | inline_asset_content }}
                   {{ section.settings.phone }}
@@ -54,6 +75,11 @@
                 <a
                   href="mailto:{{ section.settings.email }}"
                   class="footer_wrapper_top_columns_col_list_link footer_wrapper_top_columns_col_list_link--icon"
+                  data-analytics="footer_link_click contact_click"
+                  data-analytics-link-text="email"
+                  data-analytics-link-group="contact"
+                  data-analytics-contact-method="email"
+                  data-analytics-click-location="footer"
                 >
                   {{ 'icon-envelope.svg' | inline_asset_content }}
                   {{ section.settings.email }}
@@ -72,12 +98,28 @@
       <p class="footer_wrapper_legal_address">{{ section.settings.company_address }}</p>
       <div class="footer_wrapper_legal_social">
         {%- if section.settings.instagram_url != blank -%}
-          <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+          <a
+            href="{{ section.settings.instagram_url }}"
+            target="_blank"
+            rel="noopener"
+            aria-label="Instagram"
+            data-analytics="footer_link_click"
+            data-analytics-link-text="instagram"
+            data-analytics-link-group="social"
+          >
             {{- 'icon-instagram.svg' | inline_asset_content -}}
           </a>
         {%- endif -%}
         {%- if section.settings.facebook_url != blank -%}
-          <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+          <a
+            href="{{ section.settings.facebook_url }}"
+            target="_blank"
+            rel="noopener"
+            aria-label="Facebook"
+            data-analytics="footer_link_click"
+            data-analytics-link-text="facebook"
+            data-analytics-link-group="social"
+          >
             {{- 'icon-facebook.svg' | inline_asset_content -}}
           </a>
         {%- endif -%}
@@ -94,6 +136,9 @@
                 href="{{ block.settings.link | default: '#' }}"
                 class="footer_wrapper_apps_badges_badge"
                 style="--footer-mark-height: {{ block.settings.height }}px;"
+                data-analytics="footer_link_click"
+                data-analytics-link-text="{{ block.settings.image.alt | default: block.settings.link | escape }}"
+                data-analytics-link-group="app_store"
                 {{ block.shopify_attributes }}
               >
                 {%- if block.settings.image -%}

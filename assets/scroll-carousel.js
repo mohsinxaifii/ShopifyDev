@@ -21,7 +21,9 @@
 
       if (this.loop) this.buildLoop();
       this.buildDots();
-      if (this.hasAttribute('drag')) this.enableDrag();
+      // Mouse dragging is on for every carousel (touch scrolls natively);
+      // `no-drag` opts one out.
+      if (!this.hasAttribute('no-drag')) this.enableDrag();
 
       this.track.addEventListener(
         'scroll',
@@ -73,7 +75,9 @@
     /* ------------------------------------------------------------ geometry */
 
     cardStep() {
-      return window.carouselScroll.step(this.track);
+      if (window.carouselScroll) return window.carouselScroll.step(this.track);
+      const [first, second] = this.track.children;
+      return first && second ? Math.max(0, second.getBoundingClientRect().left - first.getBoundingClientRect().left) : 0;
     }
 
     /* Exact scroll offset that aligns child `index` with the start of the track.
@@ -212,7 +216,9 @@
     }
 
     scrollTrackTo(left) {
-      window.carouselScroll.to(this.track, left);
+      // carousel-scroll.js is tagged by most sections, not all of them.
+      if (window.carouselScroll) window.carouselScroll.to(this.track, left);
+      else this.track.scrollTo({ left, behavior: 'smooth' });
     }
 
     /* ---------------------------------------------------------------- drag */
@@ -233,6 +239,8 @@
 
       track.addEventListener('pointerdown', (event) => {
         if (event.pointerType !== 'mouse' || event.button !== 0) return;
+        // Nothing to drag when the cards all fit (a short thumbnail rail).
+        if (track.scrollWidth <= track.clientWidth + 1) return;
         pointerId = event.pointerId;
         startX = event.clientX;
         startLeft = track.scrollLeft;

@@ -92,6 +92,7 @@
       <fieldset
         class="variant-drawer_panel_body_options_group{% if is_swatch_option %} variant-drawer_panel_body_options_group--swatch{% endif %}"
         data-option-group
+        data-option-name="{{ option.name | escape }}"
         data-option-position="{{ option.position }}"
       >
         <legend class="variant-drawer_panel_body_options_group_head">
@@ -111,6 +112,10 @@
             <a
               href="{{ section.settings.size_guide_url }}"
               class="variant-drawer_panel_body_options_group_guide"
+              data-analytics="size_guide_open"
+              data-analytics-product-id="{{ product.id }}"
+              data-analytics-product-category="{{ product.type | escape }}"
+              data-analytics-click-location="variant_sheet"
               target="_blank"
               rel="noopener"
             >
@@ -159,6 +164,7 @@
   <script type="application/json" data-variant-data>
     {
       "productTitle": {{ product.title | json }},
+      "productId": {{ product.id | append: '' | json }},
       "variants": [
         {%- for variant in product.variants -%}
           {

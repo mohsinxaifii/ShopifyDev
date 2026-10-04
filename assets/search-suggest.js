@@ -61,6 +61,12 @@
     /* -------------------------------------------------------------- state */
 
     open() {
+      // Once per opening. On phones the header's search icon reveals and
+      // focuses this field, which is where the search was opened from.
+      if (!this.header?.classList.contains('is-searching')) {
+        const fromIcon = this.header?.getAttribute('data-search-open') === 'true';
+        window.zinaraTrack?.('search_open', { click_location: fromIcon ? 'header_icon' : 'search_bar' });
+      }
       this.header?.classList.add('is-searching');
       document.documentElement.classList.add('search-suggest-open');
       if (this.input.value.trim()) this.schedule();
@@ -132,12 +138,13 @@
         this.panel.appendChild(
           this.section(
             'Suggestions',
-            queries.map((query) => {
+            queries.map((query, index) => {
               const row = document.createElement('a');
               row.className = 'search-suggest_panel_row search-suggest_panel_row--query';
               row.href = query.url;
               row.setAttribute('role', 'option');
               row.textContent = query.text;
+              this.tagRow(row, term, query.text, 'query', index + 1);
               return row;
             }),
           ),
@@ -148,11 +155,12 @@
         this.panel.appendChild(
           this.section(
             'Products',
-            products.map((product) => {
+            products.map((product, index) => {
               const row = document.createElement('a');
               row.className = 'search-suggest_panel_row search-suggest_panel_row--product';
               row.href = product.url;
               row.setAttribute('role', 'option');
+              this.tagRow(row, term, product.title, 'product', index + 1);
 
               const media = document.createElement('span');
               media.className = 'search-suggest_panel_row_media';
@@ -208,7 +216,17 @@
         `<svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12m0 0-4.5-4.5M16 10l-4.5 4.5" ` +
         `stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
       link.querySelector('.search-suggest_panel_all_label').textContent = `Search for “${term}”`;
+      this.tagRow(link, term, term, 'search_all', 1);
       return link;
+    }
+
+    /* search_suggestion_click, sent by analytics.js when the row is followed. */
+    tagRow(row, term, text, type, position) {
+      row.dataset.analytics = 'search_suggestion_click';
+      row.dataset.analyticsSearchTerm = term;
+      row.dataset.analyticsSuggestionText = text;
+      row.dataset.analyticsSuggestionType = type;
+      row.dataset.analyticsPosition = String(position);
     }
   }
 

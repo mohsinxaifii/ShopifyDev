@@ -26,6 +26,12 @@
                 <a
                   href="{{ block.settings.link | default: '#' }}"
                   class="press-carousel_wrapper_track_item_caption_title"
+                  data-analytics="celebrity_look_click"
+                  data-analytics-celebrity-name="{{ block.settings.by_text | strip | remove_last: ' in' | escape }}"
+                  {%- if block.settings.link contains '/products/' %}
+                    data-analytics-product-id="{{ block.settings.link | split: '/products/' | last | split: '?' | first }}"
+                  {%- endif %}
+                  data-analytics-position="{{ forloop.index }}"
                 >
                   {{- block.settings.caption -}}
                 </a>

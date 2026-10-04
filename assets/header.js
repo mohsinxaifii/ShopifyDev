@@ -158,8 +158,28 @@ class HeaderComponent extends HTMLElement {
     this.style.setProperty('--header-drawer-top', `${top}px`);
   }
 
+  /* The overlay and the drawer are popovers (sections/header.liquid): shown,
+     they sit in the browser's top layer, above anything on the page whatever
+     its z-index - so nothing can cover the open menu. The overlay goes in
+     first, so the drawer stacks over it. Browsers without popovers keep the
+     plain fixed positioning. */
+  setTopLayer(on) {
+    [this.overlay, this.drawer].forEach((element) => {
+      if (typeof element?.showPopover !== 'function') return;
+      const showing = element.matches(':popover-open');
+      try {
+        if (on && !showing) element.showPopover();
+        else if (!on && showing) element.hidePopover();
+      } catch (error) {
+        // Already in the requested state.
+      }
+    });
+  }
+
   open() {
+    window.zinaraTrack?.('sidenav_open');
     this.syncDrawerTop();
+    this.setTopLayer(true);
     this.isOpen = true;
     this.setAttribute('data-drawer-open', 'true');
     this.menuToggle?.setAttribute('aria-expanded', 'true');
@@ -197,11 +217,20 @@ class HeaderComponent extends HTMLElement {
         ease: 'power1.in',
         onComplete: () => gsap.set(this.overlay, { visibility: 'hidden' }),
       });
-      gsap.to(this.drawer, { x: '-100%', duration: 0.35, ease: 'power3.in' });
+      gsap.to(this.drawer, {
+        x: '-100%',
+        duration: 0.35,
+        ease: 'power3.in',
+        // Out of the top layer once it has slid away - unless it was reopened.
+        onComplete: () => {
+          if (!this.isOpen) this.setTopLayer(false);
+        },
+      });
     } else {
       this.drawer.style.transform = 'translateX(-100%)';
       this.overlay.style.opacity = '0';
       this.overlay.style.visibility = 'hidden';
+      this.setTopLayer(false);
     }
 
     this.menuToggle?.focus();

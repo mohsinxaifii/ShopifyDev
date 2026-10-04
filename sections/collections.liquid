@@ -50,7 +50,14 @@
             {%- continue -%}
           {%- endif -%}
 
-          <a href="{{ collection.url }}" class="collections-page_wrapper_grid_item">
+          <a
+            href="{{ collection.url }}"
+            class="collections-page_wrapper_grid_item"
+            data-analytics="collection_click"
+            data-analytics-collection-name="{{ collection.title | escape }}"
+            data-analytics-section-name="all_collections"
+            data-analytics-position="{{ forloop.index }}"
+          >
             <span class="collections-page_wrapper_grid_item_image">
               {%- if collection.featured_image -%}
                 {{

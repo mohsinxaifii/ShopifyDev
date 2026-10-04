@@ -48,13 +48,21 @@
       this.index = 0;
 
       this.thumbs.forEach((thumb) => {
-        thumb.addEventListener('click', () => this.show(Number(thumb.dataset.index)));
+        thumb.addEventListener('click', () => {
+          this.show(Number(thumb.dataset.index));
+          this.trackMedia('swipe');
+        });
+      });
+
+      // product_media_interaction: play, once per video.
+      this.slides.forEach((slide, index) => {
+        slide.querySelector('video')?.addEventListener('play', () => this.trackMedia('play', index), { once: true });
       });
 
       this.slides.forEach((slide) => {
+        // The click that ends a swipe never gets here (setupSwipe), so a swipe
+        // turns the page rather than opening the lightbox.
         slide.addEventListener('click', () => {
-          // A swipe ends in a click too; it should turn the page, not open the lightbox.
-          if (this.swiped) return;
           this.dispatchEvent(
             new CustomEvent('gallery:open', { bubbles: true, detail: { index: this.index } }),
           );
@@ -64,36 +72,33 @@
       this.setupSwipe();
     }
 
-    /* Phones have dots instead of thumbnails, so the image itself has to page. */
+    /* The photo itself pages: a finger swipe on phones (which have dots, not
+       thumbnails) and a mouse drag on desktop - assets/swipe.js. Buttons over
+       the photo (wishlist, add-ons) keep their own clicks, and the click that
+       ends a drag never opens the lightbox. */
     setupSwipe() {
       const stage = this.querySelector('.pdp_gallery_stage');
       if (!stage || this.slides.length < 2) return;
-      let startX = 0;
-      let startY = 0;
-      stage.addEventListener(
-        'touchstart',
-        (event) => {
-          startX = event.touches[0].clientX;
-          startY = event.touches[0].clientY;
-          this.swiped = false;
+      window.zinaraSwipe?.(stage, {
+        ignore: 'button, a',
+        onSwipe: (direction) => {
+          const next = Math.min(Math.max(this.index + direction, 0), this.slides.length - 1);
+          if (next === this.index) return;
+          this.show(next);
+          this.trackMedia('swipe');
         },
-        { passive: true },
-      );
-      stage.addEventListener(
-        'touchend',
-        (event) => {
-          const dx = event.changedTouches[0].clientX - startX;
-          const dy = event.changedTouches[0].clientY - startY;
-          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-          this.swiped = true;
-          const last = this.slides.length - 1;
-          this.show(dx < 0 ? Math.min(this.index + 1, last) : Math.max(this.index - 1, 0));
-          window.setTimeout(() => {
-            this.swiped = false;
-          }, 400);
-        },
-        { passive: true },
-      );
+      });
+    }
+
+    /* product_media_interaction for a shopper's own move - not for the
+       gallery following a variant change. */
+    trackMedia(action, index = this.index) {
+      const slide = this.slides[index];
+      window.zinaraTrack?.('product_media_interaction', {
+        media_type: slide?.querySelector('video, iframe, model-viewer') ? 'video' : 'image',
+        media_index: index + 1,
+        action,
+      });
     }
 
     show(index) {
@@ -129,6 +134,9 @@
       this.initReviewForm();
       this.initDragScroll();
       this.recordRecentlyViewed();
+
+      // analytics.js reads the variant picked right now for Buy now.
+      window.zinaraPdp = { currentItem: () => this.currentItem() };
 
       this.classList.add('is-ready');
     }
@@ -378,9 +386,31 @@
       if (this.optionInputs.length === 0) return;
 
       this.optionInputs.forEach((input) => {
-        input.addEventListener('change', () => this.onOptionChange());
+        input.addEventListener('change', () => {
+          this.onOptionChange();
+          this.trackVariantSelect(input);
+        });
       });
       this.syncAvailability();
+    }
+
+    trackVariantSelect(input) {
+      const group = input.closest('[data-option-group]');
+      const groups = Array.from(this.querySelectorAll('[data-option-group]'));
+      const index = groups.indexOf(group);
+      const chosen = this.selectedOptions();
+      // Anything available with this value, given the other options picked?
+      const available = this.data.variants.some(
+        (variant) =>
+          variant.available &&
+          variant.options.every((option, i) => (i === index ? option === input.value : chosen[i] === null || option === chosen[i])),
+      );
+      window.zinaraTrack?.('variant_select', {
+        variant_type: group?.querySelector('.pdp_option_head_name')?.textContent.replace(':', '').trim(),
+        variant_value: input.value,
+        variant_availability: available ? 'available' : 'sold_out',
+        click_location: 'pdp',
+      });
     }
 
     selectedOptions() {
@@ -499,6 +529,7 @@
       this.lightboxIndex = 0;
 
       this.addEventListener('gallery:open', (event) => {
+        this.gallery?.trackMedia('lightbox_open', event.detail.index);
         this.showLightbox(event.detail.index);
         dialog.showModal();
         // Phones stack every image vertically, so open on the one tapped.
@@ -511,6 +542,15 @@
           }
           dialog.scrollTop = Math.max(0, top - 64);
         }
+      });
+
+      // Desktop shows one image at a time: drag or swipe it to page. (Phones
+      // stack every image to scroll through, so there is nothing to page.)
+      window.zinaraSwipe?.(dialog.querySelector('.pdp-lightbox_body_stage'), {
+        onSwipe: (direction) => {
+          if (window.matchMedia('(max-width: 749px)').matches) return;
+          this.stepLightbox(direction);
+        },
       });
 
       dialog
@@ -736,6 +776,10 @@
             });
             throw new Error(result.message || `${response.status}`);
           }
+          window.zinaraTrack?.('review_submit', {
+            rating: Number(form.querySelector('input[name="rating"]:checked')?.value) || undefined,
+            has_media: photos.length > 0,
+          });
           fields.hidden = true;
           done.hidden = false;
           submit.hidden = true;
@@ -759,6 +803,11 @@
       this.addEventListener('click', async (event) => {
         const button = event.target.closest('[data-copy-code]');
         if (!button) return;
+        window.zinaraTrack?.('coupon_copy', {
+          coupon_code: button.dataset.copyCode,
+          offer_id: button.dataset.offerId,
+          click_location: button.closest('[data-sheet="offers"]') ? 'offers_sheet' : 'pdp_offers',
+        });
         try {
           await navigator.clipboard.writeText(button.dataset.copyCode);
           button.classList.add('is-copied');
@@ -771,26 +820,90 @@
 
     /* --------------------------------------------------------- pincode */
 
+    /**
+     * Delivery estimate, with the live theme's serviceability rules:
+     * assets/pincodes.json lists the pincodes each lane serves ("gold" /
+     * "silver"; the product's tags pick one - see data-pincode-set). The list
+     * is half a megabyte, so it is fetched on first use, not with the page.
+     * A served pincode delivers in 3 days when the picked variant is in stock,
+     * otherwise in the product's own lead time (pdp_delivery_days, else 17).
+     */
     initPincode() {
       const button = this.querySelector('[data-pincode-check]');
       const input = this.querySelector('[data-pincode]');
       const result = this.querySelector('[data-pincode-result]');
       if (!button || !input || !result) return;
 
-      button.addEventListener('click', () => {
-        const value = input.value.trim();
+      let lists = null;
+      const loadLists = () => {
+        if (!lists) {
+          lists = fetch(this.dataset.pincodesUrl)
+            .then((response) => {
+              if (!response.ok) throw new Error(`${response.status}`);
+              return response.json();
+            })
+            .then((data) => ({ gold: new Set(data.gold || []), silver: new Set(data.silver || []) }))
+            .catch((error) => {
+              lists = null; // try again on the next check
+              throw error;
+            });
+        }
+        return lists;
+      };
+
+      const show = (text, invalid) => {
+        result.textContent = text;
+        result.classList.toggle('is-invalid', invalid);
         result.hidden = false;
-        if (!/^\d{6}$/.test(value)) {
-          result.textContent = 'Please enter a valid 6-digit pincode.';
+      };
+
+      // Digits only, as the shopper types; start the download meanwhile.
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
+      });
+      input.addEventListener('focus', () => loadLists().catch(() => {}), { once: true });
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          button.click();
+        }
+      });
+
+      button.addEventListener('click', async () => {
+        const value = input.value.trim();
+        if (!/^[1-9][0-9]{5}$/.test(value)) {
+          show('Please enter a valid 6-digit pincode.', true);
           return;
         }
-        const days = Number(this.dataset.deliveryDays) || 5;
+
+        let served;
+        try {
+          const sets = await loadLists();
+          served = (sets[this.dataset.pincodeSet] || sets.gold).has(value);
+        } catch (error) {
+          show('Could not check this pincode right now. Please try again.', true);
+          return;
+        }
+
+        if (!served) {
+          show(`Sorry, we don't deliver to ${value} yet.`, true);
+          window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: false });
+          return;
+        }
+
+        const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
+        const days = variant?.inStock ? 3 : Number(this.dataset.deliveryDays) || 17;
         const eta = new Date();
         eta.setDate(eta.getDate() + days);
-        result.textContent = `Delivers by ${eta.toLocaleDateString(undefined, {
-          day: 'numeric',
-          month: 'short',
-        })} to ${value}.`;
+        show(
+          `Delivers by ${eta.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} to ${value}.`,
+          false,
+        );
+        window.zinaraTrack?.('pincode_check', {
+          pincode: value,
+          serviceable: true,
+          delivery_eta: eta.toISOString().slice(0, 10),
+        });
       });
     }
 
@@ -872,10 +985,41 @@
         this.addToCart(this.buildItems(), { trigger: this.querySelector('[data-add-to-cart]') });
       });
 
+      /* KwikCart (GoKwik's side cart) claims the form's Add to cart button and
+         adds only the variant in the form - it never sees the add-ons or the
+         gift sleeve, which are not form fields. When any of those is picked,
+         this listener - on window, in the capture phase, so ahead of KwikCart's
+         own on the button - adds everything in one request instead; the
+         shared cart then shows KwikCart. With nothing extra picked the click is
+         left alone and KwikCart adds it, exactly as on the live theme. */
+      window.addEventListener(
+        'click',
+        (event) => {
+          const button = event.target.closest?.('[data-add-to-cart]');
+          if (!button || !this.form?.contains(button) || button.disabled) return;
+          const items = this.buildItems();
+          if (items.length < 2) return;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          this.addToCart(items, { trigger: button });
+        },
+        true,
+      );
+
       const buyNow = this.querySelector('[data-buy-now]');
+      // Only reached when GoKwik has not taken the button over (it swaps in a
+      // clone without this listener). Tracking for both paths lives in
+      // analytics.js, off the button's data-checkout-intent.
       buyNow?.addEventListener('click', async () => {
         const ok = await this.addToCart(this.buildItems(), { trigger: buyNow });
         if (ok) window.location.href = `${window.Shopify?.routes?.root || '/'}checkout`;
+      });
+
+      this.querySelector('[data-gift-toggle]')?.addEventListener('change', (event) => {
+        window.zinaraTrack?.('gift_sleeve_toggle', {
+          selected: event.target.checked,
+          price: Number(event.target.dataset.price) || undefined,
+        });
       });
 
       // Add-ons and paired products are selections, not immediate adds, so the
@@ -1024,10 +1168,17 @@
        The chosen variant is what Done / Add to cart later sends. */
     async toggleAddon(toggle) {
       const label = toggle.closest('.pdp-addons_grid_card')?.querySelector('[data-addon-variant]');
+      const track = (action) =>
+        window.zinaraTrack?.('addon_select', {
+          addon_name: toggle.dataset.addonName,
+          addon_price: Number(toggle.dataset.addonPrice) || undefined,
+          action,
+        });
       if (toggle.getAttribute('aria-pressed') === 'true') {
         toggle.setAttribute('aria-pressed', 'false');
         if (label) label.hidden = true;
         this.syncAddonHero();
+        track('remove');
         return;
       }
 
@@ -1042,6 +1193,7 @@
       }
       toggle.setAttribute('aria-pressed', 'true');
       this.syncAddonHero();
+      track('add');
     }
 
     /* The add-ons hero follows the ticked set. Each preview image lists the
@@ -1071,6 +1223,21 @@
       });
 
       images.forEach((img) => img.classList.toggle('is-active', img === best));
+    }
+
+    /** The GA4 item for the variant picked right now (analytics). */
+    currentItem() {
+      const base = window.zinaraAnalyticsConfig?.product?.item;
+      const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
+      if (!base || !variant) return base || null;
+      const { item_variant: omitted, ...rest } = base;
+      return {
+        ...rest,
+        item_id: variant.sku || String(variant.id),
+        ...(variant.title && variant.title !== 'Default Title' ? { item_variant: variant.title } : {}),
+        price: variant.price / 100,
+        discount: variant.compareAt > variant.price ? (variant.compareAt - variant.price) / 100 : 0,
+      };
     }
 
     buildItems() {

@@ -17,7 +17,11 @@
   assign category_blocks = section.blocks | where: 'type', 'category'
 -%}
 
-<collection-page class="collection full-width" data-collection-url="{{ collection.url }}">
+<collection-page
+  class="collection full-width"
+  data-collection-url="{{ collection.url }}"
+  data-analytics-collection="{{ collection.title | escape }}"
+>
   {%- render 'plp-skeleton' -%}
 
   <form
@@ -28,10 +32,31 @@
     {%- comment -%} Keep the chosen sort with the filter params on submit. {%- endcomment -%}
     <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
 
+    {%- liquid
+      comment
+        Active filters, counted the way plp-mobile-bar does - for filter_clear.
+      endcomment
+      assign analytics_filter_count = 0
+      for filter in collection.filters
+        if filter.type == 'price_range'
+          if filter.min_value.value != blank or filter.max_value.value != blank
+            assign analytics_filter_count = analytics_filter_count | plus: 1
+          endif
+        else
+          assign analytics_filter_count = analytics_filter_count | plus: filter.active_values.size
+        endif
+      endfor
+    -%}
     <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
       <div class="collection_wrapper_filters_head">
         <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
-        <a href="{{ collection.url }}?sort_by={{ sort_by }}" class="collection_wrapper_filters_head_clear">
+        <a
+          href="{{ collection.url }}?sort_by={{ sort_by }}"
+          class="collection_wrapper_filters_head_clear"
+          data-analytics="filter_clear"
+          data-analytics-collection-name="{{ collection.title | escape }}"
+          data-analytics-filter-count="{{ analytics_filter_count }}"
+        >
           {{- 'collection.clear_all' | t -}}
         </a>
         <button
@@ -76,7 +101,13 @@
         whose footer clears everything or closes it - filters already apply live.
       {%- endcomment -%}
       <div class="collection_wrapper_filters_footer">
-        <a href="{{ collection.url }}?sort_by={{ sort_by }}" class="collection_wrapper_filters_footer_clear">
+        <a
+          href="{{ collection.url }}?sort_by={{ sort_by }}"
+          class="collection_wrapper_filters_footer_clear"
+          data-analytics="filter_clear"
+          data-analytics-collection-name="{{ collection.title | escape }}"
+          data-analytics-filter-count="{{ analytics_filter_count }}"
+        >
           {{- 'collection.clear_all' | t -}}
         </a>
         <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-close>
@@ -160,6 +191,10 @@
             <a
               href="{{ chip_url }}"
               class="collection_wrapper_main_chips_chip{% if is_active %} is-active{% endif %}"
+              data-analytics="plp_chip_click"
+              data-analytics-chip-name="{{ block.settings.label | escape }}"
+              data-analytics-collection-name="{{ collection.title | escape }}"
+              data-analytics-position="{{ forloop.index }}"
               {% if is_active %}
                 aria-current="page"
               {% endif %}
