@@ -241,6 +241,16 @@
     root.querySelectorAll('[data-wishlist-toggle]').forEach(syncButton);
   }
 
+  /* The header heart's bubble (sections/header.liquid), styled like the cart's.
+     Hidden at zero, capped at 99+ so it never outgrows the icon. */
+  function syncBadges() {
+    const count = read().length;
+    document.querySelectorAll('[data-wishlist-badge]').forEach((badge) => {
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.hidden = count === 0;
+    });
+  }
+
   document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-wishlist-toggle]');
     if (!button) return;
@@ -250,7 +260,10 @@
 
   /* One listener keeps every heart on the page in step with the store, so the
      PDP heart and a card's heart for the same product never disagree. */
-  document.addEventListener('wishlist:change', () => syncAll());
+  document.addEventListener('wishlist:change', () => {
+    syncAll();
+    syncBadges();
+  });
 
   /* Cards are also added after load - collection filters and "Load more", the
      quick-add drawer, the wishlist page - and their hearts ship unpressed, so
@@ -269,17 +282,23 @@
 
   /* Another tab changed the list (or finished signing in): follow it. */
   window.addEventListener('storage', (event) => {
-    if (event.key === STORAGE_KEY) syncAll();
+    if (event.key !== STORAGE_KEY) return;
+    syncAll();
+    syncBadges();
   });
 
   document.addEventListener('DOMContentLoaded', async () => {
     syncAll();
+    syncBadges();
     watchNewHearts();
     await pull();
     addPending();
   });
   if (isDesignMode) {
-    document.addEventListener('shopify:section:load', (event) => syncAll(event.target));
+    document.addEventListener('shopify:section:load', (event) => {
+      syncAll(event.target);
+      syncBadges();
+    });
   }
 
   /* ---------------------------------------------------------------- the page */

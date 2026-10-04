@@ -368,7 +368,8 @@ html:not(.motion-dialogs) .pdp-ugc-box[open] .pdp-ugc-box_reel {
   color: var(--color-brand, #712242);
 }
 
-.header_wrapper_actions_cart_badge {
+.header_wrapper_actions_cart_badge,
+.header_wrapper_actions_wishlist_badge {
   transition: transform var(--motion-base) var(--motion-ease);
 }
 

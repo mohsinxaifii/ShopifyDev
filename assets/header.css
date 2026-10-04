@@ -153,7 +153,8 @@
   height: 100%;
 }
 
-.header_wrapper_actions_cart_badge {
+.header_wrapper_actions_cart_badge,
+.header_wrapper_actions_wishlist_badge {
   position: absolute;
   top: -4px;
   right: -6px;
@@ -170,6 +171,11 @@
   font-weight: 500;
   font-size: 8px;
   line-height: 1;
+}
+
+/* The rule above sets display, which outranks the UA sheet's [hidden]. */
+.header_wrapper_actions_wishlist_badge[hidden] {
+  display: none;
 }
 
 /* Off-canvas menu drawer */

@@ -57,6 +57,11 @@
         aria-label="{{ 'accessibility.wishlist' | t }}"
       >
         {{ 'icon-heart.svg' | inline_asset_content }}
+        {%- comment -%}
+          The wishlist lives in the browser, so the count is filled in and kept
+          current by wishlist.js rather than rendered here.
+        {%- endcomment -%}
+        <span class="header_wrapper_actions_wishlist_badge" data-wishlist-badge aria-hidden="true" hidden></span>
       </a>
 
       <a href="{{ routes.cart_url }}" class="header_wrapper_actions_link" aria-label="{{ 'accessibility.cart' | t }}">
