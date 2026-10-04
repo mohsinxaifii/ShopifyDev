@@ -68,6 +68,7 @@ class CollectionPage extends HTMLElement {
     if (!menu.hidden) return this.closeSort();
     this.querySelector('[data-sort-trigger]')?.setAttribute('aria-expanded', 'true');
     menu.hidden = false;
+    this.liftSheet(menu, true);
   }
 
   closeSort() {
@@ -76,6 +77,7 @@ class CollectionPage extends HTMLElement {
     if (!menu || menu.hidden) return;
     this.dismissSheet(menu, () => {
       menu.hidden = true;
+      this.liftSheet(menu, false);
     });
   }
 
@@ -132,6 +134,7 @@ class CollectionPage extends HTMLElement {
 
     if (!this.hasAttribute('data-filters-open')) return;
     const finish = () => {
+      this.liftSheet(this.querySelector('[data-filters]'), false);
       this.removeAttribute('data-filters-open');
       document.body.style.overflow = '';
     };
@@ -145,6 +148,51 @@ class CollectionPage extends HTMLElement {
     rail.classList.add('is-visible');
     rail.style.removeProperty('opacity');
     rail.style.removeProperty('transform');
+    // Also reached after a filter change swaps in a fresh rail mid-sheet.
+    this.liftSheet(rail, true);
+  }
+
+  /* Phones: an open sheet and its scrim go into the browser's top layer, where
+     nothing on the page - sticky bars, the product bar, app widgets, whatever
+     their z-index - can sit over them. The scrim goes in first so the sheet
+     stacks above it. `popover` is only added while open: the filter rail is
+     also the desktop sidebar, and a closed popover is hidden. Browsers without
+     popovers keep the plain fixed positioning. */
+  liftSheet(sheet, on) {
+    const scrim = this.querySelector('[data-sheet-scrim]');
+    const layer = (element, show) => {
+      if (!element || typeof element.showPopover !== 'function') return;
+      if (show) {
+        element.setAttribute('popover', 'manual');
+        element.setAttribute('data-top-layer', '');
+        try {
+          if (!element.matches(':popover-open')) element.showPopover();
+        } catch (error) {
+          // Already showing.
+        }
+        return;
+      }
+      try {
+        if (element.matches(':popover-open')) element.hidePopover();
+      } catch (error) {
+        // Already hidden.
+      }
+      element.removeAttribute('popover');
+      element.removeAttribute('data-top-layer');
+    };
+
+    if (on) {
+      if (!window.matchMedia('(max-width: 749px)').matches) return;
+      layer(scrim, true);
+      layer(sheet, true);
+      return;
+    }
+    layer(sheet, false);
+    const sortOpen = !this.querySelector('[data-sort-menu]')?.hidden;
+    if (!this.hasAttribute('data-filters-open') || !sortOpen) {
+      const otherOpen = sheet?.matches?.('[data-sort-menu]') ? this.hasAttribute('data-filters-open') : sortOpen;
+      if (!otherOpen) layer(scrim, false);
+    }
   }
 
   applySort(option) {
