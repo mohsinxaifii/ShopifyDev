@@ -281,7 +281,13 @@
         media.hidden = review.images.length === 0;
       }
 
-      item.querySelector('[data-review-body]').textContent = `“${review.body}”`;
+      // Judge.me fills a rating-only review with this placeholder; show nothing.
+      const body = item.querySelector('[data-review-body]');
+      if (review.body && !/^no review provided\.?$/i.test(review.body)) {
+        body.textContent = `“${review.body}”`;
+      } else {
+        body.remove();
+      }
       const date = item.querySelector('[data-review-date]');
       if (review.date) {
         date.textContent = dateFormat.format(review.date);
