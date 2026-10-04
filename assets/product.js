@@ -150,6 +150,9 @@
       this.initDragScroll();
       this.recordRecentlyViewed();
 
+      // analytics.js reads the variant picked right now for Buy now.
+      window.zinaraPdp = { currentItem: () => this.currentItem() };
+
       this.classList.add('is-ready');
     }
 
@@ -988,24 +991,34 @@
         this.addToCart(this.buildItems(), { trigger: this.querySelector('[data-add-to-cart]') });
       });
 
+      /* KwikCart (GoKwik's side cart) claims the form's Add to cart button and
+         adds only the variant in the form - it never sees the add-ons or the
+         gift sleeve, which are not form fields. When any of those is picked,
+         this listener - on window, in the capture phase, so ahead of KwikCart's
+         own on the button - adds everything in one request instead; the
+         shared cart then shows KwikCart. With nothing extra picked the click is
+         left alone and KwikCart adds it, exactly as on the live theme. */
+      window.addEventListener(
+        'click',
+        (event) => {
+          const button = event.target.closest?.('[data-add-to-cart]');
+          if (!button || !this.form?.contains(button) || button.disabled) return;
+          const items = this.buildItems();
+          if (items.length < 2) return;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          this.addToCart(items, { trigger: button });
+        },
+        true,
+      );
+
       const buyNow = this.querySelector('[data-buy-now]');
+      // Only reached when GoKwik has not taken the button over (it swaps in a
+      // clone without this listener). Tracking for both paths lives in
+      // analytics.js, off the button's data-checkout-intent.
       buyNow?.addEventListener('click', async () => {
-        const item = this.currentItem();
-        window.zinaraTrack?.('buy_now_click', {
-          currency: window.zinaraAnalyticsConfig?.currency,
-          value: item?.price,
-          items: item ? [item] : [],
-        });
         const ok = await this.addToCart(this.buildItems(), { trigger: buyNow });
-        if (!ok) return;
-        // Buy now skips the cart for GoKwik's checkout, which Shopify's pixels
-        // never see - so begin_checkout goes from here (analytics.js), capped
-        // so tracking can never hold up checkout.
-        await Promise.race([
-          window.zinaraAnalytics?.beginCheckout?.('buy_now'),
-          new Promise((resolve) => setTimeout(resolve, 800)),
-        ]);
-        window.location.href = `${window.Shopify?.routes?.root || '/'}checkout`;
+        if (ok) window.location.href = `${window.Shopify?.routes?.root || '/'}checkout`;
       });
 
       this.querySelector('[data-gift-toggle]')?.addEventListener('change', (event) => {

@@ -35,6 +35,63 @@
         "type": "shopify://apps/kwikpass/blocks/kp_login/603e209b-d585-47ff-8592-837a4faa325b",
         "disabled": false,
         "settings": {}
+      },
+      "5956026326314017506": {
+        "type": "shopify://apps/wishlink/blocks/tracking_app_embed/320d2666-828c-4460-9810-e1526e107d16",
+        "disabled": false,
+        "settings": {}
+      },
+      "2567389343055140935": {
+        "type": "shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
+        "disabled": false,
+        "settings": {}
+      },
+      "7568468938391765750": {
+        "type": "shopify://apps/shogard/blocks/lock-embed/4d2757ed-33ad-4e94-a186-da550756ae46",
+        "disabled": false,
+        "settings": {
+          "hide_in_theme_editor": true
+        }
+      },
+      "15601999777236905401": {
+        "type": "shopify://apps/shogard/blocks/ip-tracker-embed/4d2757ed-33ad-4e94-a186-da550756ae46",
+        "disabled": false,
+        "settings": {}
+      },
+      "9782964993694014311": {
+        "type": "shopify://apps/shogard/blocks/ip-block-embed/4d2757ed-33ad-4e94-a186-da550756ae46",
+        "disabled": false,
+        "settings": {
+          "blocker_message": "You cannot access our site from your current region.",
+          "background_color": "#808080",
+          "text_color": "#FFFFFF",
+          "fast_block": true
+        }
+      },
+      "6682135134011313236": {
+        "type": "shopify://apps/shogard/blocks/country-block-embed/4d2757ed-33ad-4e94-a186-da550756ae46",
+        "disabled": false,
+        "settings": {
+          "blocker_message": "You cannot access our site from your current region.",
+          "background_color": "#808080",
+          "text_color": "#FFFFFF",
+          "fast_block": true,
+          "hide_in_theme_editor": false
+        }
+      },
+      "17772089793659017505": {
+        "type": "shopify://apps/shogard/blocks/security-app-embed/4d2757ed-33ad-4e94-a186-da550756ae46",
+        "disabled": false,
+        "settings": {
+          "disable_in_theme_editor": false
+        }
+      },
+      "7283029355448080475": {
+        "type": "shopify://apps/shogard/blocks/bot-block-embed/4d2757ed-33ad-4e94-a186-da550756ae46",
+        "disabled": false,
+        "settings": {
+          "fast_block": true
+        }
       }
     }
   }
