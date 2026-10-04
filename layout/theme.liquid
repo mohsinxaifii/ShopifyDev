@@ -60,6 +60,16 @@
     {% # Event tracking (GA4 + Meta) - before content_for_header, see the snippet %}
     {% render 'analytics-config' %}
 
+    {%- comment -%}
+      GoKwik checkout (settings > Gokwik), as on the live theme. It must come
+      after analytics-config: GoKwik takes over every "Checkout" / "Buy now"
+      button with a capture listener that stops the click, and only a listener
+      registered before it still sees that click.
+    {%- endcomment -%}
+    <link rel="dns-prefetch" href="https://pdp.gokwik.co/">
+    <link rel="dns-prefetch" href="https://api.gokwik.co">
+    {% render 'gokwik' %}
+
     {{ content_for_header }}
   </head>
 
@@ -148,5 +158,7 @@
       behind it either way.
     {% endcomment %}
     <script src="{{ 'skeleton.js' | asset_url }}" defer="defer"></script>
+      {% # KwikPass: GoKwik's phone-OTP login, as on the live theme %}
+    {% render 'kwikpass' %}
   </body>
 </html>
