@@ -26,9 +26,9 @@
  * loaded, so it cannot double-fire anything.
  *
  * Wiring:
- *   - Markup: an element with data-track="event_name" sends that event on
- *     click; data-track-* attributes supply its values (data-track-section-name
- *     -> section_name). Only the parameters the plan lists for that event are
+ *   - Markup: an element with data-analytics="event_name" sends that event on
+ *     click; data-analytics-* attributes supply its values
+ *     (data-analytics-section-name -> section_name). Only the parameters the plan lists for that event are
  *     kept, and common ones (page_type, destination_url, product_id) are filled
  *     in automatically.
  *   - Code: components call window.zinaraTrack(name, params) - defined as a
@@ -342,12 +342,12 @@
 
   const toSnake = (key) => key.replace(/([A-Z])/g, '_$1').toLowerCase();
 
-  /** data-track-section-name="x" -> { section_name: 'x' } */
+  /** data-analytics-section-name="x" -> { section_name: 'x' } */
   function dataParams(element) {
     const params = {};
     Object.entries(element.dataset).forEach(([key, value]) => {
-      if (!key.startsWith('track') || key === 'track') return;
-      const name = toSnake(key.slice(5).replace(/^./, (ch) => ch.toLowerCase()));
+      if (!key.startsWith('analytics') || key === 'analytics') return;
+      const name = toSnake(key.slice(9).replace(/^./, (ch) => ch.toLowerCase()));
       if (value === 'true' || value === 'false') params[name] = value === 'true';
       else if (value !== '' && !Number.isNaN(Number(value)) && /(_count|position|index|price|value|rating|level|number)$/.test(name)) params[name] = Number(value);
       else params[name] = value;
@@ -378,7 +378,7 @@
 
   window.zinaraAnalytics = { send, dataParams, textOf, hrefOf, handleFromUrl, wishlistCount, cart };
 
-  /* --------------------------------------------- data-track click delegation */
+  /* ----------------------------------------- data-analytics click delegation */
 
   /* Capture phase on document: it runs before any component handler, so a
      handler that stops propagation (carousel drag guards, GoKwik) cannot hide
@@ -386,11 +386,11 @@
   document.addEventListener(
     'click',
     (event) => {
-      const element = event.target.closest?.('[data-track]');
+      const element = event.target.closest?.('[data-analytics]');
       if (!element) return;
       // One element may stand for more than one plan event, space-separated
       // (a footer phone link is both footer_link_click and contact_click).
-      element.dataset.track.split(/\s+/).filter(Boolean).forEach((name) => {
+      element.dataset.analytics.split(/\s+/).filter(Boolean).forEach((name) => {
         const params = dataParams(element);
         if (params.destination_url === undefined) params.destination_url = hrefOf(element);
         if (params.cta_text === undefined && spec(name)?.params.includes('cta_text')) {
@@ -419,8 +419,8 @@
           question: textOf(details.querySelector('.faq_wrapper_list_item_summary_question')),
           faq_position: list.indexOf(details) + 1,
         });
-      } else if (details.matches('[data-track-info]')) {
-        send('info_expand', { section_name: details.dataset.trackInfo });
+      } else if (details.matches('[data-analytics-info]')) {
+        send('info_expand', { section_name: details.dataset.analyticsInfo });
       }
     },
     true,
@@ -543,7 +543,7 @@
      their key in templates/index.json (shopify-section-template--…__<key>),
      translated to the plan's section_name. A section that holds two of the
      plan's sections (the split promo: custom design + about) marks each half
-     with data-track-view instead. Sections not in the plan's list (hero,
+     with data-analytics-view instead. Sections not in the plan's list (hero,
      USP strips, press logos) are left out - the hero has its own events. */
   const HOME_SECTIONS = {
     'shop-by-category': 'shop_by_category',
@@ -572,9 +572,9 @@
     if (config.pageType !== 'home') return;
     const targets = [];
     document.querySelectorAll('.shopify-section[id*="__"]').forEach((section) => {
-      const halves = section.querySelectorAll('[data-track-view]');
+      const halves = section.querySelectorAll('[data-analytics-view]');
       if (halves.length) {
-        halves.forEach((half) => targets.push([half, half.dataset.trackView]));
+        halves.forEach((half) => targets.push([half, half.dataset.analyticsView]));
         return;
       }
       const name = HOME_SECTIONS[section.id.split('__').pop()];

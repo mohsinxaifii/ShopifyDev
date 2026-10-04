@@ -26,12 +26,12 @@
                 <a
                   href="{{ block.settings.link | default: '#' }}"
                   class="press-carousel_wrapper_track_item_caption_title"
-                  data-track="celebrity_look_click"
-                  data-track-celebrity-name="{{ block.settings.by_text | strip | remove_last: ' in' | escape }}"
+                  data-analytics="celebrity_look_click"
+                  data-analytics-celebrity-name="{{ block.settings.by_text | strip | remove_last: ' in' | escape }}"
                   {%- if block.settings.link contains '/products/' %}
-                    data-track-product-id="{{ block.settings.link | split: '/products/' | last | split: '?' | first }}"
+                    data-analytics-product-id="{{ block.settings.link | split: '/products/' | last | split: '?' | first }}"
                   {%- endif %}
-                  data-track-position="{{ forloop.index }}"
+                  data-analytics-position="{{ forloop.index }}"
                 >
                   {{- block.settings.caption -}}
                 </a>

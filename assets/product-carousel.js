@@ -62,7 +62,7 @@
       if (index === this.activeIndex) return;
       this.activeIndex = index;
       window.zinaraTrack?.('product_tab_select', {
-        section_name: this.dataset.trackSection,
+        section_name: this.dataset.analyticsSection,
         tab_name: this.tabs[index]?.textContent.trim(),
         tab_position: index + 1,
       });

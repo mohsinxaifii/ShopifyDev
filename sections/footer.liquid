@@ -18,9 +18,9 @@
                   <a
                     href="{{ link.url }}"
                     class="footer_wrapper_top_columns_col_list_link"
-                    data-track="footer_link_click"
-                    data-track-link-text="{{ link.title | escape }}"
-                    data-track-link-group="quick_links"
+                    data-analytics="footer_link_click"
+                    data-analytics-link-text="{{ link.title | escape }}"
+                    data-analytics-link-group="quick_links"
                   >
                     {{- link.title -}}
                   </a>
@@ -39,9 +39,9 @@
                   <a
                     href="{{ link.url }}"
                     class="footer_wrapper_top_columns_col_list_link"
-                    data-track="footer_link_click"
-                    data-track-link-text="{{ link.title | escape }}"
-                    data-track-link-group="policies"
+                    data-analytics="footer_link_click"
+                    data-analytics-link-text="{{ link.title | escape }}"
+                    data-analytics-link-group="policies"
                   >
                     {{- link.title -}}
                   </a>
@@ -59,11 +59,11 @@
                 <a
                   href="tel:{{ section.settings.phone }}"
                   class="footer_wrapper_top_columns_col_list_link footer_wrapper_top_columns_col_list_link--icon"
-                  data-track="footer_link_click contact_click"
-                  data-track-link-text="phone"
-                  data-track-link-group="contact"
-                  data-track-contact-method="call"
-                  data-track-click-location="footer"
+                  data-analytics="footer_link_click contact_click"
+                  data-analytics-link-text="phone"
+                  data-analytics-link-group="contact"
+                  data-analytics-contact-method="call"
+                  data-analytics-click-location="footer"
                 >
                   {{ 'icon-phone.svg' | inline_asset_content }}
                   {{ section.settings.phone }}
@@ -75,11 +75,11 @@
                 <a
                   href="mailto:{{ section.settings.email }}"
                   class="footer_wrapper_top_columns_col_list_link footer_wrapper_top_columns_col_list_link--icon"
-                  data-track="footer_link_click contact_click"
-                  data-track-link-text="email"
-                  data-track-link-group="contact"
-                  data-track-contact-method="email"
-                  data-track-click-location="footer"
+                  data-analytics="footer_link_click contact_click"
+                  data-analytics-link-text="email"
+                  data-analytics-link-group="contact"
+                  data-analytics-contact-method="email"
+                  data-analytics-click-location="footer"
                 >
                   {{ 'icon-envelope.svg' | inline_asset_content }}
                   {{ section.settings.email }}
@@ -103,9 +103,9 @@
             target="_blank"
             rel="noopener"
             aria-label="Instagram"
-            data-track="footer_link_click"
-            data-track-link-text="instagram"
-            data-track-link-group="social"
+            data-analytics="footer_link_click"
+            data-analytics-link-text="instagram"
+            data-analytics-link-group="social"
           >
             {{- 'icon-instagram.svg' | inline_asset_content -}}
           </a>
@@ -116,9 +116,9 @@
             target="_blank"
             rel="noopener"
             aria-label="Facebook"
-            data-track="footer_link_click"
-            data-track-link-text="facebook"
-            data-track-link-group="social"
+            data-analytics="footer_link_click"
+            data-analytics-link-text="facebook"
+            data-analytics-link-group="social"
           >
             {{- 'icon-facebook.svg' | inline_asset_content -}}
           </a>
@@ -136,9 +136,9 @@
                 href="{{ block.settings.link | default: '#' }}"
                 class="footer_wrapper_apps_badges_badge"
                 style="--footer-mark-height: {{ block.settings.height }}px;"
-                data-track="footer_link_click"
-                data-track-link-text="{{ block.settings.image.alt | default: block.settings.link | escape }}"
-                data-track-link-group="app_store"
+                data-analytics="footer_link_click"
+                data-analytics-link-text="{{ block.settings.image.alt | default: block.settings.link | escape }}"
+                data-analytics-link-group="app_store"
                 {{ block.shopify_attributes }}
               >
                 {%- if block.settings.image -%}

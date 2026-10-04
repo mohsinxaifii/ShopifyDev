@@ -116,10 +116,10 @@
                   <a
                     href="{{ block.settings.button_url | default: '#' }}"
                     class="hero-banner_wrapper_track_slide_content_button"
-                    data-track="home_banner_click"
-                    data-track-banner-id="{{ block.id }}"
-                    data-track-banner-name="{{ block.settings.heading | default: block.settings.image.alt | default: block.settings.button_label | strip_html | escape }}"
-                    data-track-banner-position="{{ forloop.index }}"
+                    data-analytics="home_banner_click"
+                    data-analytics-banner-id="{{ block.id }}"
+                    data-analytics-banner-name="{{ block.settings.heading | default: block.settings.image.alt | default: block.settings.button_label | strip_html | escape }}"
+                    data-analytics-banner-position="{{ forloop.index }}"
                   >
                     {{ block.settings.button_label }}
                   </a>

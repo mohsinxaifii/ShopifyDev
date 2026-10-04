@@ -46,8 +46,8 @@
               <a
                 href="{{ block.settings.link }}"
                 class="announcement-bar_wrapper_track_slide_text"
-                data-track="announcement_bar_click"
-                data-track-message-text="{{ block.settings.text | strip_html | escape }}"
+                data-analytics="announcement_bar_click"
+                data-analytics-message-text="{{ block.settings.text | strip_html | escape }}"
               >
                 {{ block.settings.text }}
               </a>

@@ -63,9 +63,9 @@
       <a
         href="{{ routes.root_url }}"
         class="breadcrumb_list_item_link"
-        data-track="breadcrumb_click"
-        data-track-crumb-text="{{ section.settings.home_label | escape }}"
-        data-track-crumb-level="1"
+        data-analytics="breadcrumb_click"
+        data-analytics-crumb-text="{{ section.settings.home_label | escape }}"
+        data-analytics-crumb-level="1"
       >
         {{- section.settings.home_label -}}
       </a>
@@ -75,9 +75,9 @@
         <a
           href="{{ parent.url }}"
           class="breadcrumb_list_item_link"
-          data-track="breadcrumb_click"
-          data-track-crumb-text="{{ parent.title | escape }}"
-          data-track-crumb-level="2"
+          data-analytics="breadcrumb_click"
+          data-analytics-crumb-text="{{ parent.title | escape }}"
+          data-analytics-crumb-level="2"
         >
           {{- parent.title -}}
         </a>

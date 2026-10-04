@@ -12,11 +12,11 @@
           <a
             href="{{ block.settings.url | default: '#' }}"
             class="shop-by-category_wrapper_grid_item"
-            data-track="category_click"
-            data-track-category-name="{{ block.settings.label | escape }}"
-            data-track-category-url="{{ block.settings.url }}"
-            data-track-section-name="shop_by_category"
-            data-track-position="{{ forloop.index }}"
+            data-analytics="category_click"
+            data-analytics-category-name="{{ block.settings.label | escape }}"
+            data-analytics-category-url="{{ block.settings.url }}"
+            data-analytics-section-name="shop_by_category"
+            data-analytics-position="{{ forloop.index }}"
             data-animate
             data-animate-delay="{{ forloop.index0 | times: 80 }}"
             {{ block.shopify_attributes }}
