@@ -93,6 +93,9 @@
           "fast_block": true
         }
       }
-    }
+    },
+    "openai_ads_enabled": true,
+    "openai_ads_pixel_id": "GNxEfvYwDmKGWysLzjYCTt",
+    "openai_ads_debug": true
   }
 }
