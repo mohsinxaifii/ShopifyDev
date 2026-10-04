@@ -10,6 +10,32 @@
 {
   "current": {
     "wishlist_endpoint": "https://67r.6d1.mytemp.website/zinara-wishlist/wishlist.php",
-    "judgeme_public_token": "MLM6m6e4p0ejSY6Px9N1ThQFw1g"
+    "judgeme_public_token": "MLM6m6e4p0ejSY6Px9N1ThQFw1g",
+    "mid": "4y6fima17b5l2",
+    "envType": "production",
+    "ga4Gokwik": "G-G-9HTXCELBNX",
+    "fbpixel": "1058880252490692",
+    "goEnable": true,
+    "checkoutSubText": "",
+    "checkoutEnableLogo": false,
+    "checkoutEnableBanner": false,
+    "goBuynowEnable": true,
+    "buyNowText": "Buy It Now",
+    "buyNowSubText": "",
+    "buyNowEnableLogo": false,
+    "buyNowEnableBanner": false,
+    "enableIntlFlow": false,
+    "blocks": {
+      "1409715032340194113": {
+        "type": "shopify://apps/gokwik-cart-slide-cart-drawer/blocks/app-embed/531cd8ff-cc36-43b1-9a44-c16d44927215",
+        "disabled": false,
+        "settings": {}
+      },
+      "1219337400145039034": {
+        "type": "shopify://apps/kwikpass/blocks/kp_login/603e209b-d585-47ff-8592-837a4faa325b",
+        "disabled": false,
+        "settings": {}
+      }
+    }
   }
 }
