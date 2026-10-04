@@ -134,11 +134,25 @@
   assign offer_handles = offer_handles | split: ','
 -%}
 
+{%- liquid
+  comment
+    Pincode serviceability, as on the live theme: assets/pincodes.json holds the
+    pincodes each courier lane serves - "silver" for vermeil and silver pieces,
+    "gold" for solid gold - and the product's tags pick the lane.
+  endcomment
+  assign pincode_set = 'gold'
+  assign product_tags_lc = product.tags | join: ',' | downcase
+  if product_tags_lc contains 'vermeil' or product_tags_lc contains 'silver'
+    assign pincode_set = 'silver'
+  endif
+-%}
 <product-page
   class="pdp"
   data-product-url="{{ product.url }}"
   data-product-handle="{{ product.handle }}"
-  data-delivery-days="{{ product.metafields.custom.pdp_delivery_days.value | default: 5 }}"
+  data-delivery-days="{{ product.metafields.custom.pdp_delivery_days.value | default: 17 }}"
+  data-pincodes-url="{{ 'pincodes.json' | asset_url }}"
+  data-pincode-set="{{ pincode_set }}"
 >
   {%- render 'pdp-skeleton' -%}
 

@@ -823,33 +823,90 @@
 
     /* --------------------------------------------------------- pincode */
 
+    /**
+     * Delivery estimate, with the live theme's serviceability rules:
+     * assets/pincodes.json lists the pincodes each lane serves ("gold" /
+     * "silver"; the product's tags pick one - see data-pincode-set). The list
+     * is half a megabyte, so it is fetched on first use, not with the page.
+     * A served pincode delivers in 3 days when the picked variant is in stock,
+     * otherwise in the product's own lead time (pdp_delivery_days, else 17).
+     */
     initPincode() {
       const button = this.querySelector('[data-pincode-check]');
       const input = this.querySelector('[data-pincode]');
       const result = this.querySelector('[data-pincode-result]');
       if (!button || !input || !result) return;
 
-      button.addEventListener('click', () => {
-        const value = input.value.trim();
+      let lists = null;
+      const loadLists = () => {
+        if (!lists) {
+          lists = fetch(this.dataset.pincodesUrl)
+            .then((response) => {
+              if (!response.ok) throw new Error(`${response.status}`);
+              return response.json();
+            })
+            .then((data) => ({ gold: new Set(data.gold || []), silver: new Set(data.silver || []) }))
+            .catch((error) => {
+              lists = null; // try again on the next check
+              throw error;
+            });
+        }
+        return lists;
+      };
+
+      const show = (text, invalid) => {
+        result.textContent = text;
+        result.classList.toggle('is-invalid', invalid);
         result.hidden = false;
-        if (!/^\d{6}$/.test(value)) {
-          result.textContent = 'Please enter a valid 6-digit pincode.';
+      };
+
+      // Digits only, as the shopper types; start the download meanwhile.
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
+      });
+      input.addEventListener('focus', () => loadLists().catch(() => {}), { once: true });
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          button.click();
+        }
+      });
+
+      button.addEventListener('click', async () => {
+        const value = input.value.trim();
+        if (!/^[1-9][0-9]{5}$/.test(value)) {
+          show('Please enter a valid 6-digit pincode.', true);
           return;
         }
-        const days = Number(this.dataset.deliveryDays) || 5;
+
+        let served;
+        try {
+          const sets = await loadLists();
+          served = (sets[this.dataset.pincodeSet] || sets.gold).has(value);
+        } catch (error) {
+          show('Could not check this pincode right now. Please try again.', true);
+          return;
+        }
+
+        if (!served) {
+          show(`Sorry, we don't deliver to ${value} yet.`, true);
+          window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: false });
+          return;
+        }
+
+        const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
+        const days = variant?.inStock ? 3 : Number(this.dataset.deliveryDays) || 17;
         const eta = new Date();
         eta.setDate(eta.getDate() + days);
-        // The estimate is the same for every valid pincode - there is no
-        // serviceability lookup behind it yet - so a valid one counts as served.
+        show(
+          `Delivers by ${eta.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} to ${value}.`,
+          false,
+        );
         window.zinaraTrack?.('pincode_check', {
           pincode: value,
           serviceable: true,
           delivery_eta: eta.toISOString().slice(0, 10),
         });
-        result.textContent = `Delivers by ${eta.toLocaleDateString(undefined, {
-          day: 'numeric',
-          month: 'short',
-        })} to ${value}.`;
       });
     }
 
