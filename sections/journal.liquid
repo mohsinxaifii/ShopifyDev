@@ -20,7 +20,16 @@
                 <span class="journal_wrapper_stage_track_item_tag">FEATURED</span>
               {%- endif -%}
 
-              <a href="{{ article.url }}" class="journal_wrapper_stage_track_item_card">
+              <a
+                href="{{ article.url }}"
+                class="journal_wrapper_stage_track_item_card"
+                data-track="blog_card_click blog_select"
+                data-track-article-id="{{ article.id }}"
+                data-track-article-title="{{ article.title | escape }}"
+                data-track-section-name="journal"
+                data-track-card-type="journal"
+                data-track-position="{{ forloop.index }}"
+              >
                 <span class="journal_wrapper_stage_track_item_card_image">
                   {%- if article.image -%}
                     {{

@@ -14,6 +14,10 @@
             <a
               href="{{ block.settings.url | default: '#' }}"
               class="occasion-showcase_wrapper_track_item"
+              data-track="collection_click"
+              data-track-collection-name="{{ block.settings.label | escape }}"
+              data-track-section-name="every_occasion"
+              data-track-position="{{ forloop.index }}"
               {{ block.shopify_attributes }}
             >
               <span class="occasion-showcase_wrapper_track_item_image">

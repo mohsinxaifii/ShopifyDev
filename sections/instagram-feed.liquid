@@ -26,6 +26,9 @@
           <a
             href="{{ block.settings.link | default: 'https://instagram.com' }}"
             class="instagram-feed_wrapper_grid_item{% if has_video %} instagram-feed_wrapper_grid_item--video{% endif %}"
+            data-track="instagram_click"
+            data-track-post-id="{{ block.settings.link | split: '/p/' | last | split: '/' | first | default: block.id }}"
+            data-track-position="{{ forloop.index }}"
             target="_blank"
             rel="noopener"
             {{ block.shopify_attributes }}
