@@ -1,17 +1,45 @@
-{% comment %}
-  This section is used in the page template to render store pages like About us
-  or Contact us.
+{%- comment -%}
+  A store page (Online Store > Pages) that has no template of its own - shipping
+  notes, terms, and KwikPass's account page.
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/page
-{% endcomment %}
+  KwikPass (GoKwik's phone-OTP login) keeps its customer account - orders,
+  addresses, profile - on the page with the handle "kp-account". That page's
+  content is a single script (pdp.gokwik.co/kp-account/init.js) which draws the
+  account into #kp-account-wrapper, or else into the page's <main>; this theme
+  has no <main>, so the wrapper is rendered here. Its title ("kp account") is an
+  admin label and is not shown.
+{%- endcomment -%}
 
-<h1>{{ page.title }}</h1>
+{{ 'page.css' | asset_url | stylesheet_tag }}
 
-{{ page.content }}
+{%- liquid
+  assign is_kp_account = false
+  if page.handle == 'kp-account' or page.content contains 'kp-account/init.js'
+    assign is_kp_account = true
+  endif
+-%}
+
+<section class="page full-width{% if is_kp_account %} page--account{% endif %}">
+  <div class="page_wrapper">
+    {%- if is_kp_account -%}
+      <div id="kp-account-wrapper" class="page_wrapper_account"></div>
+      {{ page.content }}
+    {%- else -%}
+      <h1 class="page_wrapper_title">{{ page.title }}</h1>
+      {%- if page.content != blank -%}
+        <div class="page_wrapper_content">
+          {%- render 'trim-blank-paragraphs', html: page.content -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
 
 {% schema %}
 {
   "name": "t:general.page",
+  "tag": "section",
+  "class": "shopify-section--page",
   "settings": []
 }
 {% endschema %}
