@@ -21,9 +21,10 @@
  *
  * Everything else in the plan is sent from here, to GA4 as the plan's event
  * name and to Meta as a custom event of the same name (or the matching Meta
- * standard event where one exists: AddToWishlist, Contact, InitiateCheckout).
- * Each event also lands on window.dataLayer for GTM, without a GTM container
- * loaded, so it cannot double-fire anything.
+ * standard event where one exists: AddToWishlist, Contact, InitiateCheckout,
+ * Schedule). Events are deliberately not pushed to window.dataLayer as plain
+ * objects: a GTM container added later with GA4 tags on them would count every
+ * one twice.
  *
  * Wiring:
  *   - Markup: an element with data-analytics="event_name" sends that event on
@@ -321,7 +322,6 @@
       params.items = params.items.map(({ product_id: omitted, ...item }) => item);
     }
     const payload = { ...base, ...params };
-    window.dataLayer.push({ event: name, ...payload });
 
     if (gaId && plan.ga && typeof window.gtag === 'function') {
       window.gtag('event', name, { ...payload, send_to: gaId });
