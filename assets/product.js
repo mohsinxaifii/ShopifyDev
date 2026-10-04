@@ -779,6 +779,10 @@
             });
             throw new Error(result.message || `${response.status}`);
           }
+          window.zinaraTrack?.('review_submit', {
+            rating: Number(form.querySelector('input[name="rating"]:checked')?.value) || undefined,
+            has_media: photos.length > 0,
+          });
           fields.hidden = true;
           done.hidden = false;
           submit.hidden = true;

@@ -209,7 +209,10 @@
       this.more = this.querySelector('[data-reviews-more]');
       this.moreButton = this.more?.querySelector('button');
 
-      this.moreButton?.addEventListener('click', () => this.loadPage());
+      this.moreButton?.addEventListener('click', () => {
+        window.zinaraTrack?.('review_interaction', { action: 'show_more', review_count: this.total });
+        this.loadPage();
+      });
       this.init();
     }
 
