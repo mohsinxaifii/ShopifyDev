@@ -57,6 +57,9 @@
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
+    {% # Event tracking (GA4 + Meta) - before content_for_header, see the snippet %}
+    {% render 'analytics-config' %}
+
     {{ content_for_header }}
   </head>
 

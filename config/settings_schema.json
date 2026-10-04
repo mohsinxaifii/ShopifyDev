@@ -171,5 +171,41 @@
         "info": "Judge.me admin > Settings > Integrations > View API tokens. Use the Public token (never the Private one). Leave empty to hide ratings and reviews."
       }
     ]
+  },
+  {
+    "name": "Tracking",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Sends the events in the Zinara event tracking plan to GA4 and Meta. Page views, product views, searches, add to cart and Shopify checkout events are left to the Google & YouTube and Facebook & Instagram apps, so nothing is counted twice."
+      },
+      {
+        "type": "text",
+        "id": "ga4_measurement_id",
+        "label": "GA4 measurement ID",
+        "default": "G-9HTXCELBNX",
+        "info": "The same ID the Google & YouTube app uses. Leave empty to send nothing to GA4."
+      },
+      {
+        "type": "text",
+        "id": "meta_pixel_id",
+        "label": "Meta pixel ID",
+        "default": "1058880252490692",
+        "info": "The same pixel the Facebook & Instagram app uses. Leave empty to send nothing to Meta."
+      },
+      {
+        "type": "checkbox",
+        "id": "analytics_begin_checkout",
+        "label": "Send begin checkout from the theme",
+        "default": true,
+        "info": "Keep on while checkout runs on GoKwik, which the apps cannot see. Turn off if checkout moves to Shopify's own, or begin checkout will be counted twice."
+      },
+      {
+        "type": "checkbox",
+        "id": "analytics_debug",
+        "label": "Log events to the browser console",
+        "default": false
+      }
+    ]
   }
 ]
