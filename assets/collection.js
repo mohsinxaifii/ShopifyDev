@@ -120,6 +120,10 @@ class CollectionPage extends HTMLElement {
     if (rail?.classList.contains('is-closing')) return;
 
     if (open) {
+      window.zinaraTrack?.('filter_open', {
+        collection_name: this.dataset.analyticsCollection,
+        active_filter_count: this.filterState(window.location.href).count,
+      });
       this.setAttribute('data-filters-open', '');
       document.body.style.overflow = 'hidden';
       this.revealFilters();
@@ -223,6 +227,7 @@ class CollectionPage extends HTMLElement {
 
   async render(url, push) {
     this.setBusy(true);
+    const before = window.location.href;
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`${response.status}`);
@@ -244,6 +249,7 @@ class CollectionPage extends HTMLElement {
 
       if (push) window.history.pushState({}, '', url);
       this.setupPrice();
+      if (push) this.trackChange(before, url);
     } catch (error) {
       // A failed swap should not strand the shopper on a stale grid.
       console.error('[collection] could not apply filters', error);
@@ -266,7 +272,13 @@ class CollectionPage extends HTMLElement {
     try {
       const response = await fetch(link.href);
       const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
-      doc.querySelectorAll('[data-grid] > *').forEach((card) => this.grid.appendChild(card));
+      const cards = doc.querySelectorAll('[data-grid] > *');
+      cards.forEach((card) => this.grid.appendChild(card));
+      window.zinaraTrack?.('plp_load_more', {
+        collection_name: this.dataset.analyticsCollection,
+        page_number: Number(new URL(link.href, window.location.href).searchParams.get('page')) || undefined,
+        items_loaded: cards.length,
+      });
 
       const nextMore = doc.querySelector('[data-more]');
       if (nextMore) wrap.replaceWith(nextMore);
@@ -281,6 +293,58 @@ class CollectionPage extends HTMLElement {
     }
   }
 
+  /* ------------------------------------------------------------ analytics */
+
+  /* The active filters in a URL, in the plan's format:
+     'price:0-10000|colour:gold|diamond_shape:oval'. Filter params look like
+     filter.p.m.custom.colour / filter.v.option.size / filter.v.price.gte. */
+  filterState(href) {
+    const params = new URL(href, window.location.href).searchParams;
+    const groups = new Map();
+    let price = null;
+    params.forEach((value, key) => {
+      if (!key.startsWith('filter.') || value === '') return;
+      if (key === 'filter.v.price.gte' || key === 'filter.v.price.lte') {
+        price = price || { gte: '0', lte: '' };
+        price[key.endsWith('gte') ? 'gte' : 'lte'] = value;
+        return;
+      }
+      const name = key.split('.').pop();
+      groups.set(name, [...(groups.get(name) || []), value]);
+    });
+    const parts = [];
+    if (price) parts.push(`price:${price.gte}-${price.lte}`);
+    groups.forEach((values, name) => parts.push(`${name}:${values.join(',')}`));
+    let count = groups.size ? [...groups.values()].reduce((sum, values) => sum + values.length, 0) : 0;
+    if (price) count += 1;
+    return { text: parts.join('|'), count };
+  }
+
+  /* After a filter or sort request lands: filter_apply when the filters
+     changed, sort_apply when the order did. */
+  trackChange(before, after) {
+    const collection = this.dataset.analyticsCollection;
+    const was = this.filterState(before);
+    const now = this.filterState(after);
+    if (was.text !== now.text) {
+      const countText = this.querySelector('.collection_wrapper_main_toolbar_count')?.textContent || '';
+      window.zinaraTrack?.('filter_apply', {
+        filters_applied: now.text || 'none',
+        filter_count: now.count,
+        collection_name: collection,
+        results_count: parseInt(countText.replace(/[^0-9]/g, ''), 10) || 0,
+      });
+    }
+    const sortBefore = new URL(before, window.location.href).searchParams.get('sort_by') || '';
+    const sortAfter = new URL(after, window.location.href).searchParams.get('sort_by') || '';
+    if (sortBefore !== sortAfter) {
+      window.zinaraTrack?.('sort_apply', {
+        sort_option: sortAfter || 'default',
+        previous_sort: sortBefore || 'default',
+        collection_name: collection,
+      });
+    }
+  }
 }
 
 customElements.define('collection-page', CollectionPage);
