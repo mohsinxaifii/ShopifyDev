@@ -99,10 +99,10 @@
   transform: scale(1.08);
 }
 
-.product-card_media_top_wishlist.is-active {
+/* .product-card_media_top_wishlist.is-active {
   background-color: var(--color-brand, #712242);
   color: #fff;
-}
+} */
 
 .product-card_media_rating {
   position: relative;
