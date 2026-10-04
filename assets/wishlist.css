@@ -1,4 +1,4 @@
-/* Figma: Wishlist 7930:94300 > Frame 1116601589.
+/* Figma: Wishlist 7930:94300 > Frame 1116601589 (re-checked against 8106:39983).
 
    A white 32/72 band on a 24px stack: the heading and count, the circular
    category filters, then the grid. Four 266px cards to a row on the 24px
@@ -38,7 +38,7 @@
 .wishlist_wrapper_head_count {
   margin: 0;
   font-family: var(--font-secondary--family);
-  font-weight: 500;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.5;
   color: var(--color-icon, #666);
@@ -95,11 +95,12 @@
   font-weight: 500;
   font-size: 14px;
   line-height: 1.214;
-  color: var(--color-text-secondary, #494949);
+  color: #808080;
 }
 
 .wishlist_wrapper_filters_item.is-active .wishlist_wrapper_filters_item_label {
-  color: var(--color-brand, #712242);
+  font-weight: 600;
+  color: var(--color-accent, #f0166e);
 }
 
 /* -------------------------------------------------------------------- grid */

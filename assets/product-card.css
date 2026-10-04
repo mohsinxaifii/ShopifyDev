@@ -237,10 +237,6 @@
   transform: translateY(-50%) scale(1.08);
 }
 
-.product-card--grid .product-card_info_price_wishlist.is-active svg {
-  fill: currentcolor;
-}
-
 .product-card--grid .product-card_info_title {
   font-size: 14px;
   line-height: 1.429;

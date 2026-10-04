@@ -86,6 +86,12 @@ summary:active {
   transform: scale(0.985);
 }
 
+/* A product card is one big link, so pressing the heart or Add to cart inside it
+   would also press - and dip - the whole card. The press belongs to the button. */
+.product-card:active:has(button:active) {
+  transform: none;
+}
+
 /* Keyboard focus should be as visible as hover, and arrive just as smoothly. */
 :where(a, button, summary, input, select, textarea):focus-visible {
   outline: 2px solid var(--color-brand, #712242);

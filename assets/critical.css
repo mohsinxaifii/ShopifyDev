@@ -122,3 +122,19 @@ body {
 judgeme-rating:not([hidden]) {
   display: contents;
 }
+
+/* Wishlist toggles (snippets/wishlist-heart.liquid): outline heart until the
+   product is saved, filled heart after. The wrappers are layout-neutral so each
+   button's own `svg` sizing rules keep applying. */
+.wishlist-heart {
+  display: contents;
+}
+
+[data-wishlist-toggle] .wishlist-heart--on,
+[data-wishlist-toggle][aria-pressed='true'] .wishlist-heart--off {
+  display: none;
+}
+
+[data-wishlist-toggle][aria-pressed='true'] .wishlist-heart--on {
+  display: contents;
+}

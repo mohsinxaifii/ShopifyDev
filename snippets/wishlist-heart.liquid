@@ -1,0 +1,12 @@
+{%- doc -%}
+  The two hearts inside every wishlist toggle: an outline while the product is
+  not saved and a filled heart once it is. wishlist.js only flips `is-active` /
+  aria-pressed on the button; critical.css shows the matching heart. Both use
+  currentColor, so each button's own color rules still apply.
+{%- enddoc -%}
+<span class="wishlist-heart wishlist-heart--off" aria-hidden="true">
+  {{- 'icon-heart.svg' | inline_asset_content -}}
+</span>
+<span class="wishlist-heart wishlist-heart--on" aria-hidden="true">
+  {{- 'icon-heart-fill.svg' | inline_asset_content -}}
+</span>
