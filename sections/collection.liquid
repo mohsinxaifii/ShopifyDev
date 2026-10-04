@@ -32,6 +32,21 @@
     {%- comment -%} Keep the chosen sort with the filter params on submit. {%- endcomment -%}
     <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
 
+    {%- liquid
+      comment
+        Active filters, counted the way plp-mobile-bar does - for filter_clear.
+      endcomment
+      assign analytics_filter_count = 0
+      for filter in collection.filters
+        if filter.type == 'price_range'
+          if filter.min_value.value != blank or filter.max_value.value != blank
+            assign analytics_filter_count = analytics_filter_count | plus: 1
+          endif
+        else
+          assign analytics_filter_count = analytics_filter_count | plus: filter.active_values.size
+        endif
+      endfor
+    -%}
     <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
       <div class="collection_wrapper_filters_head">
         <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
@@ -40,6 +55,7 @@
           class="collection_wrapper_filters_head_clear"
           data-analytics="filter_clear"
           data-analytics-collection-name="{{ collection.title | escape }}"
+          data-analytics-filter-count="{{ analytics_filter_count }}"
         >
           {{- 'collection.clear_all' | t -}}
         </a>
@@ -90,6 +106,7 @@
           class="collection_wrapper_filters_footer_clear"
           data-analytics="filter_clear"
           data-analytics-collection-name="{{ collection.title | escape }}"
+          data-analytics-filter-count="{{ analytics_filter_count }}"
         >
           {{- 'collection.clear_all' | t -}}
         </a>
