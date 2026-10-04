@@ -396,6 +396,13 @@
         if (params.cta_text === undefined && spec(name)?.params.includes('cta_text')) {
           params.cta_text = textOf(element);
         }
+        // Which part of a card was tapped: its picture, its title, or the rest.
+        if (params.click_element === undefined && spec(name)?.params.includes('click_element')) {
+          const target = event.target;
+          if (target.closest('img, picture, video')) params.click_element = 'image';
+          else if (target.closest('h1, h2, h3, h4, [class*="title"]')) params.click_element = 'title';
+          else params.click_element = 'card';
+        }
         send(name, params);
       });
     },
@@ -404,14 +411,17 @@
 
   /* ------------------------------------------------- accordions (details) */
 
-  /* `toggle` does not bubble, but a capture listener still sees it - and it
-     fires however the <details> was opened (GSAP in faq.js, or the browser's
-     own toggle when GSAP is missing). Only openings count. */
+  /* Counted on the click of a <summary> that is about to open its <details>:
+     a `toggle` listener would also catch accordions the page opens by itself
+     (one rendered open fires `toggle` on load). Keyboard activation of a
+     summary is a click too. Works whether faq.js animates it with GSAP or the
+     browser toggles it natively. */
   document.addEventListener(
-    'toggle',
+    'click',
     (event) => {
-      const details = event.target;
-      if (!(details instanceof HTMLDetailsElement) || !details.open) return;
+      const summary = event.target.closest?.('summary');
+      const details = summary?.parentElement;
+      if (!(details instanceof HTMLDetailsElement) || details.open) return;
 
       if (details.matches('.faq_wrapper_list_item')) {
         const list = Array.from(document.querySelectorAll('.faq_wrapper_list_item'));
@@ -419,8 +429,67 @@
           question: textOf(details.querySelector('.faq_wrapper_list_item_summary_question')),
           faq_position: list.indexOf(details) + 1,
         });
-      } else if (details.matches('[data-analytics-info]')) {
-        send('info_expand', { section_name: details.dataset.analyticsInfo });
+      } else if (details.matches('.pdp_accordion')) {
+        send('info_expand', { section_name: textOf(summary.querySelector('span')) });
+      }
+    },
+    true,
+  );
+
+  /* ------------------------------------------------ product card clicks */
+
+  /* A product card's link (not its heart or Add to cart) in the lists the plan
+     follows. Each card carries its GA4 item in data-analytics-item; cards built
+     in JS (Recently viewed) fall back to what the card itself shows. */
+  function cardItem(card, index, listName) {
+    let item = null;
+    try {
+      item = JSON.parse(card.dataset.analyticsItem || 'null');
+    } catch (error) {
+      item = null;
+    }
+    if (!item) {
+      item = {
+        item_id: handleFromUrl(card.getAttribute('href')),
+        item_name: textOf(card.querySelector('.product-card_info_title')),
+        item_brand: 'Zinara',
+        quantity: 1,
+      };
+    }
+    return { ...item, index, item_list_name: listName };
+  }
+
+  const CARD_LISTS = [
+    // [container selector, list id, list name, extra event]
+    ['[data-panel="also-like"]', 'you_may_also_like', 'You may also like', 'recommendation_click'],
+    ['[data-recent-track]', 'recently_viewed', 'Recently viewed', 'recommendation_click'],
+    ['.article_wrapper_body_shop', 'blog_products', 'Shop the article', 'blog_product_click'],
+  ];
+
+  document.addEventListener(
+    'click',
+    (event) => {
+      const card = event.target.closest?.('a.product-card');
+      if (!card || event.target.closest('button')) return;
+      const match = CARD_LISTS.find(([selector]) => card.closest(selector));
+      if (!match) return;
+      const [selector, listId, listName, extra] = match;
+      const cards = Array.from(card.closest(selector).querySelectorAll('a.product-card'));
+      const position = cards.indexOf(card) + 1;
+      const item = cardItem(card, position - 1, listName);
+      const clickedId = item.product_id || item.item_id;
+
+      send('select_item', { item_list_id: listId, item_list_name: listName, items: [item] });
+      if (extra === 'recommendation_click') {
+        send('recommendation_click', {
+          rec_section: listId,
+          source_product_id: config.product?.id,
+          clicked_product_id: clickedId,
+          clicked_product_name: item.item_name,
+          position,
+        });
+      } else {
+        send('blog_product_click', { article_title: config.article?.title, product_id: clickedId, position });
       }
     },
     true,
