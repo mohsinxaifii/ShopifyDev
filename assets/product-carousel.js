@@ -61,6 +61,11 @@
     selectTab(index) {
       if (index === this.activeIndex) return;
       this.activeIndex = index;
+      window.zinaraTrack?.('product_tab_select', {
+        section_name: this.dataset.trackSection,
+        tab_name: this.tabs[index]?.textContent.trim(),
+        tab_position: index + 1,
+      });
 
       this.tabs.forEach((tab, i) => {
         tab.classList.toggle('is-active', i === index);
