@@ -77,9 +77,12 @@
 
 /* ---------------------------------------------------------------- gallery */
 
+/* --header-sticky-offset is the sticky header's height while it is on screen
+   (header.js), so the gallery rides below it instead of under it. */
 .pdp_gallery {
   position: sticky;
-  top: 24px;
+  top: calc(24px + var(--header-sticky-offset, 0px));
+  transition: top var(--motion-base, 0.3s) var(--motion-ease, ease);
 }
 
 .pdp_gallery_inner {

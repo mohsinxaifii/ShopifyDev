@@ -1,7 +1,12 @@
 {{ 'header.css' | asset_url | stylesheet_tag }}
 {{ 'search-suggest.css' | asset_url | stylesheet_tag }}
 
-<header-component class="header full-width" data-drawer-open="false" data-search-open="false">
+<header-component
+  class="header full-width"
+  data-drawer-open="false"
+  data-search-open="false"
+  data-sticky="{{ section.settings.sticky_header | default: 'scroll-up' }}"
+>
   <div class="header_wrapper">
     <div class="header_wrapper_brand">
       <button
@@ -231,6 +236,17 @@
       "type": "url",
       "id": "wishlist_url",
       "label": "Wishlist page URL"
+    },
+    {
+      "type": "select",
+      "id": "sticky_header",
+      "label": "Sticky header",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "scroll-up", "label": "On scroll up" },
+        { "value": "always", "label": "Always" }
+      ],
+      "default": "scroll-up"
     },
     {
       "type": "header",

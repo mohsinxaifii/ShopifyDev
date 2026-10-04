@@ -8,6 +8,7 @@ class HeaderComponent extends HTMLElement {
     this.isOpen = false;
 
     this.bindNavGroups();
+    this.setupSticky();
 
     this.searchToggle?.addEventListener('click', () => this.toggleSearch());
     this.menuToggle?.addEventListener('click', () => this.open());
@@ -17,6 +18,72 @@ class HeaderComponent extends HTMLElement {
       if (event.key === 'Escape' && this.isOpen) this.close();
       if (event.key === 'Tab' && this.isOpen) this.trapFocus(event);
     });
+  }
+
+  /* Sticky header (theme setting "Sticky header"; CSS in header.css).
+
+     "always" just sticks. "scroll-up" behaves like Shopify's own themes: the
+     header scrolls away with the page, slides out of view while the shopper
+     scrolls down, and slides back in on any scroll up. It is never hidden
+     while the menu drawer or the search field is open.
+
+     --header-sticky-offset on <html> is the header's height whenever it is
+     stuck and on screen, 0 otherwise, for other sticky elements to sit below. */
+  setupSticky() {
+    const mode = this.dataset.sticky;
+    this.section = this.closest('.shopify-section');
+    if (!this.section || (mode !== 'scroll-up' && mode !== 'always')) return;
+
+    const root = document.documentElement;
+    // Ignore jitter (trackpads, iOS bounce) so the header does not flicker.
+    const THRESHOLD = 6;
+    let lastY = Math.max(0, window.scrollY);
+    let ticking = false;
+
+    const isBusy = () =>
+      this.isOpen ||
+      this.getAttribute('data-search-open') === 'true' ||
+      root.classList.contains('search-suggest-open') ||
+      this.contains(document.activeElement);
+
+    const update = () => {
+      ticking = false;
+      const y = Math.max(0, window.scrollY);
+      const height = this.section.offsetHeight;
+      // Where the header sits in the page before it sticks: below the
+      // announcement bar, which scrolls away normally.
+      const previous = this.section.previousElementSibling;
+      const naturalTop = previous ? Math.max(0, previous.getBoundingClientRect().bottom + y) : 0;
+      const stuck = y > naturalTop;
+
+      let hidden = this.section.classList.contains('is-header-hidden');
+      if (mode === 'always' || !stuck || isBusy()) {
+        hidden = false;
+      } else if (y - lastY > THRESHOLD && y > naturalTop + height) {
+        hidden = true;
+      } else if (lastY - y > THRESHOLD) {
+        hidden = false;
+      }
+      if (Math.abs(y - lastY) > THRESHOLD || !stuck) lastY = y;
+
+      this.section.classList.toggle('is-header-hidden', hidden);
+      root.style.setProperty('--header-sticky-offset', stuck && !hidden ? `${height}px` : '0px');
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    // Tabbing into a hidden header should bring it back.
+    this.addEventListener('focusin', () => {
+      this.section.classList.remove('is-header-hidden');
+      onScroll();
+    });
+    update();
   }
 
   /* Any menu item with children collapses into an accordion (Figma 7930:109338
