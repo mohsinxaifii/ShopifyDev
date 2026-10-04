@@ -209,7 +209,8 @@
       if (direction > 0) {
         destination = current >= maxScroll - 1 ? 0 : Math.min(target, maxScroll);
       } else {
-        destination = current <= 1 ? maxScroll : Math.max(target, 0);
+        // Back to the page boundary below (see product-carousel.js).
+        destination = current <= 1 ? maxScroll : Math.max(Math.floor((current - 1) / distance) * distance, 0);
       }
 
       this.scrollTrackTo(destination);

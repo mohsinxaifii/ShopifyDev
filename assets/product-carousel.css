@@ -279,3 +279,10 @@
 .product-carousel_wrapper_stage_panel_track.is-scrolling {
   scroll-snap-type: none;
 }
+
+/* product-carousel.js hides the arrows when the open tab has nothing to page
+   through; their display rule would otherwise outrank [hidden]. */
+.product-carousel_wrapper_stage_prev[hidden],
+.product-carousel_wrapper_stage_next[hidden] {
+  display: none;
+}
