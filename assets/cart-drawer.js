@@ -98,6 +98,13 @@
 
     open() {
       if (kwikCart()) {
+        // A modal <dialog> (the curated-videos reel, a product sheet) lives in
+        // the browser's top layer, above anything KwikCart can stack, so the
+        // cart would open hidden behind it. Close those first, as the theme's
+        // own drawer - itself a modal - never had to.
+        document.querySelectorAll('dialog[open]').forEach((dialog) => {
+          if (dialog !== this.dialog && dialog.matches(':modal')) dialog.close();
+        });
         // Pick up the line just added before sliding in.
         Promise.resolve(window.refreshSideCart?.())
           .catch(() => {})
