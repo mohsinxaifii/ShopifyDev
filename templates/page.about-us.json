@@ -20,7 +20,7 @@
       "type": "about-hero",
       "settings": {
         "image": "shopify://shop_images/zinara-about-hero.png",
-        "eyebrow": "Our moto:",
+        "eyebrow": "Our motto:",
         "quote": "“Jewellery you'll never take off.”",
         "mobile_image": "shopify://shop_images/zinara-about-hero-mobile.png"
       }

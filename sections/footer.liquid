@@ -57,7 +57,7 @@
             {%- if section.settings.phone != blank -%}
               <li>
                 <a
-                  href="tel:{{ section.settings.phone }}"
+                  href="tel:{{ section.settings.phone | remove: ' ' | remove: '-' }}"
                   class="footer_wrapper_top_columns_col_list_link footer_wrapper_top_columns_col_list_link--icon"
                   data-analytics="footer_link_click contact_click"
                   data-analytics-link-text="phone"
@@ -142,7 +142,12 @@
                 {{ block.shopify_attributes }}
               >
                 {%- if block.settings.image -%}
-                  {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: '' }}
+                  {%- comment -%}
+                    Alt text: the image's own (set in Files), else its file
+                    name - "visa", "amazon" - which names the logo well enough.
+                  {%- endcomment -%}
+                  {%- assign logo_name = block.settings.image.src | split: '/' | last | split: '?' | first | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' -%}
+                  {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: block.settings.image.alt | default: logo_name }}
                 {%- endif -%}
               </a>
             {%- endif -%}
@@ -164,7 +169,12 @@
                 {{ block.shopify_attributes }}
               >
                 {%- if block.settings.image -%}
-                  {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: '' }}
+                  {%- comment -%}
+                    Alt text: the image's own (set in Files), else its file
+                    name - "visa", "amazon" - which names the logo well enough.
+                  {%- endcomment -%}
+                  {%- assign logo_name = block.settings.image.src | split: '/' | last | split: '?' | first | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' -%}
+                  {{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: block.settings.image.alt | default: logo_name }}
                 {%- endif -%}
               </span>
             {%- endfor -%}
