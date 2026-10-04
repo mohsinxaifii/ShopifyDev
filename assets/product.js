@@ -802,6 +802,11 @@
       this.addEventListener('click', async (event) => {
         const button = event.target.closest('[data-copy-code]');
         if (!button) return;
+        window.zinaraTrack?.('coupon_copy', {
+          coupon_code: button.dataset.copyCode,
+          offer_id: button.dataset.offerId,
+          click_location: button.closest('[data-sheet="offers"]') ? 'offers_sheet' : 'pdp_offers',
+        });
         try {
           await navigator.clipboard.writeText(button.dataset.copyCode);
           button.classList.add('is-copied');
@@ -830,6 +835,13 @@
         const days = Number(this.dataset.deliveryDays) || 5;
         const eta = new Date();
         eta.setDate(eta.getDate() + days);
+        // The estimate is the same for every valid pincode - there is no
+        // serviceability lookup behind it yet - so a valid one counts as served.
+        window.zinaraTrack?.('pincode_check', {
+          pincode: value,
+          serviceable: true,
+          delivery_eta: eta.toISOString().slice(0, 10),
+        });
         result.textContent = `Delivers by ${eta.toLocaleDateString(undefined, {
           day: 'numeric',
           month: 'short',
