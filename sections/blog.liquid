@@ -64,7 +64,13 @@
 
             <div class="blog_band_wrapper_featured" data-animate>
               {%- for article in blog.articles limit: featured_count -%}
-                {%- render 'blog-card', article: article, variant: 'featured', heading_level: 'h3' -%}
+                {%- render 'blog-card',
+                  article: article,
+                  variant: 'featured',
+                  heading_level: 'h3',
+                  section_name: 'blog_featured',
+                  position: forloop.index
+                -%}
               {%- endfor -%}
             </div>
           </div>
@@ -79,7 +85,12 @@
 
           <div class="blog_band_wrapper_grid" data-grid>
             {%- for article in blog.articles offset: grid_offset -%}
-              {%- render 'blog-card', article: article, heading_level: 'h3' -%}
+              {%- render 'blog-card',
+                article: article,
+                heading_level: 'h3',
+                section_name: 'blog_list',
+                position: forloop.index
+              -%}
             {%- endfor -%}
           </div>
 
