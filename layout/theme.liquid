@@ -88,6 +88,8 @@
         wishlistCountOne: {{ 'wishlist.item_count_one' | t | json }},
         contactCopied: {{ 'contact.copied' | t | json }},
       };
+      // wishlist.js sends a signed-out shopper to sign in before adding.
+      window.zinaraCustomer = {% if customer %}true{% else %}false{% endif %};
     </script>
     {%- comment -%}
       Wishlist sync (wishlist.js <-> zinara-wishlist on the server). For a

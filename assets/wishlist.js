@@ -23,11 +23,23 @@
  * everywhere - unless a save from this browser failed, in which case this
  * browser's list is the newest and is saved on the next visit. Without an
  * account the wishlist stays in this browser only.
+ *
+ * Signing in first: adding to the wishlist needs a signed-in customer. A
+ * signed-out shopper's tap stores the product as "pending" and sends them to
+ * sign in with return_to set to the page they were on; back on that page, the
+ * pending product is added for them, so they never have to tap the heart again.
+ * Removing never needs an account, so an older guest list can still be tidied.
  */
 (() => {
   const STORAGE_KEY = 'zinara:wishlist';
   const SYNC_KEY = 'zinara:wishlist:account';
+  const PENDING_KEY = 'zinara:wishlist:pending';
+  /* Long enough to sign in (including an emailed code), short enough that a
+     sign-in much later does not add something the shopper has forgotten. */
+  const PENDING_MS = 30 * 60 * 1000;
   const account = window.zinaraWishlistAccount || null;
+  const isDesignMode = Boolean(window.Shopify && window.Shopify.designMode);
+  const signedIn = window.zinaraCustomer === true;
 
   /* ------------------------------------------------------------------ store */
 
@@ -141,6 +153,47 @@
     return button.dataset.productHandle || '';
   }
 
+  /* ------------------------------------------------------------- sign in */
+
+  function setPending(handle) {
+    try {
+      window.localStorage.setItem(PENDING_KEY, JSON.stringify({ handle, at: Date.now() }));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function takePending() {
+    let pending = null;
+    try {
+      pending = JSON.parse(window.localStorage.getItem(PENDING_KEY));
+      window.localStorage.removeItem(PENDING_KEY);
+    } catch (error) {
+      return null;
+    }
+    if (!pending || typeof pending.handle !== 'string' || !/\D/.test(pending.handle)) return null;
+    if (!(Date.now() - pending.at < PENDING_MS)) return null;
+    return pending.handle;
+  }
+
+  /* New customer accounts send the shopper back to `return_to`, which has to be
+     a relative URL - so the page they were on, without the origin. */
+  function signInUrl() {
+    const here = `${window.location.pathname}${window.location.search}`;
+    return `/customer_authentication/login?return_to=${encodeURIComponent(here)}`;
+  }
+
+  /* Runs once the account's list has been pulled, so the added product lands
+     on top of it instead of being overwritten by it. */
+  function addPending() {
+    if (!signedIn) return;
+    const handle = takePending();
+    if (!handle) return;
+    const handles = read();
+    if (!handles.includes(handle)) write([...handles, handle]);
+  }
+
   /* ---------------------------------------------------------------- toggles */
 
   function syncButton(button) {
@@ -167,6 +220,17 @@
 
     const handles = read();
     const index = handles.indexOf(handle);
+
+    /* The theme editor has no customer session, so it keeps the plain toggle. */
+    if (index === -1 && !signedIn && !isDesignMode) {
+      if (setPending(handle)) {
+        window.location.href = signInUrl();
+        return;
+      }
+      /* Storage is blocked, so the product could not survive the round trip -
+         fall back to keeping it in this browser. */
+    }
+
     if (index === -1) handles.push(handle);
     else handles.splice(index, 1);
 
@@ -188,11 +252,33 @@
      PDP heart and a card's heart for the same product never disagree. */
   document.addEventListener('wishlist:change', () => syncAll());
 
-  document.addEventListener('DOMContentLoaded', () => {
-    syncAll();
-    pull();
+  /* Cards are also added after load - collection filters and "Load more", the
+     quick-add drawer, the wishlist page - and their hearts ship unpressed, so
+     each new one is set from the store as it arrives. */
+  function watchNewHearts() {
+    new MutationObserver((records) => {
+      records.forEach((record) => {
+        record.addedNodes.forEach((node) => {
+          if (node.nodeType !== Node.ELEMENT_NODE) return;
+          if (node.matches('[data-wishlist-toggle]')) syncButton(node);
+          node.querySelectorAll('[data-wishlist-toggle]').forEach(syncButton);
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  /* Another tab changed the list (or finished signing in): follow it. */
+  window.addEventListener('storage', (event) => {
+    if (event.key === STORAGE_KEY) syncAll();
   });
-  if (window.Shopify && window.Shopify.designMode) {
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    syncAll();
+    watchNewHearts();
+    await pull();
+    addPending();
+  });
+  if (isDesignMode) {
     document.addEventListener('shopify:section:load', (event) => syncAll(event.target));
   }
 
