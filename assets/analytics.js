@@ -539,16 +539,49 @@
 
   window.zinaraAnalytics.onSeen = onSeen;
 
-  // Home sections: once each at >= 50% visible (data-track-section-view).
+  /* Home sections: once each at >= 50% visible. Home sections are named by
+     their key in templates/index.json (shopify-section-template--…__<key>),
+     translated to the plan's section_name. A section that holds two of the
+     plan's sections (the split promo: custom design + about) marks each half
+     with data-track-view instead. Sections not in the plan's list (hero,
+     USP strips, press logos) are left out - the hero has its own events. */
+  const HOME_SECTIONS = {
+    'shop-by-category': 'shop_by_category',
+    bestsellers: 'bestsellers',
+    'know-your-jewellery': 'know_your_jewellery',
+    'curated-trends': 'curated_trends',
+    'zinara-collections': 'zinara_collections',
+    testimonials: 'reviews',
+    'occasion-showcase': 'every_occasion',
+    gifting: 'gifting',
+    'as-seen-on': 'as_seen_on',
+    'instagram-community': 'instagram',
+    journal: 'journal',
+    faq: 'faq',
+  };
+
+  /** The plan's section_name for the section an element sits in, if any. */
+  function sectionNameOf(element) {
+    const section = element?.closest?.('.shopify-section');
+    const key = section?.id.split('__').pop();
+    return HOME_SECTIONS[key] || key?.replace(/-/g, '_');
+  }
+  window.zinaraAnalytics.sectionNameOf = sectionNameOf;
+
   onReady(() => {
     if (config.pageType !== 'home') return;
-    document.querySelectorAll('[data-track-section-view]').forEach((element, index) => {
-      onSeen(element, () =>
-        send('home_section_view', {
-          section_name: element.dataset.trackSectionView,
-          section_position: index + 1,
-        }),
-      );
+    const targets = [];
+    document.querySelectorAll('.shopify-section[id*="__"]').forEach((section) => {
+      const halves = section.querySelectorAll('[data-track-view]');
+      if (halves.length) {
+        halves.forEach((half) => targets.push([half, half.dataset.trackView]));
+        return;
+      }
+      const name = HOME_SECTIONS[section.id.split('__').pop()];
+      if (name) targets.push([section, name]);
+    });
+    targets.forEach(([element, name], index) => {
+      onSeen(element, () => send('home_section_view', { section_name: name, section_position: index + 1 }));
     });
   });
 
