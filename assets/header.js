@@ -38,11 +38,14 @@ class HeaderComponent extends HTMLElement {
     if (!this.section || (mode !== 'scroll-up' && mode !== 'always')) return;
 
     const root = document.documentElement;
-    const before = this.section.previousElementSibling;
-    const after = this.section.nextElementSibling;
-    const bar = before?.classList.contains('shopify-section--announcement-bar') ? before : null;
-    const nav = after?.classList.contains('shopify-section--category-nav') ? after : null;
+    // Found by their own class, not by being next to the header, so nothing
+    // an app inserts in between can drop one of them from the block.
+    const bar = document.querySelector('.shopify-section--announcement-bar');
+    const nav = document.querySelector('.shopify-section--category-nav');
     const group = [bar, this.section, nav].filter(Boolean);
+    if (bar) bar.dataset.stickyPart = 'bar';
+    this.section.dataset.stickyPart = 'header';
+    if (nav) nav.dataset.stickyPart = 'nav';
 
     // Ignore jitter (trackpads, iOS bounce) so the block does not flicker.
     const THRESHOLD = 6;

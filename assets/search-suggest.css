@@ -74,8 +74,12 @@ html.search-suggest-open .shopify-section.shopify-section--category-nav {
 }
 
 .search-suggest-open .shopify-section--announcement-bar {
-  position: relative;
   z-index: 50;
+}
+
+/* A sticky bar is positioned already (header.css); only a plain one needs it. */
+.search-suggest-open .shopify-section--announcement-bar:not([data-sticky-part]) {
+  position: relative;
 }
 
 /* The focused field grows to the 762px the design centres in the bar, and the
