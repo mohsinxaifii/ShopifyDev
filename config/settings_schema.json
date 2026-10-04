@@ -156,5 +156,20 @@
         "info": "URL of wishlist.php on your server, e.g. https://your-domain/zinara-wishlist/wishlist.php. Leave empty to keep wishlists in the browser only."
       }
     ]
+  },
+  {
+    "name": "Judge.me reviews",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Every star rating and review in the theme - product cards, the quick-add drawer and the product page - is loaded live from Judge.me. Nothing is read from metafields."
+      },
+      {
+        "type": "text",
+        "id": "judgeme_public_token",
+        "label": "Judge.me public API token",
+        "info": "Judge.me admin > Settings > Integrations > View API tokens. Use the Public token (never the Private one). Leave empty to hide ratings and reviews."
+      }
+    ]
   }
 ]

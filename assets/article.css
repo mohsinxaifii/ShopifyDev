@@ -288,7 +288,8 @@
    368px of image against a long body, so it rides down with the reader. */
 .article_wrapper_aside {
   position: sticky;
-  top: 24px;
+  top: calc(24px + var(--header-sticky-offset, 0px));
+  transition: top var(--motion-base, 0.3s) var(--motion-ease, ease);
   aspect-ratio: 364 / 368;
   border-radius: 12px;
   overflow: hidden;

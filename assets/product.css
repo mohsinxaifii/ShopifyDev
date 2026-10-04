@@ -77,9 +77,13 @@
 
 /* ---------------------------------------------------------------- gallery */
 
+/* --header-sticky-offset is the height of the sticky announcement bar, header
+   and category bar while they are on screen (header.js), so the gallery rides
+   below them instead of under them. */
 .pdp_gallery {
   position: sticky;
-  top: 24px;
+  top: calc(24px + var(--header-sticky-offset, 0px));
+  transition: top var(--motion-base, 0.3s) var(--motion-ease, ease);
 }
 
 .pdp_gallery_inner {
@@ -1993,6 +1997,11 @@ button.pdp_trust_grid_item_inner {
   gap: 20px;
   padding-block: 24px;
   scroll-margin-top: 96px;
+}
+
+/* judgeme.js's wrapper - its children keep sitting in the column above. */
+.pdp_reviews judgeme-reviews {
+  display: contents;
 }
 
 .pdp_reviews_head {

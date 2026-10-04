@@ -8,6 +8,7 @@ class HeaderComponent extends HTMLElement {
     this.isOpen = false;
 
     this.bindNavGroups();
+    this.setupSticky();
 
     this.searchToggle?.addEventListener('click', () => this.toggleSearch());
     this.menuToggle?.addEventListener('click', () => this.open());
@@ -17,6 +18,102 @@ class HeaderComponent extends HTMLElement {
       if (event.key === 'Escape' && this.isOpen) this.close();
       if (event.key === 'Tab' && this.isOpen) this.trapFocus(event);
     });
+  }
+
+  /* Sticky header (theme setting "Sticky header"; CSS in header.css).
+
+     The announcement bar above the header and the category bar below it move
+     with it as one block. "always" just sticks. "scroll-up" behaves like
+     Shopify's own themes: the block scrolls away with the page, slides out of
+     view while the shopper scrolls down, and slides back in on any scroll up.
+     It is never hidden while the menu drawer or the search field is open.
+
+     On <html>: --announcement-height and --header-height stack the three
+     sections; --header-group-height is how far they move to hide;
+     --header-sticky-offset is the height on screen right now (0 when hidden),
+     for other sticky elements - the PDP gallery - to sit below. */
+  setupSticky() {
+    const mode = this.dataset.sticky;
+    this.section = this.closest('.shopify-section');
+    if (!this.section || (mode !== 'scroll-up' && mode !== 'always')) return;
+
+    const root = document.documentElement;
+    const before = this.section.previousElementSibling;
+    const after = this.section.nextElementSibling;
+    const bar = before?.classList.contains('shopify-section--announcement-bar') ? before : null;
+    const nav = after?.classList.contains('shopify-section--category-nav') ? after : null;
+    const group = [bar, this.section, nav].filter(Boolean);
+
+    // Ignore jitter (trackpads, iOS bounce) so the block does not flicker.
+    const THRESHOLD = 6;
+    let lastY = Math.max(0, window.scrollY);
+    let ticking = false;
+
+    const isBusy = () =>
+      this.isOpen ||
+      this.getAttribute('data-search-open') === 'true' ||
+      root.classList.contains('search-suggest-open') ||
+      group.some((section) => section.contains(document.activeElement));
+
+    // Where the block starts before it sticks: below whatever visible element
+    // precedes it (normally nothing - it opens the page). Sticky elements report
+    // their stuck position, so the measurement is taken from outside the block.
+    const naturalTop = (y) => {
+      for (let prev = group[0].previousElementSibling; prev; prev = prev.previousElementSibling) {
+        if (prev.offsetHeight > 0) return Math.max(0, prev.getBoundingClientRect().bottom + y);
+      }
+      return 0;
+    };
+
+    const update = () => {
+      ticking = false;
+      const y = Math.max(0, window.scrollY);
+      // offsetHeight is 0 for a section that is display: none (the category
+      // bar on phones), so it simply drops out of the sums.
+      const barHeight = bar ? bar.offsetHeight : 0;
+      const headerHeight = this.section.offsetHeight;
+      const total = group.reduce((sum, section) => sum + section.offsetHeight, 0);
+      const top = naturalTop(y);
+      const stuck = y > top;
+
+      let hidden = this.section.classList.contains('is-header-hidden');
+      if (mode === 'always' || !stuck || isBusy()) {
+        hidden = false;
+      } else if (y - lastY > THRESHOLD && y > top + total) {
+        hidden = true;
+      } else if (lastY - y > THRESHOLD) {
+        hidden = false;
+      }
+      if (Math.abs(y - lastY) > THRESHOLD || !stuck) lastY = y;
+
+      group.forEach((section) => section.classList.toggle('is-header-hidden', hidden));
+      root.style.setProperty('--announcement-height', `${barHeight}px`);
+      root.style.setProperty('--header-height', `${headerHeight}px`);
+      root.style.setProperty('--header-group-height', `${total}px`);
+      root.style.setProperty('--header-sticky-offset', stuck && !hidden ? `${total}px` : '0px');
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    // Heights change without a scroll too (the phone search field, a wrapping
+    // announcement), so the stacking offsets are re-measured when they do.
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(onScroll);
+      group.forEach((section) => observer.observe(section));
+    }
+    // Tabbing into a hidden block should bring it back.
+    const reveal = () => {
+      group.forEach((section) => section.classList.remove('is-header-hidden'));
+      onScroll();
+    };
+    group.forEach((section) => section.addEventListener('focusin', reveal));
+    update();
   }
 
   /* Any menu item with children collapses into an accordion (Figma 7930:109338

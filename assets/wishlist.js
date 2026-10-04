@@ -23,11 +23,23 @@
  * everywhere - unless a save from this browser failed, in which case this
  * browser's list is the newest and is saved on the next visit. Without an
  * account the wishlist stays in this browser only.
+ *
+ * Signing in first: adding to the wishlist needs a signed-in customer. A
+ * signed-out shopper's tap stores the product as "pending" and sends them to
+ * sign in with return_to set to the page they were on; back on that page, the
+ * pending product is added for them, so they never have to tap the heart again.
+ * Removing never needs an account, so an older guest list can still be tidied.
  */
 (() => {
   const STORAGE_KEY = 'zinara:wishlist';
   const SYNC_KEY = 'zinara:wishlist:account';
+  const PENDING_KEY = 'zinara:wishlist:pending';
+  /* Long enough to sign in (including an emailed code), short enough that a
+     sign-in much later does not add something the shopper has forgotten. */
+  const PENDING_MS = 30 * 60 * 1000;
   const account = window.zinaraWishlistAccount || null;
+  const isDesignMode = Boolean(window.Shopify && window.Shopify.designMode);
+  const signedIn = window.zinaraCustomer === true;
 
   /* ------------------------------------------------------------------ store */
 
@@ -141,6 +153,47 @@
     return button.dataset.productHandle || '';
   }
 
+  /* ------------------------------------------------------------- sign in */
+
+  function setPending(handle) {
+    try {
+      window.localStorage.setItem(PENDING_KEY, JSON.stringify({ handle, at: Date.now() }));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function takePending() {
+    let pending = null;
+    try {
+      pending = JSON.parse(window.localStorage.getItem(PENDING_KEY));
+      window.localStorage.removeItem(PENDING_KEY);
+    } catch (error) {
+      return null;
+    }
+    if (!pending || typeof pending.handle !== 'string' || !/\D/.test(pending.handle)) return null;
+    if (!(Date.now() - pending.at < PENDING_MS)) return null;
+    return pending.handle;
+  }
+
+  /* New customer accounts send the shopper back to `return_to`, which has to be
+     a relative URL - so the page they were on, without the origin. */
+  function signInUrl() {
+    const here = `${window.location.pathname}${window.location.search}`;
+    return `/customer_authentication/login?return_to=${encodeURIComponent(here)}`;
+  }
+
+  /* Runs once the account's list has been pulled, so the added product lands
+     on top of it instead of being overwritten by it. */
+  function addPending() {
+    if (!signedIn) return;
+    const handle = takePending();
+    if (!handle) return;
+    const handles = read();
+    if (!handles.includes(handle)) write([...handles, handle]);
+  }
+
   /* ---------------------------------------------------------------- toggles */
 
   function syncButton(button) {
@@ -167,6 +220,17 @@
 
     const handles = read();
     const index = handles.indexOf(handle);
+
+    /* The theme editor has no customer session, so it keeps the plain toggle. */
+    if (index === -1 && !signedIn && !isDesignMode) {
+      if (setPending(handle)) {
+        window.location.href = signInUrl();
+        return;
+      }
+      /* Storage is blocked, so the product could not survive the round trip -
+         fall back to keeping it in this browser. */
+    }
+
     if (index === -1) handles.push(handle);
     else handles.splice(index, 1);
 
@@ -175,6 +239,16 @@
 
   function syncAll(root = document) {
     root.querySelectorAll('[data-wishlist-toggle]').forEach(syncButton);
+  }
+
+  /* The header heart's bubble (sections/header.liquid), styled like the cart's.
+     Hidden at zero, capped at 99+ so it never outgrows the icon. */
+  function syncBadges() {
+    const count = read().length;
+    document.querySelectorAll('[data-wishlist-badge]').forEach((badge) => {
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.hidden = count === 0;
+    });
   }
 
   document.addEventListener('click', (event) => {
@@ -186,14 +260,45 @@
 
   /* One listener keeps every heart on the page in step with the store, so the
      PDP heart and a card's heart for the same product never disagree. */
-  document.addEventListener('wishlist:change', () => syncAll());
-
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('wishlist:change', () => {
     syncAll();
-    pull();
+    syncBadges();
   });
-  if (window.Shopify && window.Shopify.designMode) {
-    document.addEventListener('shopify:section:load', (event) => syncAll(event.target));
+
+  /* Cards are also added after load - collection filters and "Load more", the
+     quick-add drawer, the wishlist page - and their hearts ship unpressed, so
+     each new one is set from the store as it arrives. */
+  function watchNewHearts() {
+    new MutationObserver((records) => {
+      records.forEach((record) => {
+        record.addedNodes.forEach((node) => {
+          if (node.nodeType !== Node.ELEMENT_NODE) return;
+          if (node.matches('[data-wishlist-toggle]')) syncButton(node);
+          node.querySelectorAll('[data-wishlist-toggle]').forEach(syncButton);
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  /* Another tab changed the list (or finished signing in): follow it. */
+  window.addEventListener('storage', (event) => {
+    if (event.key !== STORAGE_KEY) return;
+    syncAll();
+    syncBadges();
+  });
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    syncAll();
+    syncBadges();
+    watchNewHearts();
+    await pull();
+    addPending();
+  });
+  if (isDesignMode) {
+    document.addEventListener('shopify:section:load', (event) => {
+      syncAll(event.target);
+      syncBadges();
+    });
   }
 
   /* ---------------------------------------------------------------- the page */
@@ -245,24 +350,33 @@
       const results = await Promise.all(
         handles.map(async (handle) => {
           try {
-            const response = await fetch(`${root}products/${handle}?section_id=wishlist-card`);
-            if (!response.ok) return null;
-            return await response.text();
+            const response = await fetch(`${root}products/${encodeURIComponent(handle)}?section_id=wishlist-card`);
+            if (response.status === 404) return { gone: true };
+            if (!response.ok) return { html: '' };
+            return { html: (await response.text()).trim() };
           } catch (error) {
-            return null;
+            return { html: '' };
           }
         }),
       );
 
-      /* A handle that no longer resolves - product deleted or unpublished - is
-         dropped from the store rather than left to fail on every visit. */
-      const kept = handles.filter((handle, index) => results[index]);
+      /* Only a handle that no longer resolves - product deleted or unpublished,
+         a 404 - is dropped from the store. A request that merely failed (offline,
+         a server hiccup) keeps its product for the next visit. */
+      const kept = handles.filter((handle, index) => !results[index].gone);
       if (kept.length !== handles.length) write(kept);
 
-      this.grid.innerHTML = results.filter(Boolean).join('');
+      /* The Section Rendering API wraps each card in a .shopify-section div,
+         which critical.css lays out as a page-width grid with side margins -
+         inside a grid cell that squeezed the card into a narrow middle column.
+         Only the card item itself goes into the grid. */
+      const template = document.createElement('template');
+      template.innerHTML = results.map((result) => result.html || '').join('');
+      const cards = Array.from(template.content.querySelectorAll('[data-wishlist-item]'));
+      this.grid.replaceChildren(...cards);
       this.querySelector('[data-skeleton]')?.remove();
       this.show('[data-wishlist-grid]', true);
-      this.show('[data-wishlist-empty]', kept.length === 0);
+      this.show('[data-wishlist-empty]', cards.length === 0);
       syncAll(this);
       this.apply();
     }

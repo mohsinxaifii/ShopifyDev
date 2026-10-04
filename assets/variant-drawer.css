@@ -4,7 +4,8 @@
 .variant-drawer {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  /* Above the sticky header (60 in header.css). */
+  z-index: 70;
   display: block;
 }
 
