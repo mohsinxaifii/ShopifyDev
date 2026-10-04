@@ -331,24 +331,27 @@
       const results = await Promise.all(
         handles.map(async (handle) => {
           try {
-            const response = await fetch(`${root}products/${handle}?section_id=wishlist-card`);
-            if (!response.ok) return null;
-            return await response.text();
+            const response = await fetch(`${root}products/${encodeURIComponent(handle)}?section_id=wishlist-card`);
+            if (response.status === 404) return { gone: true };
+            if (!response.ok) return { html: '' };
+            return { html: (await response.text()).trim() };
           } catch (error) {
-            return null;
+            return { html: '' };
           }
         }),
       );
 
-      /* A handle that no longer resolves - product deleted or unpublished - is
-         dropped from the store rather than left to fail on every visit. */
-      const kept = handles.filter((handle, index) => results[index]);
+      /* Only a handle that no longer resolves - product deleted or unpublished,
+         a 404 - is dropped from the store. A request that merely failed (offline,
+         a server hiccup) keeps its product for the next visit. */
+      const kept = handles.filter((handle, index) => !results[index].gone);
       if (kept.length !== handles.length) write(kept);
 
-      this.grid.innerHTML = results.filter(Boolean).join('');
+      const cards = results.map((result) => result.html || '').filter(Boolean);
+      this.grid.innerHTML = cards.join('');
       this.querySelector('[data-skeleton]')?.remove();
       this.show('[data-wishlist-grid]', true);
-      this.show('[data-wishlist-empty]', kept.length === 0);
+      this.show('[data-wishlist-empty]', cards.length === 0);
       syncAll(this);
       this.apply();
     }
