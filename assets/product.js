@@ -48,7 +48,15 @@
       this.index = 0;
 
       this.thumbs.forEach((thumb) => {
-        thumb.addEventListener('click', () => this.show(Number(thumb.dataset.index)));
+        thumb.addEventListener('click', () => {
+          this.show(Number(thumb.dataset.index));
+          this.trackMedia('swipe');
+        });
+      });
+
+      // product_media_interaction: play, once per video.
+      this.slides.forEach((slide, index) => {
+        slide.querySelector('video')?.addEventListener('play', () => this.trackMedia('play', index), { once: true });
       });
 
       this.slides.forEach((slide) => {
@@ -88,12 +96,24 @@
           this.swiped = true;
           const last = this.slides.length - 1;
           this.show(dx < 0 ? Math.min(this.index + 1, last) : Math.max(this.index - 1, 0));
+          this.trackMedia('swipe');
           window.setTimeout(() => {
             this.swiped = false;
           }, 400);
         },
         { passive: true },
       );
+    }
+
+    /* product_media_interaction for a shopper's own move - not for the
+       gallery following a variant change. */
+    trackMedia(action, index = this.index) {
+      const slide = this.slides[index];
+      window.zinaraTrack?.('product_media_interaction', {
+        media_type: slide?.querySelector('video, iframe, model-viewer') ? 'video' : 'image',
+        media_index: index + 1,
+        action,
+      });
     }
 
     show(index) {
@@ -378,9 +398,31 @@
       if (this.optionInputs.length === 0) return;
 
       this.optionInputs.forEach((input) => {
-        input.addEventListener('change', () => this.onOptionChange());
+        input.addEventListener('change', () => {
+          this.onOptionChange();
+          this.trackVariantSelect(input);
+        });
       });
       this.syncAvailability();
+    }
+
+    trackVariantSelect(input) {
+      const group = input.closest('[data-option-group]');
+      const groups = Array.from(this.querySelectorAll('[data-option-group]'));
+      const index = groups.indexOf(group);
+      const chosen = this.selectedOptions();
+      // Anything available with this value, given the other options picked?
+      const available = this.data.variants.some(
+        (variant) =>
+          variant.available &&
+          variant.options.every((option, i) => (i === index ? option === input.value : chosen[i] === null || option === chosen[i])),
+      );
+      window.zinaraTrack?.('variant_select', {
+        variant_type: group?.querySelector('.pdp_option_head_name')?.textContent.replace(':', '').trim(),
+        variant_value: input.value,
+        variant_availability: available ? 'available' : 'sold_out',
+        click_location: 'pdp',
+      });
     }
 
     selectedOptions() {
@@ -499,6 +541,7 @@
       this.lightboxIndex = 0;
 
       this.addEventListener('gallery:open', (event) => {
+        this.gallery?.trackMedia('lightbox_open', event.detail.index);
         this.showLightbox(event.detail.index);
         dialog.showModal();
         // Phones stack every image vertically, so open on the one tapped.
