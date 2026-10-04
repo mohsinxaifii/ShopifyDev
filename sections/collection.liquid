@@ -117,6 +117,8 @@
     </aside>
 
     <div class="collection_wrapper_main">
+      {%- comment -%} The design shows no title; this one is for search engines and screen readers. {%- endcomment -%}
+      <h1 class="visually-hidden">{{ collection.title }}</h1>
       <div class="collection_wrapper_main_toolbar">
         <p class="collection_wrapper_main_toolbar_count">
           {{- 'collection.product_count' | t: count: collection.products_count -}}
@@ -156,6 +158,8 @@
                 </button>
               </div>
               {%- for option in collection.sort_options -%}
+                {%- comment -%} "Most relevant" only means something for a search. {%- endcomment -%}
+                {%- if option.value == 'relevance' and option.value != sort_by -%}{%- continue -%}{%- endif -%}
                 <button
                   type="button"
                   class="collection_wrapper_main_toolbar_sort_menu_item{% if option.value == sort_by %} is-active{% endif %}"
