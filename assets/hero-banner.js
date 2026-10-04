@@ -16,6 +16,8 @@ class HeroBannerSlideshow extends HTMLElement {
     this.dots.forEach((dot, index) => {
       dot.addEventListener('click', () => this.goTo(index, true));
     });
+    // Drag with a mouse or swipe with a finger to change slide (assets/swipe.js).
+    window.zinaraSwipe?.(this, { onSwipe: (direction) => this.goTo(this.currentIndex + direction, true) });
     this.addEventListener('mouseenter', () => this.stopAutoplay());
     this.addEventListener('mouseleave', () => this.startAutoplay());
     this.addEventListener('focusin', () => this.stopAutoplay());
