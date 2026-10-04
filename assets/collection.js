@@ -188,11 +188,20 @@ class CollectionPage extends HTMLElement {
       return;
     }
     layer(sheet, false);
+<<<<<<< HEAD
+    // The scrim stays while the other sheet is still open.
+    const isSort = Boolean(sheet?.matches?.('[data-sort-menu]'));
+    const otherOpen = isSort
+      ? this.hasAttribute('data-filters-open')
+      : this.querySelector('[data-sort-menu]')?.hidden === false;
+    if (!otherOpen) layer(scrim, false);
+=======
     const sortOpen = !this.querySelector('[data-sort-menu]')?.hidden;
     if (!this.hasAttribute('data-filters-open') || !sortOpen) {
       const otherOpen = sheet?.matches?.('[data-sort-menu]') ? this.hasAttribute('data-filters-open') : sortOpen;
       if (!otherOpen) layer(scrim, false);
     }
+>>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
   }
 
   applySort(option) {
