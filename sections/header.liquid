@@ -12,6 +12,8 @@
       <button
         type="button"
         class="header_wrapper_brand_menu-toggle"
+        data-track="nav_icon_click"
+        data-track-icon-name="menu"
         aria-label="{{ 'accessibility.menu' | t }}"
         aria-expanded="false"
         aria-controls="header-drawer-{{ section.id }}"
@@ -19,7 +21,12 @@
         {{ 'icon-menu.svg' | inline_asset_content }}
       </button>
 
-      <a href="{{ routes.root_url }}" class="header_wrapper_brand_logo">
+      <a
+        href="{{ routes.root_url }}"
+        class="header_wrapper_brand_logo"
+        data-track="nav_icon_click"
+        data-track-icon-name="logo"
+      >
         {%- if settings.logo -%}
           {{
             settings.logo
@@ -42,6 +49,8 @@
       <button
         type="button"
         class="header_wrapper_actions_link header_wrapper_actions_search-toggle"
+        data-track="nav_icon_click"
+        data-track-icon-name="search"
         aria-label="{{ 'accessibility.search' | t }}"
         aria-expanded="false"
       >
@@ -51,6 +60,8 @@
       <a
         href="{{ routes.account_url }}"
         class="header_wrapper_actions_link"
+        data-track="nav_icon_click"
+        data-track-icon-name="account"
         aria-label="{{ 'accessibility.account' | t }}"
       >
         {{ 'icon-user.svg' | inline_asset_content }}
@@ -59,6 +70,8 @@
       <a
         href="{{ section.settings.wishlist_url | default: '#' }}"
         class="header_wrapper_actions_link"
+        data-track="nav_icon_click"
+        data-track-icon-name="wishlist"
         aria-label="{{ 'accessibility.wishlist' | t }}"
       >
         {{ 'icon-heart.svg' | inline_asset_content }}
@@ -69,7 +82,13 @@
         <span class="header_wrapper_actions_wishlist_badge" data-wishlist-badge aria-hidden="true" hidden></span>
       </a>
 
-      <a href="{{ routes.cart_url }}" class="header_wrapper_actions_link" aria-label="{{ 'accessibility.cart' | t }}">
+      <a
+        href="{{ routes.cart_url }}"
+        class="header_wrapper_actions_link"
+        data-track="nav_icon_click"
+        data-track-icon-name="cart"
+        aria-label="{{ 'accessibility.cart' | t }}"
+      >
         {{ 'icon-cart.svg' | inline_asset_content }}
         {%- if cart.item_count > 0 -%}
           <span class="header_wrapper_actions_cart_badge">{{ cart.item_count }}</span>
@@ -148,6 +167,11 @@
                       <a
                         href="{{ childlink.url }}"
                         class="header_drawer_nav_sublist_link{% if childlink.active %} is-current{% endif %}"
+                        data-track="sidenav_item_click{% if childlink.url contains 'get-your-own-design' %} custom_design_start{% endif %}"
+                        data-track-item-name="{{ childlink.title | escape }}"
+                        data-track-item-group="{{ link.title | handleize | replace: '-', '_' }}"
+                        data-track-position="{{ forloop.index }}"
+                        data-track-click-location="sidenav"
                       >
                         {{- childlink.title -}}
                       </a>
@@ -158,6 +182,11 @@
                 <a
                   href="{{ link.url }}"
                   class="header_drawer_nav_list_item_link{% if link.active %} is-current{% endif %}"
+                  data-track="sidenav_item_click{% if link.url contains 'get-your-own-design' %} custom_design_start{% endif %}"
+                  data-track-item-name="{{ link.title | escape }}"
+                  data-track-item-group="{% if is_new %}featured{% else %}menu{% endif %}"
+                  data-track-position="{{ forloop.index }}"
+                  data-track-click-location="sidenav"
                 >
                   <span class="header_drawer_nav_list_item_label">
                     {{- link.title -}}
@@ -173,7 +202,13 @@
       </nav>
 
       <div class="header_drawer_foot">
-        <a href="{{ routes.account_url }}" class="header_drawer_foot_account">
+        <a
+          href="{{ routes.account_url }}"
+          class="header_drawer_foot_account"
+          data-track="sidenav_item_click"
+          data-track-item-name="{% if customer %}account{% else %}login{% endif %}"
+          data-track-item-group="account"
+        >
           <span class="header_drawer_foot_account_icon" aria-hidden="true">
             {{- 'icon-user.svg' | inline_asset_content -}}
           </span>
@@ -195,6 +230,9 @@
                 target="_blank"
                 rel="noopener"
                 aria-label="Instagram"
+                data-track="sidenav_item_click"
+                data-track-item-name="instagram"
+                data-track-item-group="social"
               >
                 {{- 'icon-instagram.svg' | inline_asset_content -}}
               </a>
@@ -206,6 +244,9 @@
                 target="_blank"
                 rel="noopener"
                 aria-label="Facebook"
+                data-track="sidenav_item_click"
+                data-track-item-name="facebook"
+                data-track-item-group="social"
               >
                 {{- 'icon-facebook.svg' | inline_asset_content -}}
               </a>

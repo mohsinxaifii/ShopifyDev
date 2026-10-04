@@ -33,6 +33,11 @@ document.querySelectorAll('.faq_wrapper_list_item').forEach((details) => {
       });
 
     details.setAttribute('open', '');
+    const items = Array.from(document.querySelectorAll('.faq_wrapper_list_item'));
+    window.zinaraTrack?.('faq_expand', {
+      question: summary.querySelector('.faq_wrapper_list_item_summary_question')?.textContent.trim(),
+      faq_position: items.indexOf(details) + 1,
+    });
     const targetHeight = answer.scrollHeight;
     gsap.fromTo(
       answer,
