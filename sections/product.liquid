@@ -587,6 +587,7 @@
             type="button"
             class="pdp_button pdp_button--primary"
             data-buy-now
+            data-checkout-intent="buy_now"
             {% unless current_variant.available %}
               disabled
             {% endunless %}
@@ -1136,6 +1137,8 @@
 <script src="{{ 'product.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'video-showcase.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'curated-videos.js' | asset_url }}" defer="defer"></script>
+
+{% render 'openai-ads-product-viewed', product: product %}
 
 {% schema %}
 {

@@ -517,9 +517,11 @@
 
   /* ------------------------------------------------------- page-level events */
 
+  /* After every deferred script has run (DOMContentLoaded), so page-level
+     events also reach anything that bridges the pixels (assets/openai-ads.js). */
   function onReady(fn) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-    else fn();
+    if (document.readyState === 'complete') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
   }
 
   onReady(() => {

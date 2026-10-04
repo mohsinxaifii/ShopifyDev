@@ -23,6 +23,14 @@
    */
   const kwikCart = () => typeof window.openGokwikSideCart === 'function';
 
+  /* `zinara:cart-added` with the lines a confirmed /cart/add.js returned - for
+     ad pixels that have no Shopify app (assets/openai-ads.js). /cart/add.js
+     answers with the line itself, or with { items } for several. */
+  function announceAdded(body) {
+    const items = Array.isArray(body?.items) ? body.items : body?.variant_id ? [body] : [];
+    if (items.length) document.dispatchEvent(new CustomEvent('zinara:cart-added', { detail: { items } }));
+  }
+
   class ZinaraCart {
     constructor() {
       this.dialog = document.querySelector('[data-cart-drawer]');
@@ -127,6 +135,7 @@
           const body = await response.json().catch(() => ({}));
           throw new Error(body.description || `${response.status}`);
         }
+        announceAdded(await response.json().catch(() => null));
 
         // Only after the cart has confirmed: refresh, then show the result.
         await this.refresh();
@@ -261,7 +270,20 @@
     };
     const open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function (method, url, ...rest) {
-      if (CART_CALL.test(String(url))) this.addEventListener('loadend', settle);
+      if (CART_CALL.test(String(url))) {
+        this.addEventListener('loadend', settle);
+        // KwikCart's own adds (the product form's Add to cart) count as adds too.
+        if (/\/cart\/add/.test(String(url))) {
+          this.addEventListener('load', () => {
+            if (this.status < 200 || this.status > 299) return;
+            try {
+              announceAdded(JSON.parse(this.responseText));
+            } catch (error) {
+              // Not JSON (a form post): nothing to report.
+            }
+          });
+        }
+      }
       return open.call(this, method, url, ...rest);
     };
   }

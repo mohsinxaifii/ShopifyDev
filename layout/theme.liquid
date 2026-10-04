@@ -70,6 +70,12 @@
     <link rel="dns-prefetch" href="https://api.gokwik.co">
     {% render 'gokwik' %}
 
+    {% # OpenAI (ChatGPT) Ads pixel, as on the live theme (settings > OpenAI Ads) %}
+    {% render 'openai-ads-pixel' %}
+    {%- if settings.openai_ads_enabled -%}
+      <script src="{{ 'openai-ads.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
     {{ content_for_header }}
   </head>
 
