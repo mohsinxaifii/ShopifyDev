@@ -221,6 +221,7 @@
   const cart = {
     value: Number(config.cart?.value) || 0,
     count: Number(config.cart?.count) || 0,
+    lines: null,
   };
 
   function wishlistCount() {
@@ -232,8 +233,10 @@
     }
   }
 
-  // The drawer announces every cart change without the cart itself.
-  document.addEventListener('cart:updated', async () => {
+  /* The drawer announces every cart change without the cart itself, so it is
+     read back. The lines are kept too: begin_checkout is sent while the browser
+     is already leaving for checkout, with no time left to ask for the cart. */
+  async function refreshCart() {
     try {
       const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`, {
         headers: { Accept: 'application/json' },
@@ -241,10 +244,14 @@
       const data = await response.json();
       cart.value = data.total_price / 100;
       cart.count = data.item_count;
+      cart.currency = data.currency;
+      cart.lines = data.items;
     } catch (error) {
       // Keep the last known values.
     }
-  });
+  }
+  document.addEventListener('cart:updated', refreshCart);
+  if (config.beginCheckout && cart.count > 0) refreshCart();
 
   function globals() {
     return {
@@ -301,12 +308,18 @@
       let value = input[key];
       if (value === undefined && key in base) value = base[key];
       if (value === undefined && key === 'product_id') value = config.product?.id;
+      if (value === undefined && key === 'cart_count') value = cart.count;
       if (value === undefined && key === 'currency') value = config.currency;
       if (value !== undefined && value !== null && value !== '') params[key] = clean(value);
     });
     // Guard the plan asks for: an ecommerce event with no items is noise.
     if (plan.params.includes('items') && (!Array.isArray(params.items) || params.items.length === 0)) return;
 
+    // product_id rides along on items for this file's own use; GA4 items
+    // carry only the fields in the plan's Items Array tab.
+    if (Array.isArray(params.items)) {
+      params.items = params.items.map(({ product_id: omitted, ...item }) => item);
+    }
     const payload = { ...base, ...params };
     window.dataLayer.push({ event: name, ...payload });
 
@@ -375,13 +388,16 @@
     (event) => {
       const element = event.target.closest?.('[data-track]');
       if (!element) return;
-      const name = element.dataset.track;
-      const params = dataParams(element);
-      if (params.destination_url === undefined) params.destination_url = hrefOf(element);
-      if (params.text === undefined && !params.cta_text && PLAN[name]?.includes?.('cta_text')) {
-        params.cta_text = textOf(element);
-      }
-      send(name, params);
+      // One element may stand for more than one plan event, space-separated
+      // (a footer phone link is both footer_link_click and contact_click).
+      element.dataset.track.split(/\s+/).filter(Boolean).forEach((name) => {
+        const params = dataParams(element);
+        if (params.destination_url === undefined) params.destination_url = hrefOf(element);
+        if (params.cta_text === undefined && spec(name)?.params.includes('cta_text')) {
+          params.cta_text = textOf(element);
+        }
+        send(name, params);
+      });
     },
     true,
   );
@@ -578,31 +594,31 @@
 
   /* The click is announced from layout/theme.liquid by a capture listener that
      runs before GoKwik can swallow it; it carries where it came from. */
+  /** GA4 items from /cart.js lines. */
+  function cartItems(lines) {
+    return lines.map((line, index) => ({
+      item_id: line.sku || String(line.variant_id),
+      item_name: line.product_title,
+      item_brand: 'Zinara',
+      item_category: line.product_type,
+      item_variant: line.variant_title || undefined,
+      price: line.final_price / 100,
+      discount: line.original_price > line.final_price ? (line.original_price - line.final_price) / 100 : 0,
+      quantity: line.quantity,
+      index,
+    }));
+  }
+
   if (config.beginCheckout) {
-    document.addEventListener('zinara:checkout-intent', async (event) => {
-      try {
-        const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`, {
-          headers: { Accept: 'application/json' },
-        });
-        const data = await response.json();
-        send('begin_checkout', {
-          currency: data.currency,
-          value: data.total_price / 100,
-          items: data.items.map((line, index) => ({
-            item_id: line.sku || String(line.variant_id),
-            item_name: line.product_title,
-            item_brand: 'Zinara',
-            item_category: line.product_type,
-            item_variant: line.variant_title || undefined,
-            price: line.final_price / 100,
-            quantity: line.quantity,
-            index,
-          })),
-          click_location: event.detail?.location,
-        });
-      } catch (error) {
-        // A failed cart read must never get in the way of checkout.
-      }
+    document.addEventListener('zinara:checkout-intent', (event) => {
+      // Buy now sends its own begin_checkout with the item it just added.
+      if (event.detail?.location === 'buy_now' || !cart.lines?.length) return;
+      send('begin_checkout', {
+        currency: cart.currency || config.currency,
+        value: cart.value,
+        items: cartItems(cart.lines),
+        click_location: event.detail?.location,
+      });
     });
   }
 })();
