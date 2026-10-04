@@ -3,7 +3,11 @@
   Section Rendering API by variant-drawer.js. Figma 7930:102851.
 {%- enddoc -%}
 
-<variant-drawer class="variant-drawer" hidden>
+{%- comment -%}
+  A popover so variant-drawer.js can lift it into the browser's top layer while
+  open - above sticky bars and app widgets alike.
+{%- endcomment -%}
+<variant-drawer class="variant-drawer" popover="manual" hidden>
   <div class="variant-drawer_scrim" data-drawer-close></div>
 
   <div

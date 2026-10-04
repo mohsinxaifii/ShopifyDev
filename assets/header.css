@@ -223,7 +223,33 @@
   display: none;
 }
 
-/* Off-canvas menu drawer */
+/* Off-canvas menu drawer.
+
+   Both pieces are popovers (sections/header.liquid): while the menu is open
+   header.js shows them in the browser's top layer, above everything on the
+   page whatever its z-index - the sticky header block, the category bar, app
+   widgets. The z-indexes below only matter where popovers are unsupported.
+   The browser's default popover box (centred, bordered, padded, sized to
+   content) is undone here so the drawer keeps its own geometry. */
+.header_drawer_overlay[popover],
+.header_drawer[popover] {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  overflow: visible;
+}
+
+.header_drawer_overlay[popover] {
+  width: auto;
+  height: auto;
+}
+
+.header_drawer[popover] {
+  right: auto;
+  height: auto;
+}
+
 .header_drawer_overlay {
   position: fixed;
   inset: var(--header-drawer-top, 0) 0 0;
