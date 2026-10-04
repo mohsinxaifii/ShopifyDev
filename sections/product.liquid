@@ -229,7 +229,13 @@
             across the foot of the photo; desktop keeps it in the price card.
           {%- endcomment -%}
           {%- if addons != blank -%}
-            <button type="button" class="pdp_gallery_stage_addons" data-open="addons">
+            <button
+              type="button"
+              class="pdp_gallery_stage_addons"
+              data-open="addons"
+              data-analytics="addon_sheet_open"
+              data-analytics-addons-available="{{ addons.size }}"
+            >
               <span>Add-ons available</span>
               {{ 'icon-caret-right.svg' | inline_asset_content }}
             </button>
@@ -339,7 +345,14 @@
 
           {%- if section.settings.show_savings_calculator -%}
             <div class="pdp_headline_calculator">
-              <button type="button" class="pdp_headline_calculator_button" data-open="price-difference">
+              <button
+                type="button"
+                class="pdp_headline_calculator_button"
+                data-open="price-difference"
+                data-analytics="savings_calculator_open"
+                data-analytics-price="{{ current_variant.price | divided_by: 100.0 }}"
+                data-analytics-mined-equivalent-price="{{ product.metafields.custom.pdp_mined_price.value }}"
+              >
                 <span>Your savings calculator</span>
                 {{ 'icon-caret-right.svg' | inline_asset_content }}
               </button>
@@ -355,7 +368,13 @@
           {%- endif -%}
 
           {%- if addons != blank -%}
-            <button type="button" class="pdp_headline_addons" data-open="addons">
+            <button
+              type="button"
+              class="pdp_headline_addons"
+              data-open="addons"
+              data-analytics="addon_sheet_open"
+              data-analytics-addons-available="{{ addons.size }}"
+            >
               <span>Add-ons available</span>
               {{ 'icon-caret-right.svg' | inline_asset_content }}
             </button>
@@ -371,7 +390,15 @@
                 <span class="pdp_offers_head_title_dot" aria-hidden="true"></span>
                 <span class="pdp_offers_head_title_count">{{ offer_handles.size }} available</span>
               </h2>
-              <button type="button" class="pdp_link" data-open="offers">View all</button>
+              <button
+                type="button"
+                class="pdp_link"
+                data-open="offers"
+                data-analytics="offers_view_all"
+                data-analytics-offers-count="{{ offer_handles.size }}"
+              >
+                View all
+              </button>
             </div>
 
             <div class="pdp_offers_rail">
@@ -435,7 +462,14 @@
 
             {%- if show_guide -%}
               {%- assign size_guide_inline = true -%}
-              <button type="button" class="pdp_link pdp_option_guide" data-open="size-guide">
+              <button
+                type="button"
+                class="pdp_link pdp_option_guide"
+                data-open="size-guide"
+                data-analytics="size_guide_open"
+                data-analytics-product-category="{{ product.type | escape }}"
+                data-analytics-click-location="pdp"
+              >
                 <span class="pdp_option_guide_icon" aria-hidden="true">
                   {{- 'icon-ruler.svg' | inline_asset_content -}}
                 </span>
@@ -477,7 +511,14 @@
         {%- endcomment -%}
         {%- if size_chart != blank and size_guide_inline != true -%}
           <div class="pdp_option pdp_option--guide-only">
-            <button type="button" class="pdp_link" data-open="size-guide">
+            <button
+              type="button"
+              class="pdp_link"
+              data-open="size-guide"
+              data-analytics="size_guide_open"
+              data-analytics-product-category="{{ product.type | escape }}"
+              data-analytics-click-location="pdp"
+            >
               <span class="pdp_option_guide_icon" aria-hidden="true">
                 {{- 'icon-ruler.svg' | inline_asset_content -}}
               </span>
@@ -491,6 +532,9 @@
           type="button"
           class="pdp_explainer"
           data-open="know-jewellery"
+          data-analytics="material_info_click"
+          data-analytics-info-type="{{ material_name | handleize | replace: '-', '_' }}"
+          data-analytics-click-location="pdp"
           {% unless has_explainer %}
             hidden
           {% endunless %}
@@ -550,7 +594,14 @@
             {%- for block in trust_blocks -%}
               <li class="pdp_trust_grid_item" {{ block.shopify_attributes }}>
                 {%- if block.settings.action == 'sgl' -%}
-                  <button type="button" class="pdp_trust_grid_item_inner" data-open="sgl">
+                  <button
+                    type="button"
+                    class="pdp_trust_grid_item_inner"
+                    data-open="sgl"
+                    data-analytics="trust_badge_click certificate_view"
+                    data-analytics-badge-name="sgl_certified"
+                    data-analytics-certificate-type="sgl"
+                  >
                     <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
                       {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
                     </span>
@@ -627,6 +678,8 @@
             <a
               href="{{ section.settings.whatsapp_url }}"
               class="pdp_button pdp_button--outline"
+              data-analytics="expert_help_click"
+              data-analytics-help-type="chat"
               target="_blank"
               rel="noopener"
             >
@@ -640,6 +693,8 @@
             <a
               href="{{ section.settings.video_call_url }}"
               class="pdp_button pdp_button--outline"
+              data-analytics="expert_help_click"
+              data-analytics-help-type="video_call"
               target="_blank"
               rel="noopener"
             >
@@ -941,11 +996,18 @@
               type="button"
               class="pdp_button pdp_button--primary pdp_button--compact"
               data-open="review"
+              data-analytics="review_interaction"
+              data-analytics-action="write_review_click"
             >
               Write a review
             </button>
           {%- elsif section.settings.review_url != blank -%}
-            <a href="{{ section.settings.review_url }}" class="pdp_button pdp_button--primary pdp_button--compact">
+            <a
+              href="{{ section.settings.review_url }}"
+              class="pdp_button pdp_button--primary pdp_button--compact"
+              data-analytics="review_interaction"
+              data-analytics-action="write_review_click"
+            >
               Write a review
             </a>
           {%- endif -%}

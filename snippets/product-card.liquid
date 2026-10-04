@@ -64,9 +64,11 @@
   endif
 -%}
 
+{%- capture analytics_item -%}{%- render 'analytics-item', product: product -%}{%- endcapture -%}
 <a
   href="{{ product.url }}"
   class="product-card{% if is_grid %} product-card--grid{% endif %}"
+  data-analytics-item="{{ analytics_item | strip_newlines | escape }}"
   {% if is_grid %}
     data-animate
     data-animate-distance="20"
