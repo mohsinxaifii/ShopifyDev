@@ -155,9 +155,47 @@
 
   /* ------------------------------------------------------------- sign in */
 
-  function setPending(handle) {
+  /* --------------------------------------------------------- analytics */
+
+  /* The GA4 item for a heart: its product card carries one; the PDP's heart
+     is the page's own product. */
+  function analyticsItem(button) {
+    const card = button.closest('[data-analytics-item]');
+    if (card) {
+      try {
+        return JSON.parse(card.dataset.analyticsItem);
+      } catch (error) {
+        return null;
+      }
+    }
+    return window.zinaraAnalyticsConfig?.product?.item || null;
+  }
+
+  function clickLocation(button) {
+    if (!button.closest('.product-card')) return 'pdp';
+    const page = window.zinaraAnalyticsConfig?.pageType;
+    return {
+      collection: 'plp_card',
+      search: 'search_card',
+      wishlist: 'wishlist',
+      home: 'home_card',
+      product: 'pdp_recommendations',
+    }[page] || `${page || 'page'}_card`;
+  }
+
+  function trackAdd(item, location) {
+    if (!item) return;
+    window.zinaraTrack?.('add_to_wishlist', {
+      currency: window.zinaraAnalyticsConfig?.currency,
+      value: item.price,
+      items: [item],
+      click_location: location,
+    });
+  }
+
+  function setPending(handle, extra = {}) {
     try {
-      window.localStorage.setItem(PENDING_KEY, JSON.stringify({ handle, at: Date.now() }));
+      window.localStorage.setItem(PENDING_KEY, JSON.stringify({ handle, at: Date.now(), ...extra }));
       return true;
     } catch (error) {
       return false;
@@ -174,7 +212,7 @@
     }
     if (!pending || typeof pending.handle !== 'string' || !/\D/.test(pending.handle)) return null;
     if (!(Date.now() - pending.at < PENDING_MS)) return null;
-    return pending.handle;
+    return pending;
   }
 
   /* New customer accounts send the shopper back to `return_to`, which has to be
@@ -188,10 +226,13 @@
      on top of it instead of being overwritten by it. */
   function addPending() {
     if (!signedIn) return;
-    const handle = takePending();
-    if (!handle) return;
+    const pending = takePending();
+    if (!pending) return;
     const handles = read();
-    if (!handles.includes(handle)) write([...handles, handle]);
+    if (handles.includes(pending.handle)) return;
+    write([...handles, pending.handle]);
+    // Counted now that it really is in the wishlist, with where the heart was.
+    trackAdd(pending.item, pending.location);
   }
 
   /* ---------------------------------------------------------------- toggles */
@@ -223,7 +264,8 @@
 
     /* The theme editor has no customer session, so it keeps the plain toggle. */
     if (index === -1 && !signedIn && !isDesignMode) {
-      if (setPending(handle)) {
+      if (setPending(handle, { item: analyticsItem(button), location: clickLocation(button) })) {
+        window.zinaraTrack?.('signin_prompt_view', { trigger: 'wishlist_heart' });
         window.location.href = signInUrl();
         return;
       }
@@ -235,6 +277,15 @@
     else handles.splice(index, 1);
 
     write(handles);
+
+    if (index === -1) {
+      trackAdd(analyticsItem(button), clickLocation(button));
+    } else {
+      window.zinaraTrack?.('remove_from_wishlist', {
+        product_id: button.dataset.productId,
+        click_location: clickLocation(button),
+      });
+    }
   }
 
   function syncAll(root = document) {
@@ -339,6 +390,10 @@
         this.querySelector('[data-skeleton]')?.remove();
         this.show('[data-wishlist-empty]', true);
         this.setCount(0);
+        if (!this.viewTracked) {
+          this.viewTracked = true;
+          window.zinaraTrack?.('view_wishlist', { items_count: 0 });
+        }
         return;
       }
 
@@ -374,6 +429,10 @@
       template.innerHTML = results.map((result) => result.html || '').join('');
       const cards = Array.from(template.content.querySelectorAll('[data-wishlist-item]'));
       this.grid.replaceChildren(...cards);
+      if (!this.viewTracked) {
+        this.viewTracked = true;
+        window.zinaraTrack?.('view_wishlist', { items_count: cards.length });
+      }
       this.querySelector('[data-skeleton]')?.remove();
       this.show('[data-wishlist-grid]', true);
       this.show('[data-wishlist-empty]', cards.length === 0);
@@ -394,6 +453,12 @@
       });
 
       this.apply();
+      if (this.filter) {
+        window.zinaraTrack?.('wishlist_tab_select', {
+          tab_name: chip.querySelector('.wishlist_wrapper_filters_item_label')?.textContent.trim() || value,
+          items_count: Array.from(this.querySelectorAll('[data-wishlist-item]')).filter((item) => !item.hidden).length,
+        });
+      }
     }
 
     /* Matched on whole words, not substrings: "rings" is a substring of
