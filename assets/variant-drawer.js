@@ -37,7 +37,9 @@
       });
 
       this.addEventListener('change', (event) => {
-        if (event.target.closest('[data-option-input]')) this.syncSelection();
+        if (!event.target.closest('[data-option-input]')) return;
+        this.syncSelection();
+        this.trackVariantSelect(event.target);
       });
 
       this.onKeydown = (event) => {
@@ -107,6 +109,10 @@
         this.content.replaceChildren(body);
         this.readVariantData();
         this.syncSelection();
+        window.zinaraTrack?.('variant_sheet_open', {
+          product_id: this.data?.productId,
+          click_location: this.clickLocation(),
+        });
         this.panel.querySelector('[data-option-input]')?.focus();
       } catch (error) {
         console.error('[variant-drawer] could not load product', error);
@@ -181,6 +187,37 @@
         const href = variant ? `${card.dataset.pdpUrl}?variant=${variant.id}` : card.dataset.pdpUrl;
         card.querySelectorAll('[data-pdp-link]').forEach((link) => link.setAttribute('href', href));
       }
+    }
+
+    /* --------------------------------------------------------- analytics */
+
+    /* Where the picker was opened from: a [data-analytics-location] around the
+       button that opened it, else the kind of page (plp, search, wishlist…). */
+    clickLocation() {
+      const marked = this.trigger?.closest?.('[data-analytics-location]')?.dataset.analyticsLocation;
+      if (marked) return marked;
+      if (this.mode === 'choose') return 'pdp_set';
+      const page = window.zinaraAnalyticsConfig?.pageType;
+      return { collection: 'plp_variant_sheet', search: 'search_variant_sheet' }[page] || `${page || 'page'}_variant_sheet`;
+    }
+
+    trackVariantSelect(input) {
+      const group = input.closest('[data-option-group]');
+      // Is anything available with this value, given the other options picked?
+      const index = Array.from(this.querySelectorAll('[data-option-group]')).indexOf(group);
+      const chosen = this.selectedOptions();
+      const available = (this.data?.variants || []).some(
+        (variant) =>
+          variant.available &&
+          variant.options.every((option, i) => (i === index ? option === input.value : chosen[i] === null || option === chosen[i])),
+      );
+      window.zinaraTrack?.('variant_select', {
+        product_id: this.data?.productId,
+        variant_type: group?.dataset.optionName,
+        variant_value: input.value,
+        variant_availability: available ? 'available' : 'sold_out',
+        click_location: 'plp_variant_sheet',
+      });
     }
 
     /* ----------------------------------------------------------- confirm */
