@@ -8,5 +8,7 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "wishlist_endpoint": "https://67r.6d1.mytemp.website/zinara-wishlist/wishlist.php"
+  }
 }
