@@ -218,3 +218,20 @@ hero-banner-slideshow:defined .hero-skeleton {
   height: 100%;
   border-radius: 0;
 }
+
+/* The whole-slide link (hero-banner.liquid) sits over the picture and under
+   the copy; the copy lets clicks through to it except on its own button. */
+.hero-banner_wrapper_track_slide_link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.hero-banner_wrapper_track_slide:has(.hero-banner_wrapper_track_slide_link) .hero-banner_wrapper_track_slide_content {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-banner_wrapper_track_slide:has(.hero-banner_wrapper_track_slide_link) .hero-banner_wrapper_track_slide_content_button {
+  pointer-events: auto;
+}
