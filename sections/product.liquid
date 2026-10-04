@@ -24,22 +24,6 @@
     assign saving_percent = saving | divided_by: current_variant.compare_at_price | round
   endif
 
-  comment
-    A `rating` metafield hands back its value as a string, and comparing that to
-    0 raises "comparison of String with 0 failed" - so it is coerced first.
-  endcomment
-  assign average_rating = product.metafields.reviews.rating.value.rating | plus: 0
-  assign rating_count = product.metafields.reviews.rating_count.value | plus: 0
-
-  comment
-    Liquid has no decimal formatter, so "5" would print where the design shows
-    "5.00". The fraction is padded to two digits by hand.
-  endcomment
-  assign rating_whole = average_rating | floor
-  assign rating_frac = average_rating | minus: rating_whole | times: 100 | round
-  assign rating_frac = rating_frac | prepend: '00' | slice: -2, 2
-  assign rating_text = rating_whole | append: '.' | append: rating_frac
-
   assign material_name = product.metafields.custom.pdp_material_name.value | default: 'Gold Vermeil'
   comment
     The explainer accordion and the link that opens it both disappear when a
@@ -88,10 +72,6 @@
   assign addons = addon_set.addons.value | default: product.metafields.custom.pdp_addons.value
   assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
   assign addon_previews = addon_set.previews.value
-  assign reviews = product.metafields.custom.pdp_reviews.value
-  if reviews.size > 0
-    assign rating_count = reviews.size
-  endif
   comment
     Read the PDP-specific keys first and fall back to the shared ones. The live
     theme reads content.product_details_list and custom.size_chart, so this
@@ -322,12 +302,13 @@
         <div class="pdp_headline">
           <div class="pdp_headline_top">
             <h1 class="pdp_headline_top_title">{{ product.title }}</h1>
-            {%- if average_rating > 0 -%}
+            {%- comment -%} Average from Judge.me (judgeme.js). {%- endcomment -%}
+            <judgeme-rating data-handle="{{ product.handle }}" hidden>
               <a href="#pdp-reviews" class="pdp_headline_top_rating">
                 {{ 'icon-star.svg' | inline_asset_content }}
-                <span>{{ average_rating | round: 1 }}</span>
+                <span data-judgeme-value></span>
               </a>
-            {%- endif -%}
+            </judgeme-rating>
           </div>
 
           <div class="pdp_headline_price">
@@ -970,63 +951,44 @@
           {%- endif -%}
         </div>
 
-        {%- if average_rating > 0 -%}
-          <div class="pdp_reviews_summary">
-            <span class="pdp_reviews_summary_score">{{ rating_text }}</span>
+        {%- comment -%}
+          Summary and reviews come only from Judge.me: judgeme.js fills them in
+          and fetches the next page for "Show more". Each part stays hidden
+          until Judge.me has something to show.
+        {%- endcomment -%}
+        <judgeme-reviews data-handle="{{ product.handle }}" data-per-page="{{ section.settings.reviews_shown }}">
+          <div class="pdp_reviews_summary" data-reviews-summary hidden>
+            <span class="pdp_reviews_summary_score" data-reviews-score></span>
             <span class="pdp_reviews_summary_rule" aria-hidden="true"></span>
-            {%- render 'testimonial-stars', rating: average_rating -%}
-            <span class="pdp_reviews_summary_count">{{ rating_count }} reviews</span>
+            {%- render 'testimonial-stars', rating: 5 -%}
+            <span class="pdp_reviews_summary_count" data-reviews-count></span>
           </div>
-        {%- endif -%}
 
-        {%- if reviews != blank -%}
-          <ul class="pdp_reviews_list" data-reviews-list>
-            {%- for review in reviews -%}
-              <li
-                class="pdp_reviews_list_item"
-                {% if forloop.index > section.settings.reviews_shown %}
-                  data-review-extra
-                  hidden
-                {% endif %}
-              >
-                {%- render 'testimonial-stars', rating: review.rating -%}
+          <ul class="pdp_reviews_list" data-reviews-list hidden></ul>
 
-                <p class="pdp_reviews_list_item_author">
-                  <span class="pdp_reviews_list_item_author_name">{{ review.author }}</span>
-                  {%- if review.verified_buyer -%}
-                    <span class="pdp_reviews_list_item_author_dot" aria-hidden="true"></span>
-                    <span class="pdp_reviews_list_item_author_badge">Verified buyer</span>
-                  {%- endif -%}
-                </p>
+          <template data-review-template>
+            <li class="pdp_reviews_list_item">
+              {%- render 'testimonial-stars', rating: 5 -%}
 
-                {%- if review.images.value.size > 0 -%}
-                  <div class="pdp_reviews_list_item_media">
-                    {%- for image in review.images.value -%}
-                      {{
-                        image
-                        | image_url: width: 288
-                        | image_tag: loading: 'lazy', widths: '144,288', sizes: '144px', alt: ''
-                      }}
-                    {%- endfor -%}
-                  </div>
-                {%- endif -%}
+              <p class="pdp_reviews_list_item_author">
+                <span class="pdp_reviews_list_item_author_name" data-review-author></span>
+                <span class="pdp_reviews_list_item_author_dot" aria-hidden="true" data-review-verified hidden></span>
+                <span class="pdp_reviews_list_item_author_badge" data-review-verified hidden>Verified buyer</span>
+              </p>
 
-                <p class="pdp_reviews_list_item_body">&ldquo;{{ review.body }}&rdquo;</p>
-                <p class="pdp_reviews_list_item_date">
-                  {{- review.review_date | date: '%B %-d, %Y' -}}
-                </p>
-              </li>
-            {%- endfor -%}
-          </ul>
+              <div class="pdp_reviews_list_item_media" data-review-media hidden></div>
 
-          {%- if reviews.size > section.settings.reviews_shown -%}
-            <div class="pdp_reviews_more">
-              <button type="button" class="pdp_button pdp_button--outline pdp_button--compact" data-reviews-more>
-                Show more reviews
-              </button>
-            </div>
-          {%- endif -%}
-        {%- endif -%}
+              <p class="pdp_reviews_list_item_body" data-review-body></p>
+              <p class="pdp_reviews_list_item_date" data-review-date hidden></p>
+            </li>
+          </template>
+
+          <div class="pdp_reviews_more" data-reviews-more hidden>
+            <button type="button" class="pdp_button pdp_button--outline pdp_button--compact">
+              Show more reviews
+            </button>
+          </div>
+        </judgeme-reviews>
       </section>
     </div>
   </div>
@@ -1193,7 +1155,7 @@
       "type": "text",
       "id": "review_endpoint",
       "label": "Review form endpoint",
-      "info": "URL of submit.php in the zinara-reviews app on your server, e.g. https://your-domain/zinara-reviews/submit.php. When set, Write a review opens the review form."
+      "info": "URL of submit.php in the zinara-reviews app on your server, e.g. https://your-domain/zinara-reviews/submit.php. When set, Write a review opens the review form. Published reviews are shown from Judge.me (theme settings > Judge.me reviews)."
     },
     {
       "type": "url",
@@ -1204,7 +1166,7 @@
     {
       "type": "range",
       "id": "reviews_shown",
-      "label": "Reviews shown before \"Show more\"",
+      "label": "Reviews per page (\"Show more\" loads the next)",
       "min": 1,
       "max": 10,
       "step": 1,

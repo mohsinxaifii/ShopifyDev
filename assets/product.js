@@ -125,7 +125,6 @@
       this.initCoupons();
       this.initPincode();
       this.initTabs();
-      this.initReviews();
       this.initCart();
       this.initReviewForm();
       this.initDragScroll();
@@ -862,19 +861,6 @@
           </span>`;
         card.querySelector('.product-card_info_title').textContent = item.title;
         track.appendChild(card);
-      });
-    }
-
-    /* ---------------------------------------------------------- reviews */
-
-    initReviews() {
-      const button = this.querySelector('[data-reviews-more]');
-      if (!button) return;
-      button.addEventListener('click', () => {
-        this.querySelectorAll('[data-review-extra]').forEach((item) => {
-          item.hidden = false;
-        });
-        button.remove();
       });
     }
 

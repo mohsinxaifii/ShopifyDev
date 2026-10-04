@@ -1995,6 +1995,11 @@ button.pdp_trust_grid_item_inner {
   scroll-margin-top: 96px;
 }
 
+/* judgeme.js's wrapper - its children keep sitting in the column above. */
+.pdp_reviews judgeme-reviews {
+  display: contents;
+}
+
 .pdp_reviews_head {
   display: flex;
   gap: 12px;
