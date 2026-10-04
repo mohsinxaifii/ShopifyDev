@@ -2,6 +2,13 @@
 
 {%- liquid
   assign current = section.settings.current_label
+  if current == blank and page.handle == 'kp-account'
+    comment
+      KwikPass's account page (sections/page.liquid) - its admin title is
+      "kp account".
+    endcomment
+    assign current = 'My account'
+  endif
   if current == blank
     assign current = page.title
   endif
