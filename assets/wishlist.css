@@ -1,3 +1,11 @@
+/* Every state below is toggled with the `hidden` attribute, and most also carry
+   a `display` rule - which would otherwise beat the user-agent's
+   `[hidden] { display: none }` and leave, say, "Nothing saved yet" on screen
+   under a full grid. */
+.wishlist [hidden] {
+  display: none !important;
+}
+
 /* Figma: Wishlist 7930:94300 > Frame 1116601589 (re-checked against 8106:39983).
 
    A white 32/72 band on a 24px stack: the heading and count, the circular

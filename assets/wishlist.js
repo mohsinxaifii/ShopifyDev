@@ -366,8 +366,14 @@
       const kept = handles.filter((handle, index) => !results[index].gone);
       if (kept.length !== handles.length) write(kept);
 
-      const cards = results.map((result) => result.html || '').filter(Boolean);
-      this.grid.innerHTML = cards.join('');
+      /* The Section Rendering API wraps each card in a .shopify-section div,
+         which critical.css lays out as a page-width grid with side margins -
+         inside a grid cell that squeezed the card into a narrow middle column.
+         Only the card item itself goes into the grid. */
+      const template = document.createElement('template');
+      template.innerHTML = results.map((result) => result.html || '').join('');
+      const cards = Array.from(template.content.querySelectorAll('[data-wishlist-item]'));
+      this.grid.replaceChildren(...cards);
       this.querySelector('[data-skeleton]')?.remove();
       this.show('[data-wishlist-grid]', true);
       this.show('[data-wishlist-empty]', cards.length === 0);
