@@ -12,13 +12,8 @@
       <button
         type="button"
         class="header_wrapper_brand_menu-toggle"
-<<<<<<< HEAD
         data-analytics="nav_icon_click"
         data-analytics-icon-name="menu"
-=======
-        data-track="nav_icon_click"
-        data-track-icon-name="menu"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
         aria-label="{{ 'accessibility.menu' | t }}"
         aria-expanded="false"
         aria-controls="header-drawer-{{ section.id }}"
@@ -29,13 +24,8 @@
       <a
         href="{{ routes.root_url }}"
         class="header_wrapper_brand_logo"
-<<<<<<< HEAD
         data-analytics="nav_icon_click"
         data-analytics-icon-name="logo"
-=======
-        data-track="nav_icon_click"
-        data-track-icon-name="logo"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
       >
         {%- if settings.logo -%}
           {{
@@ -59,13 +49,8 @@
       <button
         type="button"
         class="header_wrapper_actions_link header_wrapper_actions_search-toggle"
-<<<<<<< HEAD
         data-analytics="nav_icon_click"
         data-analytics-icon-name="search"
-=======
-        data-track="nav_icon_click"
-        data-track-icon-name="search"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
         aria-label="{{ 'accessibility.search' | t }}"
         aria-expanded="false"
       >
@@ -75,13 +60,8 @@
       <a
         href="{{ routes.account_url }}"
         class="header_wrapper_actions_link"
-<<<<<<< HEAD
         data-analytics="nav_icon_click"
         data-analytics-icon-name="account"
-=======
-        data-track="nav_icon_click"
-        data-track-icon-name="account"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
         aria-label="{{ 'accessibility.account' | t }}"
       >
         {{ 'icon-user.svg' | inline_asset_content }}
@@ -90,13 +70,8 @@
       <a
         href="{{ section.settings.wishlist_url | default: '#' }}"
         class="header_wrapper_actions_link"
-<<<<<<< HEAD
         data-analytics="nav_icon_click"
         data-analytics-icon-name="wishlist"
-=======
-        data-track="nav_icon_click"
-        data-track-icon-name="wishlist"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
         aria-label="{{ 'accessibility.wishlist' | t }}"
       >
         {{ 'icon-heart.svg' | inline_asset_content }}
@@ -110,13 +85,8 @@
       <a
         href="{{ routes.cart_url }}"
         class="header_wrapper_actions_link"
-<<<<<<< HEAD
         data-analytics="nav_icon_click"
         data-analytics-icon-name="cart"
-=======
-        data-track="nav_icon_click"
-        data-track-icon-name="cart"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
         aria-label="{{ 'accessibility.cart' | t }}"
       >
         {{ 'icon-cart.svg' | inline_asset_content }}
@@ -203,19 +173,11 @@
                       <a
                         href="{{ childlink.url }}"
                         class="header_drawer_nav_sublist_link{% if childlink.active %} is-current{% endif %}"
-<<<<<<< HEAD
                         data-analytics="sidenav_item_click{% if childlink.url contains 'get-your-own-design' %} custom_design_start{% endif %}"
                         data-analytics-item-name="{{ childlink.title | escape }}"
                         data-analytics-item-group="{{ link.title | handleize | replace: '-', '_' }}"
                         data-analytics-position="{{ forloop.index }}"
                         data-analytics-click-location="sidenav"
-=======
-                        data-track="sidenav_item_click{% if childlink.url contains 'get-your-own-design' %} custom_design_start{% endif %}"
-                        data-track-item-name="{{ childlink.title | escape }}"
-                        data-track-item-group="{{ link.title | handleize | replace: '-', '_' }}"
-                        data-track-position="{{ forloop.index }}"
-                        data-track-click-location="sidenav"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
                       >
                         {{- childlink.title -}}
                       </a>
@@ -226,19 +188,11 @@
                 <a
                   href="{{ link.url }}"
                   class="header_drawer_nav_list_item_link{% if link.active %} is-current{% endif %}"
-<<<<<<< HEAD
                   data-analytics="sidenav_item_click{% if link.url contains 'get-your-own-design' %} custom_design_start{% endif %}"
                   data-analytics-item-name="{{ link.title | escape }}"
                   data-analytics-item-group="{% if is_new %}featured{% else %}menu{% endif %}"
                   data-analytics-position="{{ forloop.index }}"
                   data-analytics-click-location="sidenav"
-=======
-                  data-track="sidenav_item_click{% if link.url contains 'get-your-own-design' %} custom_design_start{% endif %}"
-                  data-track-item-name="{{ link.title | escape }}"
-                  data-track-item-group="{% if is_new %}featured{% else %}menu{% endif %}"
-                  data-track-position="{{ forloop.index }}"
-                  data-track-click-location="sidenav"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
                 >
                   <span class="header_drawer_nav_list_item_label">
                     {{- link.title -}}
@@ -257,15 +211,9 @@
         <a
           href="{{ routes.account_url }}"
           class="header_drawer_foot_account"
-<<<<<<< HEAD
           data-analytics="sidenav_item_click"
           data-analytics-item-name="{% if customer %}account{% else %}login{% endif %}"
           data-analytics-item-group="account"
-=======
-          data-track="sidenav_item_click"
-          data-track-item-name="{% if customer %}account{% else %}login{% endif %}"
-          data-track-item-group="account"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
         >
           <span class="header_drawer_foot_account_icon" aria-hidden="true">
             {{- 'icon-user.svg' | inline_asset_content -}}
@@ -288,15 +236,9 @@
                 target="_blank"
                 rel="noopener"
                 aria-label="Instagram"
-<<<<<<< HEAD
                 data-analytics="sidenav_item_click"
                 data-analytics-item-name="instagram"
                 data-analytics-item-group="social"
-=======
-                data-track="sidenav_item_click"
-                data-track-item-name="instagram"
-                data-track-item-group="social"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
               >
                 {{- 'icon-instagram.svg' | inline_asset_content -}}
               </a>
@@ -308,15 +250,9 @@
                 target="_blank"
                 rel="noopener"
                 aria-label="Facebook"
-<<<<<<< HEAD
                 data-analytics="sidenav_item_click"
                 data-analytics-item-name="facebook"
                 data-analytics-item-group="social"
-=======
-                data-track="sidenav_item_click"
-                data-track-item-name="facebook"
-                data-track-item-group="social"
->>>>>>> 30916909d61dcca9800219ddedc6262368b10e41
               >
                 {{- 'icon-facebook.svg' | inline_asset_content -}}
               </a>
