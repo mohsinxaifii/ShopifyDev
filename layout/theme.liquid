@@ -110,6 +110,20 @@
         </script>
       {%- endif -%}
     {%- endif -%}
+    {%- comment -%}
+      Judge.me is the only source of ratings and reviews. judgeme.js reads them
+      from Judge.me's widget API with the shop's public token, which is meant to
+      be exposed - the private token must never be used here.
+    {%- endcomment -%}
+    {%- if settings.judgeme_public_token != blank -%}
+      <script>
+        window.zinaraJudgeme = {
+          shopDomain: {{ shop.permanent_domain | json }},
+          token: {{ settings.judgeme_public_token | strip | json }},
+        };
+      </script>
+      <script src="{{ 'judgeme.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
     <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'variant-drawer.js' | asset_url }}" defer="defer"></script>
 

@@ -115,3 +115,10 @@ body {
 .shopify-section > .full-width {
   grid-column: 1 / -1;
 }
+
+/* Judge.me rating wrappers (judgeme.js). They stay hidden until Judge.me has
+   answered with at least one review, and are layout-neutral once shown so the
+   badge inside sits exactly where it did before. */
+judgeme-rating:not([hidden]) {
+  display: contents;
+}
