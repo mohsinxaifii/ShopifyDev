@@ -87,15 +87,33 @@
       <input type="hidden" name="type" value="product">
       <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
 
+      {%- liquid
+        comment
+          Active filters, counted as plp-mobile-bar does: "Clear all" is only
+          offered when there is something to clear.
+        endcomment
+        assign active_filter_count = 0
+        for filter in search.filters
+          if filter.type == 'price_range'
+            if filter.min_value.value != blank or filter.max_value.value != blank
+              assign active_filter_count = active_filter_count | plus: 1
+            endif
+          else
+            assign active_filter_count = active_filter_count | plus: filter.active_values.size
+          endif
+        endfor
+      -%}
       <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
         <div class="collection_wrapper_filters_head">
           <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
+          {%- if active_filter_count > 0 -%}
           <a
             href="{{ routes.search_url }}?q={{ terms | url_encode }}&type=product&sort_by={{ sort_by }}"
             class="collection_wrapper_filters_head_clear"
           >
             {{- 'collection.clear_all' | t -}}
           </a>
+          {%- endif -%}
           <button
             type="button"
             class="collection_wrapper_filters_head_close"
@@ -132,12 +150,14 @@
         </div>
 
         <div class="collection_wrapper_filters_footer">
+          {%- if active_filter_count > 0 -%}
           <a
             href="{{ routes.search_url }}?q={{ terms | url_encode }}&type=product&sort_by={{ sort_by }}"
             class="collection_wrapper_filters_footer_clear"
           >
             {{- 'collection.clear_all' | t -}}
           </a>
+          {%- endif -%}
           <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-close>
             {{- 'collection.apply' | t -}}
           </button>
