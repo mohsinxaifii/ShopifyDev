@@ -154,6 +154,12 @@
               </div>
 
               {%- for block in flip_blocks -%}
+                {%- comment -%}
+                  A myth with no fact would flip to an empty card; on the live
+                  site it is left out (the theme editor still shows it, to be
+                  filled in).
+                {%- endcomment -%}
+                {%- if block.settings.fact == blank and request.design_mode == false -%}{%- continue -%}{%- endif -%}
                 <flip-card
                   class="know-your-jewellery_wrapper_grid_diamonds_stack_item know-your-jewellery_wrapper_grid_diamonds_flip_card"
                   data-stack-item
