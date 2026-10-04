@@ -1,0 +1,86 @@
+{%- comment -%}
+  Policy pages - Our policy (returns, warranty, shipping, cancellation,
+  privacy), Buyback, Exchange, Terms. The text lives in this section's blocks
+  (ported from the live theme, where the pages were built the same way); the
+  Shopify pages themselves carry no body.
+
+  One block shows as plain text. Several show as accordions, each with an
+  anchor (#return-and-refund-policy, #shipping-policy, …) so a link can open a
+  specific policy: /pages/our-policy#shipping-policy.
+{%- endcomment -%}
+
+{{ 'page.css' | asset_url | stylesheet_tag }}
+
+<section class="page policy full-width">
+  <div class="page_wrapper">
+    <h1 class="page_wrapper_title">{{ section.settings.heading | default: page.title }}</h1>
+
+    {%- if section.blocks.size == 1 -%}
+      {%- assign block = section.blocks.first -%}
+      <div class="page_wrapper_content" {{ block.shopify_attributes }}>
+        {{ block.settings.content }}
+      </div>
+    {%- else -%}
+      <div class="policy_list">
+        {%- for block in section.blocks -%}
+          <details
+            class="policy_list_item"
+            id="{{ block.settings.heading | handleize }}"
+            {% if forloop.first and section.settings.open_first %}
+              open
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <summary class="policy_list_item_summary">
+              <span>{{ block.settings.heading }}</span>
+              <span class="policy_list_item_summary_sign" aria-hidden="true">
+                {{- 'icon-plus.svg' | inline_asset_content -}}
+              </span>
+            </summary>
+            <div class="policy_list_item_body page_wrapper_content">
+              {{ block.settings.content }}
+            </div>
+          </details>
+        {%- endfor -%}
+      </div>
+
+      <script>
+        // A link to /pages/our-policy#shipping-policy opens that policy.
+        (function () {
+          var open = function () {
+            var id = decodeURIComponent(window.location.hash.slice(1));
+            var item = id && document.getElementById(id);
+            if (!item || !item.matches('.policy_list_item')) return;
+            item.open = true;
+            item.scrollIntoView({ block: 'start' });
+          };
+          open();
+          window.addEventListener('hashchange', open);
+        })();
+      </script>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Policy",
+  "tag": "section",
+  "class": "shopify-section--policy",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Leave empty to use the page title." },
+    { "type": "checkbox", "id": "open_first", "label": "Open the first policy", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "policy",
+      "name": "Policy",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Policy" },
+        { "type": "html", "id": "content", "label": "Text" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Policy" }]
+}
+{% endschema %}
