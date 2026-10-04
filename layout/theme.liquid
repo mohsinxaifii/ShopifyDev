@@ -57,6 +57,9 @@
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
+    {% # Drag (mouse) and swipe (touch) for every carousel - before any section script %}
+    <script src="{{ 'swipe.js' | asset_url }}" defer="defer"></script>
+
     {% # Event tracking (GA4 + Meta) - before content_for_header, see the snippet %}
     {% render 'analytics-config' %}
 

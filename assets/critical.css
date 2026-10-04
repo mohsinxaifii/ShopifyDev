@@ -138,3 +138,18 @@ judgeme-rating:not([hidden]) {
 [data-wishlist-toggle][aria-pressed='true'] .wishlist-heart--on {
   display: contents;
 }
+
+/* Mouse-draggable rows (assets/swipe.js zinaraDragScroll). While a drag is on,
+   snapping is suspended so the row follows the pointer, and text is not
+   selected along the way. */
+@media (hover: hover) and (pointer: fine) {
+  [data-drag-bound] {
+    cursor: grab;
+  }
+}
+
+[data-drag-bound].is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+  user-select: none;
+}
