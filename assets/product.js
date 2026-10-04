@@ -80,7 +80,9 @@
       const stage = this.querySelector('.pdp_gallery_stage');
       if (!stage || this.slides.length < 2) return;
       window.zinaraSwipe?.(stage, {
-        ignore: 'button, a',
+        // The slides themselves are buttons (they open the lightbox), so only
+        // the controls laid over the photo are left alone.
+        ignore: 'button:not([data-stage-slide]), a',
         onSwipe: (direction) => {
           const next = Math.min(Math.max(this.index + direction, 0), this.slides.length - 1);
           if (next === this.index) return;
@@ -1139,7 +1141,21 @@
         const chosen = selectedItems();
         const pieces = chosen.length > 0 ? chosen : pendingItems();
 
-        const lines = pieces.map((item) => ({ id: Number(item.dataset.variantId), quantity: 1 }));
+        // A piece with options (metal colour, size) is picked in the variant
+        // drawer first, one after another, instead of going in as whatever
+        // its first variant is. Backing out of any picker cancels the add.
+        const lines = [];
+        for (const item of pieces) {
+          const id = window.zinaraVariants
+            ? await window.zinaraVariants.pick({
+                productUrl: item.dataset.productUrl,
+                variantCount: item.dataset.variantCount,
+                variantId: item.dataset.variantId,
+              })
+            : Number(item.dataset.variantId);
+          if (!id) return;
+          lines.push({ id: Number(id), quantity: 1 });
+        }
         if (lines.length === 0) return;
         const ok = await this.addToCart(lines, { trigger: button });
         if (ok) {
