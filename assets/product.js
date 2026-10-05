@@ -437,12 +437,12 @@
       });
 
       this.syncAvailability();
+      this.updateShipTime(match);
       if (!match) return;
 
       this.variantInput.value = match.id;
       this.updatePrice(match);
       this.updateUrl(match);
-      this.updateShipTime(match);
 
       if (match.featuredMediaPosition > 0) this.gallery?.show(match.featuredMediaPosition - 1);
 
@@ -455,11 +455,11 @@
     }
 
     /* In stock ships in 24 hours; otherwise the product's own ship-time badge,
-       or no pill at all when it has none. */
+       or no pill at all when it has none or the picks match no variant. */
     updateShipTime(variant) {
       const pill = this.querySelector('[data-ship-time]');
       if (!pill) return;
-      const text = variant.inStock ? pill.dataset.shipFast : pill.dataset.shipDefault;
+      const text = !variant ? '' : variant.inStock ? pill.dataset.shipFast : pill.dataset.shipDefault;
       pill.textContent = text || '';
       pill.hidden = !text;
     }

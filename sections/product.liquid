@@ -44,13 +44,18 @@
     hand ships in 24 hours; anything else keeps the product's own "Ships in ..."
     badge, or shows none if it has none. product.js swaps the text as the
     variant changes, so the pill is always rendered and hidden when empty.
+    Any ship-time badge on the product ("Ships within 24 hours" included) is
+    taken out of the static pills, and a 24-hour one is dropped altogether -
+    only stock on hand may claim that, or a sold-out variant would keep it.
   endcomment
   assign ship_badge = ''
   assign other_badges = ''
   for badge in media_badges
-    assign badge_start = badge | strip | downcase | slice: 0, 8
-    if badge_start == 'ships in' and ship_badge == ''
-      assign ship_badge = badge | strip
+    assign badge_text = badge | strip | downcase
+    if badge_text contains 'ship' or badge_text contains 'dispatch'
+      unless badge_text contains '24' or ship_badge != ''
+        assign ship_badge = badge | strip
+      endunless
     else
       assign other_badges = other_badges | append: badge | append: '||'
     endif
