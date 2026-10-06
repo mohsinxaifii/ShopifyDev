@@ -370,6 +370,8 @@
       this.addEventListener('click', (event) => {
         const chip = event.target.closest('[data-wishlist-filter]');
         if (chip) return this.onFilter(chip);
+        const addAll = event.target.closest('[data-wishlist-add-all]');
+        if (addAll) return this.onAddAll(addAll);
       });
 
       /* Un-hearting a card on this page should take it out of the grid, not
@@ -495,6 +497,40 @@
 
       this.setCount(visible);
       this.show('[data-wishlist-nomatch]', items.length > 0 && visible === 0);
+      this.show('[data-wishlist-add-all]', this.addable().length > 0);
+    }
+
+    /* The Add to cart buttons of the cards on show; a sold-out card has none. */
+    addable() {
+      return Array.from(this.querySelectorAll('[data-wishlist-item]:not([hidden]) .product-card [data-add-to-cart]'));
+    }
+
+    /* As the PDP's "add the set": a piece with options (metal, size) is picked
+       in the variant drawer first, one after another, and the rest go in as
+       their only variant. Backing out of any picker cancels the add. */
+    async onAddAll(button) {
+      if (this.adding) return;
+      const cards = this.addable();
+      if (cards.length === 0) return;
+
+      this.adding = true;
+      try {
+        const lines = [];
+        for (const card of cards) {
+          const id = window.zinaraVariants
+            ? await window.zinaraVariants.pick({
+                productUrl: card.dataset.productUrl,
+                variantCount: card.dataset.variantCount,
+                variantId: card.dataset.variantId,
+              })
+            : Number(card.dataset.variantId);
+          if (!id) return;
+          lines.push({ id: Number(id), quantity: 1 });
+        }
+        await window.zinaraCart?.add(lines, button);
+      } finally {
+        this.adding = false;
+      }
     }
 
     /* Removes any card whose product has just been un-hearted. */

@@ -30,8 +30,35 @@
 
 .wishlist_wrapper_head {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.wishlist_wrapper_head_text {
+  display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* Styled as the empty state's "Start browsing" action. */
+.wishlist_wrapper_head_add {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: var(--style-border-radius-inputs, 8px);
+  background-color: var(--color-brand, #712242);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.wishlist_wrapper_head_add:disabled {
+  cursor: progress;
+  opacity: 0.7;
 }
 
 .wishlist_wrapper_head_title {
@@ -233,6 +260,11 @@
   .wishlist_wrapper_head_count {
     font-size: 14px;
     line-height: 22px;
+  }
+
+  .wishlist_wrapper_head_add {
+    padding: 10px 16px;
+    font-size: 14px;
   }
 
   .wishlist_wrapper_filters,
