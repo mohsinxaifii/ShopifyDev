@@ -136,7 +136,15 @@
       if (this.titleEl) {
         this.titleEl.textContent = isList ? this.titleEl.dataset.listTitle || this.singleTitle : this.singleTitle;
       }
-      this.content.replaceChildren();
+      // A placeholder per product (a few at most - the rest are off screen)
+      // holds the space until the pickers land.
+      const skeleton = this.querySelector('[data-drawer-skeleton]');
+      this.content.replaceChildren(
+        ...Array.from({ length: skeleton ? Math.min(productUrls.length, 3) : 0 }, () =>
+          skeleton.content.cloneNode(true),
+        ),
+      );
+      this.content.scrollTop = 0;
       this.content.setAttribute('aria-busy', 'true');
       try {
         // Fetched together, then laid out in the order given.
