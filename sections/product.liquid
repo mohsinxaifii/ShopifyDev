@@ -63,7 +63,7 @@
   assign other_badges = other_badges | split: '||'
   assign ship_fast_label = section.settings.ship_fast_label | default: 'Ships in 24 hours'
   assign ship_label = ship_badge
-  if current_variant.inventory_quantity > 0
+  if current_variant.available and current_variant.inventory_quantity > 0
     assign ship_label = ship_fast_label
   endif
   assign highlights = product.metafields.custom.pdp_highlights.value
@@ -79,18 +79,18 @@
   assign addon_previews = addon_set.previews.value
   comment
     Read the PDP-specific keys first and fall back to the shared ones. The live
-    theme reads content.product_details_list and custom.size_chart, so this
-    theme writes its own custom.pdp_* copies and never has to edit those.
+    theme reads content.product_details_list, so this theme writes its own
+    custom.pdp_* copies and never has to edit those.
   endcomment
-  assign size_chart = product.metafields.custom.pdp_size_chart.value | default: product.metafields.custom.size_chart.value
 
   comment
-    The size guide is for rings only ("Vermeil Rings"); a pendant or bracelet
-    carrying a chart from the source store shows no guide link or sheet.
+    Every ring ("Vermeil Rings") gets the one shop-wide size guide (the Ring size
+    guide metaobject, see pdp-size-guide); nothing else shows a guide link.
   endcomment
-  unless product.type contains 'Ring'
-    assign size_chart = blank
-  endunless
+  assign has_size_guide = false
+  if product.type contains 'Ring'
+    assign has_size_guide = true
+  endif
   assign detail_lists = product.metafields.custom.pdp_detail_lists.value | default: product.metafields.content.product_details_list.value
 
   assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
@@ -462,7 +462,7 @@
               assign is_size = true
             endif
             assign show_guide = false
-            if size_chart != blank
+            if has_size_guide
               if is_size
                 assign show_guide = true
               elsif has_size_option == false and forloop.last
@@ -534,7 +534,7 @@
           Only reached when the product has no options to hang the guide on, so
           the sidesheet still has a way in.
         {%- endcomment -%}
-        {%- if size_chart != blank and size_guide_inline != true -%}
+        {%- if has_size_guide and size_guide_inline != true -%}
           <div class="pdp_option pdp_option--guide-only">
             <button
               type="button"
@@ -1106,8 +1106,8 @@
   {%- if section.settings.review_endpoint != blank -%}
     {%- render 'pdp-review-sheet', product: product, endpoint: section.settings.review_endpoint -%}
   {%- endif -%}
-  {%- if size_chart != blank -%}
-    {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
+  {%- if has_size_guide -%}
+    {%- render 'pdp-size-guide', whatsapp_url: section.settings.whatsapp_url -%}
   {%- endif -%}
   {%- render 'pdp-offers-sheet', offer_handles: offer_handles -%}
   {%- render 'pdp-addons-sheet',
@@ -1138,7 +1138,7 @@
             "id": {{ variant.id }},
             "options": {{ variant.options | json }},
             "available": {{ variant.available | json }},
-            "inStock": {% if variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
+            "inStock": {% if variant.available and variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
             {%- comment -%}
               For the delivery estimate, as on the live theme: a variant ships
               quickly unless Shopify tracks its stock and it has run out - an
