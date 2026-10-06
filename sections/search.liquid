@@ -87,82 +87,10 @@
       <input type="hidden" name="type" value="product">
       <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
 
-      {%- liquid
-        comment
-          Active filters, counted as plp-mobile-bar does: "Clear all" is only
-          offered when there is something to clear.
-        endcomment
-        assign active_filter_count = 0
-        for filter in search.filters
-          if filter.type == 'price_range'
-            if filter.min_value.value != blank or filter.max_value.value != blank
-              assign active_filter_count = active_filter_count | plus: 1
-            endif
-          else
-            assign active_filter_count = active_filter_count | plus: filter.active_values.size
-          endif
-        endfor
-      -%}
-      <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
-        <div class="collection_wrapper_filters_head">
-          <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
-          {%- if active_filter_count > 0 -%}
-          <a
-            href="{{ routes.search_url }}?q={{ terms | url_encode }}&type=product&sort_by={{ sort_by }}"
-            class="collection_wrapper_filters_head_clear"
-          >
-            {{- 'collection.clear_all' | t -}}
-          </a>
-          {%- endif -%}
-          <button
-            type="button"
-            class="collection_wrapper_filters_head_close"
-            data-filters-close
-            aria-label="{{ 'accessibility.close' | t }}"
-          >
-            {{- 'icon-close.svg' | inline_asset_content -}}
-          </button>
-        </div>
-
-        <div class="collection_wrapper_filters_groups">
-          {%- for filter in search.filters -%}
-            <details class="collection_wrapper_filters_groups_group" open>
-              <summary class="collection_wrapper_filters_groups_group_head">
-                <span class="collection_wrapper_filters_groups_group_head_label">{{ filter.label }}</span>
-                <span class="collection_wrapper_filters_groups_group_head_icon" aria-hidden="true">
-                  <span data-icon-plus>{{ 'icon-faq-plus.svg' | inline_asset_content }}</span>
-                  <span data-icon-minus>{{ 'icon-faq-minus.svg' | inline_asset_content }}</span>
-                </span>
-              </summary>
-
-              <div class="collection_wrapper_filters_groups_group_body">
-                {%- case filter.type -%}
-                  {%- when 'price_range' -%}
-                    {%- render 'filter-price', filter: filter -%}
-                  {%- else -%}
-                    {%- render 'filter-list', filter: filter -%}
-                {%- endcase -%}
-              </div>
-            </details>
-          {%- else -%}
-            <p class="collection_wrapper_filters_groups_none">{{ 'collection.empty' | t }}</p>
-          {%- endfor -%}
-        </div>
-
-        <div class="collection_wrapper_filters_footer">
-          {%- if active_filter_count > 0 -%}
-          <a
-            href="{{ routes.search_url }}?q={{ terms | url_encode }}&type=product&sort_by={{ sort_by }}"
-            class="collection_wrapper_filters_footer_clear"
-          >
-            {{- 'collection.clear_all' | t -}}
-          </a>
-          {%- endif -%}
-          <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-close>
-            {{- 'collection.apply' | t -}}
-          </button>
-        </div>
-      </aside>
+      {%- capture clear_url -%}
+        {{- routes.search_url }}?q={{ terms | url_encode }}&type=product&sort_by={{ sort_by -}}
+      {%- endcapture -%}
+      {%- render 'filter-rail', filters: search.filters, clear_url: clear_url -%}
 
       <div class="collection_wrapper_main">
         <div class="collection_wrapper_main_toolbar">

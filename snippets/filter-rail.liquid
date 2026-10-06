@@ -1,0 +1,158 @@
+{%- doc -%}
+  The filter rail shared by the PLP and search, driven by Shopify's storefront
+  filters (`collection.filters` / `search.filters`).
+
+  Desktop (Figma PLP 7930:101938): a sidebar of collapsible groups, each change
+  applied at once.
+
+  Phones (Figma Mobile Filters 8190:42455): a full-screen panel - the group names
+  down a tinted column on the left, each with how many of its values are picked,
+  and the picked group's values on the right. Changes are only staged there;
+  Apply sends them, Clear all empties the panel, the close button drops them
+  (collection.js).
+
+  @param {object} filters - collection.filters or search.filters
+  @param {string} clear_url - the page with every filter removed
+  @param {string} [analytics_collection] - the collection name for filter_clear
+{%- enddoc -%}
+
+{%- liquid
+  comment
+    Active filters, counted the way plp-mobile-bar does.
+  endcomment
+  assign active_filter_count = 0
+  for filter in filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank or filter.max_value.value != blank
+        assign active_filter_count = active_filter_count | plus: 1
+      endif
+    else
+      assign active_filter_count = active_filter_count | plus: filter.active_values.size
+    endif
+  endfor
+-%}
+
+<aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
+  <div class="collection_wrapper_filters_head">
+    <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
+    {%- if active_filter_count > 0 -%}
+      <a
+        href="{{ clear_url }}"
+        class="collection_wrapper_filters_head_clear"
+        {% if analytics_collection != blank %}
+          data-analytics="filter_clear"
+          data-analytics-collection-name="{{ analytics_collection | escape }}"
+          data-analytics-filter-count="{{ active_filter_count }}"
+        {% endif %}
+      >
+        {{- 'collection.clear_all' | t -}}
+      </a>
+    {%- endif -%}
+    <button
+      type="button"
+      class="collection_wrapper_filters_head_close"
+      data-filters-close
+      aria-label="{{ 'accessibility.close' | t }}"
+    >
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </button>
+  </div>
+
+  {%- comment -%} Only a box on phones, where it lays the tabs beside the groups. {%- endcomment -%}
+  <div class="collection_wrapper_filters_body">
+    {%- if filters.size > 0 -%}
+      <div class="collection_wrapper_filters_tabs" role="tablist" aria-orientation="vertical">
+        {%- for filter in filters -%}
+          {%- liquid
+            if filter.type == 'price_range'
+              assign tab_count = 0
+              if filter.min_value.value != blank or filter.max_value.value != blank
+                assign tab_count = 1
+              endif
+            else
+              assign tab_count = filter.active_values.size
+            endif
+          -%}
+          <button
+            type="button"
+            role="tab"
+            id="FilterTab-{{ forloop.index }}"
+            class="collection_wrapper_filters_tabs_tab{% if forloop.first %} is-current{% endif %}"
+            data-filter-tab="{{ forloop.index0 }}"
+            aria-controls="FilterGroup-{{ forloop.index }}"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          >
+            <span class="collection_wrapper_filters_tabs_tab_label">{{ filter.label }}</span>
+            <span class="collection_wrapper_filters_tabs_tab_count" data-filter-tab-count>
+              {%- if tab_count > 0 %}{{ tab_count }}{% endif -%}
+            </span>
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="collection_wrapper_filters_groups">
+      {%- for filter in filters -%}
+        {%- liquid
+          comment
+            Figma draws the shipping group's values with round markers rather
+            than ticks - it reads as a choice of one speed.
+          endcomment
+          assign filter_label = filter.label | downcase
+          assign is_radio = false
+          if filter_label contains 'ship'
+            assign is_radio = true
+          endif
+        -%}
+        <details
+          id="FilterGroup-{{ forloop.index }}"
+          class="collection_wrapper_filters_groups_group{% if is_radio %} collection_wrapper_filters_groups_group--radio{% endif %}{% if forloop.first %} is-current{% endif %}"
+          data-filter-group="{{ forloop.index0 }}"
+          role="tabpanel"
+          aria-labelledby="FilterTab-{{ forloop.index }}"
+          open
+        >
+          <summary class="collection_wrapper_filters_groups_group_head">
+            <span class="collection_wrapper_filters_groups_group_head_label">{{ filter.label }}</span>
+            <span class="collection_wrapper_filters_groups_group_head_icon" aria-hidden="true">
+              <span data-icon-plus>{{ 'icon-faq-plus.svg' | inline_asset_content }}</span>
+              <span data-icon-minus>{{ 'icon-faq-minus.svg' | inline_asset_content }}</span>
+            </span>
+          </summary>
+
+          <div class="collection_wrapper_filters_groups_group_body">
+            {%- case filter.type -%}
+              {%- when 'price_range' -%}
+                {%- render 'filter-price', filter: filter -%}
+              {%- else -%}
+                {%- render 'filter-list', filter: filter -%}
+            {%- endcase -%}
+          </div>
+        </details>
+      {%- else -%}
+        <p class="collection_wrapper_filters_groups_none">
+          {{- 'collection.empty' | t -}}
+        </p>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- comment -%} Phones only: Clear all empties the panel, Apply sends it. {%- endcomment -%}
+  <div class="collection_wrapper_filters_footer">
+    <button
+      type="button"
+      class="collection_wrapper_filters_footer_clear"
+      data-filters-clear
+      {% if analytics_collection != blank and active_filter_count > 0 %}
+        data-analytics="filter_clear"
+        data-analytics-collection-name="{{ analytics_collection | escape }}"
+        data-analytics-filter-count="{{ active_filter_count }}"
+      {% endif %}
+    >
+      {{- 'collection.clear_all' | t -}}
+    </button>
+    <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-apply>
+      {{- 'collection.apply' | t -}}
+    </button>
+  </div>
+</aside>
