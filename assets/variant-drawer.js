@@ -200,6 +200,14 @@
       this.variant = variant;
       if (this.done) this.done.disabled = !variant || !variant.available;
 
+      // "Ready to ship" only while the picked variant has stock on hand; the
+      // feature badge takes its place otherwise, as on the product card.
+      const ready = Boolean(variant?.readyToShip);
+      const readyBadge = this.querySelector('[data-ready-badge]');
+      const featureBadge = this.querySelector('[data-feature-badge]');
+      if (readyBadge) readyBadge.hidden = !ready;
+      if (featureBadge) featureBadge.hidden = ready;
+
       // The product links open the page on the variant being picked here.
       const card = this.querySelector('[data-pdp-url]');
       if (card) {
