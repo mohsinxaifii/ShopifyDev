@@ -4,6 +4,9 @@
    which meant the collection page rendered its cards unstyled. */
 
 .product-card {
+  /* Keeps the stroke's z-index (below) inside the card. */
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -11,17 +14,28 @@
   scroll-snap-align: start;
   width: var(--product-card-width, 240px);
   background-color: #fff;
-
-  /* Inset outline rather than a border: Figma's stroke does not consume layout
-     space, so a border would shrink the square media to 238px. */
-  outline: 1px solid #e0e0e0;
-  outline-offset: -1px;
   border-radius: 12px;
   overflow: hidden;
   text-decoration: none;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease;
+}
+
+/* The 1px stroke, laid over the whole card rather than drawn as a border or
+   an outline. Figma's stroke takes no layout space (a border would shrink the
+   square media to 238px), and an inset outline sits under the card's own
+   positioned photo - on a white product shot the edge vanished beside the
+   image. Above everything here, it also leaves `outline` free for the keyboard
+   focus ring. */
+.product-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 1px solid #e0e0e0;
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .product-card_media {
