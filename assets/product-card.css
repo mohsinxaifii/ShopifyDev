@@ -64,6 +64,11 @@
   line-height: 1.667;
 }
 
+/* The variant drawer swaps badges with `hidden`, which display above outranks. */
+.product-card_media_top_badge[hidden] {
+  display: none;
+}
+
 .product-card_media_top_badge--feature,
 .product-card_media_top_badge--ready {
   background-color: #d38a0d;
