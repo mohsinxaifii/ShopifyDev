@@ -40,6 +40,7 @@
   endif
 -%}
 
+<!-- SGPROBE {% if guide %}metaobject{% else %}fallback{% endif %} byhandle={{ metaobjects.ring_size_guide['ring-size-guide'].title.value | default: 'none' }} count={{ metaobjects.ring_size_guide.values.size }} shop={{ shop.permanent_domain }} -->
 <dialog class="pdp-sheet" data-bottom-sheet data-sheet="size-guide" scroll-lock aria-labelledby="PdpSizeGuideTitle">
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
