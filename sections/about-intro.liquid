@@ -17,28 +17,60 @@
       </div>
 
       {%- if columns.size > 0 -%}
+        {%- comment -%}
+          Three endless strips: the first runs down, the second up, the third
+          down again. Each column's images repeat until a run holds at least
+          three tiles (so even one image fills the window), and the run is drawn
+          twice so the strip can slide by exactly one run and start over without
+          a seam. The speed follows the run's length, so every strip moves at
+          the same pace.
+        {%- endcomment -%}
         <div class="about-intro_wrapper_row_mosaic" data-animate aria-hidden="true">
           {%- for block in columns limit: 3 -%}
+            {%- liquid
+              assign image_count = 0
+              for i in (1..6)
+                assign image_key = 'image_' | append: i
+                if block.settings[image_key] != blank
+                  assign image_count = image_count | plus: 1
+                endif
+              endfor
+              assign repeats = 1
+              if image_count > 0
+                assign repeats = 3 | plus: image_count | minus: 1 | divided_by: image_count
+              endif
+              assign run_length = image_count | times: repeats
+              assign duration = run_length | times: 4
+            -%}
             <div
               class="about-intro_wrapper_row_mosaic_column about-intro_wrapper_row_mosaic_column--{{ forloop.index }}"
               {{ block.shopify_attributes }}
             >
-              {%- for i in (1..2) -%}
-                {%- if i == 1 -%}
-                  {%- assign tile = block.settings.image_1 -%}
-                {%- else -%}
-                  {%- assign tile = block.settings.image_2 -%}
-                {%- endif -%}
-                <span class="about-intro_wrapper_row_mosaic_column_tile">
-                  {%- if tile -%}
-                    {{
-                      tile
-                      | image_url: width: 400
-                      | image_tag: loading: 'lazy', widths: '200,300,400', sizes: '200px', alt: ''
-                    }}
-                  {%- endif -%}
-                </span>
-              {%- endfor -%}
+              {%- if image_count > 0 -%}
+                <div class="about-intro_wrapper_row_mosaic_column_track" style="--about-intro-duration: {{ duration }}s;">
+                  {%- for copy in (1..2) -%}
+                    {%- for repeat in (1..repeats) -%}
+                      {%- for i in (1..6) -%}
+                        {%- assign image_key = 'image_' | append: i -%}
+                        {%- assign tile = block.settings[image_key] -%}
+                        {%- if tile != blank -%}
+                          <span class="about-intro_wrapper_row_mosaic_column_tile">
+                            {{
+                              tile
+                              | image_url: width: 400
+                              | image_tag:
+                                loading: 'lazy',
+                                widths: '200,300,400',
+                                sizes: '(min-width: 750px) 200px, 33vw',
+                                alt: ''
+                            }}
+                          </span>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    {%- endfor -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
             </div>
           {%- endfor -%}
         </div>
@@ -64,11 +96,19 @@
   "blocks": [
     {
       "type": "column",
-      "name": "Mosaic column",
+      "name": "Image strip",
       "limit": 3,
       "settings": [
-        { "type": "image_picker", "id": "image_1", "label": "Top image" },
-        { "type": "image_picker", "id": "image_2", "label": "Bottom image" }
+        {
+          "type": "paragraph",
+          "content": "The first and third strips scroll down, the second up. Every image added here joins this strip, in order."
+        },
+        { "type": "image_picker", "id": "image_1", "label": "Image 1" },
+        { "type": "image_picker", "id": "image_2", "label": "Image 2" },
+        { "type": "image_picker", "id": "image_3", "label": "Image 3" },
+        { "type": "image_picker", "id": "image_4", "label": "Image 4" },
+        { "type": "image_picker", "id": "image_5", "label": "Image 5" },
+        { "type": "image_picker", "id": "image_6", "label": "Image 6" }
       ]
     }
   ],

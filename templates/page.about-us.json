@@ -31,22 +31,19 @@
         "column-1": {
           "type": "column",
           "settings": {
-            "image_1": "shopify://shop_images/zinara-about-intro-1.png",
-            "image_2": "shopify://shop_images/zinara-about-intro-sliver-a.png"
+            "image_1": "shopify://shop_images/zinara-about-intro-1.png"
           }
         },
         "column-2": {
           "type": "column",
           "settings": {
-            "image_1": "shopify://shop_images/zinara-about-intro-sliver-b.jpg",
-            "image_2": "shopify://shop_images/zinara-about-intro-4.png"
+            "image_1": "shopify://shop_images/zinara-about-intro-4.png"
           }
         },
         "column-3": {
           "type": "column",
           "settings": {
-            "image_1": "shopify://shop_images/zinara-about-intro-5.png",
-            "image_2": "shopify://shop_images/zinara-about-intro-sliver-c.png"
+            "image_1": "shopify://shop_images/zinara-about-intro-5.png"
           }
         }
       },
