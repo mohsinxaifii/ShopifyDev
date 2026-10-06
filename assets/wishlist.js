@@ -505,9 +505,9 @@
       return Array.from(this.querySelectorAll('[data-wishlist-item]:not([hidden]) .product-card [data-add-to-cart]'));
     }
 
-    /* As the PDP's "add the set": a piece with options (metal, size) is picked
-       in the variant drawer first, one after another, and the rest go in as
-       their only variant. Backing out of any picker cancels the add. */
+    /* Every card on show goes into one variant drawer, its pickers stacked in
+       a scrolling column; Done hands back a variant for each and they are
+       added in one request. Closing the drawer adds nothing. */
     async onAddAll(button) {
       if (this.adding) return;
       const cards = this.addable();
@@ -515,17 +515,13 @@
 
       this.adding = true;
       try {
-        const lines = [];
-        for (const card of cards) {
-          const id = window.zinaraVariants
-            ? await window.zinaraVariants.pick({
-                productUrl: card.dataset.productUrl,
-                variantCount: card.dataset.variantCount,
-                variantId: card.dataset.variantId,
-              })
-            : Number(card.dataset.variantId);
-          if (!id) return;
-          lines.push({ id: Number(id), quantity: 1 });
+        let lines;
+        if (window.zinaraVariants?.chooseAll) {
+          const chosen = await window.zinaraVariants.chooseAll(cards.map((card) => card.dataset.productUrl));
+          if (!chosen || chosen.length === 0) return;
+          lines = chosen.map((variant) => ({ id: Number(variant.id), quantity: 1 }));
+        } else {
+          lines = cards.map((card) => ({ id: Number(card.dataset.variantId), quantity: 1 }));
         }
         await window.zinaraCart?.add(lines, button);
       } finally {

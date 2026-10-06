@@ -539,3 +539,56 @@
     font-size: 16px;
   }
 }
+
+/* ------------------------------------------------------------------- list
+   The wishlist's "Add all" (variant-drawer.js chooseAll): every product's
+   picker in one scrolling column, each a compact row - thumbnail beside price
+   and title - over its options, with a rule between products. After the phone
+   block so the row geometry holds on both. */
+.variant-drawer.is-list .variant-drawer_panel_content {
+  scroll-snap-type: y proximity;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body {
+  padding-block: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  scroll-snap-align: start;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body:first-child {
+  padding-top: 0;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body:last-child {
+  border-bottom: 0;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body_card {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body_card_media {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  aspect-ratio: auto;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body_card_info {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 12px 0 0;
+}
+
+.variant-drawer.is-list judgeme-rating {
+  display: none;
+}
+
+.variant-drawer.is-list .product-card_media_top_badge {
+  padding: 2px 6px;
+  font-weight: 500;
+  font-size: 8px;
+  line-height: 16px;
+}
