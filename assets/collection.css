@@ -26,6 +26,24 @@
   min-width: 0;
 }
 
+/* Desktop: the rail stays in view beside the grid, 24px under the sticky
+   header block (--header-sticky-offset, header.js) and following it as it
+   slides away and back. A rail taller than the screen scrolls on its own, its
+   bar in the 17px the 249px groups leave in the 266px column. */
+@media screen and (min-width: 750px) {
+  .collection_wrapper_filters {
+    position: sticky;
+    top: calc(24px + var(--header-sticky-offset, 0px));
+    max-height: calc(100vh - 48px - var(--header-sticky-offset, 0px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    transition:
+      top var(--motion-base, 0.3s) var(--motion-ease, ease),
+      max-height var(--motion-base, 0.3s) var(--motion-ease, ease);
+  }
+}
+
 .collection_wrapper_filters_head {
   display: flex;
   align-items: center;
