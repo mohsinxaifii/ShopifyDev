@@ -578,12 +578,16 @@
   align-items: center;
   gap: 4px;
   height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
   font-family: var(--font-secondary--family);
   font-weight: 500;
   font-size: 14px;
   line-height: 1.429;
   color: var(--color-text-secondary, #494949);
   text-decoration: none;
+  cursor: pointer;
 }
 
 .collection_wrapper_main_more_button_spinner {
@@ -1167,11 +1171,5 @@ collection-page:defined .plp-skeleton {
     align-self: stretch;
     width: 1px;
     background-color: #e0e0e0;
-  }
-}
-
-@keyframes collection-spin {
-  to {
-    transform: rotate(360deg);
   }
 }

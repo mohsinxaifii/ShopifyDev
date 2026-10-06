@@ -144,12 +144,21 @@
 
         {%- if paginate.next -%}
           <div class="collection_wrapper_main_more" data-more>
-            <a href="{{ paginate.next.url }}" class="collection_wrapper_main_more_button" data-more-link>
+            {%- comment -%}
+              A button, not a link: the next page's cards are added under these
+              (collection.js), and the shopper never leaves the page.
+            {%- endcomment -%}
+            <button
+              type="button"
+              class="collection_wrapper_main_more_button"
+              data-more-link
+              data-more-url="{{ paginate.next.url }}"
+            >
               <span data-more-label>{{ 'collection.load_more' | t }}</span>
               <span class="collection_wrapper_main_more_button_spinner" aria-hidden="true">
                 {{- 'icon-spinner.svg' | inline_asset_content -}}
               </span>
-            </a>
+            </button>
           </div>
         {%- endif -%}
       {%- endpaginate -%}
