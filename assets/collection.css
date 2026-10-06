@@ -588,6 +588,12 @@
   color: var(--color-text-secondary, #494949);
   text-decoration: none;
   cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* A text control, so it answers hover with colour, not a button's shadow. */
+.collection_wrapper_main_more_button:hover {
+  color: var(--color-brand, #712242);
 }
 
 .collection_wrapper_main_more_button_spinner {
