@@ -444,30 +444,35 @@ class CollectionPage extends HTMLElement {
 
   /* ------------------------------------------------------------- load more */
 
+  /* Appends the next page's cards to this grid. The page and its address stay
+     as they are - a refresh starts over from the first page, never on a lone
+     page 2 - and a failed request leaves the button there to try again. */
   async loadMore(link) {
     const wrap = link.closest('[data-more]');
-    wrap?.classList.add('is-loading');
+    if (!wrap || wrap.classList.contains('is-loading')) return;
+    const url = link.dataset.moreUrl || link.getAttribute('href');
+    wrap.classList.add('is-loading');
+    link.setAttribute('aria-busy', 'true');
     try {
-      const response = await fetch(link.href);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${response.status}`);
       const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
       const cards = doc.querySelectorAll('[data-grid] > *');
       cards.forEach((card) => this.grid.appendChild(card));
       window.zinaraTrack?.('plp_load_more', {
         collection_name: this.dataset.analyticsCollection,
-        page_number: Number(new URL(link.href, window.location.href).searchParams.get('page')) || undefined,
+        page_number: Number(new URL(url, window.location.href).searchParams.get('page')) || undefined,
         items_loaded: cards.length,
       });
 
       const nextMore = doc.querySelector('[data-more]');
       if (nextMore) wrap.replaceWith(nextMore);
       else wrap.remove();
-
-      window.history.replaceState({}, '', link.href);
     } catch (error) {
       console.error('[collection] could not load more', error);
-      window.location.href = link.href;
     } finally {
-      wrap?.classList.remove('is-loading');
+      wrap.classList.remove('is-loading');
+      link.removeAttribute('aria-busy');
     }
   }
 

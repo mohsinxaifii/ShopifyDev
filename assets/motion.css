@@ -133,14 +133,12 @@ summary:active {
 /* ------------------------------------------------------------- buttons */
 
 .pdp_button:hover,
-.collection_wrapper_main_more_button:hover,
 .search_empty_form_submit:hover,
 .variant-drawer_panel_footer_done:hover {
   box-shadow: 0 8px 20px rgba(113, 34, 66, 0.22);
 }
 
 .pdp_button:active,
-.collection_wrapper_main_more_button:active,
 .search_empty_form_submit:active {
   transform: translateY(0) scale(0.985);
   box-shadow: none;
