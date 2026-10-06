@@ -81,11 +81,6 @@
   animation-name: about-intro-strip-up;
 }
 
-/* Hovering the strips holds them still for a closer look. */
-.about-intro_wrapper_row_mosaic:hover .about-intro_wrapper_row_mosaic_column_track {
-  animation-play-state: paused;
-}
-
 @keyframes about-intro-strip-down {
   from {
     transform: translateY(-50%);
