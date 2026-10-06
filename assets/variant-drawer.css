@@ -341,7 +341,9 @@
 }
 
 /* --------------------------------------------------------------- skeleton
-   The same geometry as the card and options above, in skeleton.css tiles. */
+   The same geometry as the card and options above, in skeleton.css tiles.
+   Scoped under the wrapper because skeleton.css loads after this file and
+   its tiles default to full width. */
 .variant-drawer_skeleton {
   display: flex;
   flex-direction: column;
@@ -357,7 +359,7 @@
   border-radius: 12px;
 }
 
-.variant-drawer_skeleton_card_media {
+.variant-drawer_skeleton .variant-drawer_skeleton_card_media {
   height: 310px;
   border-radius: 0;
 }
@@ -369,19 +371,19 @@
   padding: 0 8px 8px;
 }
 
-.variant-drawer_skeleton_line {
+.variant-drawer_skeleton .variant-drawer_skeleton_line {
   height: 18px;
 }
 
-.variant-drawer_skeleton_line--price {
+.variant-drawer_skeleton .variant-drawer_skeleton_line--price {
   width: 40%;
 }
 
-.variant-drawer_skeleton_line--title {
+.variant-drawer_skeleton .variant-drawer_skeleton_line--title {
   width: 70%;
 }
 
-.variant-drawer_skeleton_line--label {
+.variant-drawer_skeleton .variant-drawer_skeleton_line--label {
   width: 30%;
   height: 22px;
 }
@@ -392,7 +394,7 @@
   gap: 12px;
 }
 
-.variant-drawer_skeleton_value {
+.variant-drawer_skeleton .variant-drawer_skeleton_value {
   width: 40px;
   height: 40px;
 }
@@ -658,12 +660,12 @@
     gap: 8px;
   }
 
-  .variant-drawer_skeleton_card_media {
+  .variant-drawer_skeleton .variant-drawer_skeleton_card_media {
     height: auto;
     aspect-ratio: 1 / 1;
   }
 
-  .variant-drawer_skeleton_value {
+  .variant-drawer_skeleton .variant-drawer_skeleton_value {
     width: 34px;
     height: 34px;
   }
