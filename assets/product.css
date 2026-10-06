@@ -2408,11 +2408,6 @@ button.pdp_trust_grid_item_inner {
   object-fit: cover;
 }
 
-/* Figma's crop of its placeholder photo: the pendant, low in the frame. */
-.pdp-sheet_panel_body_guide-image--placeholder {
-  object-position: 50% 95%;
-}
-
 .pdp-table.pdp-table--size-guide :is(th, td) {
   padding-block: 8px;
   line-height: 22px;

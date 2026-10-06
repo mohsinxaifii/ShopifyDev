@@ -80,16 +80,6 @@
               alt: measure_heading,
               class: 'pdp-sheet_panel_body_guide-image'
           }}
-        {%- else -%}
-          {%- comment -%} Only reached without a product photo or a chosen image. {%- endcomment -%}
-          <img
-            src="{{ 'size-guide-measure.jpg' | asset_url }}"
-            alt="{{ measure_heading | escape }}"
-            width="1000"
-            height="1000"
-            loading="lazy"
-            class="pdp-sheet_panel_body_guide-image pdp-sheet_panel_body_guide-image--placeholder"
-          >
         {%- endif -%}
       </div>
 
