@@ -29,10 +29,17 @@
       </div>
 
       {%- comment -%}
-        Not in the design. Adds every card on show (so a category filter narrows
-        it too) that is not sold out; wishlist.js hides it when there are none.
+        Not in the design, so it wears the product card's Add to cart. Adds every
+        card on show (so a category filter narrows it too) that is not sold out;
+        wishlist.js hides it when there are none.
       {%- endcomment -%}
       <button type="button" class="wishlist_wrapper_head_add" data-wishlist-add-all hidden>
+        <span class="wishlist_wrapper_head_add_icon wishlist_wrapper_head_add_icon--bag" aria-hidden="true">
+          {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+        </span>
+        <span class="wishlist_wrapper_head_add_icon wishlist_wrapper_head_add_icon--check" aria-hidden="true">
+          {{- 'icon-check.svg' | inline_asset_content -}}
+        </span>
         <span data-add-label>{{ 'wishlist.add_all' | t }}</span>
       </button>
     </div>
