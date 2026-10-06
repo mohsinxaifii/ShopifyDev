@@ -6,17 +6,21 @@
  * from the response. That keeps Shopify's storefront filtering as the source of
  * truth (counts, disabled values, the sort list) instead of reimplementing it,
  * and it keeps the URL shareable.
+ *
+ * On phones the rail is a full-screen panel (Figma Mobile Filters 8190:42455)
+ * where changes are only staged: nothing is fetched until Apply, the close
+ * button puts back what was there when it opened, and Clear all empties it.
  */
 class CollectionPage extends HTMLElement {
   connectedCallback() {
     this.form = this.querySelector('[data-filter-form]');
     if (!this.form) return;
 
-    this.grid = this.querySelector('[data-grid]');
     this.sortInput = this.querySelector('[data-sort-input]');
 
     this.form.addEventListener('change', (event) => {
       if (event.target.closest('[data-price-filter]')) return; // price commits on release
+      if (this.isStaging()) return this.syncTabCounts();
       this.submit();
     });
 
@@ -24,12 +28,17 @@ class CollectionPage extends HTMLElement {
       // Phones: the Sort | Filters bar and the two sheets it opens.
       if (event.target.closest('[data-mobile-sort]')) return this.toggleSort();
       if (event.target.closest('[data-mobile-filters]')) return this.setFiltersOpen(true);
-      if (event.target.closest('[data-filters-close]')) return this.setFiltersOpen(false);
+      if (event.target.closest('[data-filters-close]')) return this.discardFilters();
+      if (event.target.closest('[data-filters-apply]')) return this.applyFilters();
+      if (event.target.closest('[data-filters-clear]')) return this.clearFilters();
       if (event.target.closest('[data-sort-close]')) return this.closeSort();
       if (event.target.closest('[data-sheet-scrim]')) {
-        this.setFiltersOpen(false);
+        this.discardFilters();
         return this.closeSort();
       }
+
+      const tab = event.target.closest('[data-filter-tab]');
+      if (tab) return this.selectTab(Number(tab.dataset.filterTab));
 
       const preset = event.target.closest('[data-price-preset]');
       if (preset) return this.applyPreset(preset);
@@ -54,6 +63,11 @@ class CollectionPage extends HTMLElement {
 
     // Restore the grid when the shopper walks back through filter states.
     window.addEventListener('popstate', () => this.render(window.location.href, false));
+  }
+
+  /* Looked up each time: every filter request swaps in a new grid. */
+  get grid() {
+    return this.querySelector('[data-grid]');
   }
 
   disconnectedCallback() {
@@ -119,7 +133,7 @@ class CollectionPage extends HTMLElement {
      unrevealed [data-animate] element at zero opacity. */
   setFiltersOpen(open) {
     const rail = this.querySelector('[data-filters]');
-    if (rail?.classList.contains('is-closing')) return;
+    if (rail?.classList.contains('is-closing')) return Promise.resolve();
 
     if (open) {
       window.zinaraTrack?.('filter_open', {
@@ -129,17 +143,105 @@ class CollectionPage extends HTMLElement {
       this.setAttribute('data-filters-open', '');
       document.body.style.overflow = 'hidden';
       this.revealFilters();
-      return;
+      // What the close button puts back.
+      this.staged = this.railInputs().map((input) => [input, input.checked, input.value]);
+      return Promise.resolve();
     }
 
-    if (!this.hasAttribute('data-filters-open')) return;
-    const finish = () => {
-      this.liftSheet(this.querySelector('[data-filters]'), false);
-      this.removeAttribute('data-filters-open');
-      document.body.style.overflow = '';
-    };
-    if (rail) this.dismissSheet(rail, finish);
-    else finish();
+    if (!this.hasAttribute('data-filters-open')) return Promise.resolve();
+    return new Promise((resolve) => {
+      const finish = () => {
+        this.liftSheet(this.querySelector('[data-filters]'), false);
+        this.removeAttribute('data-filters-open');
+        document.body.style.overflow = '';
+        resolve();
+      };
+      if (rail) this.dismissSheet(rail, finish);
+      else finish();
+    });
+  }
+
+  /* The panel only stages changes while it is open on a phone. */
+  isStaging() {
+    return this.hasAttribute('data-filters-open');
+  }
+
+  railInputs() {
+    return Array.from(this.querySelectorAll('[data-filters] input'));
+  }
+
+  /* Closed without applying: the panel goes back to what is on the page. */
+  discardFilters() {
+    if (!this.isStaging()) return;
+    (this.staged || []).forEach(([input, checked, value]) => {
+      input.checked = checked;
+      input.value = value;
+    });
+    this.syncPrice();
+    this.syncTabCounts();
+    this.setFiltersOpen(false);
+  }
+
+  /* Closes first, so the new rail lands on a closed panel instead of lifting
+     it back over the page, then fetches only if something changed. */
+  async applyFilters() {
+    const changed = (this.staged || []).some(
+      ([input, checked, value]) => input.checked !== checked || input.value !== value,
+    );
+    await this.setFiltersOpen(false);
+    if (changed) this.submit();
+  }
+
+  /* Empties the panel; nothing is sent until Apply. */
+  clearFilters() {
+    this.railInputs().forEach((input) => {
+      if (input.type === 'checkbox') input.checked = false;
+    });
+    const scope = this.querySelector('[data-price-filter]');
+    if (scope) {
+      scope.querySelector('[data-price-min]').value = 0;
+      scope.querySelector('[data-price-max]').value = scope.dataset.rangeMax;
+      scope.querySelector('[data-price-min-input]').value = '';
+      scope.querySelector('[data-price-max-input]').value = '';
+    }
+    this.syncPrice();
+    this.syncTabCounts();
+    if (!this.isStaging()) this.submit();
+  }
+
+  /* Phones: one group at a time, picked from the tabs down the left. */
+  selectTab(index) {
+    const tabs = Array.from(this.querySelectorAll('[data-filter-tab]'));
+    if (tabs.length === 0) return;
+    this.currentTab = Math.min(Math.max(index, 0), tabs.length - 1);
+    tabs.forEach((tab, i) => {
+      tab.classList.toggle('is-current', i === this.currentTab);
+      tab.setAttribute('aria-selected', String(i === this.currentTab));
+    });
+    this.querySelectorAll('[data-filter-group]').forEach((group, i) => {
+      group.classList.toggle('is-current', i === this.currentTab);
+      // A group folded on desktop would show an empty panel.
+      if (i === this.currentTab) group.open = true;
+    });
+    this.querySelector('.collection_wrapper_filters_groups')?.scrollTo?.(0, 0);
+  }
+
+  /* The number beside each tab: its ticked values, or 1 for a set price. */
+  syncTabCounts() {
+    const groups = Array.from(this.querySelectorAll('[data-filter-group]'));
+    this.querySelectorAll('[data-filter-tab-count]').forEach((count, i) => {
+      const group = groups[i];
+      if (!group) return;
+      let n = group.querySelectorAll('input[type="checkbox"]:checked').length;
+      const price = group.querySelector('[data-price-filter]');
+      if (price) {
+        n =
+          price.querySelector('[data-price-min-input]').value || price.querySelector('[data-price-max-input]').value
+            ? 1
+            : 0;
+      }
+      count.textContent = n > 0 ? String(n) : '';
+    });
   }
 
   revealFilters() {
@@ -233,8 +335,8 @@ class CollectionPage extends HTMLElement {
     };
 
     const commit = () => {
-      scope.querySelector('[data-price-min-input]').value = min.value;
-      scope.querySelector('[data-price-max-input]').value = max.value;
+      this.writePrice(scope, min.value, max.value);
+      if (this.isStaging()) return this.syncPrice();
       this.submit();
     };
 
@@ -242,7 +344,30 @@ class CollectionPage extends HTMLElement {
       input.addEventListener('input', paint);
       input.addEventListener('change', commit);
     });
+    this.paintPrice = paint;
     paint();
+  }
+
+  /* The submitted bounds. The full range means no price filter at all, so it
+     posts nothing rather than a filter that matches everything. */
+  writePrice(scope, low, high) {
+    const full = Number(low) <= 0 && Number(high) >= Number(scope.dataset.rangeMax);
+    scope.querySelector('[data-price-min-input]').value = full ? '' : low;
+    scope.querySelector('[data-price-max-input]').value = full ? '' : high;
+  }
+
+  /* Redraws the slider and marks the preset matching the current bounds. */
+  syncPrice() {
+    const scope = this.querySelector('[data-price-filter]');
+    if (!scope) return;
+    this.paintPrice?.();
+    const low = scope.querySelector('[data-price-min]').value;
+    const high = scope.querySelector('[data-price-max]').value;
+    const set = scope.querySelector('[data-price-min-input]').value || scope.querySelector('[data-price-max-input]').value;
+    scope.querySelectorAll('[data-price-preset]').forEach((preset) => {
+      preset.classList.toggle('is-active', Boolean(set) && preset.dataset.min === low && preset.dataset.max === high);
+    });
+    this.syncTabCounts();
   }
 
   applyPreset(preset) {
@@ -252,8 +377,8 @@ class CollectionPage extends HTMLElement {
     const max = scope.querySelector('[data-price-max]');
     min.value = preset.dataset.min;
     max.value = preset.dataset.max;
-    scope.querySelector('[data-price-min-input]').value = preset.dataset.min;
-    scope.querySelector('[data-price-max-input]').value = preset.dataset.max;
+    this.writePrice(scope, preset.dataset.min, preset.dataset.max);
+    if (this.isStaging()) return this.syncPrice();
     this.submit();
   }
 
@@ -291,6 +416,8 @@ class CollectionPage extends HTMLElement {
         else if (!next && current) current.remove();
       });
       if (this.hasAttribute('data-filters-open')) this.revealFilters();
+      // The fresh rail opens on its first tab; stay on the one in use.
+      this.selectTab(this.currentTab || 0);
 
       const count = fresh.querySelector('.collection_wrapper_main_toolbar_count');
       const currentCount = this.querySelector('.collection_wrapper_main_toolbar_count');
@@ -310,6 +437,8 @@ class CollectionPage extends HTMLElement {
 
   setBusy(busy) {
     if (this.grid) this.grid.setAttribute('aria-busy', String(busy));
+    // Phones dim the page under a spinner while results load (collection.css).
+    this.toggleAttribute('data-busy', busy);
     this.querySelector('[data-more]')?.classList.toggle('is-loading', busy);
   }
 
