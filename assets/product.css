@@ -2409,25 +2409,25 @@ button.pdp_trust_grid_item_inner {
   object-position: 50% 95%;
 }
 
-.pdp-table--size-guide :is(th, td) {
+.pdp-table.pdp-table--size-guide :is(th, td) {
   padding-block: 8px;
   line-height: 22px;
   text-transform: none;
 }
 
-.pdp-table--size-guide thead th {
+.pdp-table.pdp-table--size-guide thead th {
   padding-top: 0;
 }
 
-.pdp-table--size-guide tbody tr:last-child td {
+.pdp-table.pdp-table--size-guide tbody tr:last-child td {
   padding-bottom: 0;
 }
 
-.pdp-table--size-guide :is(th, td):first-child {
+.pdp-table.pdp-table--size-guide :is(th, td):first-child {
   width: 94px;
 }
 
-.pdp-table--size-guide :is(th, td):last-child {
+.pdp-table.pdp-table--size-guide :is(th, td):last-child {
   width: 96px;
 }
 
