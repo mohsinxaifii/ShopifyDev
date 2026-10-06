@@ -17,7 +17,12 @@
     aria-labelledby="VariantDrawerTitle"
   >
     <div class="variant-drawer_panel_head">
-      <h2 class="variant-drawer_panel_head_title" id="VariantDrawerTitle">
+      <h2
+        class="variant-drawer_panel_head_title"
+        id="VariantDrawerTitle"
+        data-drawer-title
+        data-list-title="{{ 'products.select_variants' | t | escape }}"
+      >
         {{- 'products.select_variant' | t -}}
       </h2>
       <button

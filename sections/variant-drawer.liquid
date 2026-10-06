@@ -99,6 +99,7 @@
 
   <div class="variant-drawer_panel_body_options">
     {%- for option in product.options_with_values -%}
+      {%- if product.has_only_default_variant -%}{%- break -%}{%- endif -%}
       {%- liquid
         assign is_swatch_option = false
         if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
