@@ -24,12 +24,16 @@
   if product.compare_at_price > product.price
     assign is_price_drop = true
   endif
-  for card_variant_item in product.variants
-    if card_variant_item.inventory_quantity > 0
-      assign is_ready_to_ship = true
-      break
-    endif
-  endfor
+
+  comment
+    "Ready to ship" speaks for the variant the card opens on, not any variant:
+    a product whose only stock is in another size would otherwise promise a
+    page that lands on a made-to-order or sold-out variant.
+  endcomment
+  assign card_default_variant = product.selected_or_first_available_variant
+  if card_default_variant.available and card_default_variant.inventory_quantity > 0
+    assign is_ready_to_ship = true
+  endif
 
   assign card_image_alt = product.featured_image.alt | default: product.title
 

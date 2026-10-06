@@ -7,6 +7,9 @@
  * - open(url, trigger)  - pick, then Done adds the variant to the cart
  * - choose(url)         - pick, then Done resolves with the variant (no add);
  *                         used where several items are added together
+ * - chooseAll(urls)      - every product's picker stacked in one scrolling
+ *                         column; Done resolves with a variant for each (the
+ *                         wishlist's "Add all to cart")
  * - window.zinaraVariants.pick(...) wraps choose() and skips the picker for
  *   products that only have one variant.
  *
@@ -36,6 +39,9 @@
         }
       });
 
+      this.titleEl = this.querySelector('[data-drawer-title]');
+      this.singleTitle = this.titleEl?.textContent.trim() || '';
+
       this.addEventListener('change', (event) => {
         if (!event.target.closest('[data-option-input]')) return;
         this.syncSelection();
@@ -56,7 +62,7 @@
 
     async open(productUrl, trigger) {
       this.mode = 'add';
-      return this.show(productUrl, trigger);
+      return this.show([productUrl], trigger);
     }
 
     /* Resolves with the chosen variant ({ id, title, ... }) or null if closed. */
@@ -65,7 +71,18 @@
       this.mode = 'choose';
       return new Promise((resolve) => {
         this.resolveChoice = resolve;
-        this.show(productUrl, null);
+        this.show([productUrl], null);
+      });
+    }
+
+    /* Resolves with one chosen variant per product that loaded, in the order
+       given, or null if closed. */
+    chooseAll(productUrls) {
+      this.settleChoice(null);
+      this.mode = 'choose-all';
+      return new Promise((resolve) => {
+        this.resolveChoice = resolve;
+        this.show(productUrls, null);
       });
     }
 
@@ -101,30 +118,67 @@
       else if (!host && this.parentElement !== this.homeParent) this.homeParent.append(this);
     }
 
-    async show(productUrl, trigger) {
+    async show(productUrls, trigger) {
       clearTimeout(this.closeTimer);
       this.hostInOpenDialog();
       this.trigger = trigger;
       this.opener = document.activeElement;
       this.hidden = false;
       this.setTopLayer(true);
-      // Restored on close rather than cleared: over a sheet, the page under it
-      // must stay locked.
-      this.previousOverflow = document.documentElement.style.overflow;
-      document.documentElement.style.overflow = 'hidden';
+      // The theme's scroll lock (critical.css), which also keeps the sticky
+      // header stuck. Over a sheet, that sheet's own lock still holds on close.
+      document.documentElement.classList.add('is-scroll-locked');
       // Let the element paint hidden-to-shown before the transition starts.
       requestAnimationFrame(() => this.classList.add('is-open'));
 
+      const isList = this.mode === 'choose-all';
+      this.classList.toggle('is-list', isList);
+      if (this.titleEl) {
+        this.titleEl.textContent = isList ? this.titleEl.dataset.listTitle || this.singleTitle : this.singleTitle;
+      }
+      // A placeholder per product (a few at most - the rest are off screen)
+      // holds the space until the pickers land.
+      const skeleton = this.querySelector('[data-drawer-skeleton]');
+      this.content.replaceChildren(
+        ...Array.from({ length: skeleton ? Math.min(productUrls.length, 3) : 0 }, () =>
+          skeleton.content.cloneNode(true),
+        ),
+      );
+      this.content.scrollTop = 0;
       this.content.setAttribute('aria-busy', 'true');
       try {
-        const url = `${productUrl}${productUrl.includes('?') ? '&' : '?'}section_id=variant-drawer`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`${response.status}`);
-        const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
-        const body = doc.querySelector('[data-drawer-body]');
-        if (!body) throw new Error('no drawer body in response');
+        // Fetched together, then laid out in the order given.
+        const bodies = await Promise.all(
+          productUrls.map(async (productUrl) => {
+            try {
+              const url = `${productUrl}${productUrl.includes('?') ? '&' : '?'}section_id=variant-drawer`;
+              const response = await fetch(url);
+              if (!response.ok) throw new Error(`${response.status}`);
+              const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+              return doc.querySelector('[data-drawer-body]');
+            } catch (error) {
+              console.error('[variant-drawer] could not load product', productUrl, error);
+              return null;
+            }
+          }),
+        );
+        const loaded = bodies.filter(Boolean);
+        // In the list one missing product is left out; a single picker has
+        // nothing left to show.
+        if (loaded.length === 0 || (!isList && loaded.length !== productUrls.length)) {
+          throw new Error('no drawer body in response');
+        }
 
-        this.content.replaceChildren(body);
+        // Every picker's radios share names ("option-1"), and radios group by
+        // name across the whole document, so each body gets its own.
+        loaded.forEach((body, index) => {
+          body.querySelectorAll('[data-option-input]').forEach((input) => {
+            input.name = `${input.name}-${index}`;
+          });
+        });
+
+        this.content.replaceChildren(...loaded);
+        this.content.scrollTop = 0;
         this.readVariantData();
         this.syncSelection();
         window.zinaraTrack?.('variant_sheet_open', {
@@ -133,10 +187,9 @@
         });
         this.panel.querySelector('[data-option-input]')?.focus();
       } catch (error) {
-        console.error('[variant-drawer] could not load product', error);
         this.close();
         // Picking was the point, so fall back to the product page to pick there.
-        window.location.href = productUrl;
+        if (!isList) window.location.href = productUrls[0];
       } finally {
         this.content.removeAttribute('aria-busy');
       }
@@ -145,7 +198,7 @@
     close() {
       this.settleChoice(null);
       this.classList.remove('is-open');
-      document.documentElement.style.overflow = this.previousOverflow || '';
+      document.documentElement.classList.remove('is-scroll-locked');
       const finish = () => {
         this.setTopLayer(false);
         this.hidden = true;
@@ -164,44 +217,72 @@
 
     /* --------------------------------------------------------- selection */
 
-    readVariantData() {
-      const node = this.querySelector('[data-variant-data]');
-      try {
-        this.data = JSON.parse(node?.textContent || '{}');
-      } catch {
-        this.data = { variants: [] };
-      }
+    bodies() {
+      return Array.from(this.content.querySelectorAll('[data-drawer-body]'));
     }
 
-    selectedOptions() {
-      return Array.from(this.querySelectorAll('[data-option-group]')).map((group) => {
+    readVariantData() {
+      this.bodies().forEach((body) => {
+        try {
+          body.variantData = JSON.parse(body.querySelector('[data-variant-data]')?.textContent || '{}');
+        } catch {
+          body.variantData = { variants: [] };
+        }
+      });
+    }
+
+    selectedOptions(body) {
+      return Array.from(body.querySelectorAll('[data-option-group]')).map((group) => {
         const checked = group.querySelector('[data-option-input]:checked');
         return checked ? checked.value : null;
       });
     }
 
-    matchingVariant() {
-      const chosen = this.selectedOptions();
+    matchingVariant(body) {
+      const variants = body.variantData?.variants || [];
+      // A product with only its default variant shows no options to pick.
+      if (!body.querySelector('[data-option-group]')) return variants[0] || null;
+      const chosen = this.selectedOptions(body);
       if (chosen.some((value) => value === null)) return null;
-      return (this.data?.variants || []).find((variant) =>
+      return variants.find((variant) =>
         variant.options.every((option, index) => option === chosen[index]),
       );
     }
 
     syncSelection() {
+      const bodies = this.bodies();
+      bodies.forEach((body) => this.syncBody(body));
+
+      // The single picker's product; the list reports its first.
+      this.data = bodies[0]?.variantData;
+      this.variant = bodies[0]?.variant;
+      // The list adds everything at once, so every product needs a buyable pick.
+      if (this.done) {
+        this.done.disabled = bodies.length === 0 || bodies.some((body) => !body.variant?.available);
+      }
+    }
+
+    syncBody(body) {
       // Keep the "Color: Gold" readout in step with the chosen swatch.
-      this.querySelectorAll('[data-option-group]').forEach((group) => {
+      body.querySelectorAll('[data-option-group]').forEach((group) => {
         const readout = group.querySelector('[data-option-readout]');
         const checked = group.querySelector('[data-option-input]:checked');
         if (readout && checked) readout.textContent = checked.value;
       });
 
-      const variant = this.matchingVariant();
-      this.variant = variant;
-      if (this.done) this.done.disabled = !variant || !variant.available;
+      const variant = this.matchingVariant(body);
+      body.variant = variant;
+
+      // "Ready to ship" only while the picked variant has stock on hand; the
+      // feature badge takes its place otherwise, as on the product card.
+      const ready = Boolean(variant?.readyToShip);
+      const readyBadge = body.querySelector('[data-ready-badge]');
+      const featureBadge = body.querySelector('[data-feature-badge]');
+      if (readyBadge) readyBadge.hidden = !ready;
+      if (featureBadge) featureBadge.hidden = ready;
 
       // The product links open the page on the variant being picked here.
-      const card = this.querySelector('[data-pdp-url]');
+      const card = body.querySelector('[data-pdp-url]');
       if (card) {
         const href = variant ? `${card.dataset.pdpUrl}?variant=${variant.id}` : card.dataset.pdpUrl;
         card.querySelectorAll('[data-pdp-link]').forEach((link) => link.setAttribute('href', href));
@@ -216,32 +297,45 @@
       const marked = this.trigger?.closest?.('[data-analytics-location]')?.dataset.analyticsLocation;
       if (marked) return marked;
       if (this.mode === 'choose') return 'pdp_set';
+      if (this.mode === 'choose-all') return 'wishlist_add_all';
       const page = window.zinaraAnalyticsConfig?.pageType;
       return { collection: 'plp_variant_sheet', search: 'search_variant_sheet' }[page] || `${page || 'page'}_variant_sheet`;
     }
 
     trackVariantSelect(input) {
+      const body = input.closest('[data-drawer-body]');
       const group = input.closest('[data-option-group]');
+      if (!body) return;
       // Is anything available with this value, given the other options picked?
-      const index = Array.from(this.querySelectorAll('[data-option-group]')).indexOf(group);
-      const chosen = this.selectedOptions();
-      const available = (this.data?.variants || []).some(
+      const index = Array.from(body.querySelectorAll('[data-option-group]')).indexOf(group);
+      const chosen = this.selectedOptions(body);
+      const available = (body.variantData?.variants || []).some(
         (variant) =>
           variant.available &&
           variant.options.every((option, i) => (i === index ? option === input.value : chosen[i] === null || option === chosen[i])),
       );
       window.zinaraTrack?.('variant_select', {
-        product_id: this.data?.productId,
+        product_id: body.variantData?.productId,
         variant_type: group?.dataset.optionName,
         variant_value: input.value,
         variant_availability: available ? 'available' : 'sold_out',
-        click_location: 'plp_variant_sheet',
+        click_location: this.mode === 'choose-all' ? 'wishlist_add_all' : 'plp_variant_sheet',
       });
     }
 
     /* ----------------------------------------------------------- confirm */
 
     async confirm() {
+      if (this.mode === 'choose-all') {
+        const bodies = this.bodies();
+        if (bodies.length === 0 || bodies.some((body) => !body.variant?.available)) return;
+        this.settleChoice(
+          bodies.map((body) => ({ ...body.variant, productTitle: body.variantData?.productTitle })),
+        );
+        this.close();
+        return;
+      }
+
       if (!this.variant) return;
 
       if (this.mode === 'choose') {
@@ -282,6 +376,9 @@
     },
     choose(productUrl) {
       return drawer()?.choose(productUrl) ?? Promise.resolve(null);
+    },
+    chooseAll(productUrls) {
+      return drawer()?.chooseAll(productUrls) ?? Promise.resolve(null);
     },
   };
 

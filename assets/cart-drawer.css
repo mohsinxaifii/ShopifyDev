@@ -343,7 +343,8 @@
 [data-add-single].is-loading,
 [data-buy-now].is-loading,
 [data-pair-add].is-loading,
-[data-diff-add].is-loading {
+[data-diff-add].is-loading,
+[data-wishlist-add-all].is-loading {
   position: relative;
   cursor: progress;
 }
@@ -353,7 +354,8 @@
     [data-add-single],
     [data-buy-now],
     [data-pair-add],
-    [data-diff-add]
+    [data-diff-add],
+    [data-wishlist-add-all]
   ).is-loading::after {
   content: '';
   width: 14px;
@@ -379,7 +381,7 @@
   color: #fff;
 }
 
-:is([data-add-to-cart], [data-add-single], [data-pair-add]).is-failed {
+:is([data-add-to-cart], [data-add-single], [data-pair-add], [data-wishlist-add-all]).is-failed {
   border-color: #b3261e;
   color: #b3261e;
 }

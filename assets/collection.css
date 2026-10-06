@@ -26,6 +26,63 @@
   min-width: 0;
 }
 
+/* Desktop: the rail stays in view beside the grid, 24px under the sticky
+   header block (--header-sticky-offset, header.js) and following it as it
+   slides away and back. A rail taller than the screen scrolls on its own, its
+   bar in the 17px the 249px groups leave in the 266px column. */
+@media screen and (min-width: 750px) {
+  .collection_wrapper_filters {
+    position: sticky;
+    top: calc(24px + var(--header-sticky-offset, 0px));
+    max-height: calc(100vh - 48px - var(--header-sticky-offset, 0px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transition:
+      top var(--motion-base, 0.3s) var(--motion-ease, ease),
+      max-height var(--motion-base, 0.3s) var(--motion-ease, ease);
+  }
+
+  /* Its scrollbar: a 4px brand pill on no track, faint until the rail is
+     hovered and firmest while dragged. The 1px transparent border inside the
+     6px bar keeps the pill off the edge. */
+  .collection_wrapper_filters::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .collection_wrapper_filters::-webkit-scrollbar-track {
+    margin-block: 4px;
+    background: transparent;
+  }
+
+  .collection_wrapper_filters::-webkit-scrollbar-thumb {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background-color: rgba(113, 34, 66, 0.18);
+    background-clip: padding-box;
+  }
+
+  .collection_wrapper_filters:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(113, 34, 66, 0.45);
+  }
+
+  .collection_wrapper_filters::-webkit-scrollbar-thumb:active {
+    background-color: rgba(113, 34, 66, 0.7);
+  }
+
+  /* Firefox has only the standard pair. Kept from Chromium, where setting them
+     switches off the ::-webkit-scrollbar styling above. */
+  @supports not selector(::-webkit-scrollbar) {
+    .collection_wrapper_filters {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(113, 34, 66, 0.3) transparent;
+    }
+
+    .collection_wrapper_filters:hover {
+      scrollbar-color: rgba(113, 34, 66, 0.55) transparent;
+    }
+  }
+}
+
 .collection_wrapper_filters_head {
   display: flex;
   align-items: center;
@@ -50,6 +107,11 @@
   line-height: 1.429;
   color: var(--color-accent, #f0166e);
   text-decoration: underline;
+}
+
+/* Only a box on phones, where it sets the tabs beside the groups. */
+.collection_wrapper_filters_body {
+  display: contents;
 }
 
 /* Figma draws the rail 249 wide inside the 266 column. */
@@ -210,7 +272,7 @@
   color: var(--color-text-secondary, #494949);
 }
 
-.filter-list_item_label.is-active .filter-list_item_label_text {
+.filter-list_item_label:has(.filter-list_item_label_input:checked) .filter-list_item_label_text {
   font-weight: 600;
   color: #000;
 }
@@ -659,6 +721,7 @@ collection-page:defined .plp-skeleton {
 .plp-mobile-bar,
 .plp-sheet-scrim,
 .collection_wrapper_filters_head_close,
+.collection_wrapper_filters_tabs,
 .collection_wrapper_filters_footer,
 .collection_wrapper_main_toolbar_sort_menu_head {
   display: none;
@@ -673,19 +736,35 @@ collection-page:defined .plp-skeleton {
     display: none;
   }
 
+  /* Figma Mobile Filters 8190:42455: a full-screen panel rather than a sheet -
+     the head, then the group tabs beside the picked group's values, then
+     Clear all | Apply. */
   collection-page[data-filters-open] .collection_wrapper_filters {
     position: fixed;
-    inset: 56px 0 0;
+    inset: 0;
     z-index: 101;
     display: flex;
     flex-direction: column;
-    border-radius: 12px 12px 0 0;
+    gap: 8px;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
     background-color: #fff;
     overflow: hidden;
   }
 
   .collection_wrapper_filters_head {
-    padding: 16px var(--page-margin);
+    min-height: 0;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .collection_wrapper_filters_head_title {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: normal;
   }
 
   .collection_wrapper_filters_head_clear {
@@ -710,17 +789,173 @@ collection-page:defined .plp-skeleton {
     height: 100%;
   }
 
+  .collection_wrapper_filters_body {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 12px;
+    min-height: 0;
+  }
+
+  /* The group names: a 162px tinted column, the picked one white with a pink
+     edge and its name set bold. */
+  .collection_wrapper_filters_tabs {
+    display: flex;
+    flex: 0 0 162px;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #f7f3f5;
+    overscroll-behavior: contain;
+  }
+
+  .collection_wrapper_filters_tabs_tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 0;
+    border-bottom: 1px solid #e0e0e0;
+    background: none;
+    font-family: var(--font-secondary--family);
+    text-align: left;
+    color: var(--color-text-secondary, #494949);
+    cursor: pointer;
+  }
+
+  .collection_wrapper_filters_tabs_tab.is-current {
+    background-color: #fff;
+    box-shadow: inset -1px 0 0 #f0166e;
+    color: #000;
+  }
+
+  .collection_wrapper_filters_tabs_tab_label {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .collection_wrapper_filters_tabs_tab.is-current .collection_wrapper_filters_tabs_tab_label {
+    font-weight: 600;
+  }
+
+  .collection_wrapper_filters_tabs_tab_count {
+    flex: 0 0 auto;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+    color: #000;
+  }
+
   .collection_wrapper_filters_groups {
     flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    padding-right: 4px;
     overflow-y: auto;
-    padding-inline: var(--page-margin);
+    overscroll-behavior: contain;
+  }
+
+  /* One group at a time; its name is already on the tab. */
+  .collection_wrapper_filters_groups_group {
+    display: none;
+    border: 0;
+  }
+
+  .collection_wrapper_filters_groups_group.is-current {
+    display: block;
+  }
+
+  .collection_wrapper_filters_groups_group_head {
+    display: none;
+  }
+
+  .collection_wrapper_filters_groups_group_body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Values: full-width rows on a rule, a thin tick that turns pink. */
+  .filter-list_item_label {
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .filter-list_item_label_box {
+    width: 20px;
+    height: 20px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: #c4c4c4;
+  }
+
+  .filter-list_item_label_box svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .filter-list_item_label_box path {
+    fill: currentcolor;
+  }
+
+  .filter-list_item_label_input:checked + .filter-list_item_label_box {
+    background: none;
+    color: #f0166e;
+  }
+
+  .filter-list_item_label_text {
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  /* Shipping: a round marker, filled brand once picked. */
+  .collection_wrapper_filters_groups_group--radio .filter-list_item_label_box {
+    width: 24px;
+    height: 24px;
+    border: 1.5px solid #c4c4c4;
+    border-radius: 999px;
+  }
+
+  .collection_wrapper_filters_groups_group--radio .filter-list_item_label_box svg {
+    display: none;
+  }
+
+  .collection_wrapper_filters_groups_group--radio
+    .filter-list_item_label_input:checked
+    + .filter-list_item_label_box {
+    border-color: var(--color-brand, #712242);
+    background-color: var(--color-brand, #712242);
+    box-shadow: inset 0 0 0 4px #fff;
+  }
+
+  /* Price: the readout and slider in an 8px band, the brackets 24px below. */
+  .filter-price {
+    gap: 10px;
+    padding-top: 8px;
+  }
+
+  .filter-price_caption,
+  .filter-price_value {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .filter-price_presets {
+    margin-top: 14px;
+  }
+
+  .filter-price_presets_preset {
+    padding: 12px;
   }
 
   .collection_wrapper_filters_footer {
     display: flex;
     gap: 12px;
-    padding: 12px var(--page-margin) 20px;
-    border-top: 1px solid #f2f2f2;
+    padding: 12px 16px 20px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
   }
 
   .collection_wrapper_filters_footer_clear,
@@ -763,16 +998,50 @@ collection-page:defined .plp-skeleton {
     display: block;
   }
 
-  /* Both sheets slide up the moment they are displayed. collection.js adds
-     .is-closing to play the drop before it actually hides them. */
-  collection-page[data-filters-open] .collection_wrapper_filters,
+  /* The sort sheet slides up the moment it is displayed; the full-screen
+     filter panel fades. collection.js adds .is-closing to play the way out
+     before it actually hides them. */
   .collection_wrapper_main_toolbar_sort_menu:not([hidden]) {
     animation: motion-sheet-up var(--motion-sheet-in) var(--motion-sheet-ease);
   }
 
-  collection-page[data-filters-open] .collection_wrapper_filters.is-closing,
   .collection_wrapper_main_toolbar_sort_menu.is-closing {
     animation: motion-sheet-down var(--motion-sheet-out) var(--motion-sheet-ease-out) forwards;
+  }
+
+  collection-page[data-filters-open] .collection_wrapper_filters {
+    animation: motion-fade var(--motion-base) var(--motion-ease);
+  }
+
+  collection-page[data-filters-open] .collection_wrapper_filters.is-closing {
+    animation: motion-fade-out var(--motion-base) var(--motion-ease) forwards;
+  }
+
+  /* Figma 8106:63868: after Apply the page dims under a spinner until the
+     results land. */
+  collection-page[data-busy]::before,
+  collection-page[data-busy]::after {
+    content: '';
+    position: fixed;
+    z-index: 100;
+  }
+
+  collection-page[data-busy]::before {
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: motion-fade var(--motion-base) ease;
+  }
+
+  collection-page[data-busy]::after {
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 999px;
+    animation: collection-spin 0.7s linear infinite;
   }
 
   collection-page:has(.collection_wrapper_filters.is-closing, [data-sort-menu].is-closing) .plp-sheet-scrim {
@@ -898,5 +1167,11 @@ collection-page:defined .plp-skeleton {
     align-self: stretch;
     width: 1px;
     background-color: #e0e0e0;
+  }
+}
+
+@keyframes collection-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

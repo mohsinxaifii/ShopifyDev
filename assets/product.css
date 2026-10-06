@@ -2396,6 +2396,40 @@ button.pdp_trust_grid_item_inner {
   border-radius: 8px;
 }
 
+/* Ring size guide (Figma 8106:60328): the ring's photo in a 193px band, then
+   the chart - 12px muted cells on 22px lines, an 8px band either side of each
+   rule, headings set as written (only RING SIZE is in capitals), the outer
+   columns 94px and 96px with the middle taking the rest. */
+.pdp-sheet_panel_body_guide-image {
+  display: block;
+  width: 100%;
+  height: 193px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.pdp-table.pdp-table--size-guide :is(th, td) {
+  padding-block: 8px;
+  line-height: 22px;
+  text-transform: none;
+}
+
+.pdp-table.pdp-table--size-guide thead th {
+  padding-top: 0;
+}
+
+.pdp-table.pdp-table--size-guide tbody tr:last-child td {
+  padding-bottom: 0;
+}
+
+.pdp-table.pdp-table--size-guide :is(th, td):first-child {
+  width: 94px;
+}
+
+.pdp-table.pdp-table--size-guide :is(th, td):last-child {
+  width: 96px;
+}
+
 .pdp-sheet_panel_body_cta {
   align-self: flex-start;
 }

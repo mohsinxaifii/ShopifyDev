@@ -23,8 +23,25 @@
 <wishlist-page class="wishlist full-width" data-root-url="{{ routes.root_url }}">
   <div class="wishlist_wrapper">
     <div class="wishlist_wrapper_head">
-      <h1 class="wishlist_wrapper_head_title">{{ section.settings.heading }}</h1>
-      <p class="wishlist_wrapper_head_count" data-wishlist-count hidden></p>
+      <div class="wishlist_wrapper_head_text">
+        <h1 class="wishlist_wrapper_head_title">{{ section.settings.heading }}</h1>
+        <p class="wishlist_wrapper_head_count" data-wishlist-count hidden></p>
+      </div>
+
+      {%- comment -%}
+        Not in the design, so it wears the product card's Add to cart. Adds every
+        card on show (so a category filter narrows it too) that is not sold out;
+        wishlist.js hides it when there are none.
+      {%- endcomment -%}
+      <button type="button" class="wishlist_wrapper_head_add" data-wishlist-add-all hidden>
+        <span class="wishlist_wrapper_head_add_icon wishlist_wrapper_head_add_icon--bag" aria-hidden="true">
+          {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+        </span>
+        <span class="wishlist_wrapper_head_add_icon wishlist_wrapper_head_add_icon--check" aria-hidden="true">
+          {{- 'icon-check.svg' | inline_asset_content -}}
+        </span>
+        <span data-add-label>{{ 'wishlist.add_all' | t }}</span>
+      </button>
     </div>
 
     {%- if section.blocks.size > 0 -%}

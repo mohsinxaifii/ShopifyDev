@@ -88,6 +88,7 @@
     "sold_out": "Sold out",
     "size_guide": "Size guide",
     "select_variant": "Select variant",
+    "select_variants": "Select variants",
     "done": "Done",
     "price_drop": "Price drop",
     "open_image": "Open image {{ index }} full screen",
@@ -128,6 +129,7 @@
     "empty_title": "Nothing saved yet",
     "empty_body": "Tap the heart on any piece and it will wait for you here.",
     "empty_action": "Start browsing",
+    "add_all": "Add all to cart",
     "all": "All",
     "remove": "Remove from wishlist"
   },

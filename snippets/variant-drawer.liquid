@@ -17,7 +17,12 @@
     aria-labelledby="VariantDrawerTitle"
   >
     <div class="variant-drawer_panel_head">
-      <h2 class="variant-drawer_panel_head_title" id="VariantDrawerTitle">
+      <h2
+        class="variant-drawer_panel_head_title"
+        id="VariantDrawerTitle"
+        data-drawer-title
+        data-list-title="{{ 'products.select_variants' | t | escape }}"
+      >
         {{- 'products.select_variant' | t -}}
       </h2>
       <button
@@ -31,6 +36,35 @@
     </div>
 
     <div class="variant-drawer_panel_content" data-drawer-content></div>
+
+    {%- comment -%}
+      Shown in the content while a product is fetched, laid out like the card
+      and options that replace it, so nothing jumps when they land. The tiles
+      come from skeleton.css.
+    {%- endcomment -%}
+    <template data-drawer-skeleton>
+      <div class="variant-drawer_skeleton" aria-hidden="true">
+        <div class="variant-drawer_skeleton_card">
+          <span class="skeleton_tile variant-drawer_skeleton_card_media"></span>
+          <div class="variant-drawer_skeleton_card_info">
+            <span class="skeleton_tile variant-drawer_skeleton_line variant-drawer_skeleton_line--price"></span>
+            <span class="skeleton_tile variant-drawer_skeleton_line variant-drawer_skeleton_line--title"></span>
+          </div>
+        </div>
+        <span class="skeleton_tile variant-drawer_skeleton_line variant-drawer_skeleton_line--label"></span>
+        <div class="variant-drawer_skeleton_values">
+          {%- for value in (1..3) -%}
+            <span class="skeleton_tile skeleton_tile--round variant-drawer_skeleton_value"></span>
+          {%- endfor -%}
+        </div>
+        <span class="skeleton_tile variant-drawer_skeleton_line variant-drawer_skeleton_line--label"></span>
+        <div class="variant-drawer_skeleton_values">
+          {%- for value in (1..6) -%}
+            <span class="skeleton_tile skeleton_tile--round variant-drawer_skeleton_value"></span>
+          {%- endfor -%}
+        </div>
+      </div>
+    </template>
 
     <div class="variant-drawer_panel_footer">
       <button type="button" class="variant-drawer_panel_footer_done" data-drawer-done disabled>

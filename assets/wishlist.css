@@ -30,8 +30,61 @@
 
 .wishlist_wrapper_head {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.wishlist_wrapper_head_text {
+  display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* The grid product card's Add to cart (product-card.css), bag and tick
+   included; its loading spinner comes from cart-drawer.css. */
+.wishlist_wrapper_head_add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-brand, #712242);
+  border-radius: 8px;
+  background-color: var(--color-brand, #712242);
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.wishlist_wrapper_head_add:hover {
+  background-color: #5a1b34;
+}
+
+.wishlist_wrapper_head_add_icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.wishlist_wrapper_head_add_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.wishlist_wrapper_head_add_icon--check,
+.wishlist_wrapper_head_add.is-added .wishlist_wrapper_head_add_icon--bag {
+  display: none;
+}
+
+.wishlist_wrapper_head_add.is-added .wishlist_wrapper_head_add_icon--check {
+  display: flex;
 }
 
 .wishlist_wrapper_head_title {
@@ -233,6 +286,17 @@
   .wishlist_wrapper_head_count {
     font-size: 14px;
     line-height: 22px;
+  }
+
+  .wishlist_wrapper_head_add {
+    gap: 6px;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .wishlist_wrapper_head_add_icon {
+    width: 16px;
+    height: 16px;
   }
 
   .wishlist_wrapper_filters,

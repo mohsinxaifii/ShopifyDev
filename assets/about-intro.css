@@ -1,7 +1,7 @@
-/* Figma: About us 7930:95474 > Frame 1116601747 (7930:95516).
-   Copy on the left, and on the right three 200px columns whose 410px stacks are
-   clipped to a 230px window - the middle one anchored to the bottom, so the
-   tiles read as a staggered mosaic. */
+/* Figma: About us 8106:41188. Copy on the left, and on the right three 200px
+   columns showing a 230px window onto endless strips of tiles - the first and
+   third running down, the middle one up - so the neighbouring tiles always
+   peek in at the edges. */
 .about-intro {
   display: block;
   width: 100%;
@@ -61,33 +61,58 @@
 }
 
 .about-intro_wrapper_row_mosaic_column {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   flex: 0 0 auto;
   width: 200px;
   height: 230px;
   overflow: hidden;
 }
 
-/* Outer columns hang from the top, the middle one from the bottom. The 12px
-   inset is what leaves the following tile peeking rather than flush. */
-.about-intro_wrapper_row_mosaic_column--1,
-.about-intro_wrapper_row_mosaic_column--3 {
-  justify-content: flex-start;
-  padding-bottom: 12px;
+/* The track holds the run of tiles twice; sliding it by half (one run) lands
+   on an identical frame, so the loop never shows a seam. Tiles space with a
+   bottom margin rather than a gap so both halves measure exactly the same. */
+.about-intro_wrapper_row_mosaic_column_track {
+  display: flex;
+  flex-direction: column;
+  animation: about-intro-strip-down var(--about-intro-duration, 12s) linear infinite;
+  will-change: transform;
 }
 
-.about-intro_wrapper_row_mosaic_column--2 {
-  justify-content: flex-end;
-  padding-top: 12px;
+.about-intro_wrapper_row_mosaic_column--2 .about-intro_wrapper_row_mosaic_column_track {
+  animation-name: about-intro-strip-up;
+}
+
+@keyframes about-intro-strip-down {
+  from {
+    transform: translateY(-50%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes about-intro-strip-up {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-intro_wrapper_row_mosaic_column_track {
+    animation: none;
+  }
 }
 
 .about-intro_wrapper_row_mosaic_column_tile {
   display: block;
-  flex: 0 0 200px;
-  width: 200px;
-  height: 200px;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-bottom: 10px;
   border-radius: 8px;
   overflow: hidden;
   background-color: #f2f2f2;
@@ -117,9 +142,8 @@
   }
 }
 
-/* Figma Mobile 7930:120033: the copy stacks over one row of three square tiles on
-   an 8px gap - each column's full tile, with no stagger. The columns dissolve so
-   the tiles can share that row; the third column's tile leads, as drawn. */
+/* Figma Mobile 8106:65667: the copy stacks over one row of three square
+   windows on an 8px gap, the third column's strip leading, as drawn. */
 @media screen and (max-width: 749px) {
   .about-intro_wrapper {
     padding-block: 24px;
@@ -148,31 +172,23 @@
   }
 
   .about-intro_wrapper_row_mosaic_column {
-    display: contents;
-  }
-
-  .about-intro_wrapper_row_mosaic_column_tile {
     flex: 1 1 0;
     width: auto;
     height: auto;
     min-width: 0;
     aspect-ratio: 1;
+    border-radius: 8px;
   }
 
-  .about-intro_wrapper_row_mosaic_column--1
-    .about-intro_wrapper_row_mosaic_column_tile:nth-child(2),
-  .about-intro_wrapper_row_mosaic_column--2
-    .about-intro_wrapper_row_mosaic_column_tile:nth-child(1),
-  .about-intro_wrapper_row_mosaic_column--3
-    .about-intro_wrapper_row_mosaic_column_tile:nth-child(2) {
-    display: none;
+  .about-intro_wrapper_row_mosaic_column_tile {
+    margin-bottom: 8px;
   }
 
-  .about-intro_wrapper_row_mosaic_column--3 .about-intro_wrapper_row_mosaic_column_tile {
+  .about-intro_wrapper_row_mosaic_column--3 {
     order: -1;
   }
 
-  .about-intro_wrapper_row_mosaic_column--1 .about-intro_wrapper_row_mosaic_column_tile {
+  .about-intro_wrapper_row_mosaic_column--1 {
     order: 1;
   }
 }

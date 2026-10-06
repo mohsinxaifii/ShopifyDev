@@ -32,93 +32,12 @@
     {%- comment -%} Keep the chosen sort with the filter params on submit. {%- endcomment -%}
     <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
 
-    {%- liquid
-      comment
-        Active filters, counted the way plp-mobile-bar does - for filter_clear.
-      endcomment
-      assign analytics_filter_count = 0
-      for filter in collection.filters
-        if filter.type == 'price_range'
-          if filter.min_value.value != blank or filter.max_value.value != blank
-            assign analytics_filter_count = analytics_filter_count | plus: 1
-          endif
-        else
-          assign analytics_filter_count = analytics_filter_count | plus: filter.active_values.size
-        endif
-      endfor
+    {%- capture clear_url -%}{{ collection.url }}?sort_by={{ sort_by }}{%- endcapture -%}
+    {%- render 'filter-rail',
+      filters: collection.filters,
+      clear_url: clear_url,
+      analytics_collection: collection.title
     -%}
-    <aside class="collection_wrapper_filters" data-filters data-animate data-animate-from="left">
-      <div class="collection_wrapper_filters_head">
-        <h2 class="collection_wrapper_filters_head_title">{{ 'collection.filters' | t }}</h2>
-        {%- if analytics_filter_count > 0 -%}
-        <a
-          href="{{ collection.url }}?sort_by={{ sort_by }}"
-          class="collection_wrapper_filters_head_clear"
-          data-analytics="filter_clear"
-          data-analytics-collection-name="{{ collection.title | escape }}"
-          data-analytics-filter-count="{{ analytics_filter_count }}"
-        >
-          {{- 'collection.clear_all' | t -}}
-        </a>
-        {%- endif -%}
-        <button
-          type="button"
-          class="collection_wrapper_filters_head_close"
-          data-filters-close
-          aria-label="{{ 'accessibility.close' | t }}"
-        >
-          {{- 'icon-close.svg' | inline_asset_content -}}
-        </button>
-      </div>
-
-      <div class="collection_wrapper_filters_groups">
-        {%- for filter in collection.filters -%}
-          <details class="collection_wrapper_filters_groups_group" open>
-            <summary class="collection_wrapper_filters_groups_group_head">
-              <span class="collection_wrapper_filters_groups_group_head_label">{{ filter.label }}</span>
-              <span class="collection_wrapper_filters_groups_group_head_icon" aria-hidden="true">
-                <span data-icon-plus>{{ 'icon-faq-plus.svg' | inline_asset_content }}</span>
-                <span data-icon-minus>{{ 'icon-faq-minus.svg' | inline_asset_content }}</span>
-              </span>
-            </summary>
-
-            <div class="collection_wrapper_filters_groups_group_body">
-              {%- case filter.type -%}
-                {%- when 'price_range' -%}
-                  {%- render 'filter-price', filter: filter -%}
-                {%- else -%}
-                  {%- render 'filter-list', filter: filter -%}
-              {%- endcase -%}
-            </div>
-          </details>
-        {%- else -%}
-          <p class="collection_wrapper_filters_groups_none">
-            {{- 'collection.empty' | t -}}
-          </p>
-        {%- endfor -%}
-      </div>
-
-      {%- comment -%}
-        Phones only (Figma Mobile Filters 7930:118227): the rail opens as a sheet
-        whose footer clears everything or closes it - filters already apply live.
-      {%- endcomment -%}
-      <div class="collection_wrapper_filters_footer">
-        {%- if analytics_filter_count > 0 -%}
-        <a
-          href="{{ collection.url }}?sort_by={{ sort_by }}"
-          class="collection_wrapper_filters_footer_clear"
-          data-analytics="filter_clear"
-          data-analytics-collection-name="{{ collection.title | escape }}"
-          data-analytics-filter-count="{{ analytics_filter_count }}"
-        >
-          {{- 'collection.clear_all' | t -}}
-        </a>
-        {%- endif -%}
-        <button type="button" class="collection_wrapper_filters_footer_apply" data-filters-close>
-          {{- 'collection.apply' | t -}}
-        </button>
-      </div>
-    </aside>
 
     <div class="collection_wrapper_main">
       {%- comment -%} The design shows no title; this one is for search engines and screen readers. {%- endcomment -%}

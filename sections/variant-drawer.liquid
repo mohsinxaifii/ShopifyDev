@@ -19,14 +19,15 @@
   endunless
 
   assign feature_badge = product.metafields.content['product-features-badges'].first
-  assign is_ready_to_ship = false
-  for drawer_variant in product.variants
-    if drawer_variant.inventory_quantity > 0
-      assign is_ready_to_ship = true
-      break
-    endif
-  endfor
   assign current = product.selected_or_first_available_variant
+  comment
+    "Ready to ship" follows the picked variant (variant-drawer.js swaps it), so
+    it starts from the one the drawer opens on, as the product card does.
+  endcomment
+  assign is_ready_to_ship = false
+  if current.available and current.inventory_quantity > 0
+    assign is_ready_to_ship = true
+  endif
 -%}
 
 <div class="variant-drawer_panel_body" data-drawer-body>
@@ -52,10 +53,25 @@
       {%- endif -%}
 
       <span class="variant-drawer_panel_body_card_media_top">
-        {%- if is_ready_to_ship -%}
-          <span class="product-card_media_top_badge product-card_media_top_badge--ready">Ready to ship</span>
-        {%- elsif feature_badge != blank -%}
-          <span class="product-card_media_top_badge product-card_media_top_badge--feature">{{ feature_badge }}</span>
+        <span
+          class="product-card_media_top_badge product-card_media_top_badge--ready"
+          data-ready-badge
+          {% unless is_ready_to_ship %}
+            hidden
+          {% endunless %}
+        >
+          Ready to ship
+        </span>
+        {%- if feature_badge != blank -%}
+          <span
+            class="product-card_media_top_badge product-card_media_top_badge--feature"
+            data-feature-badge
+            {% if is_ready_to_ship %}
+              hidden
+            {% endif %}
+          >
+            {{- feature_badge -}}
+          </span>
         {%- endif -%}
       </span>
 
@@ -83,6 +99,7 @@
 
   <div class="variant-drawer_panel_body_options">
     {%- for option in product.options_with_values -%}
+      {%- if product.has_only_default_variant -%}{%- break -%}{%- endif -%}
       {%- liquid
         assign is_swatch_option = false
         if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
@@ -171,7 +188,8 @@
             "id": {{ variant.id }},
             "title": {{ variant.title | json }},
             "options": {{ variant.options | json }},
-            "available": {{ variant.available | json }}
+            "available": {{ variant.available | json }},
+            "readyToShip": {% if variant.available and variant.inventory_quantity > 0 %}true{% else %}false{% endif %}
           }{% unless forloop.last %},{% endunless %}
         {%- endfor -%}
       ],

@@ -6,6 +6,12 @@
   margin: 0;
 }
 
+/* No blue flash over whatever a phone taps - every control here draws its own
+   pressed, selected or focus state. Inherited, so it covers the whole page. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -13,8 +19,19 @@ body {
   min-height: 100svh;
 }
 
-html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]),
+html.is-scroll-locked {
   overflow: hidden;
+}
+
+/* An app writes `overflow: auto` inline on <body>. Harmless while <html> scrolls
+   - body's overflow passes to the window - but once <html> is locked it stops
+   passing, body becomes a scroll container of its own, and the sticky header
+   sticks to that instead of the screen: on phones it jumped back to the top of
+   the page under every sheet. */
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) body,
+html.is-scroll-locked body {
+  overflow: visible !important;
 }
 
 img,

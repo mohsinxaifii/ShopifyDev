@@ -340,6 +340,65 @@
   background: var(--variant-swatch, #ddd) center / cover no-repeat;
 }
 
+/* --------------------------------------------------------------- skeleton
+   The same geometry as the card and options above, in skeleton.css tiles.
+   Scoped under the wrapper because skeleton.css loads after this file and
+   its tiles default to full width. */
+.variant-drawer_skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.variant-drawer_skeleton_card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+}
+
+.variant-drawer_skeleton .variant-drawer_skeleton_card_media {
+  height: 310px;
+  border-radius: 0;
+}
+
+.variant-drawer_skeleton_card_info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px 8px;
+}
+
+.variant-drawer_skeleton .variant-drawer_skeleton_line {
+  height: 18px;
+}
+
+.variant-drawer_skeleton .variant-drawer_skeleton_line--price {
+  width: 40%;
+}
+
+.variant-drawer_skeleton .variant-drawer_skeleton_line--title {
+  width: 70%;
+}
+
+.variant-drawer_skeleton .variant-drawer_skeleton_line--label {
+  width: 30%;
+  height: 22px;
+}
+
+.variant-drawer_skeleton_values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.variant-drawer_skeleton .variant-drawer_skeleton_value {
+  width: 40px;
+  height: 40px;
+}
+
 /* ----------------------------------------------------------------- footer */
 
 .variant-drawer_panel_footer {
@@ -403,7 +462,10 @@
     top: auto;
     left: 0;
     width: 100%;
-    max-height: min(768px, calc(100% - 16px));
+    /* Full height from the moment it opens, not sized to its content: the
+       skeleton, the pickers and their photos then fill a sheet that never
+       grows or shrinks under the shopper's thumb. */
+    height: calc(100% - 16px);
     border-radius: 24px 24px 0 0;
     overflow: hidden;
     transform: translateY(100%);
@@ -538,4 +600,100 @@
     height: 44px;
     font-size: 16px;
   }
+}
+
+/* ------------------------------------------------------------------- list
+   The wishlist's "Add all" (variant-drawer.js chooseAll): every product's
+   picker in one scrolling column, each a compact row - thumbnail beside price
+   and title - over its options, with a rule between products. After the phone
+   block so the row geometry holds on both. */
+.variant-drawer.is-list .variant-drawer_panel_content {
+  scroll-snap-type: y proximity;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body {
+  padding-block: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  scroll-snap-align: start;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body:first-child {
+  padding-top: 0;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body:last-child {
+  border-bottom: 0;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body_card {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body_card_media {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  aspect-ratio: auto;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body_card_info {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 12px 0 0;
+}
+
+.variant-drawer.is-list judgeme-rating {
+  display: none;
+}
+
+.variant-drawer.is-list .product-card_media_top_badge {
+  padding: 2px 6px;
+  font-weight: 500;
+  font-size: 8px;
+  line-height: 16px;
+}
+
+@media screen and (max-width: 749px) {
+  .variant-drawer_skeleton_card {
+    gap: 8px;
+  }
+
+  .variant-drawer_skeleton .variant-drawer_skeleton_card_media {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .variant-drawer_skeleton .variant-drawer_skeleton_value {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* The list's placeholders are compact rows too, with a rule between them. */
+.variant-drawer.is-list .variant-drawer_skeleton {
+  padding-block: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.variant-drawer.is-list .variant-drawer_skeleton:first-child {
+  padding-top: 0;
+}
+
+.variant-drawer.is-list .variant-drawer_skeleton_card {
+  flex-direction: row;
+  align-items: center;
+}
+
+.variant-drawer.is-list .variant-drawer_skeleton_card_media {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  aspect-ratio: auto;
+}
+
+.variant-drawer.is-list .variant-drawer_skeleton_card_info {
+  flex: 1 1 auto;
+  padding: 0 12px 0 0;
 }
