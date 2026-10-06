@@ -767,7 +767,7 @@ collection-page:defined .plp-skeleton {
 
   .collection_wrapper_filters_tabs_tab.is-current {
     background-color: #fff;
-    box-shadow: inset -1px 0 0 var(--color-accent, #f0166e);
+    box-shadow: inset -1px 0 0 #f0166e;
     color: #000;
   }
 
@@ -846,7 +846,7 @@ collection-page:defined .plp-skeleton {
 
   .filter-list_item_label_input:checked + .filter-list_item_label_box {
     background: none;
-    color: var(--color-accent, #f0166e);
+    color: #f0166e;
   }
 
   .filter-list_item_label_text {
