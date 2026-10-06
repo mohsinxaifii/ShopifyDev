@@ -34,20 +34,24 @@
   padding: 16px 20px;
 }
 
+/* A fixed height, not just a cap: with only max-height the image's 100%
+   height had nothing to resolve against, so a square SVG mark fell back to a
+   17px box while the wide SGL logo filled 30px. Both now take the row height,
+   the logo narrowing within its 66px if it has to. */
 .usp-strip_wrapper_pill_item_icon {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+  height: 36px;
   max-width: 66px;
-  max-height: 36px;
 }
 
 .usp-strip_wrapper_pill_item_icon img {
   display: block;
   width: auto;
+  max-width: 100%;
   height: 100%;
-  max-height: 36px;
   object-fit: contain;
 }
 
@@ -94,9 +98,8 @@
     box-sizing: border-box;
   }
 
-  .usp-strip_wrapper_pill_item_icon,
-  .usp-strip_wrapper_pill_item_icon img {
-    max-height: 24px;
+  .usp-strip_wrapper_pill_item_icon {
+    height: 24px;
   }
 
   .usp-strip_wrapper_pill_item_text {
