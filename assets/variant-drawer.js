@@ -125,10 +125,9 @@
       this.opener = document.activeElement;
       this.hidden = false;
       this.setTopLayer(true);
-      // Restored on close rather than cleared: over a sheet, the page under it
-      // must stay locked.
-      this.previousOverflow = document.documentElement.style.overflow;
-      document.documentElement.style.overflow = 'hidden';
+      // The theme's scroll lock (critical.css), which also keeps the sticky
+      // header stuck. Over a sheet, that sheet's own lock still holds on close.
+      document.documentElement.classList.add('is-scroll-locked');
       // Let the element paint hidden-to-shown before the transition starts.
       requestAnimationFrame(() => this.classList.add('is-open'));
 
@@ -191,7 +190,7 @@
     close() {
       this.settleChoice(null);
       this.classList.remove('is-open');
-      document.documentElement.style.overflow = this.previousOverflow || '';
+      document.documentElement.classList.remove('is-scroll-locked');
       const finish = () => {
         this.setTopLayer(false);
         this.hidden = true;
