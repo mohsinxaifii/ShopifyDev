@@ -3,8 +3,8 @@
   Figma Mobile 8106:60328 (Size guide bottomsheet).
 
   One guide for every ring, kept in the shop's "Ring size guide" metaobject
-  (type `ring_size_guide`, the first entry), so it is edited in the admin rather
-  than per product:
+  (type `ring_size_guide`, entry `ring-size-guide`), so it is edited in the
+  admin rather than per product:
   - title            single line text    sheet heading
   - measure_heading  single line text    above the photo
   - measure_image    file (image)        "how to measure"
@@ -21,7 +21,16 @@
 {%- enddoc -%}
 
 {%- liquid
-  assign guide = metaobjects.ring_size_guide.values.first
+  comment
+    The `ring-size-guide` entry, or failing that whichever one there is - the
+    values list is paginated, so `.first` on it comes back empty.
+  endcomment
+  assign guide = metaobjects.ring_size_guide['ring-size-guide']
+  if guide == blank
+    for entry in metaobjects.ring_size_guide.values limit: 1
+      assign guide = entry
+    endfor
+  endif
 
   assign guide_title = guide.title.value | default: 'Size guide'
   assign measure_heading = guide.measure_heading.value | default: 'How to measure your ring size'
@@ -40,7 +49,6 @@
   endif
 -%}
 
-<!-- SGPROBE {% if guide %}metaobject{% else %}fallback{% endif %} byhandle={{ metaobjects.ring_size_guide['ring-size-guide'].title.value | default: 'none' }} count={{ metaobjects.ring_size_guide.values.size }} shop={{ shop.permanent_domain }} -->
 <dialog class="pdp-sheet" data-bottom-sheet data-sheet="size-guide" scroll-lock aria-labelledby="PdpSizeGuideTitle">
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
