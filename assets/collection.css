@@ -37,10 +37,49 @@
     max-height: calc(100vh - 48px - var(--header-sticky-offset, 0px));
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: thin;
     transition:
       top var(--motion-base, 0.3s) var(--motion-ease, ease),
       max-height var(--motion-base, 0.3s) var(--motion-ease, ease);
+  }
+
+  /* Its scrollbar: a 4px brand pill on no track, faint until the rail is
+     hovered and firmest while dragged. The 1px transparent border inside the
+     6px bar keeps the pill off the edge. */
+  .collection_wrapper_filters::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .collection_wrapper_filters::-webkit-scrollbar-track {
+    margin-block: 4px;
+    background: transparent;
+  }
+
+  .collection_wrapper_filters::-webkit-scrollbar-thumb {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background-color: rgba(113, 34, 66, 0.18);
+    background-clip: padding-box;
+  }
+
+  .collection_wrapper_filters:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(113, 34, 66, 0.45);
+  }
+
+  .collection_wrapper_filters::-webkit-scrollbar-thumb:active {
+    background-color: rgba(113, 34, 66, 0.7);
+  }
+
+  /* Firefox has only the standard pair. Kept from Chromium, where setting them
+     switches off the ::-webkit-scrollbar styling above. */
+  @supports not selector(::-webkit-scrollbar) {
+    .collection_wrapper_filters {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(113, 34, 66, 0.3) transparent;
+    }
+
+    .collection_wrapper_filters:hover {
+      scrollbar-color: rgba(113, 34, 66, 0.55) transparent;
+    }
   }
 }
 
