@@ -25,8 +25,9 @@
  * account the wishlist stays in this browser only.
  *
  * Signing in first: adding to the wishlist needs a signed-in customer. A
- * signed-out shopper's tap stores the product as "pending" and sends them to
- * sign in with return_to set to the page they were on; back on that page, the
+ * signed-out shopper's tap stores the product as "pending" and opens the
+ * KwikPass login right over the page (or, without it, sends them to sign in
+ * with return_to set to the page they were on); back on that page, the
  * pending product is added for them, so they never have to tap the heart again.
  * Removing never needs an account, so an older guest list can still be tidied.
  */
@@ -231,6 +232,26 @@
     return `/customer_authentication/login?return_to=${encodeURIComponent(here)}`;
   }
 
+  /* KwikPass's own login, opened over this page with no reload - the same
+     call its script makes when it finds ?kp_login on load. Once the shopper is
+     in, it loads `here` again (Shopify needs the fresh page for the customer
+     session) and addPending() finishes the add. False when KwikPass is not on
+     the page yet, for the redirect to fall back on. */
+  function openKwikPassLogin() {
+    if (!window.zinaraAnalyticsConfig?.kwikpass || typeof window.handleKpAndShopifyLogin !== 'function') {
+      return false;
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete('kp_login');
+    url.searchParams.delete('kp_redirect');
+    try {
+      window.handleKpAndShopifyLogin(`${url.pathname}${url.search}`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   /* Runs once the account's list has been pulled, so the added product lands
      on top of it instead of being overwritten by it. */
   function addPending() {
@@ -275,7 +296,7 @@
     if (index === -1 && !signedIn && !isDesignMode) {
       if (setPending(handle, { item: analyticsItem(button), location: clickLocation(button) })) {
         window.zinaraTrack?.('signin_prompt_view', { trigger: 'wishlist_heart' });
-        window.location.href = signInUrl();
+        if (!openKwikPassLogin()) window.location.href = signInUrl();
         return;
       }
       /* Storage is blocked, so the product could not survive the round trip -
