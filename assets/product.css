@@ -2396,7 +2396,7 @@ button.pdp_trust_grid_item_inner {
   border-radius: 8px;
 }
 
-/* Ring size guide (Figma 8106:60328): the 193px "how to measure" photo, then
+/* Ring size guide (Figma 8106:60328): the ring's photo in a 193px band, then
    the chart - 12px muted cells on 22px lines, an 8px band either side of each
    rule, headings set as written (only RING SIZE is in capitals), the outer
    columns 94px and 96px with the middle taking the rest. */
@@ -2406,6 +2406,10 @@ button.pdp_trust_grid_item_inner {
   height: 193px;
   border-radius: 8px;
   object-fit: cover;
+}
+
+/* Figma's crop of its placeholder photo: the pendant, low in the frame. */
+.pdp-sheet_panel_body_guide-image--placeholder {
   object-position: 50% 95%;
 }
 

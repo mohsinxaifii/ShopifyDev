@@ -1107,7 +1107,7 @@
     {%- render 'pdp-review-sheet', product: product, endpoint: section.settings.review_endpoint -%}
   {%- endif -%}
   {%- if has_size_guide -%}
-    {%- render 'pdp-size-guide', whatsapp_url: section.settings.whatsapp_url -%}
+    {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
   {%- endif -%}
   {%- render 'pdp-offers-sheet', offer_handles: offer_handles -%}
   {%- render 'pdp-addons-sheet',

@@ -7,7 +7,9 @@
   admin rather than per product:
   - title            single line text    sheet heading
   - measure_heading  single line text    above the photo
-  - measure_image    file (image)        "how to measure"
+  - measure_image    file (image)        only for a ring with no photo of its
+                                         own - the photo is the ring's featured
+                                         image
   - chart_heading    single line text    above the table
   - columns          list of single line the three column headings
   - rows             list of single line one row each, cells split by "|"
@@ -17,6 +19,7 @@
   Any field left empty falls back to the Figma copy below, so the sheet is
   complete before the entry exists.
 
+  @param {object} product - the ring; its featured image is the photo
   @param {string} [whatsapp_url] - the footer CTA's link; no button without it
 {%- enddoc -%}
 
@@ -34,7 +37,7 @@
 
   assign guide_title = guide.title.value | default: 'Size guide'
   assign measure_heading = guide.measure_heading.value | default: 'How to measure your ring size'
-  assign measure_image = guide.measure_image.value
+  assign measure_image = product.featured_image | default: guide.measure_image.value
   assign chart_heading = guide.chart_heading.value | default: 'Size chart'
   assign cta_label = guide.cta_label.value | default: 'Whatsapp us'
 
@@ -78,13 +81,14 @@
               class: 'pdp-sheet_panel_body_guide-image'
           }}
         {%- else -%}
+          {%- comment -%} Only reached without a product photo or a chosen image. {%- endcomment -%}
           <img
             src="{{ 'size-guide-measure.jpg' | asset_url }}"
             alt="{{ measure_heading | escape }}"
             width="1000"
             height="1000"
             loading="lazy"
-            class="pdp-sheet_panel_body_guide-image"
+            class="pdp-sheet_panel_body_guide-image pdp-sheet_panel_body_guide-image--placeholder"
           >
         {%- endif -%}
       </div>
