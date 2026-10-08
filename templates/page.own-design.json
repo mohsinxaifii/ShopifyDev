@@ -13,7 +13,9 @@
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": ""
+        "current_label": "",
+        "parent_collection": "",
+        "show_on": "all"
       }
     },
     "main": {
@@ -22,25 +24,25 @@
         "step-1": {
           "type": "step",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-step-1.png",
             "title": "Conceptualise",
-            "text": "Share your inspiration, and we’ll craft unique designs tailored to your vision.",
-            "image": "shopify://shop_images/zinara-gyod-step-1.png"
+            "text": "Share your inspiration, and we’ll craft unique designs tailored to your vision."
           }
         },
         "step-2": {
           "type": "step",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-step-2.png",
             "title": "Design approval",
-            "text": "Our team transforms your vision into a realistic product image for your approval before we begin crafting.",
-            "image": "shopify://shop_images/zinara-gyod-step-2.png"
+            "text": "Our team transforms your vision into a realistic product image for your approval before we begin crafting."
           }
         },
         "step-3": {
           "type": "step",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-step-3.png",
             "title": "Ready to wear",
-            "text": "Once approved, your custom jewellery is crafted and carefully prepared, ready to be worn and cherished.",
-            "image": "shopify://shop_images/zinara-gyod-step-3.png"
+            "text": "Once approved, your custom jewellery is crafted and carefully prepared, ready to be worn and cherished."
           }
         }
       },
@@ -61,22 +63,22 @@
         "option-1": {
           "type": "option",
           "settings": {
-            "label": "Diamond carat",
-            "image": "shopify://shop_images/zinara-gyod-option-carat.png"
+            "image": "shopify://shop_images/zinara-gyod-option-carat.png",
+            "label": "Diamond carat"
           }
         },
         "option-2": {
           "type": "option",
           "settings": {
-            "label": "Metal",
-            "image": "shopify://shop_images/zinara-gyod-option-metal.png"
+            "image": "shopify://shop_images/zinara-gyod-option-metal.png",
+            "label": "Metal"
           }
         },
         "option-3": {
           "type": "option",
           "settings": {
-            "label": "Colour",
-            "image": "shopify://shop_images/zinara-gyod-option-colour.png"
+            "image": "shopify://shop_images/zinara-gyod-option-colour.png",
+            "label": "Colour"
           }
         }
       },
@@ -96,41 +98,41 @@
         "design-1": {
           "type": "design",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-gallery.png",
             "title": "Ring",
-            "customer": "Anita Sharma, Jaipur",
-            "image": "shopify://shop_images/zinara-gyod-gallery.png"
+            "customer": "Anita Sharma, Jaipur"
           }
         },
         "design-2": {
           "type": "design",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-gallery.png",
             "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru",
-            "image": "shopify://shop_images/zinara-gyod-gallery.png"
+            "customer": "Anita Sharma, Bengaluru"
           }
         },
         "design-3": {
           "type": "design",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-gallery.png",
             "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru",
-            "image": "shopify://shop_images/zinara-gyod-gallery.png"
+            "customer": "Anita Sharma, Bengaluru"
           }
         },
         "design-4": {
           "type": "design",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-gallery.png",
             "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru",
-            "image": "shopify://shop_images/zinara-gyod-gallery.png"
+            "customer": "Anita Sharma, Bengaluru"
           }
         },
         "design-5": {
           "type": "design",
           "settings": {
+            "image": "shopify://shop_images/zinara-gyod-gallery.png",
             "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru",
-            "image": "shopify://shop_images/zinara-gyod-gallery.png"
+            "customer": "Anita Sharma, Bengaluru"
           }
         }
       },
@@ -152,43 +154,64 @@
         "q1": {
           "type": "question",
           "settings": {
-            "question": "Are lab grown diamonds real?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "What can I customise with Zinara?",
+            "answer": "You can customise rings, earrings, pendants, bracelets and more. Whether you’re designing for yourself or for someone else, our team will work closely with you to bring your idea to life."
           }
         },
         "q2": {
           "type": "question",
           "settings": {
-            "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "How do I start my custom jewellery request?",
+            "answer": "Simply share your idea with us through the customisation form. You can upload a reference image, sketch, or describe what you have in mind. Our team will take it from there."
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Are ZINARA lab grown diamonds graded and certified?",
-            "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
+            "question": "Can I speak to someone about my design?",
+            "answer": "Absolutely. Our team can help you discuss your idea, explore design options and answer questions about materials, diamonds, pricing and timelines. You can reach out to us on +918851812814"
           }
         },
         "q4": {
           "type": "question",
           "settings": {
-            "question": "Do you deliver pan India?",
-            "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
+            "question": "Will I see the design before you make it?",
+            "answer": "Yes. Once our team has developed your design, we’ll share it with you for approval before we begin crafting the actual piece. You can share your feedback on the proposed design before production begins, and our team will work with you to finalise it."
           }
         },
         "q5": {
           "type": "question",
           "settings": {
-            "question": "Is ID proof required for delivery?",
-            "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
+            "question": "How much will my custom piece cost?",
+            "answer": "The final price depends on your design and the choices you make, including the metal, diamond specifications and overall complexity. Once your design is finalised, we’ll share the complete price with you before production begins."
           }
         },
         "q6": {
           "type": "question",
           "settings": {
-            "question": "What payment options are available?",
-            "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
+            "question": "How long will it take to craft my piece?",
+            "answer": "Custom pieces take longer than ready-to-ship jewellery because each piece is made specifically for you. Once your design is approved, our team will share the estimated production timeline before we begin. Usually it takes 21-28 days."
+          }
+        },
+        "question_EhWdTR": {
+          "type": "question",
+          "settings": {
+            "question": "Can I customise an existing Zinara design?",
+            "answer": "Yes, where possible. If there’s a Zinara design you love but want to change a detail, share it with us and our team will let you know what can be customised."
+          }
+        },
+        "question_KKgYxe": {
+          "type": "question",
+          "settings": {
+            "question": "How do I know my custom piece is made with quality materials?",
+            "answer": "Your custom piece is crafted using the materials agreed upon during the design process. For lab-grown diamond pieces, we use SGL certified lab-grown diamonds, with certification details provided as applicable."
+          }
+        },
+        "question_ejaMNQ": {
+          "type": "question",
+          "settings": {
+            "question": "Can I return or exchange a custom piece?",
+            "answer": "Custom orders are not eligible for returns, but are covered by our Lifetime Exchange Policy. You can update or upgrade your jewellery later if your style evolves or you want to restyle your piece."
           }
         }
       },
@@ -198,7 +221,10 @@
         "q3",
         "q4",
         "q5",
-        "q6"
+        "q6",
+        "question_EhWdTR",
+        "question_KKgYxe",
+        "question_ejaMNQ"
       ],
       "settings": {
         "heading": "Frequently Asked Questions"
