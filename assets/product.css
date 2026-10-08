@@ -280,6 +280,14 @@
   flex-direction: column;
 }
 
+/* A block that holds several parts (the variant picker's option rows): a
+   column of its own, so the parts keep the spacing they had as direct
+   children of the form. */
+.pdp_block {
+  display: flex;
+  flex-direction: column;
+}
+
 .pdp_section_title {
   margin: 0;
   font-family: var(--font-secondary--family);
