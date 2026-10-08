@@ -585,7 +585,7 @@
     {%- render 'pdp-review-sheet', product: product, endpoint: reviews_block.settings.review_endpoint -%}
   {%- endif -%}
   {%- if has_size_guide -%}
-    {%- render 'pdp-size-guide', product: product, whatsapp_url: help_block.settings.whatsapp_url -%}
+    {%- render 'pdp-size-guide', whatsapp_url: help_block.settings.whatsapp_url -%}
   {%- endif -%}
   {%- if offers_block != blank -%}
     {%- render 'pdp-offers-sheet', offer_handles: offer_handles, labels: offers_block.settings -%}
