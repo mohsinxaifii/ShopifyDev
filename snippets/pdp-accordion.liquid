@@ -4,6 +4,8 @@
   @param {object} block - an "Accordion" block
 {%- enddoc -%}
 
+{%- assign accordion_text = block.settings.content | strip_html | strip -%}
+{%- if block.settings.heading != blank and accordion_text != blank -%}
 <details class="pdp_accordion" {{ block.shopify_attributes }}>
   <summary class="pdp_accordion_summary">
     <span>{{ block.settings.heading }}</span>
@@ -14,3 +16,4 @@
   </summary>
   <div class="pdp_accordion_body pdp_accordion_body--rte">{{ block.settings.content }}</div>
 </details>
+{%- endif -%}

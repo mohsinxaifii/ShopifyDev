@@ -84,12 +84,11 @@
     assign has_size_guide = true
   endif
 
-  assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
   capture pair_handles
     render 'pdp-pair-handles', product: product
   endcapture
   assign pair_handles = pair_handles | strip | split: ','
-  assign related_products = product.metafields.custom.pdp_related.value | default: shopify_recs.related_products.value
+  assign related_products = product.metafields.custom.pdp_related.value
 
   comment
     Offers are a shop-level list and each entry may pin itself to particular
