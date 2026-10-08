@@ -33,19 +33,25 @@
         "column-1": {
           "type": "column",
           "settings": {
-            "image_1": "shopify://shop_images/zinara-about-intro-1.png"
+            "image_1": "shopify://shop_images/1_vission.png",
+            "image_2": "shopify://shop_images/2_vission.png",
+            "image_3": "shopify://shop_images/3_vission.png"
           }
         },
         "column-2": {
           "type": "column",
           "settings": {
-            "image_1": "shopify://shop_images/zinara-about-intro-4.png"
+            "image_1": "shopify://shop_images/4_vission.png",
+            "image_2": "shopify://shop_images/5_vission.png",
+            "image_3": "shopify://shop_images/6_vission.png"
           }
         },
         "column-3": {
           "type": "column",
           "settings": {
-            "image_1": "shopify://shop_images/zinara-about-intro-5.png"
+            "image_1": "shopify://shop_images/7_vission.png",
+            "image_2": "shopify://shop_images/8_vission.png",
+            "image_3": "shopify://shop_images/9_vission.png"
           }
         }
       },
@@ -111,14 +117,14 @@
           "type": "collection_card",
           "settings": {
             "image": "shopify://shop_images/zinara-collection-new-job.png",
-            "label": "New job, new era",
+            "label": "Evil Eye",
             "url": ""
           }
         },
         "card-2": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-collection-siesta.png",
+            "image": "shopify://shop_images/siesta_collection.png",
             "label": "Siesta",
             "url": "/collections/siesta-collection"
           }
@@ -126,21 +132,22 @@
         "card-3": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-collection-festive.png",
-            "label": "Festive edit",
+            "image": "shopify://shop_images/prism3d_collection.png",
+            "label": "Prism 3D",
             "url": ""
           }
         },
         "card-4": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-collection-siesta.png",
-            "label": "Siesta",
+            "image": "shopify://shop_images/double_take_collection.png",
+            "label": "Double Take",
             "url": "/collections/siesta-collection"
           }
         },
         "card-5": {
           "type": "collection_card",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-collection-festive.png",
             "label": "Festive edit",

@@ -329,15 +329,15 @@
         "certificate-1": {
           "type": "calc_certificate",
           "settings": {
-            "image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
-            "alt": "Sample SGL diamond certificate"
+            "image": "shopify://shop_images/XRF_Report.png",
+            "alt": "Gold Plating Lab Test Report"
           }
         },
         "calc_certificate_EbJAQJ": {
           "type": "calc_certificate",
           "settings": {
-            "image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
-            "alt": "Diamond certificate"
+            "image": "shopify://shop_images/SGL_Report.png",
+            "alt": "SGL Diamond Certificate"
           }
         }
       },
