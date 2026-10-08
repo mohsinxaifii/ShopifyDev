@@ -7,12 +7,14 @@
 
   @param {object} product - a Shopify product object
   @param {object} current_variant - the variant the page opened on
-  @param {object} [certificate] - sample SGL certificate
+  @param {object} [certificate] - sample SGL certificate, shown when there are no certificate slides
+  @param {object} [slides] - the section's "Savings calculator certificate" blocks
   @param {object} [vermeil_image] - cutaway render for the explainer
   @param {object} [diamond_image] - diamond render for the explainer
   @param {object} [sgl_logo] - SGL mark
   @param {object} kj - the "Know your jewellery" block's settings, for the explainer
   @param {object} labels - the product section's settings: the sheet's own copy
+  @param {object} [facts] - the section's "Savings calculator fact" blocks
 {%- enddoc -%}
 
 {%- liquid
@@ -83,38 +85,53 @@
         </div>
       {%- endif -%}
 
-      {%- comment -%}
-        One line of the section's "Highlights" setting per row; the icons keep
-        their positions (certificate, buyback, eco, savings) and repeat after.
-      {%- endcomment -%}
-      {%- assign calc_facts = labels.calc_facts | default: 'SGL certified' | strip | newline_to_br | split: '<br />' -%}
-      {%- assign calc_icons = 'icon-certificate.svg,icon-alms.svg,icon-eco-energy.svg,icon-percent-circle.svg' | split: ',' -%}
-      <ul class="pdp-diff_facts">
-        {%- for fact in calc_facts -%}
-          {%- assign fact_text = fact | strip -%}
-          {%- if fact_text == blank -%}
-            {%- continue -%}
-          {%- endif -%}
-          {%- assign icon_index = forloop.index0 | modulo: 4 -%}
-          <li class="pdp-diff_facts_item">
-            <span class="pdp-diff_facts_item_icon" aria-hidden="true">
-              {{- calc_icons[icon_index] | inline_asset_content -}}
-            </span>
-            {{ fact_text }}
-          </li>
-        {%- endfor -%}
-      </ul>
+      {%- comment -%} One row per "Savings calculator fact" block. {%- endcomment -%}
+      {%- if facts.size > 0 -%}
+        <ul class="pdp-diff_facts">
+          {%- for fact in facts -%}
+            {%- if fact.settings.text == blank -%}
+              {%- continue -%}
+            {%- endif -%}
+            <li class="pdp-diff_facts_item" {{ fact.shopify_attributes }}>
+              <span class="pdp-diff_facts_item_icon" aria-hidden="true">
+                {%- render 'pdp-icon', name: fact.settings.icon, image: fact.settings.icon_image -%}
+              </span>
+              {{ fact.settings.text }}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
 
-      {%- if certificate != blank -%}
+      {%- comment -%}
+        One slide per "Savings calculator certificate" block; with none, the
+        section's SGL certificate sample on its own.
+      {%- endcomment -%}
+      {%- if slides.size > 0 or certificate != blank -%}
         <scroll-carousel class="pdp-diff_certs">
           <div class="pdp-diff_certs_track" data-track>
-            <span class="pdp-diff_certs_track_item">
-              {{
-                certificate
-                | image_url: width: 656
-                | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Sample SGL diamond certificate'
-              }}
-            </span>
+            {%- for slide in slides -%}
+              {%- if slide.settings.image != blank -%}
+                <span class="pdp-diff_certs_track_item" {{ slide.shopify_attributes }}>
+                  {{
+                    slide.settings.image
+                    | image_url: width: 656
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '328,656',
+                      sizes: '328px',
+                      alt: slide.settings.alt | default: 'Diamond certificate'
+                  }}
+                </span>
+              {%- endif -%}
+            {%- else -%}
+              <span class="pdp-diff_certs_track_item">
+                {{
+                  certificate
+                  | image_url: width: 656
+                  | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Sample SGL diamond certificate'
+                }}
+              </span>
+            {%- endfor -%}
           </div>
           <div class="pdp-diff_certs_dots scroll-carousel_dots" data-dots></div>
         </scroll-carousel>
