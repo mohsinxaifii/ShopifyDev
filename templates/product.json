@@ -111,7 +111,7 @@
           "type": "help",
           "settings": {
             "help_heading": "Need help choosing?",
-            "help_body": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice.",
+            "help_body": "Not sure what’s right for you? Our jewellery experts are here to help with sizing, materials, care & more",
             "chat_label": "Chat with us",
             "whatsapp_url": "https://wa.me/919217975782",
             "video_call_label": "Book video call",
@@ -227,7 +227,7 @@
         "diff-1": {
           "type": "difference",
           "settings": {
-            "label": "Gold Vermeil",
+            "label": "5x Thicker Gold Plating",
             "show_sgl": false
           }
         },
@@ -255,35 +255,42 @@
         "diff-5": {
           "type": "difference",
           "settings": {
-            "label": "Lifetime Buyback",
+            "label": "Water & Sweat Proof",
             "show_sgl": false
           }
         },
         "diff-6": {
           "type": "difference",
           "settings": {
-            "label": "Insured Shipping",
+            "label": "Built for daily wear",
             "show_sgl": false
           }
         },
         "diff-7": {
           "type": "difference",
           "settings": {
-            "label": "Certificate of Authenticity",
+            "label": "Value for Money",
+            "show_sgl": false
+          }
+        },
+        "difference_4Apmkp": {
+          "type": "difference",
+          "settings": {
+            "label": "Verified Quality",
             "show_sgl": false
           }
         },
         "pair": {
           "type": "pair",
           "settings": {
-            "pair_heading": "Pair beautifully with",
+            "pair_heading": "Pairs beautifully with",
             "pair_button_label": "Add set to cart"
           }
         },
         "curated": {
           "type": "curated",
           "settings": {
-            "ugc_heading": "Curated trends for you"
+            "ugc_heading": "Zinara, IRL"
           }
         },
         "reviews": {
@@ -373,6 +380,7 @@
         "diff-5",
         "diff-6",
         "diff-7",
+        "difference_4Apmkp",
         "pair",
         "curated",
         "reviews",
