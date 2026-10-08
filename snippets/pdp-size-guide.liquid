@@ -47,17 +47,20 @@
     </div>
 
     <div class="pdp-sheet_panel_body">
-      <div class="pdp-sheet_panel_body_group">
-        <p class="pdp-sheet_panel_body_group_label">How to measure your ring size</p>
-        {%- if is_ring -%}
-          <video class="pdp-sheet_panel_body_guide-video" controls playsinline preload="metadata">
-            <source src="https://cdn.shopify.com/videos/c/o/v/d0d213af2061422a837e2656892a022b.mp4" type="video/mp4">
-          </video>
-        {%- elsif video != blank -%}
-          {{ video | video_tag: controls: true, playsinline: true, preload: 'metadata', class: 'pdp-sheet_panel_body_guide-video' }}
-        {%- endif -%}
-      </div>
+      {%- if is_ring or video != blank -%}
+        <div class="pdp-sheet_panel_body_group">
+          <p class="pdp-sheet_panel_body_group_label">How to measure your ring size</p>
+          {%- if is_ring -%}
+            <video class="pdp-sheet_panel_body_guide-video" controls playsinline preload="metadata">
+              <source src="https://cdn.shopify.com/videos/c/o/v/d0d213af2061422a837e2656892a022b.mp4" type="video/mp4">
+            </video>
+          {%- else -%}
+            {{ video | video_tag: controls: true, playsinline: true, preload: 'metadata', class: 'pdp-sheet_panel_body_guide-video' }}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
 
+      {%- if is_ring or columns != blank -%}
       <div class="pdp-sheet_panel_body_group">
         <p class="pdp-sheet_panel_body_group_label">Size Chart</p>
         <div class="pdp-sheet_panel_body_table">
@@ -95,6 +98,7 @@
           </table>
         </div>
       </div>
+      {%- endif -%}
 
       {%- if whatsapp_url != blank -%}
         <a
