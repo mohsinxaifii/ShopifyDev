@@ -141,6 +141,52 @@
       : { ga: true, meta: 'custom', ...entry };
   };
 
+  /* -------------------------------------------------------- personal data */
+
+  /**
+   * Nothing that identifies a person may reach GA4 or Meta: both suspend
+   * accounts that receive it, and both read it out of URLs as well as event
+   * parameters. So, before anything leaves the page:
+   * - URLs keep their path and only known-safe query parameters (UTMs,
+   *   ad click IDs, variant, paging, sorting, filters, search); account links lose
+   *   their tokens, and tel:/mailto:/WhatsApp links their number or address.
+   * - Anything a shopper typed (search terms, the search box in a URL) has
+   *   emails and phone numbers masked, and no value anywhere carries an email.
+   * - A pincode is cut to its first three digits - the sorting district.
+   * The customer ID is already a SHA-256 hash (snippets/analytics-config).
+   */
+  const EMAIL = /[^\s@/?&=#:]+@[^\s@/?&=#]+\.[a-z]{2,}/gi;
+  const PHONE = /\+?\d[\d\s().-]{8,}\d/g;
+  // Ad click IDs stay: they are not personal and attribution needs them.
+  const SAFE_QUERY = /^(utm_[a-z]+|gclid|gbraid|wbraid|fbclid|msclkid|ttclid|variant|page|sort_by|filter\..+|q|type)$/;
+  const TYPED_QUERY = /^(q|utm_[a-z]+)$/;
+  const URL_KEYS = new Set(['page_url', 'referrer', 'destination_url']);
+  const TEXT_KEYS = new Set(['search_term', 'suggestion_text']);
+
+  const maskText = (text) => String(text).replace(EMAIL, '[email]').replace(PHONE, '[phone]');
+
+  function safeUrl(value) {
+    if (!value) return value;
+    const relative = !/^[a-z][a-z0-9+.-]*:/i.test(value);
+    let url;
+    try {
+      url = new URL(value, window.location.href);
+    } catch (error) {
+      return maskText(value);
+    }
+    if (/^(tel|mailto|sms):$/.test(url.protocol)) return url.protocol;
+    if (/(^|\.)(wa\.me|whatsapp\.com)$/.test(url.hostname)) return `${url.protocol}//${url.hostname}/`;
+    const path = url.pathname
+      .replace(/^(\/account\/(?:reset|activate|invoices|orders|addresses))\/.*/, '$1')
+      .replace(EMAIL, '[email]');
+    const query = new URLSearchParams();
+    url.searchParams.forEach((v, k) => {
+      if (SAFE_QUERY.test(k)) query.append(k, TYPED_QUERY.test(k) ? maskText(v) : v);
+    });
+    const search = query.toString() ? `?${query}` : '';
+    return relative && url.origin === window.location.origin ? `${path}${search}` : `${url.origin}${path}${search}`;
+  }
+
   /* ------------------------------------------------------------- loaders */
 
   window.dataLayer = window.dataLayer || [];
@@ -159,8 +205,12 @@
     document.head.appendChild(script);
     window.gtag('js', new Date());
     // The Google app owns page_view; this tag only carries the plan's events.
+    // GA4 adds the page URL and referrer to every hit by itself, so it is
+    // handed the cleaned ones.
     window.gtag('config', gaId, {
       send_page_view: false,
+      page_location: safeUrl(window.location.href),
+      page_referrer: safeUrl(document.referrer) || undefined,
       ...(config.userId ? { user_id: config.userId } : {}),
     });
   }
@@ -276,9 +326,17 @@
 
   const LIMIT = 100; // GA4 caps parameter values at 100 characters.
 
-  function clean(value) {
-    if (typeof value === 'string') return value.replace(/\s+/g, ' ').trim().slice(0, LIMIT);
-    return value;
+  function clean(value, key) {
+    if (key === 'pincode') {
+      const digits = String(value).replace(/\D/g, '');
+      return digits.length === 6 ? `${digits.slice(0, 3)}xxx` : undefined;
+    }
+    if (typeof value !== 'string') return value;
+    let text = value;
+    if (URL_KEYS.has(key)) text = safeUrl(text);
+    else if (TEXT_KEYS.has(key)) text = maskText(text);
+    else text = text.replace(EMAIL, '[email]');
+    return text.replace(/\s+/g, ' ').trim().slice(0, LIMIT);
   }
 
   /** Meta reads ecommerce data as content_ids / contents. */
@@ -306,7 +364,10 @@
       return;
     }
 
-    const base = globals();
+    const base = {};
+    Object.entries(globals()).forEach(([key, value]) => {
+      base[key] = clean(value, key);
+    });
     const params = {};
     plan.params.forEach((key) => {
       let value = input[key];
@@ -314,7 +375,7 @@
       if (value === undefined && key === 'product_id') value = config.product?.id;
       if (value === undefined && key === 'cart_count') value = cart.count;
       if (value === undefined && key === 'currency') value = config.currency;
-      if (value !== undefined && value !== null && value !== '') params[key] = clean(value);
+      if (value !== undefined && value !== null && value !== '') params[key] = clean(value, key);
     });
     // Guard the plan asks for: an ecommerce event with no items is noise.
     if (plan.params.includes('items') && (!Array.isArray(params.items) || params.items.length === 0)) return;
