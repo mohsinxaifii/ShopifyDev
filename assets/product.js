@@ -42,6 +42,8 @@
 
   class ProductGallery extends HTMLElement {
     connectedCallback() {
+      this.phone = window.matchMedia('(max-width: 749px)');
+      this.track = this.querySelector('[data-stage-track]');
       this.slides = Array.from(this.querySelectorAll('[data-stage-slide]'));
       this.thumbs = Array.from(this.querySelectorAll('[data-thumb]'));
       this.dots = Array.from(this.querySelectorAll('[data-gallery-dot]'));
@@ -79,6 +81,29 @@
     setupSwipe() {
       const stage = this.querySelector('.pdp_gallery_stage');
       if (!stage || this.slides.length < 2) return;
+
+      // Phones: the track scrolls natively (CSS); follow it to keep the dots,
+      // the active slide and the lightbox's starting photo in step.
+      if (this.track) {
+        let frame = 0;
+        this.track.addEventListener(
+          'scroll',
+          () => {
+            if (!this.phone.matches || frame) return;
+            frame = requestAnimationFrame(() => {
+              frame = 0;
+              const width = this.track.clientWidth || 1;
+              const index = Math.round(this.track.scrollLeft / width);
+              if (index === this.index || index < 0 || index >= this.slides.length) return;
+              this.mark(index);
+              if (!this.autoScrolling) this.trackMedia('swipe');
+            });
+          },
+          { passive: true },
+        );
+      }
+      if (this.phone.matches) return;
+
       window.zinaraSwipe?.(stage, {
         // The slides themselves are buttons (they open the lightbox), so only
         // the controls laid over the photo are left alone.
@@ -105,6 +130,19 @@
 
     show(index) {
       if (index < 0 || index >= this.slides.length) return;
+      // Phones: scroll the native track to the photo (a variant's photo, say).
+      if (this.phone?.matches && this.track) {
+        this.autoScrolling = true;
+        clearTimeout(this.autoScrollTimer);
+        this.autoScrollTimer = setTimeout(() => {
+          this.autoScrolling = false;
+        }, 600);
+        this.track.scrollTo({ left: index * this.track.clientWidth, behavior: 'smooth' });
+      }
+      this.mark(index);
+    }
+
+    mark(index) {
       this.index = index;
       this.slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
       this.thumbs.forEach((thumb, i) => thumb.classList.toggle('is-active', i === index));
@@ -991,7 +1029,19 @@
           return;
         }
 
+        // Loader on the button until the request is through and the thank-you
+        // shows (the pincode lookup and the send can take a few seconds).
+        const restLabel = submit.textContent.trim();
         submit.disabled = true;
+        submit.classList.add('is-loading');
+        submit.setAttribute('aria-busy', 'true');
+        submit.textContent = 'Sending…';
+        const stopLoading = () => {
+          submit.disabled = false;
+          submit.classList.remove('is-loading');
+          submit.removeAttribute('aria-busy');
+          submit.textContent = restLabel;
+        };
         status.hidden = true;
 
         let pincodeAvailable = '';
@@ -1019,13 +1069,13 @@
         } catch (error) {
           status.textContent = 'Could not send your request. Please check your connection and try again.';
           status.hidden = false;
-          submit.disabled = false;
+          stopLoading();
           return;
         }
 
         // There is no booking id or slot yet - the team calls back to fix one.
         window.zinaraTrack?.('video_call_booked', {});
-        submit.disabled = false;
+        stopLoading();
         fields.hidden = true;
         done.hidden = false;
         submit.hidden = true;
@@ -1124,7 +1174,10 @@
           const button = event.target.closest?.('[data-add-to-cart]');
           if (!button || !this.form?.contains(button) || button.disabled) return;
           const items = this.buildItems();
-          if (items.length < 2) return;
+          if (items.length < 2) {
+            this.showKwikPending(button);
+            return;
+          }
           event.preventDefault();
           event.stopImmediatePropagation();
           this.addToCart(items, { trigger: button });
@@ -1185,6 +1238,42 @@
           trigger: button,
         });
       });
+    }
+
+    /* KwikCart takes the plain Add to cart click over and adds on its own, so
+       the theme's loader never starts. The button shows it anyway - only the
+       look, never disabled, as KwikCart may check that - until the add request
+       settles (cart-drawer.js reports KwikCart's /cart/add calls), with a cap
+       in case it never does. Without KwikCart the form's own submit runs the
+       shared cart, which handles the loader itself. */
+    showKwikPending(button) {
+      if (typeof window.openGokwikSideCart !== 'function') return;
+      const label = button.querySelector('[data-add-label]') || button;
+      const rest = label.dataset.restLabel || label.textContent.trim();
+      label.dataset.restLabel = rest;
+      button.classList.add('is-loading');
+      button.setAttribute('aria-busy', 'true');
+      label.textContent = window.themeStrings?.adding || 'Adding…';
+      let timer = 0;
+      const finish = (event) => {
+        document.removeEventListener('cart:add-settled', finish);
+        clearTimeout(timer);
+        button.classList.remove('is-loading');
+        button.removeAttribute('aria-busy');
+        const ok = event?.detail?.ok;
+        if (ok) {
+          button.classList.add('is-added');
+          label.textContent = window.themeStrings?.added || 'Added to cart';
+          setTimeout(() => {
+            button.classList.remove('is-added');
+            label.textContent = label.dataset.restLabel || rest;
+          }, 1800);
+        } else {
+          label.textContent = label.dataset.restLabel || rest;
+        }
+      };
+      document.addEventListener('cart:add-settled', finish);
+      timer = setTimeout(finish, 8000);
     }
 
     /* --------------------------------------------------- pair beautifully */

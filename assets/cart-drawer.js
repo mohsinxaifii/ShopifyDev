@@ -281,6 +281,12 @@
         this.addEventListener('loadend', settle);
         // KwikCart's own adds (the product form's Add to cart) count as adds too.
         if (/\/cart\/add/.test(String(url))) {
+          // Lets a button that handed its click to KwikCart end its loader.
+          this.addEventListener('loadend', () => {
+            document.dispatchEvent(
+              new CustomEvent('cart:add-settled', { detail: { ok: this.status >= 200 && this.status < 300 } }),
+            );
+          });
           this.addEventListener('load', () => {
             if (this.status < 200 || this.status > 299) return;
             try {

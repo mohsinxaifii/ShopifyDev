@@ -74,5 +74,17 @@
         {{ labels.show_more_reviews_label | default: 'Show more reviews' }}
       </button>
     </div>
+    {%- comment -%} Full-size review photo, opened from a review's thumbnail (judgeme.js). {%- endcomment -%}
+    <dialog class="pdp-review-photo" data-review-viewer scroll-lock aria-label="Review photo">
+      <button
+        type="button"
+        class="pdp-review-photo_close"
+        data-review-viewer-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+      <img class="pdp-review-photo_image" alt="Customer photo" width="960" height="960">
+    </dialog>
   </judgeme-reviews>
 </section>

@@ -100,6 +100,11 @@
   background-color: var(--pdp-surface-subtle);
 }
 
+.pdp_gallery_stage_track {
+  position: absolute;
+  inset: 0;
+}
+
 .pdp_gallery_stage_slide {
   position: absolute;
   inset: 0;
@@ -643,16 +648,11 @@
   border: 0;
 }
 
-/* A fieldset draws its legend inside its top border, above the padding, so the
-   12px Figma puts over the label would never appear and the absolutely placed
-   size guide would land beside the values. A floated legend is laid out as
-   ordinary content instead (float itself is ignored in the flex column). */
 .pdp_option_head {
-  float: left;
-  width: 100%;
   display: flex;
   gap: 8px;
   align-items: baseline;
+  margin: 0;
   padding: 0;
   font-weight: 600;
   font-size: 18px;
@@ -665,10 +665,20 @@
   font-size: 16px;
 }
 
+/* Option name (and a swatch's picked value) on the left, the size guide link
+   on the right of the same line. */
+.pdp_option_top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .pdp_option_guide {
-  position: absolute;
-  top: 12px;
-  right: 0;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .pdp_option--guide-only {
@@ -2187,11 +2197,72 @@ button.pdp_trust_grid_item_inner {
   display: none;
 }
 
+.pdp_reviews_list_item_media_item {
+  flex: 0 0 144px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
 .pdp_reviews_list_item_media img {
   flex: 0 0 144px;
   width: 144px;
   height: 144px;
   object-fit: cover;
+}
+
+/* Full-size review photo: dark backdrop, the photo fitted to the screen, a
+   close button that shows on any photo. */
+.pdp-review-photo {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: rgba(0, 0, 0, 0.92);
+}
+
+.pdp-review-photo[open] {
+  display: grid;
+  place-items: center;
+}
+
+.pdp-review-photo::backdrop {
+  background: transparent;
+}
+
+.pdp-review-photo_image {
+  width: auto;
+  height: auto;
+  max-width: min(92vw, 960px);
+  max-height: 86vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.pdp-review-photo_close {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border: 0;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  cursor: pointer;
+}
+
+.pdp-review-photo_close svg {
+  width: 100%;
+  height: 100%;
 }
 
 .pdp_reviews_list_item_body {
@@ -2769,6 +2840,31 @@ button.pdp_trust_grid_item_inner {
   font-size: 14px;
   line-height: 20px;
   color: var(--pdp-text-secondary);
+}
+
+/* The video call form's button while its request is on the way. */
+[data-video-call-submit].is-loading {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: progress;
+}
+
+[data-video-call-submit].is-loading::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 999px;
+  animation: pdp-spin 0.7s linear infinite;
+}
+
+@keyframes pdp-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .pdp-review-form_submit {
@@ -3501,6 +3597,33 @@ button.pdp_trust_grid_item_inner {
     border-radius: 0;
   }
 
+  /* Phones swipe the photos natively: the track scrolls sideways and snaps a
+     whole photo at a time, following the finger (product.js keeps the dots
+     and the lightbox in step). */
+  .pdp_gallery_stage_track {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pdp_gallery_stage_track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pdp_gallery_stage_slide {
+    position: relative;
+    flex: 0 0 100%;
+    height: 100%;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
   .pdp_gallery_stage_top_badge,
   .pdp_gallery_stage_bottom_pill {
     padding: 2px 6px;
@@ -3635,15 +3758,25 @@ button.pdp_trust_grid_item_inner {
     overscroll-behavior: contain;
   }
 
+  /* A white X alone vanishes over a light photo, so on phones it gets a dark
+     round backing, and stays pinned top-right (below any notch) while the
+     photos scroll under it. */
   .pdp-lightbox_close {
     position: sticky;
-    top: 0;
+    top: calc(12px + env(safe-area-inset-top, 0px));
     right: auto;
-    z-index: 1;
+    z-index: 2;
     flex: 0 0 auto;
     align-self: flex-end;
-    box-sizing: content-box;
-    padding-top: 16px;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    margin: 12px 12px 0 0;
+    padding: 9px;
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    color: #fff;
   }
 
   .pdp-lightbox_body {

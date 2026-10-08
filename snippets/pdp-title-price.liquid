@@ -54,12 +54,12 @@
   <p class="pdp_headline_tax">{{ block.settings.tax_note }}</p>
 
   {%- comment -%}
-    The calculator compares against the product's mined-diamond price
-    (custom.pdp_mined_price); without one the sheet has no figures to
-    show, so the button is left out.
+    Always offered while the block's switch is on. The sheet's "You save"
+    comparison needs the product's mined-diamond price
+    (custom.pdp_mined_price) and is left out without one; its highlights,
+    certificates and explainer show either way.
   {%- endcomment -%}
-  {%- assign mined_price = product.metafields.custom.pdp_mined_price.value | plus: 0 -%}
-  {%- if block.settings.show_savings_calculator and mined_price > 0 -%}
+  {%- if block.settings.show_savings_calculator -%}
     <div class="pdp_headline_calculator">
       <button
         type="button"

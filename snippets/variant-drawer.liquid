@@ -67,7 +67,14 @@
     </template>
 
     <div class="variant-drawer_panel_footer">
-      <button type="button" class="variant-drawer_panel_footer_done" data-drawer-done disabled>
+      <button
+        type="button"
+        class="variant-drawer_panel_footer_done"
+        data-drawer-done
+        data-label-done="{{ 'products.done' | t | escape }}"
+        data-label-add="{{ 'products.add_to_cart' | t | escape }}"
+        disabled
+      >
         {{- 'products.done' | t -}}
       </button>
     </div>
