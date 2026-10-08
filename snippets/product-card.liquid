@@ -18,7 +18,7 @@
     assign is_grid = true
   endif
 
-  assign feature_badge = product.metafields.content['product-features-badges'].first
+  assign feature_badge = product.metafields.custom.product_card_badges.first
   assign is_price_drop = false
   assign is_ready_to_ship = false
   if product.compare_at_price > product.price

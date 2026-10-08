@@ -1,7 +1,7 @@
 {%- doc -%}
   "You may also like" / "Recently viewed" tabs. Figma 7930:96277.
   You may also like: the catalogue hierarchy (same vertical, then
-  sub-category, then category), or the product's own custom.pdp_related list
+  sub-category, then category), or the product's own custom.you_may_also_like_products list
   when it is outside the hierarchy - nothing else. Recently viewed is filled
   by product.js from the shopper's own history.
   Each tab shows only with something in it: with no "You may also like"
@@ -9,7 +9,7 @@
   only) when there is history; with neither, nothing shows.
 
   @param {object} product - the product being viewed
-  @param {object} [related_products] - products from custom.pdp_related or Search & Discovery
+  @param {object} [related_products] - products from custom.you_may_also_like_products or Search & Discovery
   @param {object} [block] - its block, for the theme editor
   @param {object} labels - the block's settings (tab names)
 {%- enddoc -%}

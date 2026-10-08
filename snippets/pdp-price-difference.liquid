@@ -23,7 +23,7 @@
     same unit `variant.price` uses - so it needs no scaling. `.amount` is nil
     here, which is why the guard reads the value itself.
   endcomment
-  assign mined_cents = product.metafields.custom.pdp_mined_price.value
+  assign mined_cents = product.metafields.custom.price_card_mined_diamond_price.value
   assign has_mined = false
   if mined_cents > 0
     assign has_mined = true
