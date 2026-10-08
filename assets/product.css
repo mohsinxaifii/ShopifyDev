@@ -3672,15 +3672,25 @@ button.pdp_trust_grid_item_inner {
     overscroll-behavior: contain;
   }
 
+  /* A white X alone vanishes over a light photo, so on phones it gets a dark
+     round backing, and stays pinned top-right (below any notch) while the
+     photos scroll under it. */
   .pdp-lightbox_close {
     position: sticky;
-    top: 0;
+    top: calc(12px + env(safe-area-inset-top, 0px));
     right: auto;
-    z-index: 1;
+    z-index: 2;
     flex: 0 0 auto;
     align-self: flex-end;
-    box-sizing: content-box;
-    padding-top: 16px;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    margin: 12px 12px 0 0;
+    padding: 9px;
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    color: #fff;
   }
 
   .pdp-lightbox_body {
