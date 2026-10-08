@@ -13,7 +13,9 @@
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": ""
+        "current_label": "",
+        "parent_collection": "",
+        "show_on": "all"
       }
     },
     "main": {
@@ -28,43 +30,78 @@
         "q1": {
           "type": "question",
           "settings": {
-            "question": "Are lab grown diamonds real?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "Why are lab-grown diamonds better than mined diamonds?",
+            "answer": "Lab-grown diamonds offer the same sparkle and quality as mined diamonds, while being a more ethical and sustainable choice. With fewer impurities, they can offer exceptional brilliance — and they're up to 90% more affordable than comparable mined diamonds."
           }
         },
         "q2": {
           "type": "question",
           "settings": {
-            "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "What is the difference between gold vermeil, gold plating and solid gold?",
+            "answer": "Solid gold is gold throughout the piece. Our Gold vermeil uses 925 sterling silver with 6 layers of gold on top, and is 5X thicker. Gold plating typically uses a thinner layer of gold over another base metal. Vermeil gives you the look and feel of solid gold without the hefty price tag ideal for daily wear."
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Are ZINARA lab grown diamonds graded and certified?",
-            "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
+            "question": "Will the gold vermeil wear off?",
+            "answer": "Gold vermeil is a high-quality, durable finish designed for everyday wear. With proper care, it can maintain its shine for a long time. However, like any gold-plated jewellery, the gold layer can naturally wear over time with frequent friction or exposure to chemicals. We offer lifetime free replating on eligible pieces to keep your jewellery looking its best."
           }
         },
         "q4": {
           "type": "question",
           "settings": {
-            "question": "Do you deliver pan India?",
-            "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
+            "question": "Can I wear Zinara jewellery every day?",
+            "answer": "Absolutely. Our 18KT gold vermeil features a 2.5-micron gold layer over 925 sterling silver and is designed for everyday wear. It's water- and sweat-resistant, so you can wear it with confidence."
           }
         },
         "q5": {
           "type": "question",
           "settings": {
-            "question": "Is ID proof required for delivery?",
-            "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
+            "question": "How safe is my jewellery shipping?",
+            "answer": "Very! Your jewellery is packed in durable, tamper-proof packaging, shipped through reputed courier partners and fully insured until it reaches your doorstep."
           }
         },
         "q6": {
           "type": "question",
           "settings": {
+            "question": "Can I customise a piece?",
+            "answer": "Looking for something more personal? We offer customisation on select designs. WhatsApp our jewellery experts on +91 88518 12814 with your requirements and we'll let you know what's possible."
+          }
+        },
+        "question_3Y7i6z": {
+          "type": "question",
+          "settings": {
+            "question": "Can I place an order through WhatsApp?",
+            "answer": "Absolutely! WhatsApp our jewellery experts on +91 88518 12814 to get help with product details, sizing, availability and placing your order."
+          }
+        },
+        "question_FgBmBQ": {
+          "type": "question",
+          "settings": {
+            "question": "Can I speak to someone before I buy?",
+            "answer": "Of course! Our jewellery experts can help with design selection, sizing, materials and any questions you may have. Chat with an expert or book a video consultation for personalised guidance."
+          }
+        },
+        "question_b3QB8a": {
+          "type": "question",
+          "settings": {
             "question": "What payment options are available?",
-            "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
+            "answer": "We accept credit cards, debit cards, net banking, international cards, and Cash on Delivery (COD). COD is available on orders up to ₹35,000."
+          }
+        },
+        "question_MgP66B": {
+          "type": "question",
+          "settings": {
+            "question": "Do you deliver pan India?",
+            "answer": "We deliver across India to over 1900+ pincodes, so you can shop your favourite Zinara pieces from wherever you are. Delivery timelines may vary depending on your location and will be shown at checkout."
+          }
+        },
+        "question_dQw6Cr": {
+          "type": "question",
+          "settings": {
+            "question": "Are there shipping charges?",
+            "answer": "Shipping within India is free and insured. For details on return shipping charges, please refer to the Shipping Policy section."
           }
         }
       },
@@ -74,7 +111,12 @@
         "q3",
         "q4",
         "q5",
-        "q6"
+        "q6",
+        "question_3Y7i6z",
+        "question_FgBmBQ",
+        "question_b3QB8a",
+        "question_MgP66B",
+        "question_dQw6Cr"
       ],
       "settings": {
         "heading": "Frequently Asked Questions"
