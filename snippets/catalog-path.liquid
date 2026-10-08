@@ -1,0 +1,109 @@
+{%- doc -%}
+  Where a product or collection sits in the catalogue hierarchy - Category >
+  Sub-category > Vertical - kept as metaobjects (Content > Metaobjects):
+  `catalog_category` entries list their `catalog_subcategory` entries, which
+  list their `catalog_vertical` entries. Every entry has a name, an optional
+  tag (the name is used when it is empty) and its collection page.
+
+  Outputs the path as metaobject handles, comma separated, category first:
+    rings,rings-daily-wear,rings-daily-wear-everyday-minimal
+  and nothing when there is no match. Callers look the entries up again by
+  handle (index 0 = catalog_category, 1 = catalog_subcategory,
+  2 = catalog_vertical).
+
+  - With `product`: the first category whose tag the product carries, then
+    its sub-category and vertical - searched only under that parent, so
+    "Daily Wear" or "Evil Eye" resolve to the right branch even though several
+    branches use the same tag. Tags are compared handleized - case and
+    spacing do not matter.
+  - With `collection`: the entry whose collection page this is, and its parents.
+
+  @param {object} [product] - a Shopify product object
+  @param {object} [collection] - a Shopify collection object
+{%- enddoc -%}
+
+{%- liquid
+  assign path = ''
+
+  if product != blank
+    assign tag_key = '|'
+    for product_tag in product.tags
+      assign tag_handle = product_tag | handleize
+      assign tag_key = tag_key | append: tag_handle | append: '|'
+    endfor
+
+    for category in shop.metaobjects.catalog_category.values
+      assign needle = category.tag.value | default: category.name.value | handleize | prepend: '|' | append: '|'
+      unless tag_key contains needle
+        continue
+      endunless
+      assign path = category.system.handle
+
+      comment
+        A sub-category whose vertical also matches beats one that matches
+        alone: "Bands" is both a ring sub-category and a vertical under
+        Statement, so Rings + Statement + Bands is Statement > Bands.
+      endcomment
+      assign first_match = ''
+      assign full_match = ''
+      for subcategory in category.subcategories.value
+        assign needle = subcategory.tag.value | default: subcategory.name.value | handleize | prepend: '|' | append: '|'
+        unless tag_key contains needle
+          continue
+        endunless
+        if first_match == blank
+          assign first_match = subcategory.system.handle
+        endif
+
+        for vertical in subcategory.verticals.value
+          assign needle = vertical.tag.value | default: vertical.name.value | handleize | prepend: '|' | append: '|'
+          if tag_key contains needle
+            assign full_match = subcategory.system.handle | append: ',' | append: vertical.system.handle
+            break
+          endif
+        endfor
+        if full_match != blank
+          break
+        endif
+      endfor
+
+      if full_match != blank
+        assign path = path | append: ',' | append: full_match
+      elsif first_match != blank
+        assign path = path | append: ',' | append: first_match
+      endif
+      break
+    endfor
+
+  elsif collection != blank
+    for category in shop.metaobjects.catalog_category.values
+      if category.collection.value.id == collection.id
+        assign path = category.system.handle
+        break
+      endif
+
+      for subcategory in category.subcategories.value
+        if subcategory.collection.value.id == collection.id
+          assign path = category.system.handle | append: ',' | append: subcategory.system.handle
+          break
+        endif
+
+        for vertical in subcategory.verticals.value
+          if vertical.collection.value.id == collection.id
+            assign path = category.system.handle | append: ',' | append: subcategory.system.handle
+            assign path = path | append: ',' | append: vertical.system.handle
+            break
+          endif
+        endfor
+        if path != blank
+          break
+        endif
+      endfor
+      if path != blank
+        break
+      endif
+    endfor
+  endif
+
+  echo path
+-%}

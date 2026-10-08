@@ -1,0 +1,141 @@
+{%- doc -%}
+  "Book video call" sheet - the live theme's video trial form (name, mobile)
+  in the PDP sheet shell, plus an optional pincode, prefilled from the
+  delivery check. product.js (initVideoCall) posts it to the Google Apps Script
+  in the product section's `video_call_endpoint` setting, with the same fields
+  the live theme sends: name, mobile, pincode, pincodeAvailable, timestamp,
+  productHandle.
+
+  @param {object} product - a Shopify product object
+  @param {string} endpoint - Google Apps Script URL the request is posted to
+{%- enddoc -%}
+
+<dialog
+  class="pdp-sheet"
+  data-bottom-sheet
+  data-sheet="video-call"
+  scroll-lock
+  aria-labelledby="PdpVideoCallTitle"
+>
+  <div class="pdp-sheet_panel">
+    <div class="pdp-sheet_panel_head">
+      <h2 class="pdp-sheet_panel_head_title" id="PdpVideoCallTitle">Book a video call</h2>
+      <button
+        type="button"
+        class="pdp-sheet_panel_head_close"
+        data-sheet-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <form
+      class="pdp-review-form"
+      action="{{ endpoint }}"
+      method="post"
+      novalidate
+      data-video-call-form
+      data-product-handle="{{ product.handle }}"
+    >
+      <div class="pdp-sheet_panel_body pdp-review-form_body" data-video-call-fields>
+        <div class="pdp-review-form_product">
+          {%- if product.featured_image -%}
+            {{
+              product.featured_image
+              | image_url: width: 112
+              | image_tag: loading: 'lazy', widths: '56,112', sizes: '56px', alt: '', class: 'pdp-review-form_product_image'
+            }}
+          {%- endif -%}
+          <p class="pdp-review-form_product_title">{{ product.title }}</p>
+        </div>
+
+        <p class="pdp-review-form_note">
+          A Zinara expert will call you to show this piece live. Leave your details and we'll be in touch shortly.
+        </p>
+
+        <label class="pdp-review-form_field">
+          <span class="pdp-review-form_label">
+            Full name <span class="pdp-review-form_required" aria-hidden="true">*</span>
+          </span>
+          <input
+            type="text"
+            class="pdp-review-form_input"
+            name="name"
+            maxlength="100"
+            autocomplete="name"
+            required
+          >
+          <span class="pdp-review-form_error" data-error-for="name" hidden>Please enter your name.</span>
+        </label>
+
+        <div class="pdp-review-form_row">
+          <label class="pdp-review-form_field">
+            <span class="pdp-review-form_label">
+              Mobile number <span class="pdp-review-form_required" aria-hidden="true">*</span>
+            </span>
+            <input
+              type="tel"
+              class="pdp-review-form_input"
+              name="mobile"
+              inputmode="numeric"
+              maxlength="10"
+              autocomplete="tel-national"
+              placeholder="10-digit mobile number"
+              required
+            >
+            <span class="pdp-review-form_error" data-error-for="mobile" hidden>
+              Please enter a valid 10-digit mobile number.
+            </span>
+          </label>
+
+          <label class="pdp-review-form_field">
+            <span class="pdp-review-form_label">Pincode</span>
+            <input
+              type="text"
+              class="pdp-review-form_input"
+              name="pincode"
+              inputmode="numeric"
+              maxlength="6"
+              autocomplete="postal-code"
+            >
+            <span class="pdp-review-form_error" data-error-for="pincode" hidden>
+              Please enter a valid 6-digit pincode.
+            </span>
+          </label>
+        </div>
+
+        <p class="pdp-review-form_status" data-video-call-status role="alert" hidden></p>
+      </div>
+
+      <div class="pdp-review-form_done" data-video-call-done hidden>
+        <span class="pdp-review-form_done_icon" aria-hidden="true">
+          {{- 'icon-check.svg' | inline_asset_content -}}
+        </span>
+        <p class="pdp-review-form_done_title">Request received</p>
+        <p class="pdp-review-form_done_text">
+          Your request has been submitted successfully. We'll contact you shortly.
+        </p>
+      </div>
+
+      <div class="pdp-sheet_panel_footer">
+        <button
+          type="submit"
+          class="pdp_button pdp_button--primary pdp-review-form_submit"
+          data-video-call-submit
+        >
+          Request a video call
+        </button>
+        <button
+          type="button"
+          class="pdp_button pdp_button--outline pdp-review-form_submit"
+          data-sheet-close
+          data-video-call-close
+          hidden
+        >
+          Close
+        </button>
+      </div>
+    </form>
+  </div>
+</dialog>

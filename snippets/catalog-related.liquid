@@ -1,0 +1,43 @@
+{%- doc -%}
+  "You may also like" cards from the catalogue hierarchy (see
+  snippets/catalog-path): pieces from the product's own vertical first, then
+  the rest of its sub-category, then its category - up to `limit` cards,
+  never the product itself or the same piece twice. Outputs nothing for a
+  product outside the hierarchy.
+
+  @param {object} product - the product being viewed
+  @param {number} [limit] - how many cards at most, 12 by default
+{%- enddoc -%}
+
+{%- liquid
+  assign max_cards = limit | default: 12
+  capture catalog_path
+    render 'catalog-path', product: product
+  endcapture
+  assign handles = catalog_path | strip | split: ','
+  assign types = 'catalog_category,catalog_subcategory,catalog_vertical' | split: ','
+  assign seen = '|' | append: product.handle | append: '|'
+  assign shown = 0
+-%}
+
+{%- for node_handle in handles reversed -%}
+  {%- liquid
+    if shown >= max_cards
+      break
+    endif
+    assign type_index = handles.size | minus: forloop.index
+    assign node_collection = metaobjects[types[type_index]][node_handle].collection.value
+  -%}
+  {%- for item in node_collection.products -%}
+    {%- assign item_key = '|' | append: item.handle | append: '|' -%}
+    {%- if seen contains item_key -%}
+      {%- continue -%}
+    {%- endif -%}
+    {%- assign seen = seen | append: item.handle | append: '|' -%}
+    {%- render 'product-card', product: item, variant: 'grid' -%}
+    {%- assign shown = shown | plus: 1 -%}
+    {%- if shown >= max_cards -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}

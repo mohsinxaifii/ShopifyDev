@@ -134,6 +134,7 @@
       this.initTabs();
       this.initCart();
       this.initReviewForm();
+      this.initVideoCall();
       this.initDragScroll();
       this.recordRecentlyViewed();
 
@@ -443,6 +444,7 @@
       this.variantInput.value = match.id;
       this.updatePrice(match);
       this.updateUrl(match);
+      this.updateDetails(match);
 
       if (match.featuredMediaPosition > 0) this.gallery?.show(match.featuredMediaPosition - 1);
 
@@ -454,13 +456,13 @@
       if (label) label.textContent = match.available ? 'Add to cart' : 'Sold out';
     }
 
-    /* In stock ships in 24 hours; otherwise the product's own ship-time badge,
-       or no pill at all when it has none or the picks match no variant. */
+    /* "Ships in 24 hours" while the picked variant has stock on hand; no pill
+       otherwise, or when the picks match no variant. */
     updateShipTime(variant) {
       const pill = this.querySelector('[data-ship-time]');
       if (!pill) return;
-      const text = !variant ? '' : variant.inStock ? pill.dataset.shipFast : pill.dataset.shipDefault;
-      pill.textContent = text || '';
+      const text = variant?.inStock ? pill.dataset.shipFast : '';
+      pill.textContent = text;
       pill.hidden = !text;
     }
 
@@ -511,6 +513,22 @@
 
       this.querySelectorAll('[data-diff-price], [data-diff-cta-price]').forEach((node) => {
         node.textContent = this.money(variant.priceText);
+      });
+    }
+
+    /* Product information follows the variant: each variant's accordions are
+       pre-rendered in a <template> (snippets/pdp-detail-lists). Any list the
+       shopper had open stays open across the swap. */
+    updateDetails(variant) {
+      const target = this.querySelector('[data-variant-details]');
+      const source = this.querySelector(`template[data-variant-details-for="${variant.id}"]`);
+      if (!target || !source) return;
+
+      const headingOf = (details) => details.querySelector('[data-details-heading]')?.textContent.trim();
+      const open = new Set(Array.from(target.querySelectorAll('details[open]'), headingOf));
+      target.replaceChildren(source.content.cloneNode(true));
+      target.querySelectorAll('details').forEach((details) => {
+        if (open.has(headingOf(details))) details.open = true;
       });
     }
 
@@ -823,35 +841,19 @@
     /* --------------------------------------------------------- pincode */
 
     /**
-     * Delivery estimate, with the live theme's serviceability rules:
+     * Pincode check, with the live theme's serviceability rules:
      * assets/pincodes.json lists the pincodes each lane serves ("gold" /
      * "silver"; the product's tags pick one - see data-pincode-set). The list
      * is half a megabyte, so it is fetched on first use, not with the page.
-     * A served pincode delivers in 3 days when the picked variant is in stock,
-     * otherwise in the product's own lead time (pdp_delivery_days, else 17).
+     * No delivery date is promised: a served pincode gets the in-stock ship
+     * time when the picked variant has stock, and nothing about timing
+     * otherwise.
      */
     initPincode() {
       const button = this.querySelector('[data-pincode-check]');
       const input = this.querySelector('[data-pincode]');
       const result = this.querySelector('[data-pincode-result]');
       if (!button || !input || !result) return;
-
-      let lists = null;
-      const loadLists = () => {
-        if (!lists) {
-          lists = fetch(this.dataset.pincodesUrl)
-            .then((response) => {
-              if (!response.ok) throw new Error(`${response.status}`);
-              return response.json();
-            })
-            .then((data) => ({ gold: new Set(data.gold || []), silver: new Set(data.silver || []) }))
-            .catch((error) => {
-              lists = null; // try again on the next check
-              throw error;
-            });
-        }
-        return lists;
-      };
 
       const show = (text, invalid) => {
         result.textContent = text;
@@ -863,7 +865,7 @@
       input.addEventListener('input', () => {
         input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
       });
-      input.addEventListener('focus', () => loadLists().catch(() => {}), { once: true });
+      input.addEventListener('focus', () => this.pincodeServes('').catch(() => {}), { once: true });
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
@@ -880,8 +882,7 @@
 
         let served;
         try {
-          const sets = await loadLists();
-          served = (sets[this.dataset.pincodeSet] || sets.gold).has(value);
+          served = await this.pincodeServes(value);
         } catch (error) {
           show('Could not check this pincode right now. Please try again.', true);
           return;
@@ -894,18 +895,141 @@
         }
 
         const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
-        const days = variant?.shipsFast ? 3 : Number(this.dataset.deliveryDays) || 17;
-        const eta = new Date();
-        eta.setDate(eta.getDate() + days);
-        show(
-          `Delivers by ${eta.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} to ${value}.`,
-          false,
-        );
-        window.zinaraTrack?.('pincode_check', {
-          pincode: value,
-          serviceable: true,
-          delivery_eta: eta.toISOString().slice(0, 10),
+        const shipFast = this.querySelector('[data-ship-time]')?.dataset.shipFast || 'Ships in 24 hours';
+        show(variant?.inStock ? `${shipFast}. We deliver to ${value}.` : `We deliver to ${value}.`, false);
+        window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: true });
+      });
+    }
+
+    /* Whether this product's lane (data-pincode-set) serves a pincode. The
+       lists are fetched once, on first use; a failed fetch is retried. */
+    pincodeServes(pincode) {
+      if (!this.pincodeLists) {
+        this.pincodeLists = fetch(this.dataset.pincodesUrl)
+          .then((response) => {
+            if (!response.ok) throw new Error(`${response.status}`);
+            return response.json();
+          })
+          .then((data) => ({ gold: new Set(data.gold || []), silver: new Set(data.silver || []) }))
+          .catch((error) => {
+            this.pincodeLists = null;
+            throw error;
+          });
+      }
+      return this.pincodeLists.then((sets) => (sets[this.dataset.pincodeSet] || sets.gold).has(pincode));
+    }
+
+    /* ------------------------------------------------------- video call */
+
+    /**
+     * "Book video call" opens a short form (name, mobile, optional pincode)
+     * instead of leaving the page - the live theme's video trial form. Like
+     * the live theme it posts one `data` field of JSON to the Google Apps
+     * Script in the section's video call endpoint setting; Apps Script sends
+     * no CORS headers, so the response is opaque and a sent request counts as
+     * success, as it does on the live theme.
+     */
+    initVideoCall() {
+      const form = this.querySelector('[data-video-call-form]');
+      if (!form) return;
+
+      const fields = form.querySelector('[data-video-call-fields]');
+      const done = form.querySelector('[data-video-call-done]');
+      const submit = form.querySelector('[data-video-call-submit]');
+      const close = form.querySelector('[data-video-call-close]');
+      const status = form.querySelector('[data-video-call-status]');
+      const { name, mobile, pincode } = form.elements;
+
+      const setError = (field, message) => {
+        const error = form.querySelector(`[data-error-for="${field.name}"]`);
+        if (error) error.hidden = !message;
+        field.toggleAttribute('aria-invalid', Boolean(message));
+        return !message;
+      };
+
+      [mobile, pincode].forEach((field) => {
+        field.addEventListener('input', () => {
+          field.value = field.value.replace(/[^0-9]/g, '').slice(0, Number(field.maxLength));
         });
+      });
+
+      // Every open starts on a fresh form, with the pincode the shopper already
+      // checked on the page (or entered on the live theme's try-at-home popup).
+      this.addEventListener('click', (event) => {
+        if (!event.target.closest('[data-open="video-call"]')) return;
+        form.reset();
+        fields.hidden = false;
+        done.hidden = true;
+        submit.hidden = false;
+        close.hidden = true;
+        status.hidden = true;
+        [name, mobile, pincode].forEach((field) => setError(field, ''));
+        let saved = '';
+        try {
+          saved = localStorage.getItem('user_tryathomepincode') || '';
+        } catch (error) {
+          /* storage blocked */
+        }
+        const checked = this.querySelector('[data-pincode]')?.value || saved;
+        if (/^[1-9][0-9]{5}$/.test(checked)) pincode.value = checked;
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const values = {
+          name: name.value.trim(),
+          mobile: mobile.value.trim(),
+          pincode: pincode.value.trim(),
+        };
+        const valid = [
+          setError(name, values.name ? '' : 'missing'),
+          setError(mobile, /^\d{10}$/.test(values.mobile) ? '' : 'invalid'),
+          setError(pincode, !values.pincode || /^[1-9][0-9]{5}$/.test(values.pincode) ? '' : 'invalid'),
+        ].every(Boolean);
+        if (!valid) {
+          form.querySelector('[aria-invalid]')?.focus();
+          return;
+        }
+
+        submit.disabled = true;
+        status.hidden = true;
+
+        let pincodeAvailable = '';
+        if (values.pincode) {
+          try {
+            pincodeAvailable = (await this.pincodeServes(values.pincode)) ? 'Available' : 'Not Available';
+          } catch (error) {
+            /* lists unreachable - send the request without it */
+          }
+        }
+
+        try {
+          await fetch(form.action, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: new URLSearchParams({
+              data: JSON.stringify({
+                ...values,
+                pincodeAvailable,
+                timestamp: new Date().toISOString(),
+                productHandle: form.dataset.productHandle,
+              }),
+            }),
+          });
+        } catch (error) {
+          status.textContent = 'Could not send your request. Please check your connection and try again.';
+          status.hidden = false;
+          submit.disabled = false;
+          return;
+        }
+
+        // There is no booking id or slot yet - the team calls back to fix one.
+        window.zinaraTrack?.('video_call_booked', {});
+        submit.disabled = false;
+        fields.hidden = true;
+        done.hidden = false;
+        submit.hidden = true;
+        close.hidden = false;
       });
     }
 
@@ -1141,21 +1265,7 @@
         const chosen = selectedItems();
         const pieces = chosen.length > 0 ? chosen : pendingItems();
 
-        // A piece with options (metal colour, size) is picked in the variant
-        // drawer first, one after another, instead of going in as whatever
-        // its first variant is. Backing out of any picker cancels the add.
-        const lines = [];
-        for (const item of pieces) {
-          const id = window.zinaraVariants
-            ? await window.zinaraVariants.pick({
-                productUrl: item.dataset.productUrl,
-                variantCount: item.dataset.variantCount,
-                variantId: item.dataset.variantId,
-              })
-            : Number(item.dataset.variantId);
-          if (!id) return;
-          lines.push({ id: Number(id), quantity: 1 });
-        }
+        const lines = pieces.map((item) => ({ id: Number(item.dataset.variantId), quantity: 1 }));
         if (lines.length === 0) return;
         const ok = await this.addToCart(lines, { trigger: button });
         if (ok) {
@@ -1179,37 +1289,19 @@
       this.syncPair?.();
     }
 
-    /* Ticking an add-on that has options asks for the variant first (the
-       drawer opens over the add-ons sheet); backing out leaves it unticked.
-       The chosen variant is what Done / Add to cart later sends. */
-    async toggleAddon(toggle) {
-      const label = toggle.closest('.pdp-addons_grid_card')?.querySelector('[data-addon-variant]');
+    /* Ticking an add-on just marks it, as a paired piece is marked: Done /
+       Add to cart later sends its first available variant. */
+    toggleAddon(toggle) {
       const track = (action) =>
         window.zinaraTrack?.('addon_select', {
           addon_name: toggle.dataset.addonName,
           addon_price: Number(toggle.dataset.addonPrice) || undefined,
           action,
         });
-      if (toggle.getAttribute('aria-pressed') === 'true') {
-        toggle.setAttribute('aria-pressed', 'false');
-        if (label) label.hidden = true;
-        this.syncAddonHero();
-        track('remove');
-        return;
-      }
-
-      if (Number(toggle.dataset.variantCount) > 1 && window.zinaraVariants) {
-        const chosen = await window.zinaraVariants.choose(toggle.dataset.productUrl);
-        if (!chosen) return;
-        toggle.dataset.variantId = chosen.id;
-        if (label) {
-          label.textContent = chosen.title;
-          label.hidden = false;
-        }
-      }
-      toggle.setAttribute('aria-pressed', 'true');
+      const pressed = toggle.getAttribute('aria-pressed') === 'true';
+      toggle.setAttribute('aria-pressed', String(!pressed));
       this.syncAddonHero();
-      track('add');
+      track(pressed ? 'remove' : 'add');
     }
 
     /* The add-ons hero follows the ticked set. Each preview image lists the

@@ -18,66 +18,6 @@
     },
     "main": {
       "type": "collection",
-      "blocks": {
-        "chip-1": {
-          "type": "category",
-          "settings": {
-            "label": "All",
-            "url": ""
-          }
-        },
-        "chip-2": {
-          "type": "category",
-          "settings": {
-            "label": "Everyday",
-            "url": ""
-          }
-        },
-        "chip-3": {
-          "type": "category",
-          "settings": {
-            "label": "Party",
-            "url": ""
-          }
-        },
-        "chip-4": {
-          "type": "category",
-          "settings": {
-            "label": "Officewear",
-            "url": ""
-          }
-        },
-        "chip-5": {
-          "type": "category",
-          "settings": {
-            "label": "Bands",
-            "url": ""
-          }
-        },
-        "chip-6": {
-          "type": "category",
-          "settings": {
-            "label": "Engagement rings",
-            "url": ""
-          }
-        },
-        "chip-7": {
-          "type": "category",
-          "settings": {
-            "label": "Pendants",
-            "url": ""
-          }
-        }
-      },
-      "block_order": [
-        "chip-1",
-        "chip-2",
-        "chip-3",
-        "chip-4",
-        "chip-5",
-        "chip-6",
-        "chip-7"
-      ],
       "settings": {
         "products_per_page": 24
       }

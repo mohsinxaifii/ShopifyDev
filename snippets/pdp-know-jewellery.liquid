@@ -3,10 +3,9 @@
   stone comparison. Figma 7930:96276 (accordion) and, at reduced type sizes,
   7930:101124 inside the price-difference sidesheet.
 
-  Every claim here is per-product and comes from metafields: a silver piece must
-  not tell the shopper it has 5x thicker gold plating, and a moissanite piece
-  must not be compared against a mined diamond. The Figma copy is kept only as
-  the fallback for products that have not been filled in yet.
+  The copy is the same for every product, so it comes from the product
+  section's "Know your jewellery" settings (passed in as `kj`), not from
+  product metafields.
 
   The connector lines are one inline SVG rather than three positioned images:
   Figma draws them as separate rotated vectors, but rotating an <img> inside a
@@ -14,7 +13,7 @@
   the block. The path data below is those same three vectors resolved onto a
   single 532x238 canvas, so they scale with the diagram instead of against it.
 
-  @param {object} product - a Shopify product object
+  @param {object} kj - the product section's settings
   @param {object} [vermeil_image] - cutaway render of the plating stack
   @param {object} [mined_image] - stone render used for both comparison sides
   @param {boolean} [compact] - smaller type, for the sidesheet
@@ -22,19 +21,21 @@
 {%- enddoc -%}
 
 {%- liquid
-  assign base_metal = product.metafields.custom.pdp_base_metal.value
-  assign plating = product.metafields.custom.pdp_plating.value
-  assign material_name = product.metafields.custom.pdp_material_name.value | default: 'Gold Vermeil'
-  assign stone_name = product.metafields.custom.pdp_stone_name.value | default: 'Lab Grown Diamonds'
-
-  assign callouts = product.metafields.custom.pdp_material_callouts.value
-  assign compare_labels = product.metafields.custom.pdp_stone_compare_labels.value
-  assign compare_notes = product.metafields.custom.pdp_stone_compare_notes.value
+  assign base_metal = kj.kj_base_metal
+  assign plating = kj.kj_plating
+  assign material_name = kj.kj_material_name | default: 'Gold Vermeil'
+  assign stone_name = kj.kj_stone_name | default: 'Lab Grown Diamonds'
 
   comment
-    Icons pair with the callouts positionally, so the list order in the metafield
-    is what decides which leader line each label sits on.
+    Icons pair with the callouts positionally, so the line order in the
+    setting is what decides which leader line each label sits on.
   endcomment
+  assign callouts = kj.kj_callouts | strip | newline_to_br | split: '<br />'
+  assign compare_labels = kj.kj_mined_label | append: '||' | append: kj.kj_lab_label | split: '||'
+  if kj.kj_mined_label == blank or kj.kj_lab_label == blank
+    assign compare_labels = blank
+  endif
+  assign compare_notes = kj.kj_compare_note_1 | append: '||' | append: kj.kj_compare_note_2 | split: '||'
   assign callout_icons = 'icon-sparkles.svg,icon-droplet.svg,icon-layers.svg' | split: ','
 
   assign kj_class = 'pdp-kj'
@@ -110,7 +111,7 @@
             <span class="pdp-kj_vermeil_diagram_callout_icon" aria-hidden="true">
               {{- callout_icons[forloop.index0] | inline_asset_content -}}
             </span>
-            <span class="pdp-kj_vermeil_diagram_callout_text">{{ callout }}</span>
+            <span class="pdp-kj_vermeil_diagram_callout_text">{{ callout | strip }}</span>
           </span>
         {%- endfor -%}
       </div>
@@ -183,8 +184,8 @@
         7930:101169); the accordion version stops at the comparison row.
       {%- endcomment -%}
       {%- if compact -%}
-        {%- assign certification = product.metafields.custom.pdp_certification_label.value -%}
-        {%- assign pricing_claim = product.metafields.custom.pdp_pricing_claim.value -%}
+        {%- assign certification = kj.kj_certification_label -%}
+        {%- assign pricing_claim = kj.kj_pricing_claim -%}
         {%- if certification != blank or pricing_claim != blank -%}
           <div class="pdp-kj_diamonds_facts">
             {%- if certification != blank -%}

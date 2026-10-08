@@ -1,0 +1,65 @@
+{%- doc -%}
+  The chips above a collection's grid, from the catalogue hierarchy (see
+  snippets/catalog-path): "All" for the page itself, then
+  - a category: its sub-categories
+  - a sub-category: its verticals
+  - a vertical: nothing (the last level)
+  - a collection outside the hierarchy: the categories.
+  Entries without a collection page are skipped, and the row is left out
+  when no chip would link anywhere.
+
+  @param {string} path - this collection's path from catalog-path (empty when outside it)
+  @param {object} collection - the collection being viewed
+{%- enddoc -%}
+
+{%- liquid
+  assign handles = path | split: ','
+  case handles.size
+    when 0
+      assign children = metaobjects.catalog_category.values
+    when 1
+      assign children = metaobjects.catalog_category[handles[0]].subcategories.value
+    when 2
+      assign children = metaobjects.catalog_subcategory[handles[1]].verticals.value
+    else
+      assign children = blank
+  endcase
+-%}
+
+{%- capture child_chips -%}
+  {%- assign position = 1 -%}
+  {%- for child in children -%}
+    {%- assign child_collection = child.collection.value -%}
+    {%- if child_collection == blank -%}
+      {%- continue -%}
+    {%- endif -%}
+    {%- assign position = position | plus: 1 -%}
+    <a
+      href="{{ child_collection.url }}"
+      class="collection_wrapper_main_chips_chip"
+      data-analytics="plp_chip_click"
+      data-analytics-chip-name="{{ child.name.value | escape }}"
+      data-analytics-collection-name="{{ collection.title | escape }}"
+      data-analytics-position="{{ position }}"
+    >
+      {{- child.name.value -}}
+    </a>
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if child_chips != blank -%}
+  <nav class="collection_wrapper_main_chips" aria-label="{{ 'collection.filters' | t }}">
+    <a
+      href="{{ collection.url }}"
+      class="collection_wrapper_main_chips_chip is-active"
+      data-analytics="plp_chip_click"
+      data-analytics-chip-name="All"
+      data-analytics-collection-name="{{ collection.title | escape }}"
+      data-analytics-position="1"
+      aria-current="page"
+    >
+      All
+    </a>
+    {{- child_chips -}}
+  </nav>
+{%- endif -%}

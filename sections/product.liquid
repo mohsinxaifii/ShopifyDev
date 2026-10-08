@@ -24,49 +24,37 @@
     assign saving_percent = saving | divided_by: current_variant.compare_at_price | round
   endif
 
-  assign material_name = product.metafields.custom.pdp_material_name.value | default: 'Gold Vermeil'
+  assign material_name = section.settings.kj_material_name | default: 'Gold Vermeil'
   comment
-    The explainer accordion and the link that opens it both disappear when a
-    product carries none of the content they would show.
+    The explainer accordion and the link that opens it both disappear when the
+    section's "Know your jewellery" settings hold none of the content they
+    would show.
   endcomment
   assign has_explainer = false
-  if product.metafields.custom.pdp_material_callouts.value != blank
+  if section.settings.kj_callouts != blank
     assign has_explainer = true
   endif
-  if product.metafields.custom.pdp_stone_compare_labels.value != blank
+  if section.settings.kj_mined_label != blank and section.settings.kj_lab_label != blank
     assign has_explainer = true
   endif
   assign material_tags = product.metafields.custom.pdp_material_tags.value
-  assign media_badges = product.metafields.custom.pdp_media_badges.value
 
   comment
-    Ship time (Figma 8106:57906, "Ships in 2 days"). A variant with stock on
-    hand ships in 24 hours; anything else keeps the product's own "Ships in ..."
-    badge, or shows none if it has none. product.js swaps the text as the
-    variant changes, so the pill is always rendered and hidden when empty.
-    Any ship-time badge on the product ("Ships within 24 hours" included) is
-    taken out of the static pills, and a 24-hour one is dropped altogether -
-    only stock on hand may claim that, or a sold-out variant would keep it.
+    Ship time (Figma 8106:57906): "Ships in 24 hours" only while the selected
+    variant has stock on hand; otherwise nothing about shipping is shown.
+    product.js re-checks it as the variant changes, so the pill is always
+    rendered and hidden when empty.
   endcomment
-  assign ship_badge = ''
-  assign other_badges = ''
-  for badge in media_badges
-    assign badge_text = badge | strip | downcase
-    if badge_text contains 'ship' or badge_text contains 'dispatch'
-      unless badge_text contains '24' or ship_badge != ''
-        assign ship_badge = badge | strip
-      endunless
-    else
-      assign other_badges = other_badges | append: badge | append: '||'
-    endif
-  endfor
-  assign other_badges = other_badges | split: '||'
   assign ship_fast_label = section.settings.ship_fast_label | default: 'Ships in 24 hours'
-  assign ship_label = ship_badge
+  assign ship_label = ''
   if current_variant.available and current_variant.inventory_quantity > 0
     assign ship_label = ship_fast_label
   endif
-  assign highlights = product.metafields.custom.pdp_highlights.value
+  comment
+    "Why you'll love it" is the same for every product: one line of the
+    section's textarea per bullet.
+  endcomment
+  assign highlights = section.settings.highlights | strip | newline_to_br | split: '<br />'
   comment
     Add-ons come from the product's add-on set (custom.pdp_addon_set, a
     pdp_addon_set entry) when it has one: the products on offer, the default
@@ -78,12 +66,6 @@
   assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
   assign addon_previews = addon_set.previews.value
   comment
-    Read the PDP-specific keys first and fall back to the shared ones. The live
-    theme reads content.product_details_list, so this theme writes its own
-    custom.pdp_* copies and never has to edit those.
-  endcomment
-
-  comment
     Every ring ("Vermeil Rings") gets the one shop-wide size guide (the Ring size
     guide metaobject, see pdp-size-guide); nothing else shows a guide link.
   endcomment
@@ -91,7 +73,6 @@
   if product.type contains 'Ring'
     assign has_size_guide = true
   endif
-  assign detail_lists = product.metafields.custom.pdp_detail_lists.value | default: product.metafields.content.product_details_list.value
 
   assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
   capture pair_handles
@@ -155,7 +136,6 @@
   class="pdp"
   data-product-url="{{ product.url }}"
   data-product-handle="{{ product.handle }}"
-  data-delivery-days="{{ product.metafields.custom.pdp_delivery_days.value | default: 17 }}"
   data-pincodes-url="{{ 'pincodes.json' | asset_url }}"
   data-pincode-set="{{ pincode_set }}"
 >
@@ -231,16 +211,12 @@
               class="pdp_gallery_stage_bottom_pill"
               data-ship-time
               data-ship-fast="{{ ship_fast_label | escape }}"
-              data-ship-default="{{ ship_badge | escape }}"
               {% if ship_label == blank %}
                 hidden
               {% endif %}
             >
               {{- ship_label -}}
             </span>
-            {%- for badge in other_badges -%}
-              <span class="pdp_gallery_stage_bottom_pill">{{ badge }}</span>
-            {%- endfor -%}
           </div>
 
           {%- comment -%}
@@ -716,20 +692,19 @@
               <span>Chat with us</span>
             </a>
           {%- endif -%}
-          {%- if section.settings.video_call_url != blank -%}
-            <a
-              href="{{ section.settings.video_call_url }}"
+          {%- if section.settings.video_call_endpoint != blank -%}
+            <button
+              type="button"
               class="pdp_button pdp_button--outline"
+              data-open="video-call"
               data-analytics="expert_help_click"
               data-analytics-help-type="video_call"
-              target="_blank"
-              rel="noopener"
             >
               <span class="pdp_button_icon" aria-hidden="true">
                 {{- 'icon-video-call.svg' | inline_asset_content -}}
               </span>
               <span>Book video call</span>
-            </a>
+            </button>
           {%- endif -%}
         </div>
       </section>
@@ -782,7 +757,7 @@
                     <span class="pdp_highlights_item_icon" aria-hidden="true">
                       {{- icon_name | inline_asset_content -}}
                     </span>
-                    <span class="pdp_highlights_item_text">{{ item.bullet }}</span>
+                    <span class="pdp_highlights_item_text">{{ item | strip }}</span>
                   </li>
                 {%- endfor -%}
               </ul>
@@ -790,18 +765,12 @@
           </details>
         {%- endif -%}
 
-        {%- for list in detail_lists -%}
-          <details class="pdp_accordion">
-            <summary class="pdp_accordion_summary">
-              <span>{{ list.heading }}</span>
-              <span class="pdp_accordion_summary_sign" aria-hidden="true">
-                <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
-                <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
-              </span>
-            </summary>
-            {%- render 'pdp-accordion-list', list: list, product: product -%}
-          </details>
-        {%- endfor -%}
+        {%- render 'pdp-detail-lists', product: product, variant: current_variant -%}
+
+        {%- render 'pdp-care-guide',
+          heading: section.settings.care_guide_heading,
+          image: section.settings.care_guide_image
+        -%}
 
         {%- for block in section.blocks -%}
           {%- if block.type == 'accordion' -%}
@@ -835,7 +804,7 @@
           </summary>
           <div class="pdp_accordion_body">
             {%- render 'pdp-know-jewellery',
-              product: product,
+              kj: section.settings,
               vermeil_image: section.settings.vermeil_image,
               mined_image: section.settings.diamond_image
             -%}
@@ -868,7 +837,16 @@
 
         <scroll-carousel class="pdp_related_panel" data-panel="also-like">
           <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
-            {%- if related_products != blank -%}
+            {%- comment -%}
+              The catalogue hierarchy first (same vertical, then sub-category,
+              then category); products outside it keep the older sources.
+            {%- endcomment -%}
+            {%- capture hierarchy_cards -%}
+              {%- render 'catalog-related', product: product, limit: 12 -%}
+            {%- endcapture -%}
+            {%- if hierarchy_cards != blank -%}
+              {{ hierarchy_cards }}
+            {%- elsif related_products != blank -%}
               {%- for item in related_products limit: 12 -%}
                 {%- render 'product-card', product: item, variant: 'grid' -%}
               {%- endfor -%}
@@ -966,8 +944,6 @@
                   data-pair-item
                   data-product-id="{{ item.id }}"
                   data-variant-id="{{ item.first_available_variant.id }}"
-                  data-variant-count="{{ item.variants.size }}"
-                  data-product-url="{{ item.url }}"
                 >
                   <a href="{{ item.url }}" class="pdp-mini_media">
                     {%- if item.featured_image -%}
@@ -1116,10 +1092,14 @@
     previews: addon_previews,
     whatsapp_url: section.settings.whatsapp_url
   -%}
-  {%- render 'pdp-sgl-modal', product: product, fallback: section.settings.certificate_image -%}
+  {%- render 'pdp-sgl-modal', certificate: section.settings.certificate_image -%}
+  {%- if section.settings.video_call_endpoint != blank -%}
+    {%- render 'pdp-video-call', product: product, endpoint: section.settings.video_call_endpoint -%}
+  {%- endif -%}
   {%- render 'pdp-price-difference',
     product: product,
     current_variant: current_variant,
+    kj: section.settings,
     certificate: section.settings.certificate_image,
     vermeil_image: section.settings.vermeil_image,
     diamond_image: section.settings.diamond_image,
@@ -1139,12 +1119,6 @@
             "options": {{ variant.options | json }},
             "available": {{ variant.available | json }},
             "inStock": {% if variant.available and variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
-            {%- comment -%}
-              For the delivery estimate, as on the live theme: a variant ships
-              quickly unless Shopify tracks its stock and it has run out - an
-              untracked variant is made to ship, not out of stock.
-            {%- endcomment %}
-            "shipsFast": {% if variant.inventory_management != 'shopify' or variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
             "price": {{ variant.price | json }},
             "sku": {{ variant.sku | json }},
             "title": {{ variant.title | json }},
@@ -1193,7 +1167,7 @@
       "id": "ship_fast_label",
       "label": "In-stock ship time",
       "default": "Ships in 24 hours",
-      "info": "Shown on the gallery when the selected variant has stock. Otherwise the product's own \"Ships in ...\" badge (custom.pdp_media_badges) is shown."
+      "info": "Shown on the gallery and with the pincode check when the selected variant has stock. Nothing about shipping is shown otherwise."
     },
     {
       "type": "checkbox",
@@ -1222,7 +1196,13 @@
       "default": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice."
     },
     { "type": "url", "id": "whatsapp_url", "label": "WhatsApp link" },
-    { "type": "url", "id": "video_call_url", "label": "Video call link" },
+    {
+      "type": "text",
+      "id": "video_call_endpoint",
+      "label": "Video call form endpoint",
+      "info": "Google Apps Script URL that \"Book video call\" requests are sent to - the same one the live theme's video trial form uses. Leave empty to hide the button.",
+      "default": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec"
+    },
     { "type": "header", "content": "Add-ons" },
     {
       "type": "product",
@@ -1236,7 +1216,40 @@
       "default": "Add a gift sleeve"
     },
     { "type": "image_picker", "id": "addons_image", "label": "Add-ons sidesheet image" },
+    { "type": "header", "content": "Why you'll love it" },
+    {
+      "type": "textarea",
+      "id": "highlights",
+      "label": "Bullets",
+      "info": "One per line. Shown on every product.",
+      "default": "Skin Friendly Jewellery\nAnti Tarnish, Made for Daily Wear\nLong Lasting and Durable Vermeil\nHypoallergenic finish\nPremium look, smart choice"
+    },
+    { "type": "header", "content": "Care guide" },
+    { "type": "text", "id": "care_guide_heading", "label": "Heading", "default": "Care guide" },
+    {
+      "type": "image_picker",
+      "id": "care_guide_image",
+      "label": "Image",
+      "info": "Shown on every product. Leave empty to hide the Care guide accordion."
+    },
     { "type": "header", "content": "Know your jewellery" },
+    { "type": "text", "id": "kj_material_name", "label": "Material name", "default": "Gold Vermeil" },
+    { "type": "text", "id": "kj_base_metal", "label": "Base metal", "default": "Sterling Silver 925" },
+    { "type": "text", "id": "kj_plating", "label": "Plating", "default": "18 KT Gold" },
+    {
+      "type": "textarea",
+      "id": "kj_callouts",
+      "label": "Diagram callouts",
+      "info": "One per line, up to 3, in diagram order: sparkle, droplet, layers.",
+      "default": "Looks and feels like solid gold\nSweat and waterproof\n5x thicker gold plating"
+    },
+    { "type": "text", "id": "kj_stone_name", "label": "Stone name", "default": "Lab Grown Diamonds" },
+    { "type": "text", "id": "kj_mined_label", "label": "Comparison: left label", "default": "Mined diamond" },
+    { "type": "text", "id": "kj_lab_label", "label": "Comparison: right label", "default": "Lab grown diamond" },
+    { "type": "text", "id": "kj_compare_note_1", "label": "Comparison: note above arrow", "default": "Same sparkle" },
+    { "type": "text", "id": "kj_compare_note_2", "label": "Comparison: note below arrow", "default": "100% same composition" },
+    { "type": "text", "id": "kj_certification_label", "label": "Certification", "default": "SGL certified" },
+    { "type": "text", "id": "kj_pricing_claim", "label": "Pricing claim", "default": "40-60% easier on your pocket" },
     { "type": "image_picker", "id": "vermeil_image", "label": "Gold vermeil cutaway" },
     { "type": "image_picker", "id": "diamond_image", "label": "Diamond render" },
     { "type": "image_picker", "id": "certificate_image", "label": "SGL certificate sample" },

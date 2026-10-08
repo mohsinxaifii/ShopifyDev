@@ -46,6 +46,25 @@
       assign parent = product.collections.first
     endif
   endif
+
+  comment
+    A product or collection that sits in the catalogue hierarchy (see
+    snippets/catalog-path) shows that instead: Home / Rings / Daily Wear /
+    Everyday Minimal / product. On a hierarchy collection the last rung is the
+    page itself, so it is the current label rather than a link.
+  endcomment
+  assign catalog_path = ''
+  if product != blank
+    capture catalog_path
+      render 'catalog-path', product: product
+    endcapture
+  elsif template.name == 'collection'
+    capture catalog_path
+      render 'catalog-path', collection: collection
+    endcapture
+  endif
+  assign catalog_path = catalog_path | strip | split: ','
+  assign catalog_types = 'catalog_category,catalog_subcategory,catalog_vertical' | split: ','
 -%}
 
 {%- liquid
@@ -77,7 +96,34 @@
         {{- section.settings.home_label -}}
       </a>
     </li>
-    {%- if parent != blank -%}
+    {%- if catalog_path.size > 0 -%}
+      {%- for node_handle in catalog_path -%}
+        {%- liquid
+          assign node = metaobjects[catalog_types[forloop.index0]][node_handle]
+          assign node_name = node.name.value
+          assign node_url = node.collection.value.url
+          if product == blank and forloop.last
+            assign current = node_name
+            break
+          endif
+        -%}
+        <li class="breadcrumb_list_item">
+          {%- if node_url != blank -%}
+            <a
+              href="{{ node_url }}"
+              class="breadcrumb_list_item_link"
+              data-analytics="breadcrumb_click"
+              data-analytics-crumb-text="{{ node_name | escape }}"
+              data-analytics-crumb-level="{{ forloop.index | plus: 1 }}"
+            >
+              {{- node_name -}}
+            </a>
+          {%- else -%}
+            <span class="breadcrumb_list_item_link">{{ node_name }}</span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    {%- elsif parent != blank -%}
       <li class="breadcrumb_list_item">
         <a
           href="{{ parent.url }}"
