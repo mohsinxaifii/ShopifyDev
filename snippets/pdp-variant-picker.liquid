@@ -41,37 +41,46 @@
         endif
       endif
     -%}
-    <fieldset
+    {%- comment -%}
+      A radio group with an ordinary heading row rather than fieldset/legend:
+      browsers lay a legend out in their own way (some draw it over the
+      border), which pushed the size guide link down onto the size chips.
+    {%- endcomment -%}
+    <div
       class="pdp_option{% if is_swatch %} pdp_option--swatch{% endif %}"
+      role="radiogroup"
+      aria-labelledby="PdpOption{{ option.position }}"
       data-option-group
       data-option-position="{{ option.position }}"
     >
-      <legend class="pdp_option_head">
-        <span class="pdp_option_head_name">
-          {{- option.name -}}
-          {%- if is_swatch %}:{% endif -%}
-        </span>
-        {%- if is_swatch -%}
-          <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
-        {%- endif -%}
-      </legend>
-
-      {%- if show_guide -%}
-        {%- assign size_guide_inline = true -%}
-        <button
-          type="button"
-          class="pdp_link pdp_option_guide"
-          data-open="size-guide"
-          data-analytics="size_guide_open"
-          data-analytics-product-category="{{ product.type | escape }}"
-          data-analytics-click-location="pdp"
-        >
-          <span class="pdp_option_guide_icon" aria-hidden="true">
-            {{- 'icon-ruler.svg' | inline_asset_content -}}
+      <div class="pdp_option_top">
+        <p class="pdp_option_head" id="PdpOption{{ option.position }}">
+          <span class="pdp_option_head_name">
+            {{- option.name -}}
+            {%- if is_swatch %}:{% endif -%}
           </span>
-          {{ block.settings.size_guide_label | default: 'Size guide' }}
-        </button>
-      {%- endif -%}
+          {%- if is_swatch -%}
+            <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
+          {%- endif -%}
+        </p>
+
+        {%- if show_guide -%}
+          {%- assign size_guide_inline = true -%}
+          <button
+            type="button"
+            class="pdp_link pdp_option_guide"
+            data-open="size-guide"
+            data-analytics="size_guide_open"
+            data-analytics-product-category="{{ product.type | escape }}"
+            data-analytics-click-location="pdp"
+          >
+            <span class="pdp_option_guide_icon" aria-hidden="true">
+              {{- 'icon-ruler.svg' | inline_asset_content -}}
+            </span>
+            {{ block.settings.size_guide_label | default: 'Size guide' }}
+          </button>
+        {%- endif -%}
+      </div>
 
       <div class="pdp_option_values">
         {%- for value in option.values -%}
@@ -98,7 +107,7 @@
           </label>
         {%- endfor -%}
       </div>
-    </fieldset>
+    </div>
   {%- endfor -%}
 
   {%- comment -%}

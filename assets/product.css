@@ -643,16 +643,20 @@
   border: 0;
 }
 
-/* A fieldset draws its legend inside its top border, above the padding, so the
-   12px Figma puts over the label would never appear and the absolutely placed
-   size guide would land beside the values. A floated legend is laid out as
-   ordinary content instead (float itself is ignored in the flex column). */
+/* Option name (and the swatch's picked value) on the left, the size guide link
+   on the right, in one row. */
+.pdp_option_top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .pdp_option_head {
-  float: left;
-  width: 100%;
   display: flex;
   gap: 8px;
   align-items: baseline;
+  margin: 0;
   padding: 0;
   font-weight: 600;
   font-size: 18px;
@@ -666,9 +670,7 @@
 }
 
 .pdp_option_guide {
-  position: absolute;
-  top: 12px;
-  right: 0;
+  flex: 0 0 auto;
 }
 
 .pdp_option--guide-only {
