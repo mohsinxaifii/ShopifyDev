@@ -1,0 +1,44 @@
+{%- doc -%}
+  "Why you'll love it" accordion: one bullet per line of the block's text,
+  each with the icon for its position (leaf, sparkles, zap, bacteria, star).
+
+  @param {object} block - the "Why you'll love it" block
+{%- enddoc -%}
+
+{%- assign highlights = block.settings.highlights | strip | newline_to_br | split: '<br />' -%}
+{%- if highlights != blank -%}
+  <details class="pdp_accordion" {{ block.shopify_attributes }}{% if block.settings.open %} open{% endif %}>
+    <summary class="pdp_accordion_summary">
+      <span>{{ block.settings.highlights_heading | default: 'Why you’ll love it' }}</span>
+      <span class="pdp_accordion_summary_sign" aria-hidden="true">
+        <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+        <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+      </span>
+    </summary>
+    <div class="pdp_accordion_body">
+      <ul class="pdp_highlights">
+        {%- for item in highlights -%}
+          {%- assign icon_index = forloop.index0 | modulo: 5 -%}
+          {%- case icon_index -%}
+            {%- when 0 -%}
+              {%- assign icon_name = 'icon-leaf.svg' -%}
+            {%- when 1 -%}
+              {%- assign icon_name = 'icon-sparkles.svg' -%}
+            {%- when 2 -%}
+              {%- assign icon_name = 'icon-zap.svg' -%}
+            {%- when 3 -%}
+              {%- assign icon_name = 'icon-bacteria.svg' -%}
+            {%- else -%}
+              {%- assign icon_name = 'icon-honour-star.svg' -%}
+          {%- endcase -%}
+          <li class="pdp_highlights_item">
+            <span class="pdp_highlights_item_icon" aria-hidden="true">
+              {{- icon_name | inline_asset_content -}}
+            </span>
+            <span class="pdp_highlights_item_text">{{ item | strip }}</span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </details>
+{%- endif -%}

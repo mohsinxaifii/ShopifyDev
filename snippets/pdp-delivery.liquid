@@ -1,0 +1,25 @@
+{%- doc -%}
+  Delivery estimate - Figma 7930:96136. The pincode check itself is in
+  product.js (initPincode).
+
+  @param {object} block - the "Delivery estimate" block
+{%- enddoc -%}
+
+<section class="pdp_delivery" data-animate {{ block.shopify_attributes }}>
+  <h2 class="pdp_section_title">{{ block.settings.delivery_heading | default: 'Delivery Estimate' }}</h2>
+  <div class="pdp_delivery_row">
+    <input
+      type="text"
+      class="pdp_delivery_row_input"
+      inputmode="numeric"
+      maxlength="6"
+      placeholder="{{ block.settings.pincode_placeholder | default: 'Enter pincode' | escape }}"
+      aria-label="{{ block.settings.pincode_placeholder | default: 'Enter pincode' | escape }}"
+      data-pincode
+    >
+    <button type="button" class="pdp_button pdp_button--primary pdp_button--compact" data-pincode-check>
+      {{ block.settings.pincode_button_label | default: 'Check' }}
+    </button>
+  </div>
+  <p class="pdp_delivery_result" data-pincode-result hidden></p>
+</section>
