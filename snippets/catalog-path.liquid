@@ -1,0 +1,92 @@
+{%- doc -%}
+  Where a product or collection sits in the catalogue hierarchy - Category >
+  Sub-category > Vertical - kept as metaobjects (Content > Metaobjects):
+  `catalog_category` entries list their `catalog_subcategory` entries, which
+  list their `catalog_vertical` entries. Every entry has a name, an optional
+  tag (the name is used when it is empty) and its collection page.
+
+  Outputs the path as metaobject handles, comma separated, category first:
+    rings,rings-daily-wear,rings-daily-wear-everyday-minimal
+  and nothing when there is no match. Callers look the entries up again by
+  handle (index 0 = catalog_category, 1 = catalog_subcategory,
+  2 = catalog_vertical).
+
+  - With `product`: the first category whose tag the product carries, then the
+    first of that category's sub-categories it carries, then the first of that
+    sub-category's verticals. So "Daily Wear" or "Evil Eye" resolve under the
+    right parent even though several branches use the same tag. Tags are
+    compared handleized - case and spacing do not matter.
+  - With `collection`: the entry whose collection page this is, and its parents.
+
+  @param {object} [product] - a Shopify product object
+  @param {object} [collection] - a Shopify collection object
+{%- enddoc -%}
+
+{%- liquid
+  assign path = ''
+
+  if product != blank
+    assign tag_key = '|'
+    for product_tag in product.tags
+      assign tag_handle = product_tag | handleize
+      assign tag_key = tag_key | append: tag_handle | append: '|'
+    endfor
+
+    for category in shop.metaobjects.catalog_category.values
+      assign needle = category.tag.value | default: category.name.value | handleize | prepend: '|' | append: '|'
+      unless tag_key contains needle
+        continue
+      endunless
+      assign path = category.system.handle
+
+      for subcategory in category.subcategories.value
+        assign needle = subcategory.tag.value | default: subcategory.name.value | handleize | prepend: '|' | append: '|'
+        unless tag_key contains needle
+          continue
+        endunless
+        assign path = path | append: ',' | append: subcategory.system.handle
+
+        for vertical in subcategory.verticals.value
+          assign needle = vertical.tag.value | default: vertical.name.value | handleize | prepend: '|' | append: '|'
+          if tag_key contains needle
+            assign path = path | append: ',' | append: vertical.system.handle
+            break
+          endif
+        endfor
+        break
+      endfor
+      break
+    endfor
+
+  elsif collection != blank
+    for category in shop.metaobjects.catalog_category.values
+      if category.collection.value.id == collection.id
+        assign path = category.system.handle
+        break
+      endif
+
+      for subcategory in category.subcategories.value
+        if subcategory.collection.value.id == collection.id
+          assign path = category.system.handle | append: ',' | append: subcategory.system.handle
+          break
+        endif
+
+        for vertical in subcategory.verticals.value
+          if vertical.collection.value.id == collection.id
+            assign path = category.system.handle | append: ',' | append: subcategory.system.handle
+            assign path = path | append: ',' | append: vertical.system.handle
+            break
+          endif
+        endfor
+        if path != blank
+          break
+        endif
+      endfor
+      if path != blank
+        break
+      endif
+    endfor
+  endif
+
+  echo path
+-%}
