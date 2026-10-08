@@ -1,0 +1,54 @@
+{%- doc -%}
+  The chips above a hierarchy collection's grid (see snippets/catalog-path):
+  "All" for the page itself, then a category's sub-categories or a
+  sub-category's verticals. A vertical is the last level, so it gets none.
+  Children without a collection page are skipped.
+
+  @param {string} path - this collection's path from catalog-path
+  @param {object} collection - the collection being viewed
+{%- enddoc -%}
+
+{%- liquid
+  assign handles = path | split: ','
+  assign children = blank
+  case handles.size
+    when 1
+      assign children = metaobjects.catalog_category[handles[0]].subcategories.value
+    when 2
+      assign children = metaobjects.catalog_subcategory[handles[1]].verticals.value
+  endcase
+-%}
+
+{%- if children != blank and children.size > 0 -%}
+  <nav class="collection_wrapper_main_chips" aria-label="{{ 'collection.filters' | t }}">
+    <a
+      href="{{ collection.url }}"
+      class="collection_wrapper_main_chips_chip is-active"
+      data-analytics="plp_chip_click"
+      data-analytics-chip-name="All"
+      data-analytics-collection-name="{{ collection.title | escape }}"
+      data-analytics-position="1"
+      aria-current="page"
+    >
+      All
+    </a>
+    {%- assign position = 1 -%}
+    {%- for child in children -%}
+      {%- assign child_collection = child.collection.value -%}
+      {%- if child_collection == blank -%}
+        {%- continue -%}
+      {%- endif -%}
+      {%- assign position = position | plus: 1 -%}
+      <a
+        href="{{ child_collection.url }}"
+        class="collection_wrapper_main_chips_chip"
+        data-analytics="plp_chip_click"
+        data-analytics-chip-name="{{ child.name.value | escape }}"
+        data-analytics-collection-name="{{ collection.title | escape }}"
+        data-analytics-position="{{ position }}"
+      >
+        {{- child.name.value -}}
+      </a>
+    {%- endfor -%}
+  </nav>
+{%- endif -%}

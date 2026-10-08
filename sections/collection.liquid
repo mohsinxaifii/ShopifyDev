@@ -9,12 +9,19 @@
   configured to expose - the design's Product type / Colour / Diamond shape /
   Occassion / Collection / Shipping groups are all `list` filters, and Price is
   the one `price_range`. The category chips above the grid are navigational
-  rather than filters, so they come from section blocks.
+  rather than filters. On a collection in the catalogue hierarchy (see
+  snippets/catalog-path) they are its children - a category shows its
+  sub-categories, a sub-category its verticals, a vertical none. Any other
+  collection keeps the chips set as section blocks.
 {%- endcomment -%}
 
 {%- liquid
   assign sort_by = collection.sort_by | default: collection.default_sort_by
   assign category_blocks = section.blocks | where: 'type', 'category'
+  capture catalog_path
+    render 'catalog-path', collection: collection
+  endcapture
+  assign catalog_path = catalog_path | strip
 -%}
 
 <collection-page
@@ -97,7 +104,9 @@
         {%- endif -%}
       </div>
 
-      {%- if category_blocks.size > 0 -%}
+      {%- if catalog_path != blank -%}
+        {%- render 'catalog-chips', path: catalog_path, collection: collection -%}
+      {%- elsif category_blocks.size > 0 -%}
         <nav class="collection_wrapper_main_chips" aria-label="{{ 'collection.filters' | t }}">
           {%- for block in category_blocks -%}
             {%- liquid
