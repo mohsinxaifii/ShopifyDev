@@ -1,0 +1,69 @@
+{%- doc -%}
+  "You may also like" / "Recently viewed" tabs. Figma 7930:96277.
+  You may also like: the catalogue hierarchy first (same vertical, then
+  sub-category, then category); products outside it fall back to
+  custom.pdp_related / Search & Discovery, then their first collection.
+  Recently viewed is filled by product.js.
+
+  @param {object} product - the product being viewed
+  @param {object} [related_products] - products from custom.pdp_related or Search & Discovery
+  @param {object} [block] - its block, for the theme editor
+  @param {object} labels - the product section's settings (tab names, empty text)
+{%- enddoc -%}
+
+<section class="pdp_related" data-related data-animate {{ block.shopify_attributes }}>
+  <div class="pdp_related_tabs" role="tablist">
+    <button
+      type="button"
+      class="pdp_related_tabs_tab is-active"
+      role="tab"
+      aria-selected="true"
+      data-tab="also-like"
+    >
+      {{ labels.related_heading | default: 'You may also like' }}
+    </button>
+    <button
+      type="button"
+      class="pdp_related_tabs_tab"
+      role="tab"
+      aria-selected="false"
+      data-tab="recent"
+    >
+      {{ labels.recent_heading | default: 'Recently viewed' }}
+    </button>
+  </div>
+
+  <scroll-carousel class="pdp_related_panel" data-panel="also-like">
+    <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
+      {%- comment -%}
+        The catalogue hierarchy first (same vertical, then sub-category,
+        then category); products outside it keep the older sources.
+      {%- endcomment -%}
+      {%- capture hierarchy_cards -%}
+        {%- render 'catalog-related', product: product, limit: 12 -%}
+      {%- endcapture -%}
+      {%- if hierarchy_cards != blank -%}
+        {{ hierarchy_cards }}
+      {%- elsif related_products != blank -%}
+        {%- for item in related_products limit: 12 -%}
+          {%- render 'product-card', product: item, variant: 'grid' -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- assign fallback = product.collections.first -%}
+        {%- for item in fallback.products limit: 12 -%}
+          {%- unless item.id == product.id -%}
+            {%- render 'product-card', product: item, variant: 'grid' -%}
+          {%- endunless -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+    <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
+  </scroll-carousel>
+
+  <div class="pdp_related_panel" data-panel="recent" hidden>
+    <div class="pdp_related_panel_track" data-recent-track></div>
+    <p class="pdp_related_panel_empty" data-recent-empty>
+      {{- labels.recent_empty | default: 'Nothing here yet — browse a few pieces first.' -}}
+    </p>
+  </div>
+</section>

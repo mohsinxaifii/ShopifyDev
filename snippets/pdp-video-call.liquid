@@ -7,6 +7,7 @@
   productHandle.
 
   @param {object} product - a Shopify product object
+  @param {object} labels - the product section's settings (title, intro, button, thank-you)
   @param {string} endpoint - Google Apps Script URL the request is posted to
 {%- enddoc -%}
 
@@ -19,7 +20,7 @@
 >
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
-      <h2 class="pdp-sheet_panel_head_title" id="PdpVideoCallTitle">Book a video call</h2>
+      <h2 class="pdp-sheet_panel_head_title" id="PdpVideoCallTitle">{{ labels.video_call_title | default: 'Book a video call' }}</h2>
       <button
         type="button"
         class="pdp-sheet_panel_head_close"
@@ -51,7 +52,7 @@
         </div>
 
         <p class="pdp-review-form_note">
-          A Zinara expert will call you to show this piece live. Leave your details and we'll be in touch shortly.
+          {{ labels.video_call_intro | default: "A Zinara expert will call you to show this piece live. Leave your details and we'll be in touch shortly." }}
         </p>
 
         <label class="pdp-review-form_field">
@@ -112,9 +113,9 @@
         <span class="pdp-review-form_done_icon" aria-hidden="true">
           {{- 'icon-check.svg' | inline_asset_content -}}
         </span>
-        <p class="pdp-review-form_done_title">Request received</p>
+        <p class="pdp-review-form_done_title">{{ labels.video_call_done_title | default: 'Request received' }}</p>
         <p class="pdp-review-form_done_text">
-          Your request has been submitted successfully. We'll contact you shortly.
+          {{ labels.video_call_done_text | default: "Your request has been submitted successfully. We'll contact you shortly." }}
         </p>
       </div>
 
@@ -124,7 +125,7 @@
           class="pdp_button pdp_button--primary pdp-review-form_submit"
           data-video-call-submit
         >
-          Request a video call
+          {{ labels.video_call_submit_label | default: 'Request a video call' }}
         </button>
         <button
           type="button"

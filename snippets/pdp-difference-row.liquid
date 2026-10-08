@@ -1,0 +1,23 @@
+{%- doc -%}
+  One row of "The Zinara Difference" table (see pdp-difference-head).
+
+  @param {object} block - a "Difference row" block
+  @param {object} [sgl_logo] - SGL mark, shown on rows that ask for it
+{%- enddoc -%}
+
+<tr {{ block.shopify_attributes }}>
+  <th scope="row">{{ block.settings.label }}</th>
+  <td>
+    <span class="pdp_difference_table_yes" aria-label="Yes">
+      {{- 'icon-seal-check.svg' | inline_asset_content -}}
+      {%- if block.settings.show_sgl and sgl_logo != blank -%}
+        {{ sgl_logo | image_url: width: 76 | image_tag: loading: 'lazy', alt: 'SGL' }}
+      {%- endif -%}
+    </span>
+  </td>
+  <td>
+    <span class="pdp_difference_table_no" aria-label="No">
+      {{- 'icon-x-circle.svg' | inline_asset_content -}}
+    </span>
+  </td>
+</tr>

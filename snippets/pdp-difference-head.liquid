@@ -1,0 +1,26 @@
+{%- doc -%}
+  The opening of "The Zinara Difference" table - Figma 7930:96294: the frame,
+  heading and column names. Each "Difference row" block renders one row
+  (pdp-difference-row) and the section closes the table after the last.
+  Echoed as strings because the elements are closed elsewhere.
+
+  The heading mixes two colours mid-sentence ("The *Zinara* Difference"), so
+  the accented run is marked with [brackets] in the setting and swapped for a
+  span here - a second text setting would let the two halves drift apart.
+
+  @param {object} labels - the product section's settings
+{%- enddoc -%}
+
+{%- liquid
+  assign heading_html = labels.difference_heading | replace: '[', '<span class="pdp_difference_title_accent">' | replace: ']', '</span>'
+  echo '<section class="pdp_difference" data-animate data-animate-from="scale">'
+  echo '<h2 class="pdp_difference_title">'
+  echo heading_html
+  echo '</h2><table class="pdp_difference_table"><thead><tr><th scope="col">'
+  echo labels.difference_col_feature | default: 'Feature' | escape
+  echo '</th><th scope="col">'
+  echo labels.difference_col_ours | default: 'Zinara' | escape
+  echo '</th><th scope="col">'
+  echo labels.difference_col_others | default: 'Typical Brands' | escape
+  echo '</th></tr></thead><tbody>'
+-%}

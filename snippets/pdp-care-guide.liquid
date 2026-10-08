@@ -1,14 +1,14 @@
 {%- doc -%}
-  The Care guide accordion: one image, the same on every product, set in the
-  product section. Nothing is rendered without an image.
+  The Care guide accordion: one image, the same on every product, set on the
+  "Care guide" block. Nothing is rendered without an image.
 
-  @param {string} [heading] - accordion title, defaults to "Care guide"
-  @param {object} [image] - the care guide image
+  @param {object} block - the "Care guide" block
 {%- enddoc -%}
 
+{%- assign image = block.settings.care_guide_image -%}
 {%- if image != blank -%}
-  {%- assign care_heading = heading | default: 'Care guide' -%}
-  <details class="pdp_accordion">
+  {%- assign care_heading = block.settings.care_guide_heading | default: 'Care guide' -%}
+  <details class="pdp_accordion" {{ block.shopify_attributes }}>
     <summary class="pdp_accordion_summary">
       <span>{{ care_heading }}</span>
       <span class="pdp_accordion_summary_sign" aria-hidden="true">

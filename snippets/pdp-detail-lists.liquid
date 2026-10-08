@@ -5,9 +5,10 @@
 
   @param {object} product - a Shopify product object
   @param {object} variant - the variant the page opened on
+  @param {object} [block] - the "Product details" block, for the theme editor
 {%- enddoc -%}
 
-<div class="pdp_variant_details" data-variant-details>
+<div class="pdp_variant_details" data-variant-details {{ block.shopify_attributes }}>
   {%- render 'pdp-variant-details', variant: variant -%}
 </div>
 {%- unless product.has_only_default_variant -%}

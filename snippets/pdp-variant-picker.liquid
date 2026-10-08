@@ -1,0 +1,125 @@
+{%- doc -%}
+  Variant options - Figma 7930:96080 (swatches) / 7930:96094 (chips) - with
+  the size guide link on the Size row (or the last row, or on its own).
+
+  @param {object} block - the "Variant picker" block
+  @param {object} product - the product being viewed
+  @param {boolean} has_size_guide - whether this product gets the size guide
+{%- enddoc -%}
+
+{%- comment -%} Variant options - Figma 7930:96080 (swatches) / 7930:96094 (chips) {%- endcomment -%}
+<div class="pdp_block" {{ block.shopify_attributes }}>
+  {%- liquid
+    comment
+      The size guide sits on the Size row's header. A product with a size
+      chart but no Size option (a chain length, say) hangs it on its last
+      option's header instead, rather than on an empty row of its own.
+    endcomment
+    assign has_size_option = false
+    for option in product.options_with_values
+      if option.name contains 'Size'
+        assign has_size_option = true
+      endif
+    endfor
+  -%}
+  {%- for option in product.options_with_values -%}
+    {%- liquid
+      assign is_swatch = false
+      if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
+        assign is_swatch = true
+      endif
+      assign is_size = false
+      if option.name contains 'Size'
+        assign is_size = true
+      endif
+      assign show_guide = false
+      if has_size_guide
+        if is_size
+          assign show_guide = true
+        elsif has_size_option == false and forloop.last
+          assign show_guide = true
+        endif
+      endif
+    -%}
+    <fieldset
+      class="pdp_option{% if is_swatch %} pdp_option--swatch{% endif %}"
+      data-option-group
+      data-option-position="{{ option.position }}"
+    >
+      <legend class="pdp_option_head">
+        <span class="pdp_option_head_name">
+          {{- option.name -}}
+          {%- if is_swatch %}:{% endif -%}
+        </span>
+        {%- if is_swatch -%}
+          <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
+        {%- endif -%}
+      </legend>
+
+      {%- if show_guide -%}
+        {%- assign size_guide_inline = true -%}
+        <button
+          type="button"
+          class="pdp_link pdp_option_guide"
+          data-open="size-guide"
+          data-analytics="size_guide_open"
+          data-analytics-product-category="{{ product.type | escape }}"
+          data-analytics-click-location="pdp"
+        >
+          <span class="pdp_option_guide_icon" aria-hidden="true">
+            {{- 'icon-ruler.svg' | inline_asset_content -}}
+          </span>
+          {{ block.settings.size_guide_label | default: 'Size guide' }}
+        </button>
+      {%- endif -%}
+
+      <div class="pdp_option_values">
+        {%- for value in option.values -%}
+          <label class="pdp_option_values_value">
+            <input
+              type="radio"
+              name="option-{{ option.position }}"
+              value="{{ value | escape }}"
+              data-option-input
+              {% if value == option.selected_value %}
+                checked
+              {% endif %}
+            >
+            {%- if is_swatch -%}
+              <span
+                class="pdp_option_values_value_swatch"
+                style="--pdp-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--pdp-swatch-{{ value | handle }}, #ddd){% endif %};"
+              >
+                <span class="visually-hidden">{{ value }}</span>
+              </span>
+            {%- else -%}
+              <span class="pdp_option_values_value_chip">{{ value }}</span>
+            {%- endif -%}
+          </label>
+        {%- endfor -%}
+      </div>
+    </fieldset>
+  {%- endfor -%}
+
+  {%- comment -%}
+    Only reached when the product has no options to hang the guide on, so
+    the sidesheet still has a way in.
+  {%- endcomment -%}
+  {%- if has_size_guide and size_guide_inline != true -%}
+    <div class="pdp_option pdp_option--guide-only">
+      <button
+        type="button"
+        class="pdp_link"
+        data-open="size-guide"
+        data-analytics="size_guide_open"
+        data-analytics-product-category="{{ product.type | escape }}"
+        data-analytics-click-location="pdp"
+      >
+        <span class="pdp_option_guide_icon" aria-hidden="true">
+          {{- 'icon-ruler.svg' | inline_asset_content -}}
+        </span>
+        {{ block.settings.size_guide_label | default: 'Size guide' }}
+      </button>
+    </div>
+  {%- endif -%}
+</div>

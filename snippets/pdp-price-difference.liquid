@@ -7,11 +7,14 @@
 
   @param {object} product - a Shopify product object
   @param {object} current_variant - the variant the page opened on
-  @param {object} [certificate] - sample SGL certificate
+  @param {object} [certificate] - sample SGL certificate, shown when there are no certificate slides
+  @param {object} [slides] - the section's "Calculator certificate" blocks
   @param {object} [vermeil_image] - cutaway render for the explainer
   @param {object} [diamond_image] - diamond render for the explainer
   @param {object} [sgl_logo] - SGL mark
-  @param {object} kj - the product section's settings, for the explainer
+  @param {object} kj - the "Know your jewellery" block's settings, for the explainer
+  @param {object} labels - the product section's settings: the sheet's own copy
+  @param {object} [facts] - the section's "Savings calculator fact" blocks
 {%- enddoc -%}
 
 {%- liquid
@@ -42,7 +45,7 @@
 >
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
-      <h2 class="pdp-sheet_panel_head_title" id="PdpPriceDiffTitle">Savings calculator</h2>
+      <h2 class="pdp-sheet_panel_head_title" id="PdpPriceDiffTitle">{{ labels.calc_title | default: 'Savings calculator' }}</h2>
       <button
         type="button"
         class="pdp-sheet_panel_head_close"
@@ -60,19 +63,20 @@
             <span class="pdp-diff_banner_icon" aria-hidden="true">
               {{- 'icon-receipt-rupee.svg' | inline_asset_content -}}
             </span>
-            You save {% render 'money', amount: saved %} vs mined diamond
+            {%- capture saved_text -%}{%- render 'money', amount: saved -%}{%- endcapture -%}
+            {{ labels.calc_saving_label | default: 'You save [amount] vs mined diamond' | replace: '[amount]', saved_text }}
           </p>
 
           <div class="pdp-diff_compare">
             <div class="pdp-diff_compare_cell">
-              <span class="pdp-diff_compare_cell_label">Mined diamond</span>
+              <span class="pdp-diff_compare_cell_label">{{ labels.calc_mined_label | default: 'Mined diamond' }}</span>
               <span class="pdp-diff_compare_cell_price">
                 {%- render 'money', amount: mined_cents -%}
               </span>
             </div>
             <span class="pdp-diff_compare_arrow" aria-hidden="true">&rarr;</span>
             <div class="pdp-diff_compare_cell pdp-diff_compare_cell--ours">
-              <span class="pdp-diff_compare_cell_label">Your Zinara piece</span>
+              <span class="pdp-diff_compare_cell_label">{{ labels.calc_ours_label | default: 'Your Zinara piece' }}</span>
               <span class="pdp-diff_compare_cell_price" data-diff-price>
                 {%- render 'money', amount: current_variant.price -%}
               </span>
@@ -81,43 +85,53 @@
         </div>
       {%- endif -%}
 
-      <ul class="pdp-diff_facts">
-        <li class="pdp-diff_facts_item">
-          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
-            {{- 'icon-certificate.svg' | inline_asset_content -}}
-          </span>
-          SGL certified
-        </li>
-        <li class="pdp-diff_facts_item">
-          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
-            {{- 'icon-alms.svg' | inline_asset_content -}}
-          </span>
-          Lifetime buyback
-        </li>
-        <li class="pdp-diff_facts_item">
-          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
-            {{- 'icon-eco-energy.svg' | inline_asset_content -}}
-          </span>
-          Environment friendly
-        </li>
-        <li class="pdp-diff_facts_item">
-          <span class="pdp-diff_facts_item_icon" aria-hidden="true">
-            {{- 'icon-percent-circle.svg' | inline_asset_content -}}
-          </span>
-          Save upto 40-60% with gold vermeil
-        </li>
-      </ul>
+      {%- comment -%} One row per "Savings calculator fact" block. {%- endcomment -%}
+      {%- if facts.size > 0 -%}
+        <ul class="pdp-diff_facts">
+          {%- for fact in facts -%}
+            {%- if fact.settings.text == blank -%}
+              {%- continue -%}
+            {%- endif -%}
+            <li class="pdp-diff_facts_item" {{ fact.shopify_attributes }}>
+              <span class="pdp-diff_facts_item_icon" aria-hidden="true">
+                {%- render 'pdp-icon', name: fact.settings.icon, image: fact.settings.icon_image -%}
+              </span>
+              {{ fact.settings.text }}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
 
-      {%- if certificate != blank -%}
+      {%- comment -%}
+        One slide per "Calculator certificate" block; with none, the
+        section's SGL certificate sample on its own.
+      {%- endcomment -%}
+      {%- if slides.size > 0 or certificate != blank -%}
         <scroll-carousel class="pdp-diff_certs">
           <div class="pdp-diff_certs_track" data-track>
-            <span class="pdp-diff_certs_track_item">
-              {{
-                certificate
-                | image_url: width: 656
-                | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Sample SGL diamond certificate'
-              }}
-            </span>
+            {%- for slide in slides -%}
+              {%- if slide.settings.image != blank -%}
+                <span class="pdp-diff_certs_track_item" {{ slide.shopify_attributes }}>
+                  {{
+                    slide.settings.image
+                    | image_url: width: 656
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '328,656',
+                      sizes: '328px',
+                      alt: slide.settings.alt | default: 'Diamond certificate'
+                  }}
+                </span>
+              {%- endif -%}
+            {%- else -%}
+              <span class="pdp-diff_certs_track_item">
+                {{
+                  certificate
+                  | image_url: width: 656
+                  | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Sample SGL diamond certificate'
+                }}
+              </span>
+            {%- endfor -%}
           </div>
           <div class="pdp-diff_certs_dots scroll-carousel_dots" data-dots></div>
         </scroll-carousel>
@@ -125,8 +139,8 @@
 
       <div class="pdp-diff_explainer">
         <div class="pdp-diff_explainer_head">
-          <p class="pdp-diff_explainer_head_title">Know your jewellery</p>
-          <p class="pdp-diff_explainer_head_sub">Learn about Gold Vermeil &amp; Lab-Grown Diamonds</p>
+          <p class="pdp-diff_explainer_head_title">{{ kj.kj_heading | default: 'Know your jewellery' }}</p>
+          <p class="pdp-diff_explainer_head_sub">{{ labels.calc_explainer_intro | default: 'Learn about Gold Vermeil & Lab-Grown Diamonds' }}</p>
         </div>
         {%- render 'pdp-know-jewellery',
           kj: kj,
@@ -140,7 +154,7 @@
 
     <div class="pdp-sheet_panel_footer">
       <button type="button" class="pdp_button pdp_button--primary pdp-diff_cta" data-diff-add>
-        <span>Add to Cart</span>
+        <span>{{ labels.calc_cta_label | default: 'Add to Cart' }}</span>
         <span class="pdp-diff_cta_dot" aria-hidden="true"></span>
         <span class="pdp-diff_cta_price" data-diff-cta-price>
           {%- render 'money', amount: current_variant.price -%}

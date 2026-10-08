@@ -19,6 +19,29 @@
         "main": {
             "type": "product",
             "blocks": {
+                "title": {
+                    "type": "title_price",
+                    "settings": {
+                        "tax_note": "Price inclusive of all taxes",
+                        "show_savings_calculator": true
+                    }
+                },
+                "offers": {
+                    "type": "offers",
+                    "settings": {}
+                },
+                "options": {
+                    "type": "variant_picker",
+                    "settings": {}
+                },
+                "material": {
+                    "type": "material_link",
+                    "settings": {}
+                },
+                "buy": {
+                    "type": "buy_buttons",
+                    "settings": {}
+                },
                 "trust-1": {
                     "type": "trust",
                     "settings": {
@@ -50,6 +73,60 @@
                         "label": "Lifetime free replating service",
                         "action": "none"
                     }
+                },
+                "delivery": {
+                    "type": "delivery",
+                    "settings": {}
+                },
+                "gift": {
+                    "type": "gift",
+                    "settings": {
+                        "gift_label": "Add a gift sleeve"
+                    }
+                },
+                "help": {
+                    "type": "help",
+                    "settings": {
+                        "help_heading": "Need help choosing?",
+                        "help_body": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice.",
+                        "whatsapp_url": "https://wa.me/919217975782",
+                        "video_call_endpoint": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec"
+                    }
+                },
+                "description": {
+                    "type": "description",
+                    "settings": {}
+                },
+                "highlights": {
+                    "type": "highlights",
+                    "settings": {}
+                },
+                "details": {
+                    "type": "product_details",
+                    "settings": {}
+                },
+                "care": {
+                    "type": "care_guide",
+                    "settings": {
+                        "care_guide_image": "shopify://shop_images/JewelAI_Luxury_Studio_Shot_3.png"
+                    }
+                },
+                "shipping": {
+                    "type": "accordion",
+                    "settings": {
+                        "heading": "Shipping policy",
+                        "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"/pages/shipping-policy\">shipping policy</a> page.</p>"
+                    }
+                },
+                "kj": {
+                    "type": "know_jewellery",
+                    "settings": {
+                        "diamond_image": "shopify://shop_images/zinara-kyj-diamond-icon.png"
+                    }
+                },
+                "related": {
+                    "type": "related",
+                    "settings": {}
                 },
                 "diff-1": {
                     "type": "difference",
@@ -100,48 +177,144 @@
                         "show_sgl": false
                     }
                 },
-                "shipping": {
-                    "type": "accordion",
+                "pair": {
+                    "type": "pair",
                     "settings": {
-                        "heading": "Shipping policy",
-                        "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"/pages/shipping-policy\">shipping policy</a> page.</p>"
+                        "pair_heading": "Pair beautifully with"
+                    }
+                },
+                "curated": {
+                    "type": "curated",
+                    "settings": {
+                        "ugc_heading": "Curated trends for you"
+                    }
+                },
+                "reviews": {
+                    "type": "reviews",
+                    "settings": {
+                        "reviews_shown": 3,
+                        "review_url": "",
+                        "review_endpoint": "https://67r.6d1.mytemp.website/zinara-reviews/submit.php"
+                    }
+                },
+                "highlight-1": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-leaf",
+                        "text": "Skin Friendly Jewellery"
+                    }
+                },
+                "highlight-2": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-sparkles",
+                        "text": "Anti Tarnish, Made for Daily Wear"
+                    }
+                },
+                "highlight-3": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-zap",
+                        "text": "Long Lasting and Durable Vermeil"
+                    }
+                },
+                "highlight-4": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-bacteria",
+                        "text": "Hypoallergenic finish"
+                    }
+                },
+                "highlight-5": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-honour-star",
+                        "text": "Premium look, smart choice"
+                    }
+                },
+                "fact-1": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-certificate",
+                        "text": "SGL certified"
+                    }
+                },
+                "fact-2": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-alms",
+                        "text": "Lifetime buyback"
+                    }
+                },
+                "fact-3": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-eco-energy",
+                        "text": "Environment friendly"
+                    }
+                },
+                "fact-4": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-percent-circle",
+                        "text": "Save upto 40-60% with gold vermeil"
+                    }
+                },
+                "certificate-1": {
+                    "type": "calc_certificate",
+                    "settings": {
+                        "image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
+                        "alt": "Sample SGL diamond certificate"
                     }
                 }
             },
             "block_order": [
+                "title",
+                "offers",
+                "options",
+                "material",
+                "buy",
                 "trust-1",
                 "trust-2",
                 "trust-3",
                 "trust-4",
+                "delivery",
+                "gift",
+                "help",
+                "description",
+                "highlights",
+                "highlight-1",
+                "highlight-2",
+                "highlight-3",
+                "highlight-4",
+                "highlight-5",
+                "details",
+                "care",
                 "shipping",
+                "kj",
+                "related",
                 "diff-1",
                 "diff-2",
                 "diff-3",
                 "diff-4",
                 "diff-5",
                 "diff-6",
-                "diff-7"
+                "diff-7",
+                "pair",
+                "curated",
+                "reviews",
+                "fact-1",
+                "fact-2",
+                "fact-3",
+                "fact-4",
+                "certificate-1"
             ],
             "settings": {
-                "tax_note": "Price inclusive of all taxes",
-                "show_savings_calculator": true,
                 "trust_heading": "Shop with confidence",
-                "help_heading": "Need help choosing?",
-                "help_body": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice.",
-                "whatsapp_url": "https://wa.me/919217975782",
-                "video_call_endpoint": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec",
-                "gift_label": "Add a gift sleeve",
                 "addons_image": "shopify://shop_images/zinara-pdp-addons-hero.png",
-                "diamond_image": "shopify://shop_images/zinara-kyj-diamond-icon.png",
                 "certificate_image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
-                "care_guide_image": "shopify://shop_images/JewelAI_Luxury_Studio_Shot_3.png",
                 "sgl_logo": "shopify://shop_images/zinara-pdp-sgl-logo.png",
-                "difference_heading": "The [Zinara] Difference",
-                "pair_heading": "Pair beautifully with",
-                "ugc_heading": "Curated trends for you",
-                "reviews_shown": 3,
-                "review_url": "",
-                "review_endpoint": "https://67r.6d1.mytemp.website/zinara-reviews/submit.php"
+                "difference_heading": "The [Zinara] Difference"
             }
         },
         "faq": {

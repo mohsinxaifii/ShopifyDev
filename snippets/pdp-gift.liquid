@@ -1,0 +1,29 @@
+{%- doc -%}
+  Gift sleeve add-on - Figma 7930:96141. Ticked, it rides along with the main
+  product in the same cart request (product.js buildItems).
+
+  @param {object} block - the "Gift sleeve" block
+{%- enddoc -%}
+
+{%- if block.settings.gift_product != blank -%}
+  {%- assign gift = block.settings.gift_product -%}
+  <div class="pdp_gift" {{ block.shopify_attributes }}>
+    <label class="pdp_gift_row">
+      <input
+        type="checkbox"
+        class="pdp_gift_row_check"
+        data-gift-toggle
+        data-variant-id="{{ gift.selected_or_first_available_variant.id }}"
+        data-price="{{ gift.price | divided_by: 100.0 }}"
+      >
+      <span class="pdp_gift_row_box" aria-hidden="true">{{ 'icon-tick.svg' | inline_asset_content }}</span>
+      {%- if gift.featured_image -%}
+        <span class="pdp_gift_row_media">
+          {{ gift.featured_image | image_url: width: 56 | image_tag: loading: 'lazy', alt: '' }}
+        </span>
+      {%- endif -%}
+      <span class="pdp_gift_row_label">{{ block.settings.gift_label | default: gift.title }}</span>
+      <span class="pdp_gift_row_price">{%- render 'money', amount: gift.price -%}</span>
+    </label>
+  </div>
+{%- endif -%}

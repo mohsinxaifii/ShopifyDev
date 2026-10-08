@@ -1,0 +1,44 @@
+{%- doc -%}
+  Need help choosing? - Figma 7930:96150. "Book video call" opens the form in
+  pdp-video-call, which reads its copy from this same block.
+
+  @param {object} block - the "Need help choosing?" block
+{%- enddoc -%}
+
+<section class="pdp_help" data-animate {{ block.shopify_attributes }}>
+  <div class="pdp_help_copy">
+    <h2 class="pdp_section_title">{{ block.settings.help_heading }}</h2>
+    <p class="pdp_help_copy_body">{{ block.settings.help_body }}</p>
+  </div>
+  <div class="pdp_help_actions">
+    {%- if block.settings.whatsapp_url != blank -%}
+      <a
+        href="{{ block.settings.whatsapp_url }}"
+        class="pdp_button pdp_button--outline"
+        data-analytics="expert_help_click"
+        data-analytics-help-type="chat"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="pdp_button_icon" aria-hidden="true">
+          {{- 'icon-whatsapp.svg' | inline_asset_content -}}
+        </span>
+        <span>{{ block.settings.chat_label | default: 'Chat with us' }}</span>
+      </a>
+    {%- endif -%}
+    {%- if block.settings.video_call_endpoint != blank -%}
+      <button
+        type="button"
+        class="pdp_button pdp_button--outline"
+        data-open="video-call"
+        data-analytics="expert_help_click"
+        data-analytics-help-type="video_call"
+      >
+        <span class="pdp_button_icon" aria-hidden="true">
+          {{- 'icon-video-call.svg' | inline_asset_content -}}
+        </span>
+        <span>{{ block.settings.video_call_label | default: 'Book video call' }}</span>
+      </button>
+    {%- endif -%}
+  </div>
+</section>

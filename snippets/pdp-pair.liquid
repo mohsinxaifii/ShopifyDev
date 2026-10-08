@@ -1,0 +1,90 @@
+{%- doc -%}
+  Pair beautifully with - Figma 7930:96345. Up to three pieces from
+  pdp-pair-handles; product.js (initPair) adds the selection or the set.
+
+  @param {object} block - the "Pair beautifully with" block
+  @param {string[]} pair_handles - handles of the pieces to show
+{%- enddoc -%}
+
+{%- if pair_handles.size > 0 -%}
+  <section class="pdp_pair" data-pair data-animate {{ block.shopify_attributes }}>
+    <div class="pdp_pair_card">
+      <h2 class="pdp_pair_card_title">
+        <span class="pdp_pair_card_title_icon" aria-hidden="true">
+          {{- 'icon-sparkle.svg' | inline_asset_content -}}
+        </span>
+        {{ block.settings.pair_heading }}
+      </h2>
+
+      <div class="pdp_pair_card_items">
+        {%- for pair_handle in pair_handles limit: 3 -%}
+          {%- assign item = all_products[pair_handle] -%}
+          {%- unless forloop.first -%}
+            <span class="pdp_pair_card_items_plus" aria-hidden="true">
+              {{- 'icon-plus.svg' | inline_asset_content -}}
+            </span>
+          {%- endunless -%}
+          {%- comment -%}
+            No variant picking here: each piece goes in as its first
+            available variant. A piece with nothing available has no id
+            and is left out of the set.
+          {%- endcomment -%}
+          <article
+            class="pdp-mini"
+            data-pair-item
+            data-product-id="{{ item.id }}"
+            data-variant-id="{{ item.first_available_variant.id }}"
+          >
+            <a href="{{ item.url }}" class="pdp-mini_media">
+              {%- if item.featured_image -%}
+                {{
+                  item.featured_image
+                  | image_url: width: 340
+                  | image_tag: loading: 'lazy', widths: '170,340', sizes: '170px', alt: item.title
+                }}
+              {%- endif -%}
+            </a>
+            <button
+              type="button"
+              class="pdp-mini_add"
+              data-pair-toggle
+              aria-pressed="false"
+              aria-label="Select {{ item.title | escape }}"
+            >
+              <span class="pdp-mini_add_bag" aria-hidden="true">
+                {{- 'icon-bag.svg' | inline_asset_content -}}
+              </span>
+              <span class="pdp-mini_add_tick" aria-hidden="true">
+                {{- 'icon-tick.svg' | inline_asset_content -}}
+              </span>
+            </button>
+            <div class="pdp-mini_info">
+              <span class="pdp-mini_info_price">
+                <span class="pdp-mini_info_price_current">{%- render 'money', amount: item.price -%}</span>
+                {%- if item.compare_at_price > item.price -%}
+                  <span class="pdp-mini_info_price_compare">
+                    {%- render 'money', amount: item.compare_at_price -%}
+                  </span>
+                {%- endif -%}
+              </span>
+              <a href="{{ item.url }}" class="pdp-mini_info_title">{{ item.title }}</a>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+
+      {%- assign pair_label = block.settings.pair_button_label | default: 'Add set to cart' -%}
+      <button
+        type="button"
+        class="pdp_button pdp_button--primary pdp_pair_card_cta"
+        data-pair-add
+        data-label-set="{{ pair_label | escape }}"
+      >
+        <span class="pdp_button_icon" aria-hidden="true">
+          {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+        </span>
+        <span data-add-label>{{ pair_label }}</span>
+      </button>
+    </div>
+  </section>
+{%- endif -%}

@@ -1,0 +1,16 @@
+{%- doc -%}
+  A free-form accordion (e.g. Shipping policy): heading and rich text.
+
+  @param {object} block - an "Accordion" block
+{%- enddoc -%}
+
+<details class="pdp_accordion" {{ block.shopify_attributes }}>
+  <summary class="pdp_accordion_summary">
+    <span>{{ block.settings.heading }}</span>
+    <span class="pdp_accordion_summary_sign" aria-hidden="true">
+      <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+      <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+    </span>
+  </summary>
+  <div class="pdp_accordion_body pdp_accordion_body--rte">{{ block.settings.content }}</div>
+</details>

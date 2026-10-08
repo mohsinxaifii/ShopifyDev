@@ -24,17 +24,28 @@
     assign saving_percent = saving | divided_by: current_variant.compare_at_price | round
   endif
 
-  assign material_name = section.settings.kj_material_name | default: 'Gold Vermeil'
+  comment
+    Blocks whose settings are also needed outside their own spot: the
+    explainer copy feeds the material link and the savings calculator sheet;
+    the offers, help and reviews blocks carry the copy of the sheets they open.
+  endcomment
+  assign kj_block = section.blocks | where: 'type', 'know_jewellery' | first
+  assign kj = kj_block.settings
+  assign offers_block = section.blocks | where: 'type', 'offers' | first
+  assign help_block = section.blocks | where: 'type', 'help' | first
+  assign reviews_block = section.blocks | where: 'type', 'reviews' | first
+
+  assign material_name = kj.kj_material_name | default: 'Gold Vermeil'
   comment
     The explainer accordion and the link that opens it both disappear when the
-    section's "Know your jewellery" settings hold none of the content they
+    "Know your jewellery" block is missing or holds none of the content they
     would show.
   endcomment
   assign has_explainer = false
-  if section.settings.kj_callouts != blank
+  if kj.kj_callout_1 != blank or kj.kj_callout_2 != blank or kj.kj_callout_3 != blank
     assign has_explainer = true
   endif
-  if section.settings.kj_mined_label != blank and section.settings.kj_lab_label != blank
+  if kj.kj_mined_label != blank and kj.kj_lab_label != blank
     assign has_explainer = true
   endif
   assign material_tags = product.metafields.custom.pdp_material_tags.value
@@ -50,11 +61,6 @@
   if current_variant.available and current_variant.inventory_quantity > 0
     assign ship_label = ship_fast_label
   endif
-  comment
-    "Why you'll love it" is the same for every product: one line of the
-    section's textarea per bullet.
-  endcomment
-  assign highlights = section.settings.highlights | strip | newline_to_br | split: '<br />'
   comment
     Add-ons come from the product's add-on set (custom.pdp_addon_set, a
     pdp_addon_set entry) when it has one: the products on offer, the default
@@ -231,7 +237,7 @@
               data-analytics="addon_sheet_open"
               data-analytics-addons-available="{{ addons.size }}"
             >
-              <span>Add-ons available</span>
+              <span>{{ section.settings.addons_link_label | default: 'Add-ons available' }}</span>
               {{ 'icon-caret-right.svg' | inline_asset_content }}
             </button>
           {%- endif -%}
@@ -296,813 +302,302 @@
 
     {%- comment -%} ------------------------------------------------- info {%- endcomment -%}
     <div class="pdp_info" data-animate data-animate-from="right">
+      {%- comment -%}
+        Everything in this column is a block, in the order set in the theme
+        editor. The buy box - title & price, offers, variant picker, material
+        link, buy buttons - stays inside the product form (GoKwik and KwikCart
+        look for the buttons there), so those five always come first, in their
+        own order; the rest follow below it in theirs. Consecutive trust items,
+        accordions and difference rows share one heading/frame.
+      {%- endcomment -%}
       {%- form 'product', product, class: 'pdp_info_form', novalidate: 'novalidate' -%}
         <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
 
-        {%- comment -%} Title / price card - Figma 7930:96004 {%- endcomment -%}
-        <div class="pdp_headline">
-          <div class="pdp_headline_top">
-            <h1 class="pdp_headline_top_title">{{ product.title }}</h1>
-            {%- comment -%} Average from Judge.me (judgeme.js). {%- endcomment -%}
-            <judgeme-rating data-handle="{{ product.handle }}" hidden>
-              <a href="#pdp-reviews" class="pdp_headline_top_rating">
-                {{ 'icon-star.svg' | inline_asset_content }}
-                <span data-judgeme-value></span>
-              </a>
-            </judgeme-rating>
-          </div>
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'title_price' -%}
+              {%- render 'pdp-title-price', block: block, product: product, current_variant: current_variant, has_compare: has_compare, saving_percent: saving_percent, material_tags: material_tags, addons: addons, addons_label: section.settings.addons_link_label -%}
 
-          <div class="pdp_headline_price">
-            <span class="pdp_headline_price_current" data-price>
-              {%- render 'money', amount: current_variant.price -%}
-            </span>
-            <span
-              class="pdp_headline_price_compare"
-              data-compare
-              {% unless has_compare %}
-                hidden
-              {% endunless %}
-            >
-              {%- render 'money', amount: current_variant.compare_at_price -%}
-            </span>
-            <span
-              class="pdp_headline_price_save"
-              data-save
-              {% unless has_compare %}
-                hidden
-              {% endunless %}
-            >
-              Save {{ saving_percent }}%
-            </span>
-          </div>
-
-          <p class="pdp_headline_tax">{{ section.settings.tax_note }}</p>
-
-          {%- comment -%}
-            The calculator compares against the product's mined-diamond price
-            (custom.pdp_mined_price); without one the sheet has no figures to
-            show, so the button is left out.
-          {%- endcomment -%}
-          {%- assign mined_price = product.metafields.custom.pdp_mined_price.value | plus: 0 -%}
-          {%- if section.settings.show_savings_calculator and mined_price > 0 -%}
-            <div class="pdp_headline_calculator">
-              <button
-                type="button"
-                class="pdp_headline_calculator_button"
-                data-open="price-difference"
-                data-analytics="savings_calculator_open"
-                data-analytics-price="{{ current_variant.price | divided_by: 100.0 }}"
-                data-analytics-mined-equivalent-price="{{ product.metafields.custom.pdp_mined_price.value }}"
-              >
-                <span>Your savings calculator</span>
-                {{ 'icon-caret-right.svg' | inline_asset_content }}
-              </button>
-            </div>
-          {%- endif -%}
-
-          {%- if material_tags != blank -%}
-            <ul class="pdp_headline_tags">
-              {%- for tag in material_tags -%}
-                <li class="pdp_headline_tags_item">{{ tag }}</li>
-              {%- endfor -%}
-            </ul>
-          {%- endif -%}
-
-          {%- if addons != blank -%}
-            <button
-              type="button"
-              class="pdp_headline_addons"
-              data-open="addons"
-              data-analytics="addon_sheet_open"
-              data-analytics-addons-available="{{ addons.size }}"
-            >
-              <span>Add-ons available</span>
-              {{ 'icon-caret-right.svg' | inline_asset_content }}
-            </button>
-          {%- endif -%}
-        </div>
-
-        {%- comment -%} Offers rail - Figma 7930:96033 {%- endcomment -%}
-        {%- if offer_handles.size > 0 -%}
-          <section class="pdp_offers">
-            <div class="pdp_offers_head">
-              <h2 class="pdp_offers_head_title">
-                Offers
-                <span class="pdp_offers_head_title_dot" aria-hidden="true"></span>
-                <span class="pdp_offers_head_title_count">{{ offer_handles.size }} available</span>
-              </h2>
-              <button
-                type="button"
-                class="pdp_link"
-                data-open="offers"
-                data-analytics="offers_view_all"
-                data-analytics-offers-count="{{ offer_handles.size }}"
-              >
-                View all
-              </button>
-            </div>
-
-            <div class="pdp_offers_rail">
-              {%- for handle in offer_handles -%}
-                {%- assign offer = shop.metaobjects.discount_offer[handle] -%}
-                {%- if offer != blank -%}
-                  {%- render 'pdp-offer-card', offer: offer -%}
-                {%- endif -%}
-              {%- endfor -%}
-            </div>
-          </section>
-        {%- endif -%}
-
-        {%- comment -%} Variant options - Figma 7930:96080 (swatches) / 7930:96094 (chips) {%- endcomment -%}
-        {%- liquid
-          comment
-            The size guide sits on the Size row's header. A product with a size
-            chart but no Size option (a chain length, say) hangs it on its last
-            option's header instead, rather than on an empty row of its own.
-          endcomment
-          assign has_size_option = false
-          for option in product.options_with_values
-            if option.name contains 'Size'
-              assign has_size_option = true
-            endif
-          endfor
-        -%}
-        {%- for option in product.options_with_values -%}
-          {%- liquid
-            assign is_swatch = false
-            if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
-              assign is_swatch = true
-            endif
-            assign is_size = false
-            if option.name contains 'Size'
-              assign is_size = true
-            endif
-            assign show_guide = false
-            if has_size_guide
-              if is_size
-                assign show_guide = true
-              elsif has_size_option == false and forloop.last
-                assign show_guide = true
-              endif
-            endif
-          -%}
-          <fieldset
-            class="pdp_option{% if is_swatch %} pdp_option--swatch{% endif %}"
-            data-option-group
-            data-option-position="{{ option.position }}"
-          >
-            <legend class="pdp_option_head">
-              <span class="pdp_option_head_name">
-                {{- option.name -}}
-                {%- if is_swatch %}:{% endif -%}
-              </span>
-              {%- if is_swatch -%}
-                <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
-              {%- endif -%}
-            </legend>
-
-            {%- if show_guide -%}
-              {%- assign size_guide_inline = true -%}
-              <button
-                type="button"
-                class="pdp_link pdp_option_guide"
-                data-open="size-guide"
-                data-analytics="size_guide_open"
-                data-analytics-product-category="{{ product.type | escape }}"
-                data-analytics-click-location="pdp"
-              >
-                <span class="pdp_option_guide_icon" aria-hidden="true">
-                  {{- 'icon-ruler.svg' | inline_asset_content -}}
-                </span>
-                Size guide
-              </button>
-            {%- endif -%}
-
-            <div class="pdp_option_values">
-              {%- for value in option.values -%}
-                <label class="pdp_option_values_value">
-                  <input
-                    type="radio"
-                    name="option-{{ option.position }}"
-                    value="{{ value | escape }}"
-                    data-option-input
-                    {% if value == option.selected_value %}
-                      checked
-                    {% endif %}
-                  >
-                  {%- if is_swatch -%}
-                    <span
-                      class="pdp_option_values_value_swatch"
-                      style="--pdp-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--pdp-swatch-{{ value | handle }}, #ddd){% endif %};"
-                    >
-                      <span class="visually-hidden">{{ value }}</span>
+            {%- when 'offers' -%}
+            {%- comment -%} Offers rail - Figma 7930:96033 {%- endcomment -%}
+            {%- if offer_handles.size > 0 -%}
+              <section class="pdp_offers" {{ block.shopify_attributes }}>
+                <div class="pdp_offers_head">
+                  <h2 class="pdp_offers_head_title">
+                    {{ block.settings.offers_heading | default: 'Offers' }}
+                    <span class="pdp_offers_head_title_dot" aria-hidden="true"></span>
+                    <span class="pdp_offers_head_title_count">
+                      {{- block.settings.offers_count_label | default: '[count] available' | replace: '[count]', offer_handles.size -}}
                     </span>
-                  {%- else -%}
-                    <span class="pdp_option_values_value_chip">{{ value }}</span>
-                  {%- endif -%}
-                </label>
-              {%- endfor -%}
-            </div>
-          </fieldset>
-        {%- endfor -%}
-
-        {%- comment -%}
-          Only reached when the product has no options to hang the guide on, so
-          the sidesheet still has a way in.
-        {%- endcomment -%}
-        {%- if has_size_guide and size_guide_inline != true -%}
-          <div class="pdp_option pdp_option--guide-only">
-            <button
-              type="button"
-              class="pdp_link"
-              data-open="size-guide"
-              data-analytics="size_guide_open"
-              data-analytics-product-category="{{ product.type | escape }}"
-              data-analytics-click-location="pdp"
-            >
-              <span class="pdp_option_guide_icon" aria-hidden="true">
-                {{- 'icon-ruler.svg' | inline_asset_content -}}
-              </span>
-              Size guide
-            </button>
-          </div>
-        {%- endif -%}
-
-        {%- comment -%} Material explainer link - Figma 7930:96109 {%- endcomment -%}
-        <button
-          type="button"
-          class="pdp_explainer"
-          data-open="know-jewellery"
-          data-analytics="material_info_click"
-          data-analytics-info-type="{{ material_name | handleize | replace: '-', '_' }}"
-          data-analytics-click-location="pdp"
-          {% unless has_explainer %}
-            hidden
-          {% endunless %}
-        >
-          <span class="pdp_explainer_dot" aria-hidden="true"></span>
-          <span class="pdp_explainer_text">
-            {{- 'products.what_is' | t: material: material_name -}}
-          </span>
-          {{ 'icon-caret-right.svg' | inline_asset_content }}
-        </button>
-
-        {%- comment -%} Buy buttons - Figma 7930:96117 {%- endcomment -%}
-        <div class="pdp_buy">
-          <button
-            type="submit"
-            name="add"
-            class="pdp_button pdp_button--secondary"
-            data-add-to-cart
-            {% unless current_variant.available %}
-              disabled
-            {% endunless %}
-          >
-            <span class="pdp_button_icon" aria-hidden="true">
-              {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
-            </span>
-            <span data-add-label>
-              {%- if current_variant.available -%}
-                {{ 'products.add_to_cart' | t }}
-              {%- else -%}
-                {{ 'products.sold_out' | t }}
-              {%- endif -%}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            class="pdp_button pdp_button--primary"
-            data-buy-now
-            data-checkout-intent="buy_now"
-            {% unless current_variant.available %}
-              disabled
-            {% endunless %}
-          >
-            <span class="pdp_button_icon" aria-hidden="true">
-              {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
-            </span>
-            <span>Buy now</span>
-          </button>
-        </div>
-      {%- endform -%}
-
-      {%- comment -%} Shop with confidence - Figma 7930:96120 {%- endcomment -%}
-      {%- assign trust_blocks = section.blocks | where: 'type', 'trust' -%}
-      {%- if trust_blocks.size > 0 -%}
-        <section class="pdp_trust" data-animate>
-          <h2 class="pdp_section_title">{{ section.settings.trust_heading }}</h2>
-          <ul class="pdp_trust_grid">
-            {%- for block in trust_blocks -%}
-              <li class="pdp_trust_grid_item" {{ block.shopify_attributes }}>
-                {%- if block.settings.action == 'sgl' -%}
+                  </h2>
                   <button
                     type="button"
-                    class="pdp_trust_grid_item_inner"
-                    data-open="sgl"
-                    data-analytics="trust_badge_click certificate_view"
-                    data-analytics-badge-name="sgl_certified"
-                    data-analytics-certificate-type="sgl"
+                    class="pdp_link"
+                    data-open="offers"
+                    data-analytics="offers_view_all"
+                    data-analytics-offers-count="{{ offer_handles.size }}"
                   >
-                    <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
-                      {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
-                    </span>
-                    <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
-                    <span class="pdp_trust_grid_item_inner_out" aria-hidden="true">
-                      {{- 'icon-arrow-square-out.svg' | inline_asset_content -}}
-                    </span>
+                    {{ block.settings.offers_view_all_label | default: 'View all' }}
                   </button>
-                {%- else -%}
-                  <span class="pdp_trust_grid_item_inner">
-                    <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
-                      {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
-                    </span>
-                    <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
-                  </span>
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ul>
-        </section>
-      {%- endif -%}
+                </div>
 
-      {%- comment -%} Delivery estimate - Figma 7930:96136 {%- endcomment -%}
-      <section class="pdp_delivery" data-animate>
-        <h2 class="pdp_section_title">Delivery Estimate</h2>
-        <div class="pdp_delivery_row">
-          <input
-            type="text"
-            class="pdp_delivery_row_input"
-            inputmode="numeric"
-            maxlength="6"
-            placeholder="Enter pincode"
-            aria-label="Enter pincode"
-            data-pincode
-          >
-          <button type="button" class="pdp_button pdp_button--primary pdp_button--compact" data-pincode-check>
-            Check
-          </button>
-        </div>
-        <p class="pdp_delivery_result" data-pincode-result hidden></p>
-      </section>
-
-      {%- comment -%} Gift sleeve add-on - Figma 7930:96141 {%- endcomment -%}
-      {%- if section.settings.gift_product != blank -%}
-        {%- assign gift = section.settings.gift_product -%}
-        <div class="pdp_gift">
-          <label class="pdp_gift_row">
-            <input
-              type="checkbox"
-              class="pdp_gift_row_check"
-              data-gift-toggle
-              data-variant-id="{{ gift.selected_or_first_available_variant.id }}"
-              data-price="{{ gift.price | divided_by: 100.0 }}"
-            >
-            <span class="pdp_gift_row_box" aria-hidden="true">{{ 'icon-tick.svg' | inline_asset_content }}</span>
-            {%- if gift.featured_image -%}
-              <span class="pdp_gift_row_media">
-                {{ gift.featured_image | image_url: width: 56 | image_tag: loading: 'lazy', alt: '' }}
-              </span>
+                <div class="pdp_offers_rail">
+                  {%- for handle in offer_handles -%}
+                    {%- assign offer = shop.metaobjects.discount_offer[handle] -%}
+                    {%- if offer != blank -%}
+                      {%- render 'pdp-offer-card', offer: offer -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </section>
             {%- endif -%}
-            <span class="pdp_gift_row_label">{{ section.settings.gift_label | default: gift.title }}</span>
-            <span class="pdp_gift_row_price">{%- render 'money', amount: gift.price -%}</span>
-          </label>
-        </div>
-      {%- endif -%}
 
-      {%- comment -%} Need help choosing? - Figma 7930:96150 {%- endcomment -%}
-      <section class="pdp_help" data-animate>
-        <div class="pdp_help_copy">
-          <h2 class="pdp_section_title">{{ section.settings.help_heading }}</h2>
-          <p class="pdp_help_copy_body">{{ section.settings.help_body }}</p>
-        </div>
-        <div class="pdp_help_actions">
-          {%- if section.settings.whatsapp_url != blank -%}
-            <a
-              href="{{ section.settings.whatsapp_url }}"
-              class="pdp_button pdp_button--outline"
-              data-analytics="expert_help_click"
-              data-analytics-help-type="chat"
-              target="_blank"
-              rel="noopener"
-            >
-              <span class="pdp_button_icon" aria-hidden="true">
-                {{- 'icon-whatsapp.svg' | inline_asset_content -}}
-              </span>
-              <span>Chat with us</span>
-            </a>
-          {%- endif -%}
-          {%- if section.settings.video_call_endpoint != blank -%}
-            <button
-              type="button"
-              class="pdp_button pdp_button--outline"
-              data-open="video-call"
-              data-analytics="expert_help_click"
-              data-analytics-help-type="video_call"
-            >
-              <span class="pdp_button_icon" aria-hidden="true">
-                {{- 'icon-video-call.svg' | inline_asset_content -}}
-              </span>
-              <span>Book video call</span>
-            </button>
-          {%- endif -%}
-        </div>
-      </section>
+            {%- when 'variant_picker' -%}
+              {%- render 'pdp-variant-picker', block: block, product: product, has_size_guide: has_size_guide -%}
 
-      {%- comment -%} Accordions - Figma 7930:96179 / 7930:96225-96229 / 7930:96276 {%- endcomment -%}
-      <div class="pdp_accordions" data-animate>
-        {%- comment -%}
-          The product's own description from Shopify admin. Opens by default
-          when there is no "Why you'll love it" list above it to lead with.
-        {%- endcomment -%}
-        {%- if product.description != blank -%}
-          <details class="pdp_accordion"{% if highlights == blank %} open{% endif %}>
+            {%- when 'material_link' -%}
+              {%- render 'pdp-material-link', block: block, material_name: material_name, has_explainer: has_explainer -%}
+
+            {%- when 'buy_buttons' -%}
+            {%- comment -%} Buy buttons - Figma 7930:96117 {%- endcomment -%}
+            <div class="pdp_buy" {{ block.shopify_attributes }}>
+              <button
+                type="submit"
+                name="add"
+                class="pdp_button pdp_button--secondary"
+                data-add-to-cart
+                {% unless current_variant.available %}
+                  disabled
+                {% endunless %}
+              >
+                <span class="pdp_button_icon" aria-hidden="true">
+                  {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+                </span>
+                {%- assign add_label = block.settings.add_to_cart_label | default: 'Add to cart' -%}
+                {%- assign sold_label = block.settings.sold_out_label | default: 'Sold out' -%}
+                <span
+                  data-add-label
+                  data-label-add="{{ add_label | escape }}"
+                  data-label-sold="{{ sold_label | escape }}"
+                >
+                  {%- if current_variant.available -%}{{ add_label }}{%- else -%}{{ sold_label }}{%- endif -%}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="pdp_button pdp_button--primary"
+                data-buy-now
+                data-checkout-intent="buy_now"
+                {% unless current_variant.available %}
+                  disabled
+                {% endunless %}
+              >
+                <span class="pdp_button_icon" aria-hidden="true">
+                  {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
+                </span>
+                <span>{{ block.settings.buy_now_label | default: 'Buy now' }}</span>
+              </button>
+            </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      {%- endform -%}
+
+      {%- liquid
+        comment
+          Grouped parts open their frame when the first of a run appears and
+          close it when the run ends. The tags are echoed as strings because an
+          element opened in one branch and closed in another is not valid
+          markup to the theme's tooling.
+        endcomment
+        capture difference_head
+          render 'pdp-difference-head', labels: section.settings
+        endcapture
+        assign group = ''
+        assign in_highlights = false
+      -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          case block.type
+            when 'title_price', 'offers', 'variant_picker', 'material_link', 'buy_buttons', 'calc_fact', 'calc_certificate'
+              continue
+            when 'description', 'highlights', 'highlight', 'product_details', 'care_guide', 'accordion', 'know_jewellery'
+              assign family = 'accordions'
+            when 'trust', 'difference'
+              assign family = block.type
+            else
+              assign family = ''
+          endcase
+
+          comment
+            "Why you'll love it" opens its accordion and the Highlight blocks
+            after it are its bullets, up to the first block of another kind.
+          endcomment
+          if in_highlights and block.type != 'highlight'
+            echo '</ul></div></details>'
+            assign in_highlights = false
+          endif
+
+          if family != group
+            case group
+              when 'accordions'
+                echo '</div>'
+              when 'trust'
+                echo '</ul></section>'
+              when 'difference'
+                echo '</tbody></table></section>'
+            endcase
+            case family
+              when 'accordions'
+                echo '<div class="pdp_accordions" data-animate>'
+              when 'trust'
+                echo '<section class="pdp_trust" data-animate><h2 class="pdp_section_title">'
+                echo section.settings.trust_heading
+                echo '</h2><ul class="pdp_trust_grid">'
+              when 'difference'
+                echo difference_head
+            endcase
+            assign group = family
+          endif
+
+          if block.type == 'highlights'
+            render 'pdp-highlights-open', block: block
+            assign in_highlights = true
+          elsif block.type == 'highlight'
+            unless in_highlights
+              render 'pdp-highlights-open'
+              assign in_highlights = true
+            endunless
+          endif
+        -%}
+        {%- case block.type -%}
+          {%- when 'trust' -%}
+            {%- render 'pdp-trust-item', block: block -%}
+
+          {%- when 'delivery' -%}
+            {%- render 'pdp-delivery', block: block -%}
+
+          {%- when 'gift' -%}
+            {%- render 'pdp-gift', block: block -%}
+
+          {%- when 'help' -%}
+            {%- render 'pdp-help', block: block -%}
+
+          {%- when 'description' -%}
+            {%- render 'pdp-description', block: block, product: product -%}
+
+          {%- when 'highlight' -%}
+            {%- render 'pdp-highlight', block: block -%}
+
+          {%- when 'product_details' -%}
+            {%- render 'pdp-detail-lists', product: product, variant: current_variant, block: block -%}
+
+          {%- when 'care_guide' -%}
+            {%- render 'pdp-care-guide', block: block -%}
+
+          {%- when 'accordion' -%}
+            {%- render 'pdp-accordion', block: block -%}
+
+          {%- when 'know_jewellery' -%}
+          <details
+            class="pdp_accordion pdp_accordion--flush"
+            id="pdp-know-jewellery"
+            {{ block.shopify_attributes }}
+            open
+            {% unless has_explainer %}
+              hidden
+            {% endunless %}
+          >
             <summary class="pdp_accordion_summary">
-              <span>Description</span>
-              <span class="pdp_accordion_summary_sign" aria-hidden="true">
-                <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
-                <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
-              </span>
-            </summary>
-            <div class="pdp_accordion_body pdp_accordion_body--rte">{{ product.description }}</div>
-          </details>
-        {%- endif -%}
-
-        {%- if highlights != blank -%}
-          <details class="pdp_accordion" open>
-            <summary class="pdp_accordion_summary">
-              <span>Why you&rsquo;ll love it</span>
+              <span>{{ block.settings.kj_heading | default: 'Know your jewellery' }}</span>
               <span class="pdp_accordion_summary_sign" aria-hidden="true">
                 <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
                 <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
               </span>
             </summary>
             <div class="pdp_accordion_body">
-              <ul class="pdp_highlights">
-                {%- for item in highlights -%}
-                  {%- assign icon_index = forloop.index0 | modulo: 5 -%}
-                  {%- case icon_index -%}
-                    {%- when 0 -%}
-                      {%- assign icon_name = 'icon-leaf.svg' -%}
-                    {%- when 1 -%}
-                      {%- assign icon_name = 'icon-sparkles.svg' -%}
-                    {%- when 2 -%}
-                      {%- assign icon_name = 'icon-zap.svg' -%}
-                    {%- when 3 -%}
-                      {%- assign icon_name = 'icon-bacteria.svg' -%}
-                    {%- else -%}
-                      {%- assign icon_name = 'icon-honour-star.svg' -%}
-                  {%- endcase -%}
-                  <li class="pdp_highlights_item">
-                    <span class="pdp_highlights_item_icon" aria-hidden="true">
-                      {{- icon_name | inline_asset_content -}}
-                    </span>
-                    <span class="pdp_highlights_item_text">{{ item | strip }}</span>
-                  </li>
-                {%- endfor -%}
-              </ul>
+              {%- render 'pdp-know-jewellery',
+                kj: block.settings,
+                vermeil_image: block.settings.vermeil_image,
+                mined_image: block.settings.diamond_image
+              -%}
             </div>
           </details>
-        {%- endif -%}
 
-        {%- render 'pdp-detail-lists', product: product, variant: current_variant -%}
+          {%- when 'related' -%}
+            {%- render 'pdp-related', product: product, related_products: related_products, labels: block.settings, block: block -%}
 
-        {%- render 'pdp-care-guide',
-          heading: section.settings.care_guide_heading,
-          image: section.settings.care_guide_image
-        -%}
+          {%- when 'difference' -%}
+            {%- render 'pdp-difference-row', block: block, sgl_logo: section.settings.sgl_logo -%}
 
-        {%- for block in section.blocks -%}
-          {%- if block.type == 'accordion' -%}
-            <details class="pdp_accordion" {{ block.shopify_attributes }}>
-              <summary class="pdp_accordion_summary">
-                <span>{{ block.settings.heading }}</span>
-                <span class="pdp_accordion_summary_sign" aria-hidden="true">
-                  <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
-                  <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
-                </span>
-              </summary>
-              <div class="pdp_accordion_body pdp_accordion_body--rte">{{ block.settings.content }}</div>
-            </details>
-          {%- endif -%}
-        {%- endfor -%}
+          {%- when 'pair' -%}
+            {%- render 'pdp-pair', block: block, pair_handles: pair_handles -%}
 
-        <details
-          class="pdp_accordion pdp_accordion--flush"
-          id="pdp-know-jewellery"
-          open
-          {% unless has_explainer %}
-            hidden
-          {% endunless %}
-        >
-          <summary class="pdp_accordion_summary">
-            <span>Know your jewellery</span>
-            <span class="pdp_accordion_summary_sign" aria-hidden="true">
-              <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
-              <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
-            </span>
-          </summary>
-          <div class="pdp_accordion_body">
-            {%- render 'pdp-know-jewellery',
-              kj: section.settings,
-              vermeil_image: section.settings.vermeil_image,
-              mined_image: section.settings.diamond_image
-            -%}
-          </div>
-        </details>
-      </div>
-
-      {%- comment -%} You may also like / Recently viewed - Figma 7930:96277 {%- endcomment -%}
-      <section class="pdp_related" data-related data-animate>
-        <div class="pdp_related_tabs" role="tablist">
-          <button
-            type="button"
-            class="pdp_related_tabs_tab is-active"
-            role="tab"
-            aria-selected="true"
-            data-tab="also-like"
-          >
-            You may also like
-          </button>
-          <button
-            type="button"
-            class="pdp_related_tabs_tab"
-            role="tab"
-            aria-selected="false"
-            data-tab="recent"
-          >
-            Recently viewed
-          </button>
-        </div>
-
-        <scroll-carousel class="pdp_related_panel" data-panel="also-like">
-          <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
+          {%- when 'curated' -%}
             {%- comment -%}
-              The catalogue hierarchy first (same vertical, then sub-category,
-              then category); products outside it keep the older sources.
+              The home page's "Curated trends" videos and products, fetched in by
+              curated-videos.js when it nears the viewport.
             {%- endcomment -%}
-            {%- capture hierarchy_cards -%}
-              {%- render 'catalog-related', product: product, limit: 12 -%}
-            {%- endcapture -%}
-            {%- if hierarchy_cards != blank -%}
-              {{ hierarchy_cards }}
-            {%- elsif related_products != blank -%}
-              {%- for item in related_products limit: 12 -%}
-                {%- render 'product-card', product: item, variant: 'grid' -%}
-              {%- endfor -%}
-            {%- else -%}
-              {%- assign fallback = product.collections.first -%}
-              {%- for item in fallback.products limit: 12 -%}
-                {%- unless item.id == product.id -%}
-                  {%- render 'product-card', product: item, variant: 'grid' -%}
-                {%- endunless -%}
-              {%- endfor -%}
-            {%- endif -%}
-          </div>
-          <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
-        </scroll-carousel>
+            <curated-videos
+              class="pdp_curated"
+              data-src="{{ routes.root_url }}"
+              data-heading="{{ block.settings.ugc_heading | escape }}"
+              {{ block.shopify_attributes }}
+            ></curated-videos>
 
-        <div class="pdp_related_panel" data-panel="recent" hidden>
-          <div class="pdp_related_panel_track" data-recent-track></div>
-          <p class="pdp_related_panel_empty" data-recent-empty>Nothing here yet &mdash; browse a few pieces first.</p>
-        </div>
-      </section>
-
-      {%- comment -%} The Zinara Difference - Figma 7930:96294 {%- endcomment -%}
-      {%- assign difference_rows = section.blocks | where: 'type', 'difference' -%}
-      {%- if difference_rows.size > 0 -%}
-        {%- comment -%}
-          The heading mixes two colours mid-sentence ("The *Zinara* Difference"),
-          so the accented run is marked with [brackets] in the setting and swapped
-          for a span here - a second text setting would let the two halves drift
-          apart in the editor.
-        {%- endcomment -%}
-        {%- assign heading_html = section.settings.difference_heading
-          | replace: '[', '<span class="pdp_difference_title_accent">'
-          | replace: ']', '</span>'
-        -%}
-        <section class="pdp_difference" data-animate data-animate-from="scale">
-          <h2 class="pdp_difference_title">{{ heading_html }}</h2>
-          <table class="pdp_difference_table">
-            <thead>
-              <tr>
-                <th scope="col">Feature</th>
-                <th scope="col">Zinara</th>
-                <th scope="col">Typical Brands</th>
-              </tr>
-            </thead>
-            <tbody>
-              {%- for block in difference_rows -%}
-                <tr {{ block.shopify_attributes }}>
-                  <th scope="row">{{ block.settings.label }}</th>
-                  <td>
-                    <span class="pdp_difference_table_yes" aria-label="Yes">
-                      {{- 'icon-seal-check.svg' | inline_asset_content -}}
-                      {%- if block.settings.show_sgl and section.settings.sgl_logo != blank -%}
-                        {{ section.settings.sgl_logo | image_url: width: 76 | image_tag: loading: 'lazy', alt: 'SGL' }}
-                      {%- endif -%}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="pdp_difference_table_no" aria-label="No">
-                      {{- 'icon-x-circle.svg' | inline_asset_content -}}
-                    </span>
-                  </td>
-                </tr>
-              {%- endfor -%}
-            </tbody>
-          </table>
-        </section>
-      {%- endif -%}
-
-      {%- comment -%} Pair beautifully with - Figma 7930:96345 {%- endcomment -%}
-      {%- if pair_handles.size > 0 -%}
-        <section class="pdp_pair" data-pair data-animate>
-          <div class="pdp_pair_card">
-            <h2 class="pdp_pair_card_title">
-              <span class="pdp_pair_card_title_icon" aria-hidden="true">
-                {{- 'icon-sparkle.svg' | inline_asset_content -}}
-              </span>
-              {{ section.settings.pair_heading }}
-            </h2>
-
-            <div class="pdp_pair_card_items">
-              {%- for pair_handle in pair_handles limit: 3 -%}
-                {%- assign item = all_products[pair_handle] -%}
-                {%- unless forloop.first -%}
-                  <span class="pdp_pair_card_items_plus" aria-hidden="true">
-                    {{- 'icon-plus.svg' | inline_asset_content -}}
-                  </span>
-                {%- endunless -%}
-                {%- comment -%}
-                  No variant picking here: each piece goes in as its first
-                  available variant. A piece with nothing available has no id
-                  and is left out of the set.
-                {%- endcomment -%}
-                <article
-                  class="pdp-mini"
-                  data-pair-item
-                  data-product-id="{{ item.id }}"
-                  data-variant-id="{{ item.first_available_variant.id }}"
-                >
-                  <a href="{{ item.url }}" class="pdp-mini_media">
-                    {%- if item.featured_image -%}
-                      {{
-                        item.featured_image
-                        | image_url: width: 340
-                        | image_tag: loading: 'lazy', widths: '170,340', sizes: '170px', alt: item.title
-                      }}
-                    {%- endif -%}
-                  </a>
-                  <button
-                    type="button"
-                    class="pdp-mini_add"
-                    data-pair-toggle
-                    aria-pressed="false"
-                    aria-label="Select {{ item.title | escape }}"
-                  >
-                    <span class="pdp-mini_add_bag" aria-hidden="true">
-                      {{- 'icon-bag.svg' | inline_asset_content -}}
-                    </span>
-                    <span class="pdp-mini_add_tick" aria-hidden="true">
-                      {{- 'icon-tick.svg' | inline_asset_content -}}
-                    </span>
-                  </button>
-                  <div class="pdp-mini_info">
-                    <span class="pdp-mini_info_price">
-                      <span class="pdp-mini_info_price_current">{%- render 'money', amount: item.price -%}</span>
-                      {%- if item.compare_at_price > item.price -%}
-                        <span class="pdp-mini_info_price_compare">
-                          {%- render 'money', amount: item.compare_at_price -%}
-                        </span>
-                      {%- endif -%}
-                    </span>
-                    <a href="{{ item.url }}" class="pdp-mini_info_title">{{ item.title }}</a>
-                  </div>
-                </article>
-              {%- endfor -%}
-            </div>
-
-            <button type="button" class="pdp_button pdp_button--primary pdp_pair_card_cta" data-pair-add>
-              <span class="pdp_button_icon" aria-hidden="true">
-                {{- 'icon-shopping-bag.svg' | inline_asset_content -}}
-              </span>
-              <span data-add-label>Add set to cart</span>
-            </button>
-          </div>
-        </section>
-      {%- endif -%}
-
-      {%- comment -%}
-        Curated trends: the home page's video showcase, same videos and
-        products, edited once in the home page's "Curated trends" section.
-        curated-videos.js fetches it in when it nears the viewport; until then
-        (or if the home page has none) the slot is empty.
-      {%- endcomment -%}
-      <curated-videos
-        class="pdp_curated"
-        data-src="{{ routes.root_url }}"
-        data-heading="{{ section.settings.ugc_heading | escape }}"
-      ></curated-videos>
-
-      {%- comment -%} Customer reviews - Figma 7930:96415 {%- endcomment -%}
-      <section class="pdp_reviews" id="pdp-reviews" data-animate>
-        <div class="pdp_reviews_head">
-          <h2 class="pdp_section_title">Customer reviews</h2>
-          {%- comment -%}
-            With a review endpoint set, the button opens the in-theme review
-            form (pdp-review-sheet); without one it falls back to the link.
-          {%- endcomment -%}
-          {%- if section.settings.review_endpoint != blank -%}
-            <button
-              type="button"
-              class="pdp_button pdp_button--primary pdp_button--compact"
-              data-open="review"
-              data-analytics="review_interaction"
-              data-analytics-action="write_review_click"
-            >
-              Write a review
-            </button>
-          {%- elsif section.settings.review_url != blank -%}
-            <a
-              href="{{ section.settings.review_url }}"
-              class="pdp_button pdp_button--primary pdp_button--compact"
-              data-analytics="review_interaction"
-              data-analytics-action="write_review_click"
-            >
-              Write a review
-            </a>
-          {%- endif -%}
-        </div>
-
-        {%- comment -%}
-          Summary and reviews come only from Judge.me: judgeme.js fills them in
-          and fetches the next page for "Show more". Each part stays hidden
-          until Judge.me has something to show.
-        {%- endcomment -%}
-        <judgeme-reviews data-handle="{{ product.handle }}" data-per-page="{{ section.settings.reviews_shown }}">
-          <div class="pdp_reviews_summary" data-reviews-summary hidden>
-            <span class="pdp_reviews_summary_score" data-reviews-score></span>
-            <span class="pdp_reviews_summary_rule" aria-hidden="true"></span>
-            {%- render 'testimonial-stars', rating: 5 -%}
-            <span class="pdp_reviews_summary_count" data-reviews-count></span>
-          </div>
-
-          <ul class="pdp_reviews_list" data-reviews-list hidden></ul>
-
-          <template data-review-template>
-            <li class="pdp_reviews_list_item">
-              {%- render 'testimonial-stars', rating: 5 -%}
-
-              <p class="pdp_reviews_list_item_author">
-                <span class="pdp_reviews_list_item_author_name" data-review-author></span>
-                <span class="pdp_reviews_list_item_author_dot" aria-hidden="true" data-review-verified hidden></span>
-                <span class="pdp_reviews_list_item_author_badge" data-review-verified hidden>Verified buyer</span>
-              </p>
-
-              <div class="pdp_reviews_list_item_media" data-review-media hidden></div>
-
-              <p class="pdp_reviews_list_item_body" data-review-body></p>
-              <p class="pdp_reviews_list_item_date" data-review-date hidden></p>
-            </li>
-          </template>
-
-          <div class="pdp_reviews_more" data-reviews-more hidden>
-            <button type="button" class="pdp_button pdp_button--outline pdp_button--compact">
-              Show more reviews
-            </button>
-          </div>
-        </judgeme-reviews>
-      </section>
+          {%- when 'reviews' -%}
+            {%- render 'pdp-reviews', product: product, labels: block.settings, block: block -%}
+        {%- endcase -%}
+      {%- endfor -%}
+      {%- liquid
+        if in_highlights
+          echo '</ul></div></details>'
+        endif
+        case group
+          when 'accordions'
+            echo '</div>'
+          when 'trust'
+            echo '</ul></section>'
+          when 'difference'
+            echo '</tbody></table></section>'
+        endcase
+      -%}
     </div>
   </div>
 
   {%- comment -%} ------------------------------------------------- overlays {%- endcomment -%}
   {%- render 'pdp-lightbox', product: product -%}
-  {%- if section.settings.review_endpoint != blank -%}
-    {%- render 'pdp-review-sheet', product: product, endpoint: section.settings.review_endpoint -%}
+  {%- if reviews_block.settings.review_endpoint != blank -%}
+    {%- render 'pdp-review-sheet', product: product, endpoint: reviews_block.settings.review_endpoint -%}
   {%- endif -%}
   {%- if has_size_guide -%}
-    {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
+    {%- render 'pdp-size-guide', product: product, whatsapp_url: help_block.settings.whatsapp_url -%}
   {%- endif -%}
-  {%- render 'pdp-offers-sheet', offer_handles: offer_handles -%}
+  {%- if offers_block != blank -%}
+    {%- render 'pdp-offers-sheet', offer_handles: offer_handles, labels: offers_block.settings -%}
+  {%- endif -%}
   {%- render 'pdp-addons-sheet',
     addons: addons,
     hero: addons_hero,
     previews: addon_previews,
-    whatsapp_url: section.settings.whatsapp_url
+    labels: section.settings
   -%}
-  {%- render 'pdp-sgl-modal', certificate: section.settings.certificate_image -%}
-  {%- if section.settings.video_call_endpoint != blank -%}
-    {%- render 'pdp-video-call', product: product, endpoint: section.settings.video_call_endpoint -%}
+  {%- render 'pdp-sgl-modal', certificate: section.settings.certificate_image, labels: section.settings -%}
+  {%- if help_block.settings.video_call_endpoint != blank -%}
+    {%- render 'pdp-video-call', product: product, endpoint: help_block.settings.video_call_endpoint, labels: help_block.settings -%}
   {%- endif -%}
+  {%- assign calc_facts = section.blocks | where: 'type', 'calc_fact' -%}
+  {%- assign calc_slides = section.blocks | where: 'type', 'calc_certificate' -%}
   {%- render 'pdp-price-difference',
     product: product,
+    facts: calc_facts,
+    slides: calc_slides,
     current_variant: current_variant,
-    kj: section.settings,
+    kj: kj,
+    labels: section.settings,
     certificate: section.settings.certificate_image,
-    vermeil_image: section.settings.vermeil_image,
-    diamond_image: section.settings.diamond_image,
+    vermeil_image: kj.vermeil_image,
+    diamond_image: kj.diamond_image,
     sgl_logo: section.settings.sgl_logo
   -%}
 
@@ -1157,10 +652,12 @@
   "class": "shopify-section--product",
   "settings": [
     {
-      "type": "text",
-      "id": "tax_note",
-      "label": "Price note",
-      "default": "Price inclusive of all taxes"
+      "type": "paragraph",
+      "content": "Each part of the product details is a block - click it in the preview or pick it in the sidebar. Drag blocks to reorder; remove one to hide that part. The buy box (Title & price, Offers, Variant picker, Material link, Buy buttons) always sits at the top, in its own order."
+    },
+    {
+      "type": "header",
+      "content": "Gallery"
     },
     {
       "type": "text",
@@ -1170,91 +667,72 @@
       "info": "Shown on the gallery and with the pincode check when the selected variant has stock. Nothing about shipping is shown otherwise."
     },
     {
-      "type": "checkbox",
-      "id": "show_savings_calculator",
-      "label": "Show savings calculator link",
-      "default": true
+      "type": "header",
+      "content": "Add-ons",
+      "info": "The \"Add-ons available\" link and the sheet it opens."
     },
-    { "type": "header", "content": "Shop with confidence" },
+    {
+      "type": "text",
+      "id": "addons_link_label",
+      "label": "Add-ons link",
+      "default": "Add-ons available",
+      "info": "Shown when the product has add-ons."
+    },
+    {
+      "type": "text",
+      "id": "addons_sheet_title",
+      "label": "Title",
+      "default": "Add ons"
+    },
+    {
+      "type": "text",
+      "id": "addons_sheet_intro",
+      "label": "Intro",
+      "default": "Elevate your piece with curated add-ons"
+    },
+    {
+      "type": "image_picker",
+      "id": "addons_image",
+      "label": "Add-ons sidesheet image"
+    },
+    {
+      "type": "text",
+      "id": "addons_done_label",
+      "label": "Done button",
+      "default": "Done"
+    },
+    {
+      "type": "header",
+      "content": "Shop with confidence",
+      "info": "Each badge is a \"Trust item\" block."
+    },
     {
       "type": "text",
       "id": "trust_heading",
       "label": "Heading",
       "default": "Shop with confidence"
     },
-    { "type": "header", "content": "Need help choosing?" },
-    {
-      "type": "text",
-      "id": "help_heading",
-      "label": "Heading",
-      "default": "Need help choosing?"
-    },
-    {
-      "type": "textarea",
-      "id": "help_body",
-      "label": "Body",
-      "default": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice."
-    },
-    { "type": "url", "id": "whatsapp_url", "label": "WhatsApp link" },
-    {
-      "type": "text",
-      "id": "video_call_endpoint",
-      "label": "Video call form endpoint",
-      "info": "Google Apps Script URL that \"Book video call\" requests are sent to - the same one the live theme's video trial form uses. Leave empty to hide the button.",
-      "default": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec"
-    },
-    { "type": "header", "content": "Add-ons" },
-    {
-      "type": "product",
-      "id": "gift_product",
-      "label": "Gift sleeve product"
-    },
-    {
-      "type": "text",
-      "id": "gift_label",
-      "label": "Gift sleeve label",
-      "default": "Add a gift sleeve"
-    },
-    { "type": "image_picker", "id": "addons_image", "label": "Add-ons sidesheet image" },
-    { "type": "header", "content": "Why you'll love it" },
-    {
-      "type": "textarea",
-      "id": "highlights",
-      "label": "Bullets",
-      "info": "One per line. Shown on every product.",
-      "default": "Skin Friendly Jewellery\nAnti Tarnish, Made for Daily Wear\nLong Lasting and Durable Vermeil\nHypoallergenic finish\nPremium look, smart choice"
-    },
-    { "type": "header", "content": "Care guide" },
-    { "type": "text", "id": "care_guide_heading", "label": "Heading", "default": "Care guide" },
     {
       "type": "image_picker",
-      "id": "care_guide_image",
-      "label": "Image",
-      "info": "Shown on every product. Leave empty to hide the Care guide accordion."
+      "id": "certificate_image",
+      "label": "SGL certificate sample"
     },
-    { "type": "header", "content": "Know your jewellery" },
-    { "type": "text", "id": "kj_material_name", "label": "Material name", "default": "Gold Vermeil" },
-    { "type": "text", "id": "kj_base_metal", "label": "Base metal", "default": "Sterling Silver 925" },
-    { "type": "text", "id": "kj_plating", "label": "Plating", "default": "18 KT Gold" },
     {
-      "type": "textarea",
-      "id": "kj_callouts",
-      "label": "Diagram callouts",
-      "info": "One per line, up to 3, in diagram order: sparkle, droplet, layers.",
-      "default": "Looks and feels like solid gold\nSweat and waterproof\n5x thicker gold plating"
+      "type": "text",
+      "id": "sgl_title",
+      "label": "SGL certificate popup: title",
+      "default": "SGL certified diamonds"
     },
-    { "type": "text", "id": "kj_stone_name", "label": "Stone name", "default": "Lab Grown Diamonds" },
-    { "type": "text", "id": "kj_mined_label", "label": "Comparison: left label", "default": "Mined diamond" },
-    { "type": "text", "id": "kj_lab_label", "label": "Comparison: right label", "default": "Lab grown diamond" },
-    { "type": "text", "id": "kj_compare_note_1", "label": "Comparison: note above arrow", "default": "Same sparkle" },
-    { "type": "text", "id": "kj_compare_note_2", "label": "Comparison: note below arrow", "default": "100% same composition" },
-    { "type": "text", "id": "kj_certification_label", "label": "Certification", "default": "SGL certified" },
-    { "type": "text", "id": "kj_pricing_claim", "label": "Pricing claim", "default": "40-60% easier on your pocket" },
-    { "type": "image_picker", "id": "vermeil_image", "label": "Gold vermeil cutaway" },
-    { "type": "image_picker", "id": "diamond_image", "label": "Diamond render" },
-    { "type": "image_picker", "id": "certificate_image", "label": "SGL certificate sample" },
-    { "type": "image_picker", "id": "sgl_logo", "label": "SGL logo" },
-    { "type": "header", "content": "The Zinara Difference" },
+    {
+      "type": "image_picker",
+      "id": "sgl_logo",
+      "label": "SGL logo"
+    },
+    {
+      "type": "header",
+      "content": "The Zinara Difference",
+      "info": "Each row is a \"Difference row\" block."
+    },
     {
       "type": "text",
       "id": "difference_heading",
@@ -1262,49 +740,198 @@
       "info": "Wrap the highlighted word in [brackets].",
       "default": "The [Zinara] Difference"
     },
-    { "type": "header", "content": "Pair beautifully with" },
     {
       "type": "text",
-      "id": "pair_heading",
-      "label": "Heading",
-      "default": "Pair beautifully with"
+      "id": "difference_col_feature",
+      "label": "Column 1",
+      "default": "Feature"
+    },
+    {
+      "type": "text",
+      "id": "difference_col_ours",
+      "label": "Column 2",
+      "default": "Zinara"
+    },
+    {
+      "type": "text",
+      "id": "difference_col_others",
+      "label": "Column 3",
+      "default": "Typical Brands"
     },
     {
       "type": "header",
-      "content": "Curated trends",
-      "info": "Shows the videos and products from the Curated trends section on the home page."
+      "content": "Savings calculator sheet",
+      "info": "Opened from the Title & price block. Its highlights are \"Savings calculator fact\" blocks and its certificate slides \"Calculator certificate\" blocks."
     },
     {
       "type": "text",
-      "id": "ugc_heading",
-      "label": "Heading",
-      "info": "Leave empty to use the home page heading.",
-      "default": "Curated trends for you"
+      "id": "calc_title",
+      "label": "Title",
+      "default": "Savings calculator"
     },
-    { "type": "header", "content": "Reviews" },
     {
       "type": "text",
-      "id": "review_endpoint",
-      "label": "Review form endpoint",
-      "info": "URL of submit.php in the zinara-reviews app on your server, e.g. https://your-domain/zinara-reviews/submit.php. When set, Write a review opens the review form. Published reviews are shown from Judge.me (theme settings > Judge.me reviews)."
+      "id": "calc_saving_label",
+      "label": "Saving line",
+      "default": "You save [amount] vs mined diamond",
+      "info": "[amount] is replaced with the saving."
     },
     {
-      "type": "url",
-      "id": "review_url",
-      "label": "Write a review link",
-      "info": "Used only when no review form endpoint is set."
+      "type": "text",
+      "id": "calc_mined_label",
+      "label": "Mined diamond price label",
+      "default": "Mined diamond"
     },
     {
-      "type": "range",
-      "id": "reviews_shown",
-      "label": "Reviews per page (\"Show more\" loads the next)",
-      "min": 1,
-      "max": 10,
-      "step": 1,
-      "default": 3
+      "type": "text",
+      "id": "calc_ours_label",
+      "label": "Your price label",
+      "default": "Your Zinara piece"
+    },
+    {
+      "type": "text",
+      "id": "calc_explainer_intro",
+      "label": "Know your jewellery intro",
+      "default": "Learn about Gold Vermeil & Lab-Grown Diamonds"
+    },
+    {
+      "type": "text",
+      "id": "calc_cta_label",
+      "label": "Button",
+      "default": "Add to Cart"
     }
   ],
   "blocks": [
+    {
+      "type": "title_price",
+      "name": "Title & price",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tax_note",
+          "label": "Price note",
+          "default": "Price inclusive of all taxes"
+        },
+        {
+          "type": "text",
+          "id": "save_label",
+          "label": "Discount badge",
+          "default": "Save [percent]%",
+          "info": "[percent] is replaced with the discount."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_savings_calculator",
+          "label": "Show savings calculator link",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "savings_calculator_label",
+          "label": "Savings calculator link",
+          "default": "Your savings calculator"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "offers",
+      "name": "Offers",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "The offers themselves are edited in Content > Metaobjects > Discount offer."
+        },
+        {
+          "type": "text",
+          "id": "offers_heading",
+          "label": "Heading",
+          "default": "Offers"
+        },
+        {
+          "type": "text",
+          "id": "offers_count_label",
+          "label": "Count",
+          "default": "[count] available",
+          "info": "[count] is replaced with the number of offers."
+        },
+        {
+          "type": "text",
+          "id": "offers_view_all_label",
+          "label": "View all link",
+          "default": "View all"
+        },
+        {
+          "type": "text",
+          "id": "offers_sheet_title",
+          "label": "All offers sheet: title",
+          "default": "All offers"
+        },
+        {
+          "type": "text",
+          "id": "offers_sheet_label",
+          "label": "All offers sheet: label",
+          "default": "Coupons"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant picker",
+      "settings": [
+        {
+          "type": "text",
+          "id": "size_guide_label",
+          "label": "Size guide link",
+          "default": "Size guide"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "material_link",
+      "name": "Material link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "explainer_label",
+          "label": "Material link",
+          "default": "What is [material]?",
+          "info": "[material] is replaced with the Know your jewellery material name."
+        },
+        {
+          "type": "paragraph",
+          "content": "Shown when the Know your jewellery block has content."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "settings": [
+        {
+          "type": "text",
+          "id": "add_to_cart_label",
+          "label": "Add to cart button",
+          "default": "Add to cart"
+        },
+        {
+          "type": "text",
+          "id": "sold_out_label",
+          "label": "Sold out button",
+          "default": "Sold out"
+        },
+        {
+          "type": "text",
+          "id": "buy_now_label",
+          "label": "Buy now button",
+          "default": "Buy now"
+        }
+      ],
+      "limit": 1
+    },
     {
       "type": "trust",
       "name": "Trust item",
@@ -1314,46 +941,1153 @@
           "id": "icon",
           "label": "Icon",
           "options": [
-            { "value": "icon-return", "label": "Return" },
-            { "value": "icon-certificate", "label": "Certificate" },
-            { "value": "icon-handshake", "label": "Handshake" },
-            { "value": "icon-diamond-outline", "label": "Diamond" },
-            { "value": "icon-seal-check", "label": "Seal check" }
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
           ],
           "default": "icon-return"
         },
-        { "type": "text", "id": "label", "label": "Label", "default": "7 days free return" },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "7 days free return"
+        },
         {
           "type": "select",
           "id": "action",
           "label": "Action",
           "options": [
-            { "value": "none", "label": "None" },
-            { "value": "sgl", "label": "Open SGL certificate" }
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "sgl",
+              "label": "Open SGL certificate"
+            }
           ],
           "default": "none"
         }
       ]
     },
     {
-      "type": "difference",
-      "name": "Difference row",
+      "type": "delivery",
+      "name": "Delivery estimate",
       "settings": [
-        { "type": "text", "id": "label", "label": "Feature", "default": "Gold Vermeil" },
-        { "type": "checkbox", "id": "show_sgl", "label": "Show SGL mark", "default": false }
+        {
+          "type": "text",
+          "id": "delivery_heading",
+          "label": "Heading",
+          "default": "Delivery Estimate"
+        },
+        {
+          "type": "text",
+          "id": "pincode_placeholder",
+          "label": "Pincode placeholder",
+          "default": "Enter pincode"
+        },
+        {
+          "type": "text",
+          "id": "pincode_button_label",
+          "label": "Button",
+          "default": "Check"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "gift",
+      "name": "Gift sleeve",
+      "settings": [
+        {
+          "type": "product",
+          "id": "gift_product",
+          "label": "Gift sleeve product"
+        },
+        {
+          "type": "text",
+          "id": "gift_label",
+          "label": "Gift sleeve label",
+          "default": "Add a gift sleeve"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "help",
+      "name": "Need help choosing?",
+      "settings": [
+        {
+          "type": "text",
+          "id": "help_heading",
+          "label": "Heading",
+          "default": "Need help choosing?"
+        },
+        {
+          "type": "textarea",
+          "id": "help_body",
+          "label": "Body",
+          "default": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice."
+        },
+        {
+          "type": "text",
+          "id": "chat_label",
+          "label": "Chat button",
+          "default": "Chat with us"
+        },
+        {
+          "type": "url",
+          "id": "whatsapp_url",
+          "label": "WhatsApp link"
+        },
+        {
+          "type": "text",
+          "id": "video_call_label",
+          "label": "Video call button",
+          "default": "Book video call"
+        },
+        {
+          "type": "text",
+          "id": "video_call_endpoint",
+          "label": "Video call form endpoint",
+          "info": "Google Apps Script URL that \"Book video call\" requests are sent to - the same one the live theme's video trial form uses. Leave empty to hide the button.",
+          "default": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec"
+        },
+        {
+          "type": "header",
+          "content": "Video call form"
+        },
+        {
+          "type": "text",
+          "id": "video_call_title",
+          "label": "Video call form: title",
+          "default": "Book a video call"
+        },
+        {
+          "type": "textarea",
+          "id": "video_call_intro",
+          "label": "Video call form: intro",
+          "default": "A Zinara expert will call you to show this piece live. Leave your details and we'll be in touch shortly."
+        },
+        {
+          "type": "text",
+          "id": "video_call_submit_label",
+          "label": "Video call form: button",
+          "default": "Request a video call"
+        },
+        {
+          "type": "text",
+          "id": "video_call_done_title",
+          "label": "Video call form: thank-you title",
+          "default": "Request received"
+        },
+        {
+          "type": "textarea",
+          "id": "video_call_done_text",
+          "label": "Video call form: thank-you text",
+          "default": "Your request has been submitted successfully. We'll contact you shortly."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "settings": [
+        {
+          "type": "text",
+          "id": "description_heading",
+          "label": "Heading",
+          "default": "Description",
+          "info": "The text is the product's own description."
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": false
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "highlights",
+      "name": "Why you'll love it",
+      "settings": [
+        {
+          "type": "text",
+          "id": "highlights_heading",
+          "label": "Heading",
+          "default": "Why you’ll love it"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": true
+        },
+        {
+          "type": "paragraph",
+          "content": "Each bullet is a \"Highlight\" block - add them right after this block, and drag to reorder."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "highlight",
+      "name": "Highlight",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-leaf"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Skin Friendly Jewellery"
+        },
+        {
+          "type": "paragraph",
+          "content": "A bullet of the \"Why you'll love it\" block it follows."
+        }
       ]
+    },
+    {
+      "type": "product_details",
+      "name": "Product details",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "One accordion per list in the selected variant's Product Details List 1-4 JSON metafields; follows the variant picked."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "care_guide",
+      "name": "Care guide",
+      "settings": [
+        {
+          "type": "text",
+          "id": "care_guide_heading",
+          "label": "Heading",
+          "default": "Care guide"
+        },
+        {
+          "type": "image_picker",
+          "id": "care_guide_image",
+          "label": "Image",
+          "info": "Shown on every product. Leave empty to hide the Care guide accordion."
+        }
+      ],
+      "limit": 1
     },
     {
       "type": "accordion",
       "name": "Accordion",
       "settings": [
-        { "type": "text", "id": "heading", "label": "Heading", "default": "Shipping policy" },
-        { "type": "richtext", "id": "content", "label": "Content" }
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Shipping policy"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    },
+    {
+      "type": "know_jewellery",
+      "name": "Know your jewellery",
+      "settings": [
+        {
+          "type": "text",
+          "id": "kj_heading",
+          "label": "Heading",
+          "default": "Know your jewellery"
+        },
+        {
+          "type": "text",
+          "id": "kj_material_name",
+          "label": "Material name",
+          "default": "Gold Vermeil"
+        },
+        {
+          "type": "header",
+          "content": "Material"
+        },
+        {
+          "type": "text",
+          "id": "kj_base_metal_label",
+          "label": "Base metal: label",
+          "default": "Base metal"
+        },
+        {
+          "type": "text",
+          "id": "kj_base_metal",
+          "label": "Base metal: value",
+          "default": "Sterling Silver 925"
+        },
+        {
+          "type": "text",
+          "id": "kj_plating_label",
+          "label": "Plating: label",
+          "default": "Plating"
+        },
+        {
+          "type": "text",
+          "id": "kj_plating",
+          "label": "Plating: value",
+          "default": "18 KT Gold"
+        },
+        {
+          "type": "text",
+          "id": "kj_callout_1",
+          "label": "Diagram callout 1 (top left)",
+          "default": "Looks and feels like solid gold"
+        },
+        {
+          "type": "select",
+          "id": "kj_callout_1_icon",
+          "label": "Callout 1 icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-sparkles"
+        },
+        {
+          "type": "image_picker",
+          "id": "kj_callout_1_image",
+          "label": "Callout 1 custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "kj_callout_2",
+          "label": "Diagram callout 2 (top right)",
+          "default": "Sweat and waterproof"
+        },
+        {
+          "type": "select",
+          "id": "kj_callout_2_icon",
+          "label": "Callout 2 icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-droplet"
+        },
+        {
+          "type": "image_picker",
+          "id": "kj_callout_2_image",
+          "label": "Callout 2 custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "kj_callout_3",
+          "label": "Diagram callout 3 (bottom)",
+          "default": "5x thicker gold plating"
+        },
+        {
+          "type": "select",
+          "id": "kj_callout_3_icon",
+          "label": "Callout 3 icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-layers"
+        },
+        {
+          "type": "image_picker",
+          "id": "kj_callout_3_image",
+          "label": "Callout 3 custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "image_picker",
+          "id": "vermeil_image",
+          "label": "Gold vermeil cutaway"
+        },
+        {
+          "type": "header",
+          "content": "Stone comparison"
+        },
+        {
+          "type": "text",
+          "id": "kj_stone_name",
+          "label": "Stone name",
+          "default": "Lab Grown Diamonds"
+        },
+        {
+          "type": "text",
+          "id": "kj_mined_label",
+          "label": "Comparison: left label",
+          "default": "Mined diamond"
+        },
+        {
+          "type": "text",
+          "id": "kj_lab_label",
+          "label": "Comparison: right label",
+          "default": "Lab grown diamond"
+        },
+        {
+          "type": "text",
+          "id": "kj_compare_note_1",
+          "label": "Comparison: note above arrow",
+          "default": "Same sparkle"
+        },
+        {
+          "type": "text",
+          "id": "kj_compare_note_2",
+          "label": "Comparison: note below arrow",
+          "default": "100% same composition"
+        },
+        {
+          "type": "image_picker",
+          "id": "diamond_image",
+          "label": "Diamond render"
+        },
+        {
+          "type": "header",
+          "content": "Savings calculator facts"
+        },
+        {
+          "type": "text",
+          "id": "kj_certification_heading",
+          "label": "Certification: label",
+          "default": "Certification",
+          "info": "Certification and pricing show in the savings calculator sheet."
+        },
+        {
+          "type": "text",
+          "id": "kj_certification_label",
+          "label": "Certification: value",
+          "default": "SGL certified"
+        },
+        {
+          "type": "text",
+          "id": "kj_pricing_heading",
+          "label": "Pricing: label",
+          "default": "Pricing"
+        },
+        {
+          "type": "text",
+          "id": "kj_pricing_claim",
+          "label": "Pricing: value",
+          "default": "40-60% easier on your pocket"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "related",
+      "name": "You may also like",
+      "settings": [
+        {
+          "type": "text",
+          "id": "related_heading",
+          "label": "You may also like tab",
+          "default": "You may also like"
+        },
+        {
+          "type": "text",
+          "id": "recent_heading",
+          "label": "Recently viewed tab",
+          "default": "Recently viewed"
+        },
+        {
+          "type": "text",
+          "id": "recent_empty",
+          "label": "Recently viewed: when empty",
+          "default": "Nothing here yet — browse a few pieces first."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "difference",
+      "name": "Difference row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Feature",
+          "default": "Gold Vermeil"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_sgl",
+          "label": "Show SGL mark",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "pair",
+      "name": "Pair beautifully with",
+      "settings": [
+        {
+          "type": "text",
+          "id": "pair_heading",
+          "label": "Heading",
+          "default": "Pair beautifully with"
+        },
+        {
+          "type": "text",
+          "id": "pair_button_label",
+          "label": "Button",
+          "default": "Add set to cart"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "curated",
+      "name": "Curated trends",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Shows the videos and products from the Curated trends section on the home page."
+        },
+        {
+          "type": "text",
+          "id": "ugc_heading",
+          "label": "Heading",
+          "info": "Leave empty to use the home page heading.",
+          "default": "Curated trends for you"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "reviews",
+      "name": "Customer reviews",
+      "settings": [
+        {
+          "type": "text",
+          "id": "reviews_heading",
+          "label": "Heading",
+          "default": "Customer reviews"
+        },
+        {
+          "type": "text",
+          "id": "write_review_label",
+          "label": "Write a review button",
+          "default": "Write a review"
+        },
+        {
+          "type": "text",
+          "id": "verified_label",
+          "label": "Verified badge",
+          "default": "Verified buyer"
+        },
+        {
+          "type": "text",
+          "id": "show_more_reviews_label",
+          "label": "Show more button",
+          "default": "Show more reviews"
+        },
+        {
+          "type": "text",
+          "id": "review_endpoint",
+          "label": "Review form endpoint",
+          "info": "URL of submit.php in the zinara-reviews app on your server, e.g. https://your-domain/zinara-reviews/submit.php. When set, Write a review opens the review form. Published reviews are shown from Judge.me (theme settings > Judge.me reviews)."
+        },
+        {
+          "type": "url",
+          "id": "review_url",
+          "label": "Write a review link",
+          "info": "Used only when no review form endpoint is set."
+        },
+        {
+          "type": "range",
+          "id": "reviews_shown",
+          "label": "Reviews per page (\"Show more\" loads the next)",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 3
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "calc_fact",
+      "name": "Savings calculator fact",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-certificate"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "SGL certified"
+        },
+        {
+          "type": "paragraph",
+          "content": "Listed in the savings calculator sheet (opened from \"Your savings calculator\"), in block order."
+        }
+      ]
+    },
+    {
+      "type": "calc_certificate",
+      "name": "Calculator certificate",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Certificate image"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Image description",
+          "info": "Read out by screen readers.",
+          "default": "Diamond certificate"
+        },
+        {
+          "type": "paragraph",
+          "content": "One slide of the certificate carousel in the savings calculator sheet, in block order. With none, the SGL certificate sample from the section settings is shown."
+        }
       ]
     }
   ],
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   }
 }
 {% endschema %}

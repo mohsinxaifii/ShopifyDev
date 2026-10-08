@@ -1,0 +1,14 @@
+{%- doc -%}
+  An editor-chosen icon: the uploaded image when there is one, else the
+  theme's own SVG picked from the icon list (see the "Icon" select in the
+  product section's blocks). Sized by the box it sits in.
+
+  @param {string} [name] - icon file without extension, e.g. 'icon-leaf'
+  @param {object} [image] - an uploaded custom icon, which wins
+{%- enddoc -%}
+
+{%- if image != blank -%}
+  {{ image | image_url: width: 96 | image_tag: loading: 'lazy', alt: '', class: 'pdp-icon-image' }}
+{%- elsif name != blank and name != 'none' -%}
+  {{ name | append: '.svg' | inline_asset_content }}
+{%- endif -%}

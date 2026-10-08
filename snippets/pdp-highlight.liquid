@@ -1,0 +1,14 @@
+{%- doc -%}
+  One "Why you'll love it" bullet: its icon and text.
+
+  @param {object} block - a "Highlight" block
+{%- enddoc -%}
+
+{%- if block.settings.text != blank -%}
+  <li class="pdp_highlights_item" {{ block.shopify_attributes }}>
+    <span class="pdp_highlights_item_icon" aria-hidden="true">
+      {%- render 'pdp-icon', name: block.settings.icon, image: block.settings.icon_image -%}
+    </span>
+    <span class="pdp_highlights_item_text">{{ block.settings.text }}</span>
+  </li>
+{%- endif -%}
