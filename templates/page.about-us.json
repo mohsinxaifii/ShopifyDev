@@ -298,43 +298,78 @@
         "q1": {
           "type": "question",
           "settings": {
-            "question": "Are lab grown diamonds real?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "What makes Zinara different?",
+            "answer": "We take a modern approach to fine jewellery, focusing on design, quality and transparency. Our jewellery features SGL-certified lab-grown diamonds and 18KT gold vermeil, with details like 5× thicker gold plating, lifetime free replating, lifetime buyback and exchange, and free insured shipping."
           }
         },
         "q2": {
           "type": "question",
           "settings": {
-            "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "What materials does Zinara use?",
+            "answer": "Our jewellery is made using SGL-certified lab-grown diamonds and 18KT gold vermeil. Our vermeil pieces are made with 925 sterling silver and finished with six layers of 18KT gold plating, making the plating 5× thicker than standard plating."
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Are ZINARA lab grown diamonds graded and certified?",
-            "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
+            "question": "Why does Zinara use lab-grown diamonds?",
+            "answer": "Lab-grown diamonds offer the same chemical, physical and optical properties as mined diamonds, while being created in a controlled environment. We use certified lab-grown diamonds to offer the look and quality of fine jewellery through a more modern approach."
           }
         },
         "q4": {
           "type": "question",
           "settings": {
-            "question": "Do you deliver pan India?",
-            "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
+            "question": "How can you tell the difference between a lab-grown and natural diamond?",
+            "answer": "Lab-grown and natural diamonds look identical to the naked eye and cannot be reliably distinguished with standard testing tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment."
           }
         },
         "q5": {
           "type": "question",
           "settings": {
-            "question": "Is ID proof required for delivery?",
-            "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
+            "question": "Are Zinara's lab-grown diamonds certified?",
+            "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
           }
         },
         "q6": {
           "type": "question",
           "settings": {
-            "question": "What payment options are available?",
-            "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
+            "question": "What is gold vermeil?",
+            "answer": "Gold vermeil is 925 sterling silver finished with a layer of gold. Zinara jewellery features 18K gold vermeil with 6 layers of gold plating, making it 5× thicker than standard plating.\nOur pieces are designed to be waterproof, sweatproof and durable for everyday wear. And when your jewellery eventually needs a refresh, we also offer replating services to restore its finish"
+          }
+        },
+        "question_79x7JH": {
+          "type": "question",
+          "settings": {
+            "question": "What is your return & exchange policy?",
+            "answer": "At Zinara, your satisfaction is our highest priority. We strive to ensure every purchase brings you joy and confidence. If your experience falls short, you can return your purchase within 7 days of delivery, no questions asked. We offer a transparent and hassle-free return and refund process, subject to our Return & Refund Policy."
+          }
+        },
+        "question_cWiWCj": {
+          "type": "question",
+          "settings": {
+            "question": "What is Lifetime Exchange?",
+            "answer": "Zinara offers Lifetime Exchange on its jewellery. You can exchange your Zinara jewellery for another piece under the terms of our Lifetime Exchange Program, allowing you to update your collection while retaining value from your existing piece."
+          }
+        },
+        "question_3HATMd": {
+          "type": "question",
+          "settings": {
+            "question": "What is Lifetime Buyback?",
+            "answer": "Yes, Zinara offers Lifetime Buyback on its jewellery. You can sell your Zinara jewellery back to us under the terms of our Lifetime Buyback Program, giving you the flexibility to realise value from your jewellery over time."
+          }
+        },
+        "question_HThYjh": {
+          "type": "question",
+          "settings": {
+            "question": "Can I speak to someone before buying?",
+            "answer": "Absolutely. You can request a consultation by emailing admin@zinara.in or calling +91 88518 12814. Our team will be happy to answer your questions and help you make the right choice."
+          }
+        },
+        "question_nXeWNe": {
+          "type": "question",
+          "settings": {
+            "question": "Is Zinara jewellery safe to wear everyday?",
+            "answer": "Yes. Our pieces are designed to be worn often, not saved for special occasions. They are waterproof, sweatproof and made with durability in mind, while proper care will help maintain their finish over time."
           }
         }
       },
@@ -344,7 +379,12 @@
         "q3",
         "q4",
         "q5",
-        "q6"
+        "q6",
+        "question_79x7JH",
+        "question_cWiWCj",
+        "question_3HATMd",
+        "question_HThYjh",
+        "question_nXeWNe"
       ],
       "settings": {
         "heading": "Frequently Asked Questions"
