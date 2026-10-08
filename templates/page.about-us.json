@@ -62,7 +62,7 @@
       ],
       "settings": {
         "heading": "Our vision & mission",
-        "body": "Make real gold and real diamond jewellery an everyday choice - not a once-in-a-lifetime event."
+        "body": "At Zinara, our vision is to make diamonds a part of everyday life, not just special occasions. Our mission is to create high-quality & ethically sourced jewellery with innovative designs that make fine jewellery more accessible, transparent, and effortless."
       }
     },
     "about-stats": {
@@ -72,7 +72,7 @@
           "type": "stat",
           "settings": {
             "icon": "customers",
-            "value": "5000+",
+            "value": "1000+",
             "label": "Customers"
           }
         },
@@ -88,7 +88,7 @@
           "type": "stat",
           "settings": {
             "icon": "designs",
-            "value": "2100+",
+            "value": "400+",
             "label": "Designs"
           }
         }
@@ -105,9 +105,9 @@
       "settings": {
         "image_front": "shopify://shop_images/zinara-about-belief-front.png",
         "image_back": "shopify://shop_images/zinara-about-belief-back.png",
-        "heading": "What we believe",
-        "lead": "Thoughtful design. Modern materials. Timeless sparkle.",
-        "body": "We believe diamonds should feel personal, powerful, and easy. That’s why our collections are consciously crafted using lab-grown diamonds and set in 18 KT gold vermeil and fine gold - giving you timeless sparkle without the markup or the guilt.\n\nEvery design is made to slip effortlessly into your everyday, adding just the right amount of shine to everything you do."
+        "heading": "The Zinara Standard",
+        "lead": "Modern designs. Long-lasting materials. Honest pricing. ",
+        "body": "We make fine jewellery without the old rules. We believe fine jewellery should be beautifully designed, expertly made, and meant to be lived in.\n\nWe work with SGL-certified lab-grown diamonds set in 18KT gold vermeil, bringing a modern approach to fine jewellery that is mindfully made, without the traditional markup."
       }
     },
     "zinara-collections": {
@@ -116,7 +116,7 @@
         "card-1": {
           "type": "collection_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-collection-new-job.png",
+            "image": "shopify://shop_images/evil_eye_collection.png",
             "label": "Evil Eye",
             "url": ""
           }
@@ -170,18 +170,32 @@
     "about-story": {
       "type": "about-story",
       "blocks": {
-        "card-1": {
+        "card-6": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-1.png",
-            "label": "Lifetime free replating"
+            "image": "shopify://shop_images/zinara-about-story-6.png",
+            "label": "5× Thicker 18KT Gold Plating"
+          }
+        },
+        "card-5": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/zinara-about-story-5.png",
+            "label": "SGL-Certified Lab-Grown Diamonds"
           }
         },
         "card-2": {
           "type": "card",
           "settings": {
             "image": "shopify://shop_images/zinara-about-story-2.png",
-            "label": "7 day free returns"
+            "label": "7 day hassle free returns"
+          }
+        },
+        "card-1": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/zinara-about-story-1.png",
+            "label": "Lifetime free replating"
           }
         },
         "card-3": {
@@ -195,36 +209,30 @@
           "type": "card",
           "settings": {
             "image": "shopify://shop_images/zinara-about-story-4.png",
-            "label": "Obsession with the Details"
+            "label": "Free & Insured Shipping"
           }
         },
-        "card-5": {
+        "card_RNx86B": {
           "type": "card",
+          "disabled": true,
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-5.png",
-            "label": "Handcrafted by Skilled Artisans"
-          }
-        },
-        "card-6": {
-          "type": "card",
-          "settings": {
-            "image": "shopify://shop_images/zinara-about-story-6.png",
-            "label": "Insured and free shipping"
+            "label": "Lifetime free replating"
           }
         }
       },
       "block_order": [
-        "card-1",
+        "card-6",
+        "card-5",
         "card-2",
+        "card-1",
         "card-3",
         "card-4",
-        "card-5",
-        "card-6"
+        "card_RNx86B"
       ],
       "settings": {
         "heading": "Our story",
         "quote": "“Thoughtful design. Modern materials. Timeless sparkle.”",
-        "body": "We pair gold vermeil (thick, real gold over sterling silver) with lab-grown diamonds (identical to mined, without the cost or conscience). The result is jewellery that feels like an heirloom but lives like your favourite pair of earrings - on you, every single day.",
+        "body": "It started with a simple desire.\nMake jewellery differently. Make jewellery with more intention.\nTo make diamonds more accessible, without compromising on what makes them special.\nWe wanted to create fine jewellery where design comes first, craftsmanship is never compromised, and price has a reason behind it.\n\nSo we brought together modern materials, skilled craftsmanship and an obsessive attention to detail to create pieces that feel timeless without feeling traditional.\nEvery piece is thoroughly tested to ensure you have a hassle-free experience, made to become part of your everyday life.\n\nBecause the best jewellery isn't made for one occasion.\nIt's made to become yours.",
         "block_heading": "What makes Zinara different"
       }
     },
