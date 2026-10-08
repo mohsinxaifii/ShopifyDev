@@ -419,7 +419,7 @@
       {%- for block in section.blocks -%}
         {%- liquid
           case block.type
-            when 'title_price', 'offers', 'variant_picker', 'material_link', 'buy_buttons', 'calc_fact'
+            when 'title_price', 'offers', 'variant_picker', 'material_link', 'buy_buttons', 'calc_fact', 'calc_certificate'
               continue
             when 'description', 'highlights', 'highlight', 'product_details', 'care_guide', 'accordion', 'know_jewellery'
               assign family = 'accordions'
@@ -587,9 +587,11 @@
     {%- render 'pdp-video-call', product: product, endpoint: help_block.settings.video_call_endpoint, labels: help_block.settings -%}
   {%- endif -%}
   {%- assign calc_facts = section.blocks | where: 'type', 'calc_fact' -%}
+  {%- assign calc_slides = section.blocks | where: 'type', 'calc_certificate' -%}
   {%- render 'pdp-price-difference',
     product: product,
     facts: calc_facts,
+    slides: calc_slides,
     current_variant: current_variant,
     kj: kj,
     labels: section.settings,
@@ -759,7 +761,7 @@
     {
       "type": "header",
       "content": "Savings calculator sheet",
-      "info": "Opened from the Title & price block. Its highlights are \"Savings calculator fact\" blocks."
+      "info": "Opened from the Title & price block. Its highlights are \"Savings calculator fact\" blocks and its certificate slides \"Calculator certificate\" blocks."
     },
     {
       "type": "text",
@@ -2055,6 +2057,28 @@
         {
           "type": "paragraph",
           "content": "Listed in the savings calculator sheet (opened from \"Your savings calculator\"), in block order."
+        }
+      ]
+    },
+    {
+      "type": "calc_certificate",
+      "name": "Calculator certificate",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Certificate image"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Image description",
+          "info": "Read out by screen readers.",
+          "default": "Diamond certificate"
+        },
+        {
+          "type": "paragraph",
+          "content": "One slide of the certificate carousel in the savings calculator sheet, in block order. With none, the SGL certificate sample from the section settings is shown."
         }
       ]
     }

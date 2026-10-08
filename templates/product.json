@@ -259,6 +259,13 @@
                         "icon": "icon-percent-circle",
                         "text": "Save upto 40-60% with gold vermeil"
                     }
+                },
+                "certificate-1": {
+                    "type": "calc_certificate",
+                    "settings": {
+                        "image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
+                        "alt": "Sample SGL diamond certificate"
+                    }
                 }
             },
             "block_order": [
@@ -299,7 +306,8 @@
                 "fact-1",
                 "fact-2",
                 "fact-3",
-                "fact-4"
+                "fact-4",
+                "certificate-1"
             ],
             "settings": {
                 "trust_heading": "Shop with confidence",
