@@ -193,7 +193,7 @@
         "tab-5"
       ],
       "settings": {
-        "heading": "Zinara's bestsellers",
+        "heading": "Zinara Favourites",
         "show_bottom_link": true
       }
     },
@@ -334,14 +334,14 @@
           "type": "cell",
           "settings": {
             "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
-            "text": "Handcrafted"
+            "text": "Lifetime Replating"
           }
         },
         "cell-3": {
           "type": "cell",
           "settings": {
             "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
-            "text": "Lifetime buyback & exchange"
+            "text": "Hassle free 7 day free returns"
           }
         },
         "cell-4": {
@@ -417,7 +417,7 @@
         "card-5"
       ],
       "settings": {
-        "heading": "Zinara Collections",
+        "heading": "Shop By Collections",
         "background_color": "#fef4e2"
       }
     },
@@ -480,7 +480,7 @@
         "testimonial_MnFhGq"
       ],
       "settings": {
-        "heading": "They tried it. They loved it!"
+        "heading": "Love At First Wear"
       }
     },
     "occasion-showcase": {
@@ -599,7 +599,7 @@
         "gtab-5"
       ],
       "settings": {
-        "heading": "Gifting by Zinara",
+        "heading": "Gifting Made Easy",
         "show_bottom_link": false
       }
     },
@@ -607,14 +607,14 @@
       "type": "split-promo",
       "settings": {
         "left_image": "shopify://shop_images/zinara-custom-design-bg.png",
-        "left_heading": "Get your dream jewellery",
-        "left_subheading": "Share your idea and we’ll shape it into the piece you imagined",
+        "left_heading": "Craft Your Dream Jewellery",
+        "left_subheading": "Turn your inspiration into a one-of-a-kind piece with us.",
         "left_button_label": "Start designing",
         "left_button_url": "/pages/get-your-own-design",
         "right_image_1": "shopify://shop_images/zinara-collection-siesta.png",
         "right_image_2": "shopify://shop_images/zinara-video-thumb-generic.jpg",
         "right_image_mobile": "shopify://shop_images/zinara-split-promo-mobile.png",
-        "right_heading": "Made to be worn.\nMade to be yours.",
+        "right_heading": "Premium Jewelry.\nMade to be lived in.",
         "right_button_label": "Get to know us",
         "right_button_url": "/pages/about-us"
       }
@@ -748,43 +748,92 @@
         "q1": {
           "type": "question",
           "settings": {
-            "question": "Are lab grown diamonds real?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "What is a lab-grown diamond?",
+            "answer": "A lab grown diamond is a diamond that is produced in a controlled laboratory environment and advanced technological processes that replicate the natural conditions under which diamonds form in the Earth's mantle. Lab grown diamonds are chemically, physically, and optically identical to natural diamonds. They have reduced environmental and ethical concerns associated with diamond mining."
           }
         },
         "q2": {
           "type": "question",
           "settings": {
-            "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "How can you tell the difference between a lab-grown and natural diamond?",
+            "answer": "Lab-grown and natural diamonds can look identical to the naked eye and cannot be reliably distinguished with standard testing tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their synthetic origin."
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Are ZINARA lab grown diamonds graded and certified?",
+            "question": "Are Zinara's lab-grown diamonds certified?",
             "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
           }
         },
         "q4": {
           "type": "question",
           "settings": {
-            "question": "Do you deliver pan India?",
-            "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
+            "question": "What is gold vermeil?",
+            "answer": "Gold vermeil is 925 sterling silver finished with a layer of gold. Zinara jewellery features 18K gold vermeil with 6 layers of gold plating, making it 5× thicker than standard plating.\nOur pieces are designed to be waterproof, sweatproof and durable for everyday wear. And when your jewellery eventually needs a refresh, we also offer replating services to restore its finish."
           }
         },
         "q5": {
           "type": "question",
           "settings": {
-            "question": "Is ID proof required for delivery?",
-            "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
+            "question": "How long does delivery take?",
+            "answer": "Delivery timelines vary depending on the product and delivery location. Your estimated delivery timeline will be provided at checkout/product level. For any assistance with your order, you can reach us at admin@zinara.in or +91 88518 12814."
           }
         },
         "q6": {
           "type": "question",
           "settings": {
-            "question": "What payment options are available?",
-            "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
+            "question": "What is your return & exchange policy?",
+            "answer": "At Zinara, your satisfaction is our highest priority. We strive to ensure every purchase brings you joy and confidence. If your experience falls short, you can return your purchase within 7 days of delivery, no questions asked. We offer a transparent and hassle-free return and refund process, subject to our Return & Refund Policy."
+          }
+        },
+        "question_nbjUrV": {
+          "type": "question",
+          "settings": {
+            "question": "What is Lifetime Exchange?",
+            "answer": "Zinara offers Lifetime Exchange on its jewellery. You can exchange your Zinara jewellery for another piece under the terms of our Lifetime Exchange Program, allowing you to update your collection while retaining value from your existing piece."
+          }
+        },
+        "question_83bpDp": {
+          "type": "question",
+          "settings": {
+            "question": "What is Lifetime Buyback?",
+            "answer": "Yes, Zinara offers Lifetime Buyback on its jewellery. You can sell your Zinara jewellery back to us under the terms of our Lifetime Buyback Program, giving you the flexibility to realise value from your jewellery over time."
+          }
+        },
+        "question_4MhYKC": {
+          "type": "question",
+          "settings": {
+            "question": "Can I speak to someone before buying?",
+            "answer": "Absolutely. You can request a consultation by emailing admin@zinara.in or calling +91 8851"
+          }
+        },
+        "question_fY8ttp": {
+          "type": "question",
+          "settings": {
+            "question": "What payment options do you offer?",
+            "answer": "We accept credit cards, debit cards, net banking, international cards and Cash on Delivery. COD is available for orders up to ₹35,000."
+          }
+        },
+        "question_N8T3ee": {
+          "type": "question",
+          "settings": {
+            "question": "How do I care for my Zinara jewellery?",
+            "answer": "Zinara jewellery is waterproof, sweatproof and made for everyday wear. That said, a little care can help keep your pieces looking their best for longer.\nAvoid prolonged exposure to perfumes, harsh chemicals, chlorine and abrasive products, and wipe your jewellery gently with a soft, dry cloth after wearing. When you're not wearing it, store it in a clean, dry place away from other jewellery."
+          }
+        },
+        "question_mMBVkn": {
+          "type": "question",
+          "settings": {
+            "question": "Why vermeil instead of solid gold?",
+            "answer": "Gold vermeil gives you the look and long-lasting shine of solid gold jewelry at an accessible luxury price point. Crafted with a thick coating of 18k real gold (at least 2.5 microns) over a 925 sterling silver base, it offers superior durability over standard gold-plated pieces."
+          }
+        },
+        "question_faHeHV": {
+          "type": "question",
+          "settings": {
+            "question": "Will it tarnish or fade over time?",
+            "answer": "No, gold vermeil is highly tarnish-resistant and lasts far longer than standard gold plating. With minimal care: avoiding moisture, perfumes, and harsh chemicals, it will retain its shine and gold finish for years."
           }
         }
       },
@@ -794,7 +843,14 @@
         "q3",
         "q4",
         "q5",
-        "q6"
+        "q6",
+        "question_nbjUrV",
+        "question_83bpDp",
+        "question_4MhYKC",
+        "question_fY8ttp",
+        "question_N8T3ee",
+        "question_mMBVkn",
+        "question_faHeHV"
       ],
       "settings": {
         "heading": "Frequently Asked Questions"
