@@ -9,7 +9,7 @@
 
 <section class="pdp_reviews" id="pdp-reviews" data-animate>
   <div class="pdp_reviews_head">
-    <h2 class="pdp_section_title">Customer reviews</h2>
+    <h2 class="pdp_section_title">{{ labels.reviews_heading | default: 'Customer reviews' }}</h2>
     {%- comment -%}
       With a review endpoint set, the button opens the in-theme review
       form (pdp-review-sheet); without one it falls back to the link.
@@ -22,7 +22,7 @@
         data-analytics="review_interaction"
         data-analytics-action="write_review_click"
       >
-        Write a review
+        {{ labels.write_review_label | default: 'Write a review' }}
       </button>
     {%- elsif labels.review_url != blank -%}
       <a
@@ -31,7 +31,7 @@
         data-analytics="review_interaction"
         data-analytics-action="write_review_click"
       >
-        Write a review
+        {{ labels.write_review_label | default: 'Write a review' }}
       </a>
     {%- endif -%}
   </div>
@@ -58,7 +58,7 @@
         <p class="pdp_reviews_list_item_author">
           <span class="pdp_reviews_list_item_author_name" data-review-author></span>
           <span class="pdp_reviews_list_item_author_dot" aria-hidden="true" data-review-verified hidden></span>
-          <span class="pdp_reviews_list_item_author_badge" data-review-verified hidden>Verified buyer</span>
+          <span class="pdp_reviews_list_item_author_badge" data-review-verified hidden>{{ labels.verified_label | default: 'Verified buyer' }}</span>
         </p>
 
         <div class="pdp_reviews_list_item_media" data-review-media hidden></div>
@@ -70,7 +70,7 @@
 
     <div class="pdp_reviews_more" data-reviews-more hidden>
       <button type="button" class="pdp_button pdp_button--outline pdp_button--compact">
-        Show more reviews
+        {{ labels.show_more_reviews_label | default: 'Show more reviews' }}
       </button>
     </div>
   </judgeme-reviews>
