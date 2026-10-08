@@ -100,6 +100,11 @@
   background-color: var(--pdp-surface-subtle);
 }
 
+.pdp_gallery_stage_track {
+  position: absolute;
+  inset: 0;
+}
+
 .pdp_gallery_stage_slide {
   position: absolute;
   inset: 0;
@@ -3504,6 +3509,33 @@ button.pdp_trust_grid_item_inner {
 
   .pdp_gallery_stage {
     border-radius: 0;
+  }
+
+  /* Phones swipe the photos natively: the track scrolls sideways and snaps a
+     whole photo at a time, following the finger (product.js keeps the dots
+     and the lightbox in step). */
+  .pdp_gallery_stage_track {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pdp_gallery_stage_track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pdp_gallery_stage_slide {
+    position: relative;
+    flex: 0 0 100%;
+    height: 100%;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
   .pdp_gallery_stage_top_badge,

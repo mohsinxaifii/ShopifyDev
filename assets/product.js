@@ -42,6 +42,8 @@
 
   class ProductGallery extends HTMLElement {
     connectedCallback() {
+      this.phone = window.matchMedia('(max-width: 749px)');
+      this.track = this.querySelector('[data-stage-track]');
       this.slides = Array.from(this.querySelectorAll('[data-stage-slide]'));
       this.thumbs = Array.from(this.querySelectorAll('[data-thumb]'));
       this.dots = Array.from(this.querySelectorAll('[data-gallery-dot]'));
@@ -79,6 +81,29 @@
     setupSwipe() {
       const stage = this.querySelector('.pdp_gallery_stage');
       if (!stage || this.slides.length < 2) return;
+
+      // Phones: the track scrolls natively (CSS); follow it to keep the dots,
+      // the active slide and the lightbox's starting photo in step.
+      if (this.track) {
+        let frame = 0;
+        this.track.addEventListener(
+          'scroll',
+          () => {
+            if (!this.phone.matches || frame) return;
+            frame = requestAnimationFrame(() => {
+              frame = 0;
+              const width = this.track.clientWidth || 1;
+              const index = Math.round(this.track.scrollLeft / width);
+              if (index === this.index || index < 0 || index >= this.slides.length) return;
+              this.mark(index);
+              if (!this.autoScrolling) this.trackMedia('swipe');
+            });
+          },
+          { passive: true },
+        );
+      }
+      if (this.phone.matches) return;
+
       window.zinaraSwipe?.(stage, {
         // The slides themselves are buttons (they open the lightbox), so only
         // the controls laid over the photo are left alone.
@@ -105,6 +130,19 @@
 
     show(index) {
       if (index < 0 || index >= this.slides.length) return;
+      // Phones: scroll the native track to the photo (a variant's photo, say).
+      if (this.phone?.matches && this.track) {
+        this.autoScrolling = true;
+        clearTimeout(this.autoScrollTimer);
+        this.autoScrollTimer = setTimeout(() => {
+          this.autoScrolling = false;
+        }, 600);
+        this.track.scrollTo({ left: index * this.track.clientWidth, behavior: 'smooth' });
+      }
+      this.mark(index);
+    }
+
+    mark(index) {
       this.index = index;
       this.slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
       this.thumbs.forEach((thumb, i) => thumb.classList.toggle('is-active', i === index));

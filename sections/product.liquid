@@ -156,45 +156,52 @@
     <div class="pdp_gallery" data-animate data-animate-from="left">
       <product-gallery class="pdp_gallery_inner">
         <div class="pdp_gallery_stage">
-          {%- for media in product.media -%}
-            {%- liquid
-              comment
-                The first frame is the LCP image, so it is fetched eagerly while
-                the rest wait. Both of these have to be resolved before the tag:
-                a filter written inline in image_tag's argument list binds to the
-                tag's output, not to the argument.
-              endcomment
-              assign media_loading = 'lazy'
-              if forloop.first
-                assign media_loading = 'eager'
-              endif
-              assign media_alt = media.alt | default: product.title
-            -%}
-            <button
-              type="button"
-              class="pdp_gallery_stage_slide{% if forloop.first %} is-active{% endif %}"
-              data-stage-slide
-              data-index="{{ forloop.index0 }}"
-              aria-label="{{ 'products.open_image' | t: index: forloop.index }}"
-            >
-              {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
-                {{
-                  media.preview_image
-                  | image_url: width: 1112
-                  | image_tag: loading: 'lazy', widths: '556,834,1112', sizes: '556px', alt: product.title
-                }}
-                <span class="pdp_gallery_stage_slide_play" aria-hidden="true">
-                  {{- 'icon-play.svg' | inline_asset_content -}}
-                </span>
-              {%- else -%}
-                {{
-                  media
-                  | image_url: width: 1112
-                  | image_tag: loading: media_loading, widths: '556,834,1112', sizes: '556px', alt: media_alt
-                }}
-              {%- endif -%}
-            </button>
-          {%- endfor -%}
+          {%- comment -%}
+            The slides sit in their own track so that on phones it can be a
+            native, finger-following swipe (scroll snapping) while the badges
+            and buttons laid over the photo stay put. Desktop cross-fades.
+          {%- endcomment -%}
+          <div class="pdp_gallery_stage_track" data-stage-track>
+            {%- for media in product.media -%}
+              {%- liquid
+                comment
+                  The first frame is the LCP image, so it is fetched eagerly while
+                  the rest wait. Both of these have to be resolved before the tag:
+                  a filter written inline in image_tag's argument list binds to the
+                  tag's output, not to the argument.
+                endcomment
+                assign media_loading = 'lazy'
+                if forloop.first
+                  assign media_loading = 'eager'
+                endif
+                assign media_alt = media.alt | default: product.title
+              -%}
+              <button
+                type="button"
+                class="pdp_gallery_stage_slide{% if forloop.first %} is-active{% endif %}"
+                data-stage-slide
+                data-index="{{ forloop.index0 }}"
+                aria-label="{{ 'products.open_image' | t: index: forloop.index }}"
+              >
+                {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+                  {{
+                    media.preview_image
+                    | image_url: width: 1112
+                    | image_tag: loading: 'lazy', widths: '556,834,1112', sizes: '556px', alt: product.title
+                  }}
+                  <span class="pdp_gallery_stage_slide_play" aria-hidden="true">
+                    {{- 'icon-play.svg' | inline_asset_content -}}
+                  </span>
+                {%- else -%}
+                  {{
+                    media
+                    | image_url: width: 1112
+                    | image_tag: loading: media_loading, widths: '556,834,1112', sizes: '556px', alt: media_alt
+                  }}
+                {%- endif -%}
+              </button>
+            {%- endfor -%}
+          </div>
 
           <div class="pdp_gallery_stage_top">
             {%- if has_compare -%}
