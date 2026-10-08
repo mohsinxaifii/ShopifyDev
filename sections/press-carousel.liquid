@@ -11,32 +11,51 @@
       <div class="press-carousel_wrapper_stage">
         <div class="press-carousel_wrapper_track" data-track>
           {%- for block in section.blocks -%}
-            <div class="press-carousel_wrapper_track_item" {{ block.shopify_attributes }}>
+            {%- liquid
+              comment
+                The whole card - photo and caption - opens the product worn in
+                it. A picked product gives the link and, unless a caption is
+                set, the name; the Link setting covers anything else.
+              endcomment
+              assign card_product = block.settings.product
+              assign card_url = card_product.url | default: block.settings.link
+              assign card_caption = block.settings.caption | default: card_product.title
+              assign card_product_id = card_product.id
+              if card_product_id == blank and block.settings.link contains '/products/'
+                assign card_product_id = block.settings.link | split: '/products/' | last | split: '?' | first
+              endif
+              assign card_tag = 'div'
+              if card_url != blank
+                assign card_tag = 'a'
+              endif
+            -%}
+            <{{ card_tag }}
+              class="press-carousel_wrapper_track_item"
+              {% if card_url != blank %}
+                href="{{ card_url }}"
+                data-analytics="celebrity_look_click"
+                data-analytics-celebrity-name="{{ block.settings.by_text | strip | remove_last: ' in' | escape }}"
+                {% if card_product_id != blank %}
+                  data-analytics-product-id="{{ card_product_id }}"
+                {% endif %}
+                data-analytics-position="{{ forloop.index }}"
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
               <span class="press-carousel_wrapper_track_item_image">
                 {%- if block.settings.image -%}
                   {{
                     block.settings.image
                     | image_url: width: 480
-                    | image_tag: loading: 'lazy', alt: block.settings.caption
+                    | image_tag: loading: 'lazy', alt: card_caption
                   }}
                 {%- endif -%}
               </span>
               <span class="press-carousel_wrapper_track_item_caption">
                 <span class="press-carousel_wrapper_track_item_caption_by">{{ block.settings.by_text }}</span>
-                <a
-                  href="{{ block.settings.link | default: '#' }}"
-                  class="press-carousel_wrapper_track_item_caption_title"
-                  data-analytics="celebrity_look_click"
-                  data-analytics-celebrity-name="{{ block.settings.by_text | strip | remove_last: ' in' | escape }}"
-                  {%- if block.settings.link contains '/products/' %}
-                    data-analytics-product-id="{{ block.settings.link | split: '/products/' | last | split: '?' | first }}"
-                  {%- endif %}
-                  data-analytics-position="{{ forloop.index }}"
-                >
-                  {{- block.settings.caption -}}
-                </a>
+                <span class="press-carousel_wrapper_track_item_caption_title">{{ card_caption }}</span>
               </span>
-            </div>
+            </{{ card_tag }}>
           {%- endfor -%}
         </div>
 
@@ -88,8 +107,24 @@
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Image" },
         { "type": "text", "id": "by_text", "label": "By line", "default": "Featured with" },
-        { "type": "text", "id": "caption", "label": "Caption", "default": "Product name" },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product",
+          "info": "The product worn in the photo. The whole card links to it."
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "info": "Leave empty to use the product's name."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Only used when no product is picked."
+        }
       ]
     }
   ],
