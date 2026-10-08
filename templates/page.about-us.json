@@ -13,16 +13,18 @@
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": "About us"
+        "current_label": "About us",
+        "parent_collection": "",
+        "show_on": "all"
       }
     },
     "about-hero": {
       "type": "about-hero",
       "settings": {
         "image": "shopify://shop_images/zinara-about-hero.png",
+        "mobile_image": "shopify://shop_images/zinara-about-hero-mobile.png",
         "eyebrow": "Our motto:",
-        "quote": "“Jewellery you'll never take off.”",
-        "mobile_image": "shopify://shop_images/zinara-about-hero-mobile.png"
+        "quote": "“Jewellery you'll never take off.”"
       }
     },
     "about-intro": {
@@ -226,8 +228,8 @@
         "heading": "Founder",
         "quote": "“We wanted diamonds to feel less like an occasion, and more like a part of life.”",
         "body": "“Zinara started with a simple question: why should beautiful jewellery spend most of its life in a box? We wanted to create pieces that women could genuinely live in—pieces that feel special, but never too precious to wear.\n\nLab-grown diamonds gave us the opportunity to bring that vision to life in a way that felt modern, considered, and accessible.”",
-        "name": "— Harshit Abrol",
-        "role": "Founder, Zinara"
+        "name": "Harshit Abrol and Sumanyu Vyas",
+        "role": "Co-Founders, Zinara"
       }
     },
     "about-contact": {
@@ -237,24 +239,30 @@
           "type": "channel",
           "settings": {
             "icon": "phone",
+            "label": "",
             "value": "+91-8851812814",
-            "url": "tel:+918851812814"
+            "url": "tel:+918851812814",
+            "copy_on_click": false
           }
         },
         "channel-2": {
           "type": "channel",
           "settings": {
             "icon": "email",
+            "label": "",
             "value": "help@zinara.in",
-            "url": "mailto:help@zinara.in"
+            "url": "mailto:help@zinara.in",
+            "copy_on_click": false
           }
         },
         "channel-3": {
           "type": "channel",
           "settings": {
             "icon": "whatsapp",
+            "label": "",
             "value": "+91-9217975782",
-            "url": "https://wa.me/919217975782"
+            "url": "https://wa.me/919217975782",
+            "copy_on_click": false
           }
         }
       },
