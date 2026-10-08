@@ -15,9 +15,15 @@
               comment
                 The whole card - photo and caption - opens the product worn in
                 it. A picked product gives the link and, unless a caption is
-                set, the name; the Link setting covers anything else.
+                set, the name; with no product picked and no Link, the caption
+                is looked up as a product name ("Majestic Gleam Solitaire Ring"
+                -> /products/majestic-gleam-solitaire-ring).
               endcomment
               assign card_product = block.settings.product
+              if card_product == blank and block.settings.link == blank and block.settings.caption != blank
+                assign caption_handle = block.settings.caption | handleize
+                assign card_product = all_products[caption_handle]
+              endif
               assign card_url = card_product.url | default: block.settings.link
               assign card_caption = block.settings.caption | default: card_product.title
               assign card_product_id = card_product.id
@@ -117,7 +123,7 @@
           "type": "text",
           "id": "caption",
           "label": "Caption",
-          "info": "Leave empty to use the product's name."
+          "info": "Leave empty to use the product's name. With no product picked, a caption that is a product's exact name links to that product."
         },
         {
           "type": "url",
