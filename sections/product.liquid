@@ -553,25 +553,7 @@
             </div>
 
             {%- when 'material_link' -%}
-            {%- comment -%} Material explainer link - Figma 7930:96109 {%- endcomment -%}
-            <button
-              type="button"
-              class="pdp_explainer"
-              {{ block.shopify_attributes }}
-              data-open="know-jewellery"
-              data-analytics="material_info_click"
-              data-analytics-info-type="{{ material_name | handleize | replace: '-', '_' }}"
-              data-analytics-click-location="pdp"
-              {% unless has_explainer %}
-                hidden
-              {% endunless %}
-            >
-              <span class="pdp_explainer_dot" aria-hidden="true"></span>
-              <span class="pdp_explainer_text">
-                {{- block.settings.explainer_label | default: 'What is [material]?' | replace: '[material]', material_name -}}
-              </span>
-              {{ 'icon-caret-right.svg' | inline_asset_content }}
-            </button>
+              {%- render 'pdp-material-link', block: block, material_name: material_name, has_explainer: has_explainer -%}
 
             {%- when 'buy_buttons' -%}
             {%- comment -%} Buy buttons - Figma 7930:96117 {%- endcomment -%}
@@ -629,19 +611,29 @@
           render 'pdp-difference-head', labels: section.settings
         endcapture
         assign group = ''
+        assign in_highlights = false
       -%}
       {%- for block in section.blocks -%}
         {%- liquid
           case block.type
-            when 'title_price', 'offers', 'variant_picker', 'material_link', 'buy_buttons'
+            when 'title_price', 'offers', 'variant_picker', 'material_link', 'buy_buttons', 'calc_fact'
               continue
-            when 'description', 'highlights', 'product_details', 'care_guide', 'accordion', 'know_jewellery'
+            when 'description', 'highlights', 'highlight', 'product_details', 'care_guide', 'accordion', 'know_jewellery'
               assign family = 'accordions'
             when 'trust', 'difference'
               assign family = block.type
             else
               assign family = ''
           endcase
+
+          comment
+            "Why you'll love it" opens its accordion and the Highlight blocks
+            after it are its bullets, up to the first block of another kind.
+          endcomment
+          if in_highlights and block.type != 'highlight'
+            echo '</ul></div></details>'
+            assign in_highlights = false
+          endif
 
           if family != group
             case group
@@ -664,6 +656,16 @@
             endcase
             assign group = family
           endif
+
+          if block.type == 'highlights'
+            render 'pdp-highlights-open', block: block
+            assign in_highlights = true
+          elsif block.type == 'highlight'
+            unless in_highlights
+              render 'pdp-highlights-open'
+              assign in_highlights = true
+            endunless
+          endif
         -%}
         {%- case block.type -%}
           {%- when 'trust' -%}
@@ -681,8 +683,8 @@
           {%- when 'description' -%}
             {%- render 'pdp-description', block: block, product: product -%}
 
-          {%- when 'highlights' -%}
-            {%- render 'pdp-highlights', block: block -%}
+          {%- when 'highlight' -%}
+            {%- render 'pdp-highlight', block: block -%}
 
           {%- when 'product_details' -%}
             {%- render 'pdp-detail-lists', product: product, variant: current_variant, block: block -%}
@@ -745,6 +747,9 @@
         {%- endcase -%}
       {%- endfor -%}
       {%- liquid
+        if in_highlights
+          echo '</ul></div></details>'
+        endif
         case group
           when 'accordions'
             echo '</div>'
