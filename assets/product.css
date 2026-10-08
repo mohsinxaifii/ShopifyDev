@@ -643,15 +643,6 @@
   border: 0;
 }
 
-/* Option name (and the swatch's picked value) on the left, the size guide link
-   on the right, in one row. */
-.pdp_option_top {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .pdp_option_head {
   display: flex;
   gap: 8px;
@@ -671,7 +662,7 @@
 
 /* Values on the left, wrapping within their column; the size guide link on the
    right, level with the first line of chips (32px; swatches 40px). */
-.pdp_option_body {
+.pdp_option_body--guide {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 12px;

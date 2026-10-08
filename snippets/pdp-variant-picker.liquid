@@ -7,13 +7,12 @@
   @param {boolean} has_size_guide - whether this product gets the size guide
 {%- enddoc -%}
 
-{%- comment -%} Variant options - Figma 7930:96080 (swatches) / 7930:96094 (chips) {%- endcomment -%}
 <div class="pdp_block" {{ block.shopify_attributes }}>
   {%- liquid
     comment
-      The size guide sits on the Size row's header. A product with a size
-      chart but no Size option (a chain length, say) hangs it on its last
-      option's header instead, rather than on an empty row of its own.
+      The size guide sits on the Size row. A product with a size chart but no
+      Size option (a chain length, say) hangs it on its last option's row
+      instead, rather than on an empty row of its own.
     endcomment
     assign has_size_option = false
     for option in product.options_with_values
@@ -28,23 +27,24 @@
       if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
         assign is_swatch = true
       endif
-      assign is_size = false
-      if option.name contains 'Size'
-        assign is_size = true
-      endif
       assign show_guide = false
       if has_size_guide
-        if is_size
+        if option.name contains 'Size'
           assign show_guide = true
         elsif has_size_option == false and forloop.last
           assign show_guide = true
         endif
       endif
+      if show_guide
+        assign size_guide_inline = true
+      endif
     -%}
     {%- comment -%}
-      A radio group with an ordinary heading row rather than fieldset/legend:
-      browsers lay a legend out in their own way (some draw it over the
-      border), which pushed the size guide link down onto the size chips.
+      A radio group with an ordinary heading rather than fieldset/legend:
+      browsers lay a legend out in their own way, which once pushed the size
+      guide link onto the size chips. With the guide on the row, the values and
+      the link share one line - the link keeps the right-hand end of the first
+      line and values that do not fit wrap onto the next lines, never under it.
     {%- endcomment -%}
     <div
       class="pdp_option{% if is_swatch %} pdp_option--swatch{% endif %}"
@@ -53,67 +53,17 @@
       data-option-group
       data-option-position="{{ option.position }}"
     >
-      <div class="pdp_option_top">
-        <p class="pdp_option_head" id="PdpOption{{ option.position }}">
-          <span class="pdp_option_head_name">
-            {{- option.name -}}
-            {%- if is_swatch %}:{% endif -%}
-          </span>
-          {%- if is_swatch -%}
-            <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
-          {%- endif -%}
-        </p>
+      <p class="pdp_option_head" id="PdpOption{{ option.position }}">
+        <span class="pdp_option_head_name">
+          {{- option.name -}}
+          {%- if is_swatch %}:{% endif -%}
+        </span>
+        {%- if is_swatch -%}
+          <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
+        {%- endif -%}
+      </p>
 
-      </div>
-
-      {%- comment -%}
-        With the size guide on this row, the values and the link share one
-        line: the link keeps the right-hand end of the first line and any
-        values that do not fit wrap onto the next lines, never under it.
-      {%- endcomment -%}
-      {%- if show_guide -%}
-        <div class="pdp_option_body">
-          <div class="pdp_option_values">
-            {%- for value in option.values -%}
-              <label class="pdp_option_values_value">
-                <input
-                  type="radio"
-                  name="option-{{ option.position }}"
-                  value="{{ value | escape }}"
-                  data-option-input
-                  {% if value == option.selected_value %}
-                    checked
-                  {% endif %}
-                >
-                {%- if is_swatch -%}
-                  <span
-                    class="pdp_option_values_value_swatch"
-                    style="--pdp-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--pdp-swatch-{{ value | handle }}, #ddd){% endif %};"
-                  >
-                    <span class="visually-hidden">{{ value }}</span>
-                  </span>
-                {%- else -%}
-                  <span class="pdp_option_values_value_chip">{{ value }}</span>
-                {%- endif -%}
-              </label>
-            {%- endfor -%}
-          </div>
-        {%- assign size_guide_inline = true -%}
-        <button
-          type="button"
-          class="pdp_link pdp_option_guide"
-          data-open="size-guide"
-          data-analytics="size_guide_open"
-          data-analytics-product-category="{{ product.type | escape }}"
-          data-analytics-click-location="pdp"
-        >
-          <span class="pdp_option_guide_icon" aria-hidden="true">
-            {{- 'icon-ruler.svg' | inline_asset_content -}}
-          </span>
-          {{ block.settings.size_guide_label | default: 'Size guide' }}
-        </button>
-        </div>
-      {%- else -%}
+      <div class="pdp_option_body{% if show_guide %} pdp_option_body--guide{% endif %}">
         <div class="pdp_option_values">
           {%- for value in option.values -%}
             <label class="pdp_option_values_value">
@@ -139,7 +89,23 @@
             </label>
           {%- endfor -%}
         </div>
-      {%- endif -%}
+
+        {%- if show_guide -%}
+          <button
+            type="button"
+            class="pdp_link pdp_option_guide"
+            data-open="size-guide"
+            data-analytics="size_guide_open"
+            data-analytics-product-category="{{ product.type | escape }}"
+            data-analytics-click-location="pdp"
+          >
+            <span class="pdp_option_guide_icon" aria-hidden="true">
+              {{- 'icon-ruler.svg' | inline_asset_content -}}
+            </span>
+            {{ block.settings.size_guide_label | default: 'Size guide' }}
+          </button>
+        {%- endif -%}
+      </div>
     </div>
   {%- endfor -%}
 
