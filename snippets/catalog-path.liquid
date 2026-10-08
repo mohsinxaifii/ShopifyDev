@@ -11,11 +11,11 @@
   handle (index 0 = catalog_category, 1 = catalog_subcategory,
   2 = catalog_vertical).
 
-  - With `product`: the first category whose tag the product carries, then the
-    first of that category's sub-categories it carries, then the first of that
-    sub-category's verticals. So "Daily Wear" or "Evil Eye" resolve under the
-    right parent even though several branches use the same tag. Tags are
-    compared handleized - case and spacing do not matter.
+  - With `product`: the first category whose tag the product carries, then
+    its sub-category and vertical - searched only under that parent, so
+    "Daily Wear" or "Evil Eye" resolve to the right branch even though several
+    branches use the same tag. Tags are compared handleized - case and
+    spacing do not matter.
   - With `collection`: the entry whose collection page this is, and its parents.
 
   @param {object} [product] - a Shopify product object
@@ -39,22 +39,39 @@
       endunless
       assign path = category.system.handle
 
+      comment
+        A sub-category whose vertical also matches beats one that matches
+        alone: "Bands" is both a ring sub-category and a vertical under
+        Statement, so Rings + Statement + Bands is Statement > Bands.
+      endcomment
+      assign first_match = ''
+      assign full_match = ''
       for subcategory in category.subcategories.value
         assign needle = subcategory.tag.value | default: subcategory.name.value | handleize | prepend: '|' | append: '|'
         unless tag_key contains needle
           continue
         endunless
-        assign path = path | append: ',' | append: subcategory.system.handle
+        if first_match == blank
+          assign first_match = subcategory.system.handle
+        endif
 
         for vertical in subcategory.verticals.value
           assign needle = vertical.tag.value | default: vertical.name.value | handleize | prepend: '|' | append: '|'
           if tag_key contains needle
-            assign path = path | append: ',' | append: vertical.system.handle
+            assign full_match = subcategory.system.handle | append: ',' | append: vertical.system.handle
             break
           endif
         endfor
-        break
+        if full_match != blank
+          break
+        endif
       endfor
+
+      if full_match != blank
+        assign path = path | append: ',' | append: full_match
+      elsif first_match != blank
+        assign path = path | append: ',' | append: first_match
+      endif
       break
     endfor
 
