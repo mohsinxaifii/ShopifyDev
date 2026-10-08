@@ -72,15 +72,13 @@
   assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
   assign addon_previews = addon_set.previews.value
   comment
-    The size guide has the live theme's sources (see pdp-size-guide): the
-    fixed ring chart for Gold / Vermeil Rings, else the product's own
-    size_guide metafields. The link shows only when there is a guide.
+    Only rings have a size guide: the fixed ring chart (see pdp-size-guide)
+    for Gold Rings / Vermeil Rings, as on the live theme. Nothing else shows
+    a "Size guide" link.
   endcomment
   assign has_size_guide = false
   assign size_type = product.type | downcase | strip
   if size_type == 'gold rings' or size_type == 'vermeil rings'
-    assign has_size_guide = true
-  elsif product.metafields.custom.size_guide_rows.value != blank or product.metafields.custom.size_guide_video.value != blank
     assign has_size_guide = true
   endif
 

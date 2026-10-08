@@ -2,34 +2,19 @@
   Size guide sheet - a sidesheet on desktop, a bottom sheet on phones.
   Figma Mobile 8106:60328 (Size guide bottomsheet).
 
-  Sources (the live theme's, with this theme's own product metafields):
-  - Gold Rings / Vermeil Rings (product type): the fixed ring chart - the
-    "how to measure" video and sizes 8-27 with circumference and diameter.
-  - Anything else: the product's own metafields - custom.size_guide_video,
-    custom.size_guide_headings (column names) and custom.size_guide_rows (rows,
-    Size chart metaobjects with column_1 ... column_5).
-  The section shows the "Size guide" link only when one of them has content
-  (see has_size_guide in sections/product.liquid).
+  Rings only - Gold Rings / Vermeil Rings (product type), as on the live
+  theme: the "how to measure" video and sizes 8-27 with circumference and
+  diameter, fixed here.
+  The section renders this sheet, and the "Size guide" link, for those two
+  product types only (see has_size_guide in sections/product.liquid).
 
   @param {object} product - the product being viewed
   @param {string} [whatsapp_url] - the footer CTA's link; no button without it
 {%- enddoc -%}
 
 {%- liquid
-  assign product_type = product.type | downcase | strip
-  assign is_ring = false
-  if product_type == 'gold rings' or product_type == 'vermeil rings'
-    assign is_ring = true
-  endif
-
-  if is_ring
-    assign columns = 'Ring Size|Circumference (mm)|Diameter (mm)' | split: '|'
-    assign ring_rows = '8|48.1|15,9|49.0|15.4,10|50.0|15.7,11|50.9|16,12|51.8|16.4,13|52.8|16.7,14|54.0|17.1,15|55.0|17.4,16|55.9|17.8,17|56.9|18,18|57.8|18.4,19|59.1|18.7,20|60.0|19,21|60.9|19.3,22|61.9|19.7,23|62.8|20,24|63.8|20.3,25|64.7|20.6,26|66.0|20.9,27|66.9|21.2' | split: ','
-  else
-    assign columns = product.metafields.custom.size_guide_headings.value
-    assign chart_rows = product.metafields.custom.size_guide_rows.value
-    assign video = product.metafields.custom.size_guide_video.value
-  endif
+  assign columns = 'Ring Size|Circumference (mm)|Diameter (mm)' | split: '|'
+  assign ring_rows = '8|48.1|15,9|49.0|15.4,10|50.0|15.7,11|50.9|16,12|51.8|16.4,13|52.8|16.7,14|54.0|17.1,15|55.0|17.4,16|55.9|17.8,17|56.9|18,18|57.8|18.4,19|59.1|18.7,20|60.0|19,21|60.9|19.3,22|61.9|19.7,23|62.8|20,24|63.8|20.3,25|64.7|20.6,26|66.0|20.9,27|66.9|21.2' | split: ','
 -%}
 
 <dialog class="pdp-sheet" data-bottom-sheet data-sheet="size-guide" scroll-lock aria-labelledby="PdpSizeGuideTitle">
@@ -47,20 +32,13 @@
     </div>
 
     <div class="pdp-sheet_panel_body">
-      {%- if is_ring or video != blank -%}
-        <div class="pdp-sheet_panel_body_group">
-          <p class="pdp-sheet_panel_body_group_label">How to measure your ring size</p>
-          {%- if is_ring -%}
-            <video class="pdp-sheet_panel_body_guide-video" controls playsinline preload="metadata">
-              <source src="https://cdn.shopify.com/videos/c/o/v/d0d213af2061422a837e2656892a022b.mp4" type="video/mp4">
-            </video>
-          {%- else -%}
-            {{ video | video_tag: controls: true, playsinline: true, preload: 'metadata', class: 'pdp-sheet_panel_body_guide-video' }}
-          {%- endif -%}
-        </div>
-      {%- endif -%}
+      <div class="pdp-sheet_panel_body_group">
+        <p class="pdp-sheet_panel_body_group_label">How to measure your ring size</p>
+        <video class="pdp-sheet_panel_body_guide-video" controls playsinline preload="metadata">
+          <source src="https://cdn.shopify.com/videos/c/o/v/d0d213af2061422a837e2656892a022b.mp4" type="video/mp4">
+        </video>
+      </div>
 
-      {%- if is_ring or columns != blank -%}
       <div class="pdp-sheet_panel_body_group">
         <p class="pdp-sheet_panel_body_group_label">Size Chart</p>
         <div class="pdp-sheet_panel_body_table">
@@ -68,37 +46,23 @@
             <thead>
               <tr>
                 {%- for column in columns -%}
-                  <th scope="col">{{ column | strip }}</th>
+                  <th scope="col">{{ column }}</th>
                 {%- endfor -%}
               </tr>
             </thead>
             <tbody>
-              {%- if is_ring -%}
-                {%- for row in ring_rows -%}
-                  {%- assign cells = row | split: '|' -%}
-                  <tr>
-                    {%- for cell in cells -%}
-                      <td>{{ cell }}</td>
-                    {%- endfor -%}
-                  </tr>
-                {%- endfor -%}
-              {%- else -%}
-                {%- for row in chart_rows -%}
-                  <tr>
-                    {%- for position in (1..5) -%}
-                      {%- assign cell_key = 'column_' | append: position -%}
-                      {%- if row[cell_key] != blank -%}
-                        <td>{{ row[cell_key] }}</td>
-                      {%- endif -%}
-                    {%- endfor -%}
-                  </tr>
-                {%- endfor -%}
-              {%- endif -%}
+              {%- for row in ring_rows -%}
+                {%- assign cells = row | split: '|' -%}
+                <tr>
+                  {%- for cell in cells -%}
+                    <td>{{ cell }}</td>
+                  {%- endfor -%}
+                </tr>
+              {%- endfor -%}
             </tbody>
           </table>
         </div>
       </div>
-      {%- endif -%}
 
       {%- if whatsapp_url != blank -%}
         <a
