@@ -196,6 +196,69 @@
                         "review_url": "",
                         "review_endpoint": "https://67r.6d1.mytemp.website/zinara-reviews/submit.php"
                     }
+                },
+                "highlight-1": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-leaf",
+                        "text": "Skin Friendly Jewellery"
+                    }
+                },
+                "highlight-2": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-sparkles",
+                        "text": "Anti Tarnish, Made for Daily Wear"
+                    }
+                },
+                "highlight-3": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-zap",
+                        "text": "Long Lasting and Durable Vermeil"
+                    }
+                },
+                "highlight-4": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-bacteria",
+                        "text": "Hypoallergenic finish"
+                    }
+                },
+                "highlight-5": {
+                    "type": "highlight",
+                    "settings": {
+                        "icon": "icon-honour-star",
+                        "text": "Premium look, smart choice"
+                    }
+                },
+                "fact-1": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-certificate",
+                        "text": "SGL certified"
+                    }
+                },
+                "fact-2": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-alms",
+                        "text": "Lifetime buyback"
+                    }
+                },
+                "fact-3": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-eco-energy",
+                        "text": "Environment friendly"
+                    }
+                },
+                "fact-4": {
+                    "type": "calc_fact",
+                    "settings": {
+                        "icon": "icon-percent-circle",
+                        "text": "Save upto 40-60% with gold vermeil"
+                    }
                 }
             },
             "block_order": [
@@ -213,6 +276,11 @@
                 "help",
                 "description",
                 "highlights",
+                "highlight-1",
+                "highlight-2",
+                "highlight-3",
+                "highlight-4",
+                "highlight-5",
                 "details",
                 "care",
                 "shipping",
@@ -227,7 +295,11 @@
                 "diff-7",
                 "pair",
                 "curated",
-                "reviews"
+                "reviews",
+                "fact-1",
+                "fact-2",
+                "fact-3",
+                "fact-4"
             ],
             "settings": {
                 "trust_heading": "Shop with confidence",
