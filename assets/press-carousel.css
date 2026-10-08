@@ -107,13 +107,19 @@
   color: var(--color-text-secondary, #494949);
 }
 
+/* The product's name on one line at every width, cut with an ellipsis at the
+   length the design's caption runs to. */
 .press-carousel_wrapper_track_item_caption_title {
+  max-width: min(158px, 100%);
+  overflow: hidden;
   font-family: var(--font-secondary--family);
   font-weight: 500;
   font-size: 14px;
   line-height: 1.219;
   color: var(--color-brand, #712242);
   text-decoration: underline;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* Centred on the image rather than the whole card, and 20px outside the track.
@@ -170,11 +176,7 @@
   }
 
   .press-carousel_wrapper_track_item_caption_title {
-    max-width: 158px;
-    overflow: hidden;
     text-decoration: none;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
 
   .press-carousel_wrapper_stage_prev,
