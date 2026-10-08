@@ -886,6 +886,10 @@
   "class": "shopify-section--product",
   "settings": [
     {
+      "type": "paragraph",
+      "content": "Each part of the product details is a block - click it in the preview or pick it in the sidebar. Drag blocks to reorder; remove one to hide that part. The buy box (Title & price, Offers, Variant picker, Material link, Buy buttons) always sits at the top, in its own order."
+    },
+    {
       "type": "header",
       "content": "Gallery"
     },
@@ -898,32 +902,8 @@
     },
     {
       "type": "header",
-      "content": "Title & price"
-    },
-    {
-      "type": "text",
-      "id": "tax_note",
-      "label": "Price note",
-      "default": "Price inclusive of all taxes"
-    },
-    {
-      "type": "text",
-      "id": "save_label",
-      "label": "Discount badge",
-      "default": "Save [percent]%",
-      "info": "[percent] is replaced with the discount."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_savings_calculator",
-      "label": "Show savings calculator link",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "savings_calculator_label",
-      "label": "Savings calculator link",
-      "default": "Your savings calculator"
+      "content": "Add-ons",
+      "info": "The \"Add-ons available\" link and the sheet it opens."
     },
     {
       "type": "text",
@@ -933,81 +913,27 @@
       "info": "Shown when the product has add-ons."
     },
     {
-      "type": "header",
-      "content": "Offers",
-      "info": "Offers themselves are edited in Content > Metaobjects > Discount offer."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_offers",
-      "label": "Show offers",
-      "default": true
+      "type": "text",
+      "id": "addons_sheet_title",
+      "label": "Title",
+      "default": "Add ons"
     },
     {
       "type": "text",
-      "id": "offers_heading",
-      "label": "Heading",
-      "default": "Offers"
+      "id": "addons_sheet_intro",
+      "label": "Intro",
+      "default": "Elevate your piece with curated add-ons"
+    },
+    {
+      "type": "image_picker",
+      "id": "addons_image",
+      "label": "Add-ons sidesheet image"
     },
     {
       "type": "text",
-      "id": "offers_count_label",
-      "label": "Count",
-      "default": "[count] available",
-      "info": "[count] is replaced with the number of offers."
-    },
-    {
-      "type": "text",
-      "id": "offers_view_all_label",
-      "label": "View all link",
-      "default": "View all"
-    },
-    {
-      "type": "text",
-      "id": "offers_sheet_title",
-      "label": "All offers sheet: title",
-      "default": "All offers"
-    },
-    {
-      "type": "text",
-      "id": "offers_sheet_label",
-      "label": "All offers sheet: label",
-      "default": "Coupons"
-    },
-    {
-      "type": "header",
-      "content": "Options & buttons"
-    },
-    {
-      "type": "text",
-      "id": "size_guide_label",
-      "label": "Size guide link",
-      "default": "Size guide"
-    },
-    {
-      "type": "text",
-      "id": "explainer_label",
-      "label": "Material link",
-      "default": "What is [material]?",
-      "info": "[material] is replaced with the Know your jewellery material name."
-    },
-    {
-      "type": "text",
-      "id": "add_to_cart_label",
-      "label": "Add to cart button",
-      "default": "Add to cart"
-    },
-    {
-      "type": "text",
-      "id": "sold_out_label",
-      "label": "Sold out button",
-      "default": "Sold out"
-    },
-    {
-      "type": "text",
-      "id": "buy_now_label",
-      "label": "Buy now button",
-      "default": "Buy now"
+      "id": "addons_done_label",
+      "label": "Done button",
+      "default": "Done"
     },
     {
       "type": "header",
@@ -1032,318 +958,14 @@
       "default": "SGL certified diamonds"
     },
     {
-      "type": "header",
-      "content": "Delivery estimate"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_delivery",
-      "label": "Show delivery estimate",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "delivery_heading",
-      "label": "Heading",
-      "default": "Delivery Estimate"
-    },
-    {
-      "type": "text",
-      "id": "pincode_placeholder",
-      "label": "Pincode placeholder",
-      "default": "Enter pincode"
-    },
-    {
-      "type": "text",
-      "id": "pincode_button_label",
-      "label": "Button",
-      "default": "Check"
-    },
-    {
-      "type": "header",
-      "content": "Gift sleeve"
-    },
-    {
-      "type": "product",
-      "id": "gift_product",
-      "label": "Gift sleeve product"
-    },
-    {
-      "type": "text",
-      "id": "gift_label",
-      "label": "Gift sleeve label",
-      "default": "Add a gift sleeve"
-    },
-    {
-      "type": "header",
-      "content": "Need help choosing?"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_help",
-      "label": "Show help section",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "help_heading",
-      "label": "Heading",
-      "default": "Need help choosing?"
-    },
-    {
-      "type": "textarea",
-      "id": "help_body",
-      "label": "Body",
-      "default": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice."
-    },
-    {
-      "type": "text",
-      "id": "chat_label",
-      "label": "Chat button",
-      "default": "Chat with us"
-    },
-    {
-      "type": "url",
-      "id": "whatsapp_url",
-      "label": "WhatsApp link"
-    },
-    {
-      "type": "text",
-      "id": "video_call_label",
-      "label": "Video call button",
-      "default": "Book video call"
-    },
-    {
-      "type": "text",
-      "id": "video_call_endpoint",
-      "label": "Video call form endpoint",
-      "info": "Google Apps Script URL that \"Book video call\" requests are sent to - the same one the live theme's video trial form uses. Leave empty to hide the button.",
-      "default": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec"
-    },
-    {
-      "type": "text",
-      "id": "video_call_title",
-      "label": "Video call form: title",
-      "default": "Book a video call"
-    },
-    {
-      "type": "textarea",
-      "id": "video_call_intro",
-      "label": "Video call form: intro",
-      "default": "A Zinara expert will call you to show this piece live. Leave your details and we'll be in touch shortly."
-    },
-    {
-      "type": "text",
-      "id": "video_call_submit_label",
-      "label": "Video call form: button",
-      "default": "Request a video call"
-    },
-    {
-      "type": "text",
-      "id": "video_call_done_title",
-      "label": "Video call form: thank-you title",
-      "default": "Request received"
-    },
-    {
-      "type": "textarea",
-      "id": "video_call_done_text",
-      "label": "Video call form: thank-you text",
-      "default": "Your request has been submitted successfully. We'll contact you shortly."
-    },
-    {
-      "type": "header",
-      "content": "Description",
-      "info": "Extra accordions, e.g. Shipping policy, are \"Accordion\" blocks."
-    },
-    {
-      "type": "text",
-      "id": "description_heading",
-      "label": "Heading",
-      "default": "Description",
-      "info": "The text is the product's own description."
-    },
-    {
-      "type": "header",
-      "content": "Why you'll love it"
-    },
-    {
-      "type": "text",
-      "id": "highlights_heading",
-      "label": "Heading",
-      "default": "Why you’ll love it"
-    },
-    {
-      "type": "textarea",
-      "id": "highlights",
-      "label": "Bullets",
-      "info": "One per line. Shown on every product.",
-      "default": "Skin Friendly Jewellery\nAnti Tarnish, Made for Daily Wear\nLong Lasting and Durable Vermeil\nHypoallergenic finish\nPremium look, smart choice"
-    },
-    {
-      "type": "header",
-      "content": "Care guide"
-    },
-    {
-      "type": "text",
-      "id": "care_guide_heading",
-      "label": "Heading",
-      "default": "Care guide"
-    },
-    {
-      "type": "image_picker",
-      "id": "care_guide_image",
-      "label": "Image",
-      "info": "Shown on every product. Leave empty to hide the Care guide accordion."
-    },
-    {
-      "type": "header",
-      "content": "Know your jewellery"
-    },
-    {
-      "type": "text",
-      "id": "kj_heading",
-      "label": "Heading",
-      "default": "Know your jewellery"
-    },
-    {
-      "type": "text",
-      "id": "kj_material_name",
-      "label": "Material name",
-      "default": "Gold Vermeil"
-    },
-    {
-      "type": "text",
-      "id": "kj_base_metal_label",
-      "label": "Base metal: label",
-      "default": "Base metal"
-    },
-    {
-      "type": "text",
-      "id": "kj_base_metal",
-      "label": "Base metal: value",
-      "default": "Sterling Silver 925"
-    },
-    {
-      "type": "text",
-      "id": "kj_plating_label",
-      "label": "Plating: label",
-      "default": "Plating"
-    },
-    {
-      "type": "text",
-      "id": "kj_plating",
-      "label": "Plating: value",
-      "default": "18 KT Gold"
-    },
-    {
-      "type": "textarea",
-      "id": "kj_callouts",
-      "label": "Diagram callouts",
-      "info": "One per line, up to 3, in diagram order: sparkle, droplet, layers.",
-      "default": "Looks and feels like solid gold\nSweat and waterproof\n5x thicker gold plating"
-    },
-    {
-      "type": "text",
-      "id": "kj_stone_name",
-      "label": "Stone name",
-      "default": "Lab Grown Diamonds"
-    },
-    {
-      "type": "text",
-      "id": "kj_mined_label",
-      "label": "Comparison: left label",
-      "default": "Mined diamond"
-    },
-    {
-      "type": "text",
-      "id": "kj_lab_label",
-      "label": "Comparison: right label",
-      "default": "Lab grown diamond"
-    },
-    {
-      "type": "text",
-      "id": "kj_compare_note_1",
-      "label": "Comparison: note above arrow",
-      "default": "Same sparkle"
-    },
-    {
-      "type": "text",
-      "id": "kj_compare_note_2",
-      "label": "Comparison: note below arrow",
-      "default": "100% same composition"
-    },
-    {
-      "type": "text",
-      "id": "kj_certification_heading",
-      "label": "Certification: label",
-      "default": "Certification",
-      "info": "Certification and pricing show in the savings calculator sheet."
-    },
-    {
-      "type": "text",
-      "id": "kj_certification_label",
-      "label": "Certification: value",
-      "default": "SGL certified"
-    },
-    {
-      "type": "text",
-      "id": "kj_pricing_heading",
-      "label": "Pricing: label",
-      "default": "Pricing"
-    },
-    {
-      "type": "text",
-      "id": "kj_pricing_claim",
-      "label": "Pricing: value",
-      "default": "40-60% easier on your pocket"
-    },
-    {
-      "type": "image_picker",
-      "id": "vermeil_image",
-      "label": "Gold vermeil cutaway"
-    },
-    {
-      "type": "image_picker",
-      "id": "diamond_image",
-      "label": "Diamond render"
-    },
-    {
       "type": "image_picker",
       "id": "sgl_logo",
       "label": "SGL logo"
     },
     {
       "type": "header",
-      "content": "You may also like"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_related",
-      "label": "Show You may also like / Recently viewed",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "related_heading",
-      "label": "You may also like tab",
-      "default": "You may also like"
-    },
-    {
-      "type": "text",
-      "id": "recent_heading",
-      "label": "Recently viewed tab",
-      "default": "Recently viewed"
-    },
-    {
-      "type": "text",
-      "id": "recent_empty",
-      "label": "Recently viewed: when empty",
-      "default": "Nothing here yet — browse a few pieces first."
-    },
-    {
-      "type": "header",
       "content": "The Zinara Difference",
-      "info": "Each row is a \"Difference row\" block; with none the table is hidden."
+      "info": "Each row is a \"Difference row\" block."
     },
     {
       "type": "text",
@@ -1372,129 +994,8 @@
     },
     {
       "type": "header",
-      "content": "Pair beautifully with"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_pair",
-      "label": "Show Pair beautifully with",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "pair_heading",
-      "label": "Heading",
-      "default": "Pair beautifully with"
-    },
-    {
-      "type": "text",
-      "id": "pair_button_label",
-      "label": "Button",
-      "default": "Add set to cart"
-    },
-    {
-      "type": "header",
-      "content": "Curated trends"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_curated",
-      "label": "Show Curated trends",
-      "default": true,
-      "info": "Shows the videos and products from the Curated trends section on the home page."
-    },
-    {
-      "type": "text",
-      "id": "ugc_heading",
-      "label": "Heading",
-      "info": "Leave empty to use the home page heading.",
-      "default": "Curated trends for you"
-    },
-    {
-      "type": "header",
-      "content": "Customer reviews"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_reviews",
-      "label": "Show customer reviews",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "reviews_heading",
-      "label": "Heading",
-      "default": "Customer reviews"
-    },
-    {
-      "type": "text",
-      "id": "write_review_label",
-      "label": "Write a review button",
-      "default": "Write a review"
-    },
-    {
-      "type": "text",
-      "id": "verified_label",
-      "label": "Verified badge",
-      "default": "Verified buyer"
-    },
-    {
-      "type": "text",
-      "id": "show_more_reviews_label",
-      "label": "Show more button",
-      "default": "Show more reviews"
-    },
-    {
-      "type": "text",
-      "id": "review_endpoint",
-      "label": "Review form endpoint",
-      "info": "URL of submit.php in the zinara-reviews app on your server, e.g. https://your-domain/zinara-reviews/submit.php. When set, Write a review opens the review form. Published reviews are shown from Judge.me (theme settings > Judge.me reviews)."
-    },
-    {
-      "type": "url",
-      "id": "review_url",
-      "label": "Write a review link",
-      "info": "Used only when no review form endpoint is set."
-    },
-    {
-      "type": "range",
-      "id": "reviews_shown",
-      "label": "Reviews per page (\"Show more\" loads the next)",
-      "min": 1,
-      "max": 10,
-      "step": 1,
-      "default": 3
-    },
-    {
-      "type": "header",
-      "content": "Add-ons sheet"
-    },
-    {
-      "type": "text",
-      "id": "addons_sheet_title",
-      "label": "Title",
-      "default": "Add ons"
-    },
-    {
-      "type": "text",
-      "id": "addons_sheet_intro",
-      "label": "Intro",
-      "default": "Elevate your piece with curated add-ons"
-    },
-    {
-      "type": "image_picker",
-      "id": "addons_image",
-      "label": "Add-ons sidesheet image"
-    },
-    {
-      "type": "text",
-      "id": "addons_done_label",
-      "label": "Done button",
-      "default": "Done"
-    },
-    {
-      "type": "header",
-      "content": "Savings calculator sheet"
+      "content": "Savings calculator sheet",
+      "info": "Opened from the Title & price block."
     },
     {
       "type": "text",
@@ -1542,6 +1043,136 @@
     }
   ],
   "blocks": [
+    {
+      "type": "title_price",
+      "name": "Title & price",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tax_note",
+          "label": "Price note",
+          "default": "Price inclusive of all taxes"
+        },
+        {
+          "type": "text",
+          "id": "save_label",
+          "label": "Discount badge",
+          "default": "Save [percent]%",
+          "info": "[percent] is replaced with the discount."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_savings_calculator",
+          "label": "Show savings calculator link",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "savings_calculator_label",
+          "label": "Savings calculator link",
+          "default": "Your savings calculator"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "offers",
+      "name": "Offers",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "The offers themselves are edited in Content > Metaobjects > Discount offer."
+        },
+        {
+          "type": "text",
+          "id": "offers_heading",
+          "label": "Heading",
+          "default": "Offers"
+        },
+        {
+          "type": "text",
+          "id": "offers_count_label",
+          "label": "Count",
+          "default": "[count] available",
+          "info": "[count] is replaced with the number of offers."
+        },
+        {
+          "type": "text",
+          "id": "offers_view_all_label",
+          "label": "View all link",
+          "default": "View all"
+        },
+        {
+          "type": "text",
+          "id": "offers_sheet_title",
+          "label": "All offers sheet: title",
+          "default": "All offers"
+        },
+        {
+          "type": "text",
+          "id": "offers_sheet_label",
+          "label": "All offers sheet: label",
+          "default": "Coupons"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant picker",
+      "settings": [
+        {
+          "type": "text",
+          "id": "size_guide_label",
+          "label": "Size guide link",
+          "default": "Size guide"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "material_link",
+      "name": "Material link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "explainer_label",
+          "label": "Material link",
+          "default": "What is [material]?",
+          "info": "[material] is replaced with the Know your jewellery material name."
+        },
+        {
+          "type": "paragraph",
+          "content": "Shown when the Know your jewellery block has content."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "settings": [
+        {
+          "type": "text",
+          "id": "add_to_cart_label",
+          "label": "Add to cart button",
+          "default": "Add to cart"
+        },
+        {
+          "type": "text",
+          "id": "sold_out_label",
+          "label": "Sold out button",
+          "default": "Sold out"
+        },
+        {
+          "type": "text",
+          "id": "buy_now_label",
+          "label": "Buy now button",
+          "default": "Buy now"
+        }
+      ],
+      "limit": 1
+    },
     {
       "type": "trust",
       "name": "Trust item",
@@ -1599,6 +1230,371 @@
       ]
     },
     {
+      "type": "delivery",
+      "name": "Delivery estimate",
+      "settings": [
+        {
+          "type": "text",
+          "id": "delivery_heading",
+          "label": "Heading",
+          "default": "Delivery Estimate"
+        },
+        {
+          "type": "text",
+          "id": "pincode_placeholder",
+          "label": "Pincode placeholder",
+          "default": "Enter pincode"
+        },
+        {
+          "type": "text",
+          "id": "pincode_button_label",
+          "label": "Button",
+          "default": "Check"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "gift",
+      "name": "Gift sleeve",
+      "settings": [
+        {
+          "type": "product",
+          "id": "gift_product",
+          "label": "Gift sleeve product"
+        },
+        {
+          "type": "text",
+          "id": "gift_label",
+          "label": "Gift sleeve label",
+          "default": "Add a gift sleeve"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "help",
+      "name": "Need help choosing?",
+      "settings": [
+        {
+          "type": "text",
+          "id": "help_heading",
+          "label": "Heading",
+          "default": "Need help choosing?"
+        },
+        {
+          "type": "textarea",
+          "id": "help_body",
+          "label": "Body",
+          "default": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice."
+        },
+        {
+          "type": "text",
+          "id": "chat_label",
+          "label": "Chat button",
+          "default": "Chat with us"
+        },
+        {
+          "type": "url",
+          "id": "whatsapp_url",
+          "label": "WhatsApp link"
+        },
+        {
+          "type": "text",
+          "id": "video_call_label",
+          "label": "Video call button",
+          "default": "Book video call"
+        },
+        {
+          "type": "text",
+          "id": "video_call_endpoint",
+          "label": "Video call form endpoint",
+          "info": "Google Apps Script URL that \"Book video call\" requests are sent to - the same one the live theme's video trial form uses. Leave empty to hide the button.",
+          "default": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec"
+        },
+        {
+          "type": "header",
+          "content": "Video call form"
+        },
+        {
+          "type": "text",
+          "id": "video_call_title",
+          "label": "Video call form: title",
+          "default": "Book a video call"
+        },
+        {
+          "type": "textarea",
+          "id": "video_call_intro",
+          "label": "Video call form: intro",
+          "default": "A Zinara expert will call you to show this piece live. Leave your details and we'll be in touch shortly."
+        },
+        {
+          "type": "text",
+          "id": "video_call_submit_label",
+          "label": "Video call form: button",
+          "default": "Request a video call"
+        },
+        {
+          "type": "text",
+          "id": "video_call_done_title",
+          "label": "Video call form: thank-you title",
+          "default": "Request received"
+        },
+        {
+          "type": "textarea",
+          "id": "video_call_done_text",
+          "label": "Video call form: thank-you text",
+          "default": "Your request has been submitted successfully. We'll contact you shortly."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "settings": [
+        {
+          "type": "text",
+          "id": "description_heading",
+          "label": "Heading",
+          "default": "Description",
+          "info": "The text is the product's own description."
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": false
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "highlights",
+      "name": "Why you'll love it",
+      "settings": [
+        {
+          "type": "text",
+          "id": "highlights_heading",
+          "label": "Heading",
+          "default": "Why you’ll love it"
+        },
+        {
+          "type": "textarea",
+          "id": "highlights",
+          "label": "Bullets",
+          "info": "One per line. Shown on every product.",
+          "default": "Skin Friendly Jewellery\nAnti Tarnish, Made for Daily Wear\nLong Lasting and Durable Vermeil\nHypoallergenic finish\nPremium look, smart choice"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": true
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "product_details",
+      "name": "Product details",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "One accordion per list in the selected variant's Product Details List 1-4 JSON metafields; follows the variant picked."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "care_guide",
+      "name": "Care guide",
+      "settings": [
+        {
+          "type": "text",
+          "id": "care_guide_heading",
+          "label": "Heading",
+          "default": "Care guide"
+        },
+        {
+          "type": "image_picker",
+          "id": "care_guide_image",
+          "label": "Image",
+          "info": "Shown on every product. Leave empty to hide the Care guide accordion."
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Shipping policy"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    },
+    {
+      "type": "know_jewellery",
+      "name": "Know your jewellery",
+      "settings": [
+        {
+          "type": "text",
+          "id": "kj_heading",
+          "label": "Heading",
+          "default": "Know your jewellery"
+        },
+        {
+          "type": "text",
+          "id": "kj_material_name",
+          "label": "Material name",
+          "default": "Gold Vermeil"
+        },
+        {
+          "type": "header",
+          "content": "Material"
+        },
+        {
+          "type": "text",
+          "id": "kj_base_metal_label",
+          "label": "Base metal: label",
+          "default": "Base metal"
+        },
+        {
+          "type": "text",
+          "id": "kj_base_metal",
+          "label": "Base metal: value",
+          "default": "Sterling Silver 925"
+        },
+        {
+          "type": "text",
+          "id": "kj_plating_label",
+          "label": "Plating: label",
+          "default": "Plating"
+        },
+        {
+          "type": "text",
+          "id": "kj_plating",
+          "label": "Plating: value",
+          "default": "18 KT Gold"
+        },
+        {
+          "type": "textarea",
+          "id": "kj_callouts",
+          "label": "Diagram callouts",
+          "info": "One per line, up to 3, in diagram order: sparkle, droplet, layers.",
+          "default": "Looks and feels like solid gold\nSweat and waterproof\n5x thicker gold plating"
+        },
+        {
+          "type": "image_picker",
+          "id": "vermeil_image",
+          "label": "Gold vermeil cutaway"
+        },
+        {
+          "type": "header",
+          "content": "Stone comparison"
+        },
+        {
+          "type": "text",
+          "id": "kj_stone_name",
+          "label": "Stone name",
+          "default": "Lab Grown Diamonds"
+        },
+        {
+          "type": "text",
+          "id": "kj_mined_label",
+          "label": "Comparison: left label",
+          "default": "Mined diamond"
+        },
+        {
+          "type": "text",
+          "id": "kj_lab_label",
+          "label": "Comparison: right label",
+          "default": "Lab grown diamond"
+        },
+        {
+          "type": "text",
+          "id": "kj_compare_note_1",
+          "label": "Comparison: note above arrow",
+          "default": "Same sparkle"
+        },
+        {
+          "type": "text",
+          "id": "kj_compare_note_2",
+          "label": "Comparison: note below arrow",
+          "default": "100% same composition"
+        },
+        {
+          "type": "image_picker",
+          "id": "diamond_image",
+          "label": "Diamond render"
+        },
+        {
+          "type": "header",
+          "content": "Savings calculator facts"
+        },
+        {
+          "type": "text",
+          "id": "kj_certification_heading",
+          "label": "Certification: label",
+          "default": "Certification",
+          "info": "Certification and pricing show in the savings calculator sheet."
+        },
+        {
+          "type": "text",
+          "id": "kj_certification_label",
+          "label": "Certification: value",
+          "default": "SGL certified"
+        },
+        {
+          "type": "text",
+          "id": "kj_pricing_heading",
+          "label": "Pricing: label",
+          "default": "Pricing"
+        },
+        {
+          "type": "text",
+          "id": "kj_pricing_claim",
+          "label": "Pricing: value",
+          "default": "40-60% easier on your pocket"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "related",
+      "name": "You may also like",
+      "settings": [
+        {
+          "type": "text",
+          "id": "related_heading",
+          "label": "You may also like tab",
+          "default": "You may also like"
+        },
+        {
+          "type": "text",
+          "id": "recent_heading",
+          "label": "Recently viewed tab",
+          "default": "Recently viewed"
+        },
+        {
+          "type": "text",
+          "id": "recent_empty",
+          "label": "Recently viewed: when empty",
+          "default": "Nothing here yet — browse a few pieces first."
+        }
+      ],
+      "limit": 1
+    },
+    {
       "type": "difference",
       "name": "Difference row",
       "settings": [
@@ -1617,21 +1613,93 @@
       ]
     },
     {
-      "type": "accordion",
-      "name": "Accordion",
+      "type": "pair",
+      "name": "Pair beautifully with",
       "settings": [
         {
           "type": "text",
-          "id": "heading",
+          "id": "pair_heading",
           "label": "Heading",
-          "default": "Shipping policy"
+          "default": "Pair beautifully with"
         },
         {
-          "type": "richtext",
-          "id": "content",
-          "label": "Content"
+          "type": "text",
+          "id": "pair_button_label",
+          "label": "Button",
+          "default": "Add set to cart"
         }
-      ]
+      ],
+      "limit": 1
+    },
+    {
+      "type": "curated",
+      "name": "Curated trends",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Shows the videos and products from the Curated trends section on the home page."
+        },
+        {
+          "type": "text",
+          "id": "ugc_heading",
+          "label": "Heading",
+          "info": "Leave empty to use the home page heading.",
+          "default": "Curated trends for you"
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "reviews",
+      "name": "Customer reviews",
+      "settings": [
+        {
+          "type": "text",
+          "id": "reviews_heading",
+          "label": "Heading",
+          "default": "Customer reviews"
+        },
+        {
+          "type": "text",
+          "id": "write_review_label",
+          "label": "Write a review button",
+          "default": "Write a review"
+        },
+        {
+          "type": "text",
+          "id": "verified_label",
+          "label": "Verified badge",
+          "default": "Verified buyer"
+        },
+        {
+          "type": "text",
+          "id": "show_more_reviews_label",
+          "label": "Show more button",
+          "default": "Show more reviews"
+        },
+        {
+          "type": "text",
+          "id": "review_endpoint",
+          "label": "Review form endpoint",
+          "info": "URL of submit.php in the zinara-reviews app on your server, e.g. https://your-domain/zinara-reviews/submit.php. When set, Write a review opens the review form. Published reviews are shown from Judge.me (theme settings > Judge.me reviews)."
+        },
+        {
+          "type": "url",
+          "id": "review_url",
+          "label": "Write a review link",
+          "info": "Used only when no review form endpoint is set."
+        },
+        {
+          "type": "range",
+          "id": "reviews_shown",
+          "label": "Reviews per page (\"Show more\" loads the next)",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 3
+        }
+      ],
+      "limit": 1
     }
   ],
   "disabled_on": {
