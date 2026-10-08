@@ -115,9 +115,15 @@
         verified: node.dataset.verifiedBuyer === 'true',
         body: text(node.querySelector('.jdgm-rev__body')),
         date: parseDate(stamp?.dataset.content || text(stamp)),
+        // The thumbnail, and the full-size photo its link points at.
         images: Array.from(node.querySelectorAll('.jdgm-rev__pics img'))
-          .map((img) => img.dataset.src || img.getAttribute('src') || '')
-          .filter((src) => src && !src.startsWith('data:')),
+          .map((img) => {
+            const thumb = img.dataset.src || img.getAttribute('src') || '';
+            const link = img.closest('a');
+            const full = link?.dataset.mfpSrc || link?.getAttribute('href') || thumb;
+            return { thumb, full: /^(https?:)?\/\//.test(full) ? full : thumb };
+          })
+          .filter((image) => image.thumb && !image.thumb.startsWith('data:')),
       };
     });
   }
@@ -226,6 +232,23 @@
         window.zinaraTrack?.('review_interaction', { action: 'show_more', review_count: this.total });
         this.loadPage();
       });
+
+      // A review photo opens full size in its own viewer.
+      this.viewer = this.querySelector('[data-review-viewer]');
+      const viewerImage = this.viewer?.querySelector('img');
+      this.addEventListener('click', (event) => {
+        const photo = event.target.closest('[data-review-photo]');
+        if (!photo || !this.viewer || !viewerImage) return;
+        viewerImage.src = photo.dataset.reviewPhoto;
+        this.viewer.showModal();
+        window.zinaraTrack?.('review_interaction', { action: 'photo_open', review_count: this.total });
+      });
+      this.viewer?.addEventListener('click', (event) => {
+        if (event.target === this.viewer || event.target.closest('[data-review-viewer-close]')) this.viewer.close();
+      });
+      this.viewer?.addEventListener('close', () => {
+        if (viewerImage) viewerImage.removeAttribute('src');
+      });
       this.init();
     }
 
@@ -282,14 +305,20 @@
 
       const media = item.querySelector('[data-review-media]');
       if (media) {
-        review.images.forEach((src) => {
+        review.images.forEach((image, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'pdp_reviews_list_item_media_item';
+          button.dataset.reviewPhoto = image.full;
+          button.setAttribute('aria-label', `View photo ${index + 1} from ${review.author || 'this review'}`);
           const img = document.createElement('img');
-          img.src = src;
+          img.src = image.thumb;
           img.alt = '';
           img.loading = 'lazy';
           img.width = 144;
           img.height = 144;
-          media.appendChild(img);
+          button.appendChild(img);
+          media.appendChild(button);
         });
         media.hidden = review.images.length === 0;
       }
