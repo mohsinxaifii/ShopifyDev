@@ -956,7 +956,7 @@
     {
       "type": "header",
       "content": "Savings calculator sheet",
-      "info": "Opened from the Title & price block."
+      "info": "Opened from the Title & price block. Its highlights are \"Savings calculator fact\" blocks."
     },
     {
       "type": "text",
@@ -982,13 +982,6 @@
       "id": "calc_ours_label",
       "label": "Your price label",
       "default": "Your Zinara piece"
-    },
-    {
-      "type": "textarea",
-      "id": "calc_facts",
-      "label": "Highlights",
-      "default": "SGL certified\nLifetime buyback\nEnvironment friendly\nSave upto 40-60% with gold vermeil",
-      "info": "One per line."
     },
     {
       "type": "text",
@@ -1144,27 +1137,97 @@
           "label": "Icon",
           "options": [
             {
-              "value": "icon-return",
-              "label": "Return"
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
             },
             {
               "value": "icon-certificate",
               "label": "Certificate"
             },
             {
-              "value": "icon-handshake",
-              "label": "Handshake"
+              "value": "icon-seal-check",
+              "label": "Seal check"
             },
             {
               "value": "icon-diamond-outline",
               "label": "Diamond"
             },
             {
-              "value": "icon-seal-check",
-              "label": "Seal check"
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
             }
           ],
           "default": "icon-return"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon",
+          "info": "Optional. Replaces the icon above."
         },
         {
           "type": "text",
@@ -1341,20 +1404,131 @@
           "default": "Why you’ll love it"
         },
         {
-          "type": "textarea",
-          "id": "highlights",
-          "label": "Bullets",
-          "info": "One per line. Shown on every product.",
-          "default": "Skin Friendly Jewellery\nAnti Tarnish, Made for Daily Wear\nLong Lasting and Durable Vermeil\nHypoallergenic finish\nPremium look, smart choice"
-        },
-        {
           "type": "checkbox",
           "id": "open",
           "label": "Open by default",
           "default": true
+        },
+        {
+          "type": "paragraph",
+          "content": "Each bullet is a \"Highlight\" block - add them right after this block, and drag to reorder."
         }
       ],
       "limit": 1
+    },
+    {
+      "type": "highlight",
+      "name": "Highlight",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-leaf"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Skin Friendly Jewellery"
+        },
+        {
+          "type": "paragraph",
+          "content": "A bullet of the \"Why you'll love it\" block it follows."
+        }
+      ]
     },
     {
       "type": "product_details",
@@ -1448,11 +1622,316 @@
           "default": "18 KT Gold"
         },
         {
-          "type": "textarea",
-          "id": "kj_callouts",
-          "label": "Diagram callouts",
-          "info": "One per line, up to 3, in diagram order: sparkle, droplet, layers.",
-          "default": "Looks and feels like solid gold\nSweat and waterproof\n5x thicker gold plating"
+          "type": "text",
+          "id": "kj_callout_1",
+          "label": "Diagram callout 1 (top left)",
+          "default": "Looks and feels like solid gold"
+        },
+        {
+          "type": "select",
+          "id": "kj_callout_1_icon",
+          "label": "Callout 1 icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-sparkles"
+        },
+        {
+          "type": "image_picker",
+          "id": "kj_callout_1_image",
+          "label": "Callout 1 custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "kj_callout_2",
+          "label": "Diagram callout 2 (top right)",
+          "default": "Sweat and waterproof"
+        },
+        {
+          "type": "select",
+          "id": "kj_callout_2_icon",
+          "label": "Callout 2 icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-droplet"
+        },
+        {
+          "type": "image_picker",
+          "id": "kj_callout_2_image",
+          "label": "Callout 2 custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "kj_callout_3",
+          "label": "Diagram callout 3 (bottom)",
+          "default": "5x thicker gold plating"
+        },
+        {
+          "type": "select",
+          "id": "kj_callout_3_icon",
+          "label": "Callout 3 icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-layers"
+        },
+        {
+          "type": "image_picker",
+          "id": "kj_callout_3_image",
+          "label": "Callout 3 custom icon",
+          "info": "Optional. Replaces the icon above."
         },
         {
           "type": "image_picker",
@@ -1661,6 +2140,120 @@
         }
       ],
       "limit": 1
+    },
+    {
+      "type": "calc_fact",
+      "name": "Savings calculator fact",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "icon-leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "icon-sparkles",
+              "label": "Sparkles"
+            },
+            {
+              "value": "icon-sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "icon-zap",
+              "label": "Lightning"
+            },
+            {
+              "value": "icon-bacteria",
+              "label": "Hypoallergenic"
+            },
+            {
+              "value": "icon-honour-star",
+              "label": "Badge star"
+            },
+            {
+              "value": "icon-star",
+              "label": "Star"
+            },
+            {
+              "value": "icon-heart",
+              "label": "Heart"
+            },
+            {
+              "value": "icon-certificate",
+              "label": "Certificate"
+            },
+            {
+              "value": "icon-seal-check",
+              "label": "Seal check"
+            },
+            {
+              "value": "icon-diamond-outline",
+              "label": "Diamond"
+            },
+            {
+              "value": "icon-handshake",
+              "label": "Handshake"
+            },
+            {
+              "value": "icon-return",
+              "label": "Return"
+            },
+            {
+              "value": "icon-alms",
+              "label": "Buyback"
+            },
+            {
+              "value": "icon-eco-energy",
+              "label": "Eco"
+            },
+            {
+              "value": "icon-percent-circle",
+              "label": "Percent"
+            },
+            {
+              "value": "icon-receipt-rupee",
+              "label": "Rupee receipt"
+            },
+            {
+              "value": "icon-droplet",
+              "label": "Droplet"
+            },
+            {
+              "value": "icon-layers",
+              "label": "Layers"
+            },
+            {
+              "value": "icon-ruler",
+              "label": "Ruler"
+            },
+            {
+              "value": "none",
+              "label": "No icon"
+            }
+          ],
+          "default": "icon-certificate"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon",
+          "info": "Optional. Replaces the icon above."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "SGL certified"
+        },
+        {
+          "type": "paragraph",
+          "content": "Listed in the savings calculator sheet (opened from \"Your savings calculator\"), in block order."
+        }
+      ]
     }
   ],
   "disabled_on": {
