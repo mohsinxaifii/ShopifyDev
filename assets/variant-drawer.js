@@ -133,6 +133,18 @@
 
       const isList = this.mode === 'choose-all';
       this.classList.toggle('is-list', isList);
+      // Picking for a cart add says so - "Add to cart" - and shows the cart's
+      // loader on this button; picking for something else stays "Done".
+      if (this.done) {
+        const label =
+          this.mode === 'add'
+            ? this.done.dataset.labelAdd || 'Add to cart'
+            : this.done.dataset.labelDone || 'Done';
+        clearTimeout(this.done.dataset.motionTimer);
+        this.done.classList.remove('is-loading', 'is-added', 'is-failed');
+        this.done.textContent = label;
+        this.done.dataset.restLabel = label;
+      }
       if (this.titleEl) {
         this.titleEl.textContent = isList ? this.titleEl.dataset.listTitle || this.singleTitle : this.singleTitle;
       }
@@ -349,11 +361,9 @@
 
       // The shared cart owns the request, the button's pending/added states, the
       // header count and opening the drawer; this only has to close itself once
-      // the line is actually in.
-      const added = await window.zinaraCart?.add(
-        [{ id: this.variant.id, quantity: 1 }],
-        this.trigger,
-      );
+      // the line is actually in. The loader runs on this drawer's own button,
+      // the one the shopper just pressed.
+      const added = await window.zinaraCart?.add([{ id: this.variant.id, quantity: 1 }], this.done);
 
       if (added) this.close();
       else this.done.disabled = false;

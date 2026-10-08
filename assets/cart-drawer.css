@@ -344,7 +344,8 @@
 [data-buy-now].is-loading,
 [data-pair-add].is-loading,
 [data-diff-add].is-loading,
-[data-wishlist-add-all].is-loading {
+[data-wishlist-add-all].is-loading,
+.variant-drawer_panel_footer_done.is-loading {
   position: relative;
   cursor: progress;
 }
@@ -355,7 +356,8 @@
     [data-buy-now],
     [data-pair-add],
     [data-diff-add],
-    [data-wishlist-add-all]
+    [data-wishlist-add-all],
+    .variant-drawer_panel_footer_done
   ).is-loading::after {
   content: '';
   width: 14px;
