@@ -813,106 +813,14 @@
       </div>
 
       {%- comment -%} You may also like / Recently viewed - Figma 7930:96277 {%- endcomment -%}
-      <section class="pdp_related" data-related data-animate>
-        <div class="pdp_related_tabs" role="tablist">
-          <button
-            type="button"
-            class="pdp_related_tabs_tab is-active"
-            role="tab"
-            aria-selected="true"
-            data-tab="also-like"
-          >
-            You may also like
-          </button>
-          <button
-            type="button"
-            class="pdp_related_tabs_tab"
-            role="tab"
-            aria-selected="false"
-            data-tab="recent"
-          >
-            Recently viewed
-          </button>
-        </div>
-
-        <scroll-carousel class="pdp_related_panel" data-panel="also-like">
-          <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
-            {%- comment -%}
-              The catalogue hierarchy first (same vertical, then sub-category,
-              then category); products outside it keep the older sources.
-            {%- endcomment -%}
-            {%- capture hierarchy_cards -%}
-              {%- render 'catalog-related', product: product, limit: 12 -%}
-            {%- endcapture -%}
-            {%- if hierarchy_cards != blank -%}
-              {{ hierarchy_cards }}
-            {%- elsif related_products != blank -%}
-              {%- for item in related_products limit: 12 -%}
-                {%- render 'product-card', product: item, variant: 'grid' -%}
-              {%- endfor -%}
-            {%- else -%}
-              {%- assign fallback = product.collections.first -%}
-              {%- for item in fallback.products limit: 12 -%}
-                {%- unless item.id == product.id -%}
-                  {%- render 'product-card', product: item, variant: 'grid' -%}
-                {%- endunless -%}
-              {%- endfor -%}
-            {%- endif -%}
-          </div>
-          <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
-        </scroll-carousel>
-
-        <div class="pdp_related_panel" data-panel="recent" hidden>
-          <div class="pdp_related_panel_track" data-recent-track></div>
-          <p class="pdp_related_panel_empty" data-recent-empty>Nothing here yet &mdash; browse a few pieces first.</p>
-        </div>
-      </section>
+      {%- if section.settings.show_related -%}
+        {%- render 'pdp-related', product: product, related_products: related_products, labels: section.settings -%}
+      {%- endif -%}
 
       {%- comment -%} The Zinara Difference - Figma 7930:96294 {%- endcomment -%}
       {%- assign difference_rows = section.blocks | where: 'type', 'difference' -%}
       {%- if difference_rows.size > 0 -%}
-        {%- comment -%}
-          The heading mixes two colours mid-sentence ("The *Zinara* Difference"),
-          so the accented run is marked with [brackets] in the setting and swapped
-          for a span here - a second text setting would let the two halves drift
-          apart in the editor.
-        {%- endcomment -%}
-        {%- assign heading_html = section.settings.difference_heading
-          | replace: '[', '<span class="pdp_difference_title_accent">'
-          | replace: ']', '</span>'
-        -%}
-        <section class="pdp_difference" data-animate data-animate-from="scale">
-          <h2 class="pdp_difference_title">{{ heading_html }}</h2>
-          <table class="pdp_difference_table">
-            <thead>
-              <tr>
-                <th scope="col">Feature</th>
-                <th scope="col">Zinara</th>
-                <th scope="col">Typical Brands</th>
-              </tr>
-            </thead>
-            <tbody>
-              {%- for block in difference_rows -%}
-                <tr {{ block.shopify_attributes }}>
-                  <th scope="row">{{ block.settings.label }}</th>
-                  <td>
-                    <span class="pdp_difference_table_yes" aria-label="Yes">
-                      {{- 'icon-seal-check.svg' | inline_asset_content -}}
-                      {%- if block.settings.show_sgl and section.settings.sgl_logo != blank -%}
-                        {{ section.settings.sgl_logo | image_url: width: 76 | image_tag: loading: 'lazy', alt: 'SGL' }}
-                      {%- endif -%}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="pdp_difference_table_no" aria-label="No">
-                      {{- 'icon-x-circle.svg' | inline_asset_content -}}
-                    </span>
-                  </td>
-                </tr>
-              {%- endfor -%}
-            </tbody>
-          </table>
-        </section>
+        {%- render 'pdp-difference', rows: difference_rows, labels: section.settings -%}
       {%- endif -%}
 
       {%- comment -%} Pair beautifully with - Figma 7930:96345 {%- endcomment -%}
@@ -1006,74 +914,9 @@
       ></curated-videos>
 
       {%- comment -%} Customer reviews - Figma 7930:96415 {%- endcomment -%}
-      <section class="pdp_reviews" id="pdp-reviews" data-animate>
-        <div class="pdp_reviews_head">
-          <h2 class="pdp_section_title">Customer reviews</h2>
-          {%- comment -%}
-            With a review endpoint set, the button opens the in-theme review
-            form (pdp-review-sheet); without one it falls back to the link.
-          {%- endcomment -%}
-          {%- if section.settings.review_endpoint != blank -%}
-            <button
-              type="button"
-              class="pdp_button pdp_button--primary pdp_button--compact"
-              data-open="review"
-              data-analytics="review_interaction"
-              data-analytics-action="write_review_click"
-            >
-              Write a review
-            </button>
-          {%- elsif section.settings.review_url != blank -%}
-            <a
-              href="{{ section.settings.review_url }}"
-              class="pdp_button pdp_button--primary pdp_button--compact"
-              data-analytics="review_interaction"
-              data-analytics-action="write_review_click"
-            >
-              Write a review
-            </a>
-          {%- endif -%}
-        </div>
-
-        {%- comment -%}
-          Summary and reviews come only from Judge.me: judgeme.js fills them in
-          and fetches the next page for "Show more". Each part stays hidden
-          until Judge.me has something to show.
-        {%- endcomment -%}
-        <judgeme-reviews data-handle="{{ product.handle }}" data-per-page="{{ section.settings.reviews_shown }}">
-          <div class="pdp_reviews_summary" data-reviews-summary hidden>
-            <span class="pdp_reviews_summary_score" data-reviews-score></span>
-            <span class="pdp_reviews_summary_rule" aria-hidden="true"></span>
-            {%- render 'testimonial-stars', rating: 5 -%}
-            <span class="pdp_reviews_summary_count" data-reviews-count></span>
-          </div>
-
-          <ul class="pdp_reviews_list" data-reviews-list hidden></ul>
-
-          <template data-review-template>
-            <li class="pdp_reviews_list_item">
-              {%- render 'testimonial-stars', rating: 5 -%}
-
-              <p class="pdp_reviews_list_item_author">
-                <span class="pdp_reviews_list_item_author_name" data-review-author></span>
-                <span class="pdp_reviews_list_item_author_dot" aria-hidden="true" data-review-verified hidden></span>
-                <span class="pdp_reviews_list_item_author_badge" data-review-verified hidden>Verified buyer</span>
-              </p>
-
-              <div class="pdp_reviews_list_item_media" data-review-media hidden></div>
-
-              <p class="pdp_reviews_list_item_body" data-review-body></p>
-              <p class="pdp_reviews_list_item_date" data-review-date hidden></p>
-            </li>
-          </template>
-
-          <div class="pdp_reviews_more" data-reviews-more hidden>
-            <button type="button" class="pdp_button pdp_button--outline pdp_button--compact">
-              Show more reviews
-            </button>
-          </div>
-        </judgeme-reviews>
-      </section>
+      {%- if section.settings.show_reviews -%}
+        {%- render 'pdp-reviews', product: product, labels: section.settings -%}
+      {%- endif -%}
     </div>
   </div>
 
