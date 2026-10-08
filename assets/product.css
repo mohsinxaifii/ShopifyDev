@@ -660,24 +660,20 @@
   font-size: 16px;
 }
 
-/* Values on the left, wrapping within their column; the size guide link on the
-   right, level with the first line of chips (32px; swatches 40px). */
-.pdp_option_body--guide {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: 12px;
-  align-items: start;
+/* Option name (and a swatch's picked value) on the left, the size guide link
+   on the right of the same line. */
+.pdp_option_top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .pdp_option_guide {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
-  min-height: 32px;
   white-space: nowrap;
-}
-
-.pdp_option--swatch .pdp_option_guide {
-  min-height: 40px;
 }
 
 .pdp_option--guide-only {
