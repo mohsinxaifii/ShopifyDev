@@ -1,0 +1,98 @@
+{%- doc -%}
+  Title / price card - Figma 7930:96004: title, Judge.me rating, price,
+  discount, tax note, savings calculator link, material tags and the add-ons
+  link.
+
+  @param {object} block - the "Title & price" block
+  @param {object} product - the product being viewed
+  @param {object} current_variant - the variant the page opened on
+  @param {boolean} has_compare - whether the variant is discounted
+  @param {number} [saving_percent] - the discount, in percent
+  @param {string[]} [material_tags] - custom.pdp_material_tags
+  @param {object[]} [addons] - the product's add-ons
+  @param {string} addons_label - the "Add-ons available" text
+{%- enddoc -%}
+
+{%- comment -%} Title / price card - Figma 7930:96004 {%- endcomment -%}
+<div class="pdp_headline" {{ block.shopify_attributes }}>
+  <div class="pdp_headline_top">
+    <h1 class="pdp_headline_top_title">{{ product.title }}</h1>
+    {%- comment -%} Average from Judge.me (judgeme.js). {%- endcomment -%}
+    <judgeme-rating data-handle="{{ product.handle }}" hidden>
+      <a href="#pdp-reviews" class="pdp_headline_top_rating">
+        {{ 'icon-star.svg' | inline_asset_content }}
+        <span data-judgeme-value></span>
+      </a>
+    </judgeme-rating>
+  </div>
+
+  <div class="pdp_headline_price">
+    <span class="pdp_headline_price_current" data-price>
+      {%- render 'money', amount: current_variant.price -%}
+    </span>
+    <span
+      class="pdp_headline_price_compare"
+      data-compare
+      {% unless has_compare %}
+        hidden
+      {% endunless %}
+    >
+      {%- render 'money', amount: current_variant.compare_at_price -%}
+    </span>
+    <span
+      class="pdp_headline_price_save"
+      data-save
+      data-template="{{ block.settings.save_label | default: 'Save [percent]%' | escape }}"
+      {% unless has_compare %}
+        hidden
+      {% endunless %}
+    >
+      {{ block.settings.save_label | default: 'Save [percent]%' | replace: '[percent]', saving_percent }}
+    </span>
+  </div>
+
+  <p class="pdp_headline_tax">{{ block.settings.tax_note }}</p>
+
+  {%- comment -%}
+    The calculator compares against the product's mined-diamond price
+    (custom.pdp_mined_price); without one the sheet has no figures to
+    show, so the button is left out.
+  {%- endcomment -%}
+  {%- assign mined_price = product.metafields.custom.pdp_mined_price.value | plus: 0 -%}
+  {%- if block.settings.show_savings_calculator and mined_price > 0 -%}
+    <div class="pdp_headline_calculator">
+      <button
+        type="button"
+        class="pdp_headline_calculator_button"
+        data-open="price-difference"
+        data-analytics="savings_calculator_open"
+        data-analytics-price="{{ current_variant.price | divided_by: 100.0 }}"
+        data-analytics-mined-equivalent-price="{{ product.metafields.custom.pdp_mined_price.value }}"
+      >
+        <span>{{ block.settings.savings_calculator_label | default: 'Your savings calculator' }}</span>
+        {{ 'icon-caret-right.svg' | inline_asset_content }}
+      </button>
+    </div>
+  {%- endif -%}
+
+  {%- if material_tags != blank -%}
+    <ul class="pdp_headline_tags">
+      {%- for tag in material_tags -%}
+        <li class="pdp_headline_tags_item">{{ tag }}</li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+
+  {%- if addons != blank -%}
+    <button
+      type="button"
+      class="pdp_headline_addons"
+      data-open="addons"
+      data-analytics="addon_sheet_open"
+      data-analytics-addons-available="{{ addons.size }}"
+    >
+      <span>{{ addons_label | default: 'Add-ons available' }}</span>
+      {{ 'icon-caret-right.svg' | inline_asset_content }}
+    </button>
+  {%- endif -%}
+</div>
