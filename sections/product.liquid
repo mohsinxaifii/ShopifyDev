@@ -328,11 +328,12 @@
             <span
               class="pdp_headline_price_save"
               data-save
+              data-template="{{ section.settings.save_label | default: 'Save [percent]%' | escape }}"
               {% unless has_compare %}
                 hidden
               {% endunless %}
             >
-              Save {{ saving_percent }}%
+              {{ section.settings.save_label | default: 'Save [percent]%' | replace: '[percent]', saving_percent }}
             </span>
           </div>
 
@@ -354,7 +355,7 @@
                 data-analytics-price="{{ current_variant.price | divided_by: 100.0 }}"
                 data-analytics-mined-equivalent-price="{{ product.metafields.custom.pdp_mined_price.value }}"
               >
-                <span>Your savings calculator</span>
+                <span>{{ section.settings.savings_calculator_label | default: 'Your savings calculator' }}</span>
                 {{ 'icon-caret-right.svg' | inline_asset_content }}
               </button>
             </div>
