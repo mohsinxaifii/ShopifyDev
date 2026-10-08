@@ -456,13 +456,13 @@
       if (label) label.textContent = match.available ? 'Add to cart' : 'Sold out';
     }
 
-    /* In stock ships in 24 hours; otherwise the product's own ship-time badge,
-       or no pill at all when it has none or the picks match no variant. */
+    /* "Ships in 24 hours" while the picked variant has stock on hand; no pill
+       otherwise, or when the picks match no variant. */
     updateShipTime(variant) {
       const pill = this.querySelector('[data-ship-time]');
       if (!pill) return;
-      const text = !variant ? '' : variant.inStock ? pill.dataset.shipFast : pill.dataset.shipDefault;
-      pill.textContent = text || '';
+      const text = variant?.inStock ? pill.dataset.shipFast : '';
+      pill.textContent = text;
       pill.hidden = !text;
     }
 
@@ -841,12 +841,13 @@
     /* --------------------------------------------------------- pincode */
 
     /**
-     * Delivery estimate, with the live theme's serviceability rules:
+     * Pincode check, with the live theme's serviceability rules:
      * assets/pincodes.json lists the pincodes each lane serves ("gold" /
      * "silver"; the product's tags pick one - see data-pincode-set). The list
      * is half a megabyte, so it is fetched on first use, not with the page.
-     * A served pincode delivers in 3 days when the picked variant is in stock,
-     * otherwise in the section's delivery days setting (17 by default).
+     * No delivery date is promised: a served pincode gets the in-stock ship
+     * time when the picked variant has stock, and nothing about timing
+     * otherwise.
      */
     initPincode() {
       const button = this.querySelector('[data-pincode-check]');
@@ -894,18 +895,9 @@
         }
 
         const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
-        const days = variant?.shipsFast ? 3 : Number(this.dataset.deliveryDays) || 17;
-        const eta = new Date();
-        eta.setDate(eta.getDate() + days);
-        show(
-          `Delivers by ${eta.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} to ${value}.`,
-          false,
-        );
-        window.zinaraTrack?.('pincode_check', {
-          pincode: value,
-          serviceable: true,
-          delivery_eta: eta.toISOString().slice(0, 10),
-        });
+        const shipFast = this.querySelector('[data-ship-time]')?.dataset.shipFast || 'Ships in 24 hours';
+        show(variant?.inStock ? `${shipFast}. We deliver to ${value}.` : `We deliver to ${value}.`, false);
+        window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: true });
       });
     }
 

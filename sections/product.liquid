@@ -38,32 +38,15 @@
     assign has_explainer = true
   endif
   assign material_tags = product.metafields.custom.pdp_material_tags.value
-  assign media_badges = product.metafields.custom.pdp_media_badges.value
 
   comment
-    Ship time (Figma 8106:57906, "Ships in 2 days"). A variant with stock on
-    hand ships in 24 hours; anything else keeps the product's own "Ships in ..."
-    badge, or shows none if it has none. product.js swaps the text as the
-    variant changes, so the pill is always rendered and hidden when empty.
-    Any ship-time badge on the product ("Ships within 24 hours" included) is
-    taken out of the static pills, and a 24-hour one is dropped altogether -
-    only stock on hand may claim that, or a sold-out variant would keep it.
+    Ship time (Figma 8106:57906): "Ships in 24 hours" only while the selected
+    variant has stock on hand; otherwise nothing about shipping is shown.
+    product.js re-checks it as the variant changes, so the pill is always
+    rendered and hidden when empty.
   endcomment
-  assign ship_badge = ''
-  assign other_badges = ''
-  for badge in media_badges
-    assign badge_text = badge | strip | downcase
-    if badge_text contains 'ship' or badge_text contains 'dispatch'
-      unless badge_text contains '24' or ship_badge != ''
-        assign ship_badge = badge | strip
-      endunless
-    else
-      assign other_badges = other_badges | append: badge | append: '||'
-    endif
-  endfor
-  assign other_badges = other_badges | split: '||'
   assign ship_fast_label = section.settings.ship_fast_label | default: 'Ships in 24 hours'
-  assign ship_label = ship_badge
+  assign ship_label = ''
   if current_variant.available and current_variant.inventory_quantity > 0
     assign ship_label = ship_fast_label
   endif
@@ -153,7 +136,6 @@
   class="pdp"
   data-product-url="{{ product.url }}"
   data-product-handle="{{ product.handle }}"
-  data-delivery-days="{{ section.settings.delivery_days | default: 17 }}"
   data-pincodes-url="{{ 'pincodes.json' | asset_url }}"
   data-pincode-set="{{ pincode_set }}"
 >
@@ -229,16 +211,12 @@
               class="pdp_gallery_stage_bottom_pill"
               data-ship-time
               data-ship-fast="{{ ship_fast_label | escape }}"
-              data-ship-default="{{ ship_badge | escape }}"
               {% if ship_label == blank %}
                 hidden
               {% endif %}
             >
               {{- ship_label -}}
             </span>
-            {%- for badge in other_badges -%}
-              <span class="pdp_gallery_stage_bottom_pill">{{ badge }}</span>
-            {%- endfor -%}
           </div>
 
           {%- comment -%}
@@ -1134,12 +1112,6 @@
             "options": {{ variant.options | json }},
             "available": {{ variant.available | json }},
             "inStock": {% if variant.available and variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
-            {%- comment -%}
-              For the delivery estimate, as on the live theme: a variant ships
-              quickly unless Shopify tracks its stock and it has run out - an
-              untracked variant is made to ship, not out of stock.
-            {%- endcomment %}
-            "shipsFast": {% if variant.inventory_management != 'shopify' or variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
             "price": {{ variant.price | json }},
             "sku": {{ variant.sku | json }},
             "title": {{ variant.title | json }},
@@ -1188,7 +1160,7 @@
       "id": "ship_fast_label",
       "label": "In-stock ship time",
       "default": "Ships in 24 hours",
-      "info": "Shown on the gallery when the selected variant has stock. Otherwise the product's own \"Ships in ...\" badge (custom.pdp_media_badges) is shown."
+      "info": "Shown on the gallery and with the pincode check when the selected variant has stock. Nothing about shipping is shown otherwise."
     },
     {
       "type": "checkbox",
@@ -1252,14 +1224,6 @@
       "id": "care_guide_image",
       "label": "Image",
       "info": "Shown on every product. Leave empty to hide the Care guide accordion."
-    },
-    { "type": "header", "content": "Delivery estimate" },
-    {
-      "type": "number",
-      "id": "delivery_days",
-      "label": "Delivery days when not in stock",
-      "info": "Used by the pincode check. An in-stock variant always shows 3 days.",
-      "default": 17
     },
     { "type": "header", "content": "Know your jewellery" },
     { "type": "text", "id": "kj_material_name", "label": "Material name", "default": "Gold Vermeil" },
