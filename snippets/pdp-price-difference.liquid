@@ -11,7 +11,8 @@
   @param {object} [vermeil_image] - cutaway render for the explainer
   @param {object} [diamond_image] - diamond render for the explainer
   @param {object} [sgl_logo] - SGL mark
-  @param {object} kj - the product section's settings: the sheet's copy and the explainer
+  @param {object} kj - the "Know your jewellery" block's settings, for the explainer
+  @param {object} labels - the product section's settings: the sheet's own copy
 {%- enddoc -%}
 
 {%- liquid
@@ -42,7 +43,7 @@
 >
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
-      <h2 class="pdp-sheet_panel_head_title" id="PdpPriceDiffTitle">{{ kj.calc_title | default: 'Savings calculator' }}</h2>
+      <h2 class="pdp-sheet_panel_head_title" id="PdpPriceDiffTitle">{{ labels.calc_title | default: 'Savings calculator' }}</h2>
       <button
         type="button"
         class="pdp-sheet_panel_head_close"
@@ -61,19 +62,19 @@
               {{- 'icon-receipt-rupee.svg' | inline_asset_content -}}
             </span>
             {%- capture saved_text -%}{%- render 'money', amount: saved -%}{%- endcapture -%}
-            {{ kj.calc_saving_label | default: 'You save [amount] vs mined diamond' | replace: '[amount]', saved_text }}
+            {{ labels.calc_saving_label | default: 'You save [amount] vs mined diamond' | replace: '[amount]', saved_text }}
           </p>
 
           <div class="pdp-diff_compare">
             <div class="pdp-diff_compare_cell">
-              <span class="pdp-diff_compare_cell_label">{{ kj.calc_mined_label | default: 'Mined diamond' }}</span>
+              <span class="pdp-diff_compare_cell_label">{{ labels.calc_mined_label | default: 'Mined diamond' }}</span>
               <span class="pdp-diff_compare_cell_price">
                 {%- render 'money', amount: mined_cents -%}
               </span>
             </div>
             <span class="pdp-diff_compare_arrow" aria-hidden="true">&rarr;</span>
             <div class="pdp-diff_compare_cell pdp-diff_compare_cell--ours">
-              <span class="pdp-diff_compare_cell_label">{{ kj.calc_ours_label | default: 'Your Zinara piece' }}</span>
+              <span class="pdp-diff_compare_cell_label">{{ labels.calc_ours_label | default: 'Your Zinara piece' }}</span>
               <span class="pdp-diff_compare_cell_price" data-diff-price>
                 {%- render 'money', amount: current_variant.price -%}
               </span>
@@ -86,7 +87,7 @@
         One line of the section's "Highlights" setting per row; the icons keep
         their positions (certificate, buyback, eco, savings) and repeat after.
       {%- endcomment -%}
-      {%- assign calc_facts = kj.calc_facts | default: 'SGL certified' | strip | newline_to_br | split: '<br />' -%}
+      {%- assign calc_facts = labels.calc_facts | default: 'SGL certified' | strip | newline_to_br | split: '<br />' -%}
       {%- assign calc_icons = 'icon-certificate.svg,icon-alms.svg,icon-eco-energy.svg,icon-percent-circle.svg' | split: ',' -%}
       <ul class="pdp-diff_facts">
         {%- for fact in calc_facts -%}
@@ -122,7 +123,7 @@
       <div class="pdp-diff_explainer">
         <div class="pdp-diff_explainer_head">
           <p class="pdp-diff_explainer_head_title">{{ kj.kj_heading | default: 'Know your jewellery' }}</p>
-          <p class="pdp-diff_explainer_head_sub">{{ kj.calc_explainer_intro | default: 'Learn about Gold Vermeil & Lab-Grown Diamonds' }}</p>
+          <p class="pdp-diff_explainer_head_sub">{{ labels.calc_explainer_intro | default: 'Learn about Gold Vermeil & Lab-Grown Diamonds' }}</p>
         </div>
         {%- render 'pdp-know-jewellery',
           kj: kj,
@@ -136,7 +137,7 @@
 
     <div class="pdp-sheet_panel_footer">
       <button type="button" class="pdp_button pdp_button--primary pdp-diff_cta" data-diff-add>
-        <span>{{ kj.calc_cta_label | default: 'Add to Cart' }}</span>
+        <span>{{ labels.calc_cta_label | default: 'Add to Cart' }}</span>
         <span class="pdp-diff_cta_dot" aria-hidden="true"></span>
         <span class="pdp-diff_cta_price" data-diff-cta-price>
           {%- render 'money', amount: current_variant.price -%}

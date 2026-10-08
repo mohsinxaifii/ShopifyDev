@@ -7,10 +7,11 @@
 
   @param {object} product - the product being viewed
   @param {object} [related_products] - products from custom.pdp_related or Search & Discovery
+  @param {object} [block] - its block, for the theme editor
   @param {object} labels - the product section's settings (tab names, empty text)
 {%- enddoc -%}
 
-<section class="pdp_related" data-related data-animate>
+<section class="pdp_related" data-related data-animate {{ block.shopify_attributes }}>
   <div class="pdp_related_tabs" role="tablist">
     <button
       type="button"
@@ -19,7 +20,7 @@
       aria-selected="true"
       data-tab="also-like"
     >
-      You may also like
+      {{ labels.related_heading | default: 'You may also like' }}
     </button>
     <button
       type="button"
@@ -28,7 +29,7 @@
       aria-selected="false"
       data-tab="recent"
     >
-      Recently viewed
+      {{ labels.recent_heading | default: 'Recently viewed' }}
     </button>
   </div>
 
@@ -61,6 +62,8 @@
 
   <div class="pdp_related_panel" data-panel="recent" hidden>
     <div class="pdp_related_panel_track" data-recent-track></div>
-    <p class="pdp_related_panel_empty" data-recent-empty>Nothing here yet &mdash; browse a few pieces first.</p>
+    <p class="pdp_related_panel_empty" data-recent-empty>
+      {{- labels.recent_empty | default: 'Nothing here yet — browse a few pieces first.' -}}
+    </p>
   </div>
 </section>

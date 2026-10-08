@@ -4,10 +4,11 @@
   section has a review endpoint, else follows the review link.
 
   @param {object} product - the product being viewed
+  @param {object} [block] - its block, for the theme editor
   @param {object} labels - the product section's settings (heading, button labels, endpoint)
 {%- enddoc -%}
 
-<section class="pdp_reviews" id="pdp-reviews" data-animate>
+<section class="pdp_reviews" id="pdp-reviews" data-animate {{ block.shopify_attributes }}>
   <div class="pdp_reviews_head">
     <h2 class="pdp_section_title">{{ labels.reviews_heading | default: 'Customer reviews' }}</h2>
     {%- comment -%}
