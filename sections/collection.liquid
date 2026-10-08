@@ -9,15 +9,14 @@
   configured to expose - the design's Product type / Colour / Diamond shape /
   Occassion / Collection / Shipping groups are all `list` filters, and Price is
   the one `price_range`. The category chips above the grid are navigational
-  rather than filters. On a collection in the catalogue hierarchy (see
-  snippets/catalog-path) they are its children - a category shows its
-  sub-categories, a sub-category its verticals, a vertical none. Any other
-  collection keeps the chips set as section blocks.
+  rather than filters, and come from the catalogue hierarchy (see
+  snippets/catalog-path): a category shows its sub-categories, a sub-category
+  its verticals, a vertical none, and any collection outside the hierarchy
+  the categories themselves.
 {%- endcomment -%}
 
 {%- liquid
   assign sort_by = collection.sort_by | default: collection.default_sort_by
-  assign category_blocks = section.blocks | where: 'type', 'category'
   capture catalog_path
     render 'catalog-path', collection: collection
   endcapture
@@ -104,43 +103,7 @@
         {%- endif -%}
       </div>
 
-      {%- if catalog_path != blank -%}
-        {%- render 'catalog-chips', path: catalog_path, collection: collection -%}
-      {%- elsif category_blocks.size > 0 -%}
-        <nav class="collection_wrapper_main_chips" aria-label="{{ 'collection.filters' | t }}">
-          {%- for block in category_blocks -%}
-            {%- liquid
-              assign chip_url = block.settings.url
-              assign is_active = false
-              if chip_url == blank
-                comment
-                  The catch-all chip: current whenever no other chip's path is.
-                endcomment
-                assign chip_url = collection.url
-                if forloop.first and request.path == collection.url
-                  assign is_active = true
-                endif
-              elsif chip_url == request.path
-                assign is_active = true
-              endif
-            -%}
-            <a
-              href="{{ chip_url }}"
-              class="collection_wrapper_main_chips_chip{% if is_active %} is-active{% endif %}"
-              data-analytics="plp_chip_click"
-              data-analytics-chip-name="{{ block.settings.label | escape }}"
-              data-analytics-collection-name="{{ collection.title | escape }}"
-              data-analytics-position="{{ forloop.index }}"
-              {% if is_active %}
-                aria-current="page"
-              {% endif %}
-              {{ block.shopify_attributes }}
-            >
-              {{- block.settings.label -}}
-            </a>
-          {%- endfor -%}
-        </nav>
-      {%- endif -%}
+      {%- render 'catalog-chips', path: catalog_path, collection: collection -%}
 
       {%- paginate collection.products by section.settings.products_per_page -%}
         <div class="collection_wrapper_main_grid" data-grid data-animate-group data-animate-stagger="0.05">
@@ -195,16 +158,6 @@
       "max": 48,
       "step": 3,
       "default": 24
-    }
-  ],
-  "blocks": [
-    {
-      "type": "category",
-      "name": "Category chip",
-      "settings": [
-        { "type": "text", "id": "label", "label": "Label", "default": "All" },
-        { "type": "url", "id": "url", "label": "Link" }
-      ]
     }
   ]
 }
