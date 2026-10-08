@@ -7,10 +7,9 @@
   metafield of comma-separated product handles, e.g.
     golden-grace-chain-bracelet, lustrous-horizon-studs
   and on the live store a product list. Both are read.
-  The variant is not part of it: a piece with options is picked in the variant
-  drawer when the shopper selects it. Handles that match no product are
-  skipped. Without the metafield, Shopify's complementary-product
-  recommendations are used.
+  Each piece goes in as its first available variant. Handles that match no
+  product are skipped. Without the metafield nothing is output, and the
+  "Pair beautifully with" section is left out altogether.
 
   @param {object} product - The product whose pairings to resolve
 {%- enddoc -%}
@@ -37,13 +36,6 @@
       if all_products[entry_handle].id != blank
         assign handles = handles | append: entry_handle | append: ','
       endif
-    endfor
-  endif
-
-  if handles == ''
-    assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
-    for item in shopify_recs.complementary_products.value
-      assign handles = handles | append: item.handle | append: ','
     endfor
   endif
 
