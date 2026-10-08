@@ -15,13 +15,13 @@
   @param {object} addons - add-on products, from the add-on set or `custom.pdp_addons`
   @param {object} [hero] - default banner image above the grid
   @param {object} [previews] - `pdp_addon_preview` entries from the add-on set
-  @param {string} [whatsapp_url] - shown above the footer when set
+  @param {object} labels - the product section's settings (title, intro, Done)
 {%- enddoc -%}
 
 <dialog class="pdp-sheet" data-bottom-sheet data-sheet="addons" scroll-lock aria-labelledby="PdpAddonsTitle">
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
-      <h2 class="pdp-sheet_panel_head_title" id="PdpAddonsTitle">Add ons</h2>
+      <h2 class="pdp-sheet_panel_head_title" id="PdpAddonsTitle">{{ labels.addons_sheet_title | default: 'Add ons' }}</h2>
       <button
         type="button"
         class="pdp-sheet_panel_head_close"
@@ -34,7 +34,7 @@
 
     <div class="pdp-sheet_panel_body pdp-sheet_panel_body--padded">
       <div class="pdp-sheet_panel_body_group">
-        <p class="pdp-sheet_panel_body_group_label">Elevate your piece with curated add-ons</p>
+        <p class="pdp-sheet_panel_body_group_label">{{ labels.addons_sheet_intro | default: 'Elevate your piece with curated add-ons' }}</p>
         {%- if hero != blank or previews != blank -%}
           <span class="pdp-addons_hero" data-addon-hero>
             {%- if hero != blank -%}
@@ -115,20 +115,12 @@
         {%- endfor -%}
       </ul>
 
-      {% comment %} {%- if whatsapp_url != blank -%}
-        <a
-          href="{{ whatsapp_url }}"
-          class="pdp_button pdp_button--primary pdp_button--compact pdp-sheet_panel_body_cta"
-          target="_blank"
-          rel="noopener"
-        >
-          Whatsapp us
-        </a>
-      {%- endif -%} {% endcomment %}
     </div>
 
     <div class="pdp-sheet_panel_footer">
-      <button type="button" class="pdp_button pdp_button--primary pdp_button--compact" data-addons-done>Done</button>
+      <button type="button" class="pdp_button pdp_button--primary pdp_button--compact" data-addons-done>
+        {{- labels.addons_done_label | default: 'Done' -}}
+      </button>
     </div>
   </div>
 </dialog>

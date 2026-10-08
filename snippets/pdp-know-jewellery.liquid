@@ -120,13 +120,13 @@
         <dl class="pdp-kj_vermeil_specs">
           {%- if base_metal != blank -%}
             <div class="pdp-kj_vermeil_specs_cell">
-              <dt class="pdp-kj_vermeil_specs_cell_label">{{ 'products.base_metal' | t }}</dt>
+              <dt class="pdp-kj_vermeil_specs_cell_label">{{ kj.kj_base_metal_label | default: 'Base metal' }}</dt>
               <dd class="pdp-kj_vermeil_specs_cell_value">{{ base_metal }}</dd>
             </div>
           {%- endif -%}
           {%- if plating != blank -%}
             <div class="pdp-kj_vermeil_specs_cell">
-              <dt class="pdp-kj_vermeil_specs_cell_label">{{ 'products.plating' | t }}</dt>
+              <dt class="pdp-kj_vermeil_specs_cell_label">{{ kj.kj_plating_label | default: 'Plating' }}</dt>
               <dd class="pdp-kj_vermeil_specs_cell_value">{{ plating }}</dd>
             </div>
           {%- endif -%}
@@ -190,7 +190,7 @@
           <div class="pdp-kj_diamonds_facts">
             {%- if certification != blank -%}
               <div class="pdp-kj_diamonds_facts_cell">
-                <span class="pdp-kj_diamonds_facts_cell_label">{{ 'products.certification' | t }}</span>
+                <span class="pdp-kj_diamonds_facts_cell_label">{{ kj.kj_certification_heading | default: 'Certification' }}</span>
                 <span class="pdp-kj_diamonds_facts_cell_value">
                   {%- if sgl_logo != blank -%}
                     {{ sgl_logo | image_url: width: 80 | image_tag: loading: 'lazy', alt: certification }}
@@ -201,7 +201,7 @@
             {%- endif -%}
             {%- if pricing_claim != blank -%}
               <div class="pdp-kj_diamonds_facts_cell">
-                <span class="pdp-kj_diamonds_facts_cell_label">{{ 'products.pricing' | t }}</span>
+                <span class="pdp-kj_diamonds_facts_cell_label">{{ kj.kj_pricing_heading | default: 'Pricing' }}</span>
                 <span class="pdp-kj_diamonds_facts_cell_value">{{ pricing_claim }}</span>
               </div>
             {%- endif -%}

@@ -453,7 +453,7 @@
       const label = this.querySelector('[data-add-label]');
       if (addButton) addButton.disabled = !match.available;
       if (buyButton) buyButton.disabled = !match.available;
-      if (label) label.textContent = match.available ? 'Add to cart' : 'Sold out';
+      if (label) label.textContent = match.available ? label.dataset.labelAdd || 'Add to cart' : label.dataset.labelSold || 'Sold out';
     }
 
     /* "Ships in 24 hours" while the picked variant has stock on hand; no pill
@@ -507,7 +507,7 @@
           const percent = Math.round(
             ((variant.compareAt - variant.price) / variant.compareAt) * 100,
           );
-          save.textContent = `Save ${percent}%`;
+          save.textContent = (save.dataset.template || 'Save [percent]%').replace('[percent]', percent);
         }
       }
 
@@ -1237,7 +1237,7 @@
         else if (selected.length > 0)
           text = `Add ${selected.length} item${selected.length > 1 ? 's' : ''} to cart`;
         else if (pending.length < items.filter(available).length) text = `Add remaining ${pending.length} to cart`;
-        else text = 'Add set to cart';
+        else text = button.dataset.labelSet || 'Add set to cart';
 
         // The shared cart restores this text after its "Added" flash, so it has
         // to follow the state as well as the visible label does.
