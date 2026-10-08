@@ -2235,6 +2235,8 @@ button.pdp_trust_grid_item_inner {
 }
 
 .pdp-review-photo_image {
+  width: auto;
+  height: auto;
   max-width: min(92vw, 960px);
   max-height: 86vh;
   object-fit: contain;
