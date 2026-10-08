@@ -1,0 +1,47 @@
+{%- doc -%}
+  The product information accordions for one variant: one accordion per entry
+  in its content.product_details_list_1_json ... _4_json metafields - the JSON
+  the live theme reads and the sync sheet writes ("Variant metafield ...
+  (LIST n)" columns):
+
+    [{ "heading": "Product Details", "items": [{ "label": "SKU", "value": "..." }] }]
+
+  An item with an empty value is a note and spans the whole row.
+
+  @param {object} variant - a Shopify variant object
+{%- enddoc -%}
+
+{%- assign list_keys = 'product_details_list_1_json,product_details_list_2_json,product_details_list_3_json,product_details_list_4_json' | split: ',' -%}
+{%- for list_key in list_keys -%}
+  {%- for list in variant.metafields.content[list_key].value -%}
+    {%- if list.items == blank -%}
+      {%- continue -%}
+    {%- endif -%}
+    <details class="pdp_accordion">
+      <summary class="pdp_accordion_summary">
+        <span data-details-heading>{{ list.heading }}</span>
+        <span class="pdp_accordion_summary_sign" aria-hidden="true">
+          <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+          <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+        </span>
+      </summary>
+      <div class="pdp_accordion_body">
+        <dl class="pdp_specs">
+          {%- for item in list.items -%}
+            {%- assign item_value = item.value | strip -%}
+            {%- if item_value == blank -%}
+              <div class="pdp_specs_row pdp_specs_row--note">
+                <dt class="pdp_specs_row_key">{{ item.label | strip }}</dt>
+              </div>
+            {%- else -%}
+              <div class="pdp_specs_row">
+                <dt class="pdp_specs_row_key">{{ item.label | strip }}</dt>
+                <dd class="pdp_specs_row_value">{{ item_value }}</dd>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </dl>
+      </div>
+    </details>
+  {%- endfor -%}
+{%- endfor -%}

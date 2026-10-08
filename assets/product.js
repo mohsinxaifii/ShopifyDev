@@ -134,6 +134,7 @@
       this.initTabs();
       this.initCart();
       this.initReviewForm();
+      this.initVideoCall();
       this.initDragScroll();
       this.recordRecentlyViewed();
 
@@ -443,6 +444,7 @@
       this.variantInput.value = match.id;
       this.updatePrice(match);
       this.updateUrl(match);
+      this.updateDetails(match);
 
       if (match.featuredMediaPosition > 0) this.gallery?.show(match.featuredMediaPosition - 1);
 
@@ -511,6 +513,22 @@
 
       this.querySelectorAll('[data-diff-price], [data-diff-cta-price]').forEach((node) => {
         node.textContent = this.money(variant.priceText);
+      });
+    }
+
+    /* Product information follows the variant: each variant's accordions are
+       pre-rendered in a <template> (snippets/pdp-detail-lists). Any list the
+       shopper had open stays open across the swap. */
+    updateDetails(variant) {
+      const target = this.querySelector('[data-variant-details]');
+      const source = this.querySelector(`template[data-variant-details-for="${variant.id}"]`);
+      if (!target || !source) return;
+
+      const headingOf = (details) => details.querySelector('[data-details-heading]')?.textContent.trim();
+      const open = new Set(Array.from(target.querySelectorAll('details[open]'), headingOf));
+      target.replaceChildren(source.content.cloneNode(true));
+      target.querySelectorAll('details').forEach((details) => {
+        if (open.has(headingOf(details))) details.open = true;
       });
     }
 
@@ -828,30 +846,13 @@
      * "silver"; the product's tags pick one - see data-pincode-set). The list
      * is half a megabyte, so it is fetched on first use, not with the page.
      * A served pincode delivers in 3 days when the picked variant is in stock,
-     * otherwise in the product's own lead time (pdp_delivery_days, else 17).
+     * otherwise in the section's delivery days setting (17 by default).
      */
     initPincode() {
       const button = this.querySelector('[data-pincode-check]');
       const input = this.querySelector('[data-pincode]');
       const result = this.querySelector('[data-pincode-result]');
       if (!button || !input || !result) return;
-
-      let lists = null;
-      const loadLists = () => {
-        if (!lists) {
-          lists = fetch(this.dataset.pincodesUrl)
-            .then((response) => {
-              if (!response.ok) throw new Error(`${response.status}`);
-              return response.json();
-            })
-            .then((data) => ({ gold: new Set(data.gold || []), silver: new Set(data.silver || []) }))
-            .catch((error) => {
-              lists = null; // try again on the next check
-              throw error;
-            });
-        }
-        return lists;
-      };
 
       const show = (text, invalid) => {
         result.textContent = text;
@@ -863,7 +864,7 @@
       input.addEventListener('input', () => {
         input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
       });
-      input.addEventListener('focus', () => loadLists().catch(() => {}), { once: true });
+      input.addEventListener('focus', () => this.pincodeServes('').catch(() => {}), { once: true });
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
@@ -880,8 +881,7 @@
 
         let served;
         try {
-          const sets = await loadLists();
-          served = (sets[this.dataset.pincodeSet] || sets.gold).has(value);
+          served = await this.pincodeServes(value);
         } catch (error) {
           show('Could not check this pincode right now. Please try again.', true);
           return;
@@ -906,6 +906,138 @@
           serviceable: true,
           delivery_eta: eta.toISOString().slice(0, 10),
         });
+      });
+    }
+
+    /* Whether this product's lane (data-pincode-set) serves a pincode. The
+       lists are fetched once, on first use; a failed fetch is retried. */
+    pincodeServes(pincode) {
+      if (!this.pincodeLists) {
+        this.pincodeLists = fetch(this.dataset.pincodesUrl)
+          .then((response) => {
+            if (!response.ok) throw new Error(`${response.status}`);
+            return response.json();
+          })
+          .then((data) => ({ gold: new Set(data.gold || []), silver: new Set(data.silver || []) }))
+          .catch((error) => {
+            this.pincodeLists = null;
+            throw error;
+          });
+      }
+      return this.pincodeLists.then((sets) => (sets[this.dataset.pincodeSet] || sets.gold).has(pincode));
+    }
+
+    /* ------------------------------------------------------- video call */
+
+    /**
+     * "Book video call" opens a short form (name, mobile, optional pincode)
+     * instead of leaving the page - the live theme's video trial form. Like
+     * the live theme it posts one `data` field of JSON to the Google Apps
+     * Script in the section's video call endpoint setting; Apps Script sends
+     * no CORS headers, so the response is opaque and a sent request counts as
+     * success, as it does on the live theme.
+     */
+    initVideoCall() {
+      const form = this.querySelector('[data-video-call-form]');
+      if (!form) return;
+
+      const fields = form.querySelector('[data-video-call-fields]');
+      const done = form.querySelector('[data-video-call-done]');
+      const submit = form.querySelector('[data-video-call-submit]');
+      const close = form.querySelector('[data-video-call-close]');
+      const status = form.querySelector('[data-video-call-status]');
+      const { name, mobile, pincode } = form.elements;
+
+      const setError = (field, message) => {
+        const error = form.querySelector(`[data-error-for="${field.name}"]`);
+        if (error) error.hidden = !message;
+        field.toggleAttribute('aria-invalid', Boolean(message));
+        return !message;
+      };
+
+      [mobile, pincode].forEach((field) => {
+        field.addEventListener('input', () => {
+          field.value = field.value.replace(/[^0-9]/g, '').slice(0, Number(field.maxLength));
+        });
+      });
+
+      // Every open starts on a fresh form, with the pincode the shopper already
+      // checked on the page (or entered on the live theme's try-at-home popup).
+      this.addEventListener('click', (event) => {
+        if (!event.target.closest('[data-open="video-call"]')) return;
+        form.reset();
+        fields.hidden = false;
+        done.hidden = true;
+        submit.hidden = false;
+        close.hidden = true;
+        status.hidden = true;
+        [name, mobile, pincode].forEach((field) => setError(field, ''));
+        let saved = '';
+        try {
+          saved = localStorage.getItem('user_tryathomepincode') || '';
+        } catch (error) {
+          /* storage blocked */
+        }
+        const checked = this.querySelector('[data-pincode]')?.value || saved;
+        if (/^[1-9][0-9]{5}$/.test(checked)) pincode.value = checked;
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const values = {
+          name: name.value.trim(),
+          mobile: mobile.value.trim(),
+          pincode: pincode.value.trim(),
+        };
+        const valid = [
+          setError(name, values.name ? '' : 'missing'),
+          setError(mobile, /^\d{10}$/.test(values.mobile) ? '' : 'invalid'),
+          setError(pincode, !values.pincode || /^[1-9][0-9]{5}$/.test(values.pincode) ? '' : 'invalid'),
+        ].every(Boolean);
+        if (!valid) {
+          form.querySelector('[aria-invalid]')?.focus();
+          return;
+        }
+
+        submit.disabled = true;
+        status.hidden = true;
+
+        let pincodeAvailable = '';
+        if (values.pincode) {
+          try {
+            pincodeAvailable = (await this.pincodeServes(values.pincode)) ? 'Available' : 'Not Available';
+          } catch (error) {
+            /* lists unreachable - send the request without it */
+          }
+        }
+
+        try {
+          await fetch(form.action, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: new URLSearchParams({
+              data: JSON.stringify({
+                ...values,
+                pincodeAvailable,
+                timestamp: new Date().toISOString(),
+                productHandle: form.dataset.productHandle,
+              }),
+            }),
+          });
+        } catch (error) {
+          status.textContent = 'Could not send your request. Please check your connection and try again.';
+          status.hidden = false;
+          submit.disabled = false;
+          return;
+        }
+
+        // There is no booking id or slot yet - the team calls back to fix one.
+        window.zinaraTrack?.('video_call_booked', {});
+        submit.disabled = false;
+        fields.hidden = true;
+        done.hidden = false;
+        submit.hidden = true;
+        close.hidden = false;
       });
     }
 

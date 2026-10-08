@@ -11,6 +11,7 @@
   @param {object} [vermeil_image] - cutaway render for the explainer
   @param {object} [diamond_image] - diamond render for the explainer
   @param {object} [sgl_logo] - SGL mark
+  @param {object} kj - the product section's settings, for the explainer
 {%- enddoc -%}
 
 {%- liquid
@@ -117,17 +118,6 @@
                 | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Sample SGL diamond certificate'
               }}
             </span>
-            {%- if product.metafields.custom.pdp_certificate.value != blank
-              and certificate != product.metafields.custom.pdp_certificate.value
-            -%}
-              <span class="pdp-diff_certs_track_item">
-                {{
-                  product.metafields.custom.pdp_certificate.value
-                  | image_url: width: 656
-                  | image_tag: loading: 'lazy', widths: '328,656', sizes: '328px', alt: 'Your SGL diamond certificate'
-                }}
-              </span>
-            {%- endif -%}
           </div>
           <div class="pdp-diff_certs_dots scroll-carousel_dots" data-dots></div>
         </scroll-carousel>
@@ -139,7 +129,7 @@
           <p class="pdp-diff_explainer_head_sub">Learn about Gold Vermeil &amp; Lab-Grown Diamonds</p>
         </div>
         {%- render 'pdp-know-jewellery',
-          product: product,
+          kj: kj,
           vermeil_image: vermeil_image,
           mined_image: diamond_image,
           sgl_logo: sgl_logo,

@@ -3,9 +3,10 @@
   event tracking plan. Used by layout/theme.liquid (PDP, lists) and by the
   data-analytics-item attribute on product cards (assets/analytics.js).
 
-  item_category3 is the product's first collection other than "All", and
-  item_category5 (sub-category / occasion) is left out: the shop has no field
-  for either yet.
+  item_category3 is the product's first collection other than "All".
+  item_category2 (metal), item_category4 (stone) and item_category5
+  (sub-category / occasion) are left out: the shop has no per-product field
+  for them.
 
   @param {object} product - a Shopify product object
   @param {object} [variant] - defaults to the selected or first available variant
@@ -21,13 +22,6 @@
   if item_variant.compare_at_price > item_variant.price
     assign item_discount = item_variant.compare_at_price | minus: item_variant.price | divided_by: 100.0
   endif
-
-  assign metal = product.metafields.custom.pdp_material_name.value
-  assign base_metal = product.metafields.custom.pdp_base_metal.value
-  if metal != blank and base_metal != blank
-    assign metal = metal | append: ' on ' | append: base_metal
-  endif
-  assign stone = product.metafields.custom.pdp_stone_name.value
 
   assign item_collection = ''
   for item_col in product.collections
@@ -47,9 +41,7 @@
   "item_name": {{ product.title | json }},
   "item_brand": "Zinara",
   "item_category": {{ product.type | json }}
-  {%- if metal != blank %}, "item_category2": {{ metal | json }}{% endif -%}
   {%- if item_collection != blank %}, "item_category3": {{ item_collection | json }}{% endif -%}
-  {%- if stone != blank %}, "item_category4": {{ stone | json }}{% endif -%}
   {%- if variant_title != blank %}, "item_variant": {{ variant_title | json }}{% endif -%},
   "price": {{ item_price }},
   "discount": {{ item_discount }},

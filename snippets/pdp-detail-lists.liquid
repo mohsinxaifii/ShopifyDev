@@ -1,0 +1,19 @@
+{%- doc -%}
+  Product information, per variant (see pdp-variant-details). The variant the
+  page opened on is rendered in place; every variant also gets a <template>
+  copy, which product.js swaps in when the shopper picks another variant.
+
+  @param {object} product - a Shopify product object
+  @param {object} variant - the variant the page opened on
+{%- enddoc -%}
+
+<div class="pdp_variant_details" data-variant-details>
+  {%- render 'pdp-variant-details', variant: variant -%}
+</div>
+{%- unless product.has_only_default_variant -%}
+  {%- for item in product.variants -%}
+    <template data-variant-details-for="{{ item.id }}">
+      {%- render 'pdp-variant-details', variant: item -%}
+    </template>
+  {%- endfor -%}
+{%- endunless -%}

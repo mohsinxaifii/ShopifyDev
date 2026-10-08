@@ -2,11 +2,8 @@
   SGL certificate modal. Figma 7930:99699 - a centred 600px card rather than a
   sidesheet, because the certificate is landscape and unreadable in a 435px rail.
 
-  @param {object} product - a Shopify product object
-  @param {object} [fallback] - sample certificate used when the product has none
+  @param {object} [certificate] - the sample certificate, from the product section
 {%- enddoc -%}
-
-{%- assign certificate = product.metafields.custom.pdp_certificate.value | default: fallback -%}
 
 <dialog class="pdp-modal" data-bottom-sheet data-sheet="sgl" scroll-lock aria-labelledby="PdpSglTitle">
   <div class="pdp-modal_panel">

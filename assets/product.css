@@ -1194,6 +1194,18 @@ button.pdp_trust_grid_item_inner {
   color: var(--pdp-muted);
 }
 
+/* A label with no value is a note ("Final weights subject to minor changes"). */
+.pdp_specs_row--note .pdp_specs_row_key {
+  flex: 1 1 auto;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* The variant's accordions sit in the flex column as if unwrapped. */
+.pdp_variant_details {
+  display: contents;
+}
+
 .pdp_specs_row_value {
   flex: 1 1 auto;
   margin: 0;
@@ -2434,7 +2446,7 @@ button.pdp_trust_grid_item_inner {
   align-self: flex-start;
 }
 
-/* Care guide image (custom.pdp_care_guide_image) - the guide's only content
+/* Care guide image (product section setting) - the guide's only content
    when it is set, so it takes no gap below. */
 .pdp_accordion_body_media {
   display: block;
