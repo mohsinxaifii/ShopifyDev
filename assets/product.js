@@ -1121,7 +1121,6 @@
 
     renderRecentlyViewed(root) {
       const track = root.querySelector('[data-recent-track]');
-      const empty = root.querySelector('[data-recent-empty]');
       if (!track) return;
 
       // Written before this runs, so the current product is always first - drop
@@ -1130,8 +1129,12 @@
         (item) => item.handle !== this.dataset.productHandle,
       );
 
+      // The tab shows only with history behind it; the section (hidden in the
+      // markup when it has no "You may also like" cards) shows with either.
       if (items.length === 0) return;
-      if (empty) empty.hidden = true;
+      const tab = root.querySelector('[data-tab="recent"]');
+      if (tab) tab.hidden = false;
+      root.hidden = false;
 
       track.innerHTML = '';
       items.forEach((item) => {

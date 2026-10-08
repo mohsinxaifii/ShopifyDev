@@ -5,6 +5,8 @@
   @param {object} block - the "Need help choosing?" block
 {%- enddoc -%}
 
+{%- comment -%} Without a chat link or a video call form there is no help to offer: nothing shows. {%- endcomment -%}
+{%- if block.settings.whatsapp_url != blank or block.settings.video_call_endpoint != blank -%}
 <section class="pdp_help" data-animate {{ block.shopify_attributes }}>
   <div class="pdp_help_copy">
     <h2 class="pdp_section_title">{{ block.settings.help_heading }}</h2>
@@ -42,3 +44,4 @@
     {%- endif -%}
   </div>
 </section>
+{%- endif -%}

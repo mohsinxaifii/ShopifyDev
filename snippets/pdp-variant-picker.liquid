@@ -21,6 +21,8 @@
       endif
     endfor
   -%}
+  {%- comment -%} A product without options has only Shopify's "Default Title" - no rows for it. {%- endcomment -%}
+  {%- unless product.has_only_default_variant -%}
   {%- for option in product.options_with_values -%}
     {%- liquid
       assign is_swatch = false
@@ -107,6 +109,7 @@
         </div>
     </div>
   {%- endfor -%}
+  {%- endunless -%}
 
   {%- comment -%}
     Only reached when the product has no options to hang the guide on, so

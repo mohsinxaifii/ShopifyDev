@@ -48,7 +48,7 @@
   if kj.kj_mined_label != blank and kj.kj_lab_label != blank
     assign has_explainer = true
   endif
-  assign material_tags = product.metafields.custom.pdp_material_tags.value
+  assign material_tags = product.metafields.custom.price_card_material_tags.value
 
   comment
     Ship time (Figma 8106:57906): "Ships in 24 hours" only while the selected
@@ -62,34 +62,33 @@
     assign ship_label = ship_fast_label
   endif
   comment
-    Add-ons come from the product's add-on set (custom.pdp_addon_set, a
+    Add-ons come from the product's add-on set (custom.addons_set, a
     pdp_addon_set entry) when it has one: the products on offer, the default
     hero and a hero per combination of ticked add-ons. Products without a set
-    keep the older custom.pdp_addons list and the section's add-ons image.
+    keep the older custom.addons_products list and the section's add-ons image.
   endcomment
-  assign addon_set = product.metafields.custom.pdp_addon_set.value
-  assign addons = addon_set.addons.value | default: product.metafields.custom.pdp_addons.value
+  assign addon_set = product.metafields.custom.addons_set.value
+  assign addons = addon_set.addons.value | default: product.metafields.custom.addons_products.value
   assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
   assign addon_previews = addon_set.previews.value
   comment
     The size guide has the live theme's sources (see pdp-size-guide): the
     fixed ring chart for Gold / Vermeil Rings, else the product's own
-    size_chart metafields. The link shows only when there is a guide.
+    size_guide metafields. The link shows only when there is a guide.
   endcomment
   assign has_size_guide = false
   assign size_type = product.type | downcase | strip
   if size_type == 'gold rings' or size_type == 'vermeil rings'
     assign has_size_guide = true
-  elsif product.metafields.custom.size_chart.value != blank or product.metafields.custom.size_chart_video.value != blank
+  elsif product.metafields.custom.size_guide_rows.value != blank or product.metafields.custom.size_guide_video.value != blank
     assign has_size_guide = true
   endif
 
-  assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
   capture pair_handles
     render 'pdp-pair-handles', product: product
   endcapture
   assign pair_handles = pair_handles | strip | split: ','
-  assign related_products = product.metafields.custom.pdp_related.value | default: shopify_recs.related_products.value
+  assign related_products = product.metafields.custom.you_may_also_like_products.value
 
   comment
     Offers are a shop-level list and each entry may pin itself to particular
@@ -426,6 +425,7 @@
         endcapture
         assign group = ''
         assign in_highlights = false
+        assign highlights_header = nil
       -%}
       {%- for block in section.blocks -%}
         {%- liquid
@@ -471,14 +471,19 @@
             assign group = family
           endif
 
+          comment
+            The heading waits for the first bullet with text, so a "Why you'll
+            love it" with no bullets shows nothing at all.
+          endcomment
           if block.type == 'highlights'
-            render 'pdp-highlights-open', block: block
-            assign in_highlights = true
+            assign highlights_header = block
           elsif block.type == 'highlight'
-            unless in_highlights
-              render 'pdp-highlights-open'
+            if in_highlights == false and block.settings.text != blank
+              render 'pdp-highlights-open', block: highlights_header
               assign in_highlights = true
-            endunless
+            endif
+          else
+            assign highlights_header = nil
           endif
         -%}
         {%- case block.type -%}
@@ -1352,7 +1357,7 @@
       "settings": [
         {
           "type": "paragraph",
-          "content": "One accordion per list in the selected variant's Product Details List 1-4 JSON metafields; follows the variant picked."
+          "content": "One accordion per list in the selected variant's \"Product details · List 1-4\" metafields; follows the variant picked."
         }
       ],
       "limit": 1
@@ -1842,10 +1847,8 @@
           "default": "Recently viewed"
         },
         {
-          "type": "text",
-          "id": "recent_empty",
-          "label": "Recently viewed: when empty",
-          "default": "Nothing here yet — browse a few pieces first."
+          "type": "paragraph",
+          "content": "Products from the same vertical, then sub-category, then category (product tags), or the product's own \"You may also like · Products\" list. Each tab shows only when it has products; with none, the section is hidden."
         }
       ],
       "limit": 1

@@ -3,21 +3,20 @@
   separated, for the PDP card and the UGC lightbox rail to look up with
   all_products.
 
-  The list is `custom.pdp_pair_products`: on the dev store a single-line text
+  The list is `custom.pair_beautifully_with_products`: on the dev store a single-line text
   metafield of comma-separated product handles, e.g.
     golden-grace-chain-bracelet, lustrous-horizon-studs
   and on the live store a product list. Both are read.
-  The variant is not part of it: a piece with options is picked in the variant
-  drawer when the shopper selects it. Handles that match no product are
-  skipped. Without the metafield, Shopify's complementary-product
-  recommendations are used.
+  Each piece goes in as its first available variant. Handles that match no
+  product are skipped. Without the metafield nothing is output, and the
+  "Pair beautifully with" section is left out altogether.
 
   @param {object} product - The product whose pairings to resolve
 {%- enddoc -%}
 
 {%- liquid
   assign handles = ''
-  assign pair_field = product.metafields.custom.pdp_pair_products
+  assign pair_field = product.metafields.custom.pair_beautifully_with_products
 
   comment
     The live store defines the same metafield as a product list rather than
@@ -37,13 +36,6 @@
       if all_products[entry_handle].id != blank
         assign handles = handles | append: entry_handle | append: ','
       endif
-    endfor
-  endif
-
-  if handles == ''
-    assign shopify_recs = product.metafields['shopify--discovery--product_recommendation']
-    for item in shopify_recs.complementary_products.value
-      assign handles = handles | append: item.handle | append: ','
     endfor
   endif
 
