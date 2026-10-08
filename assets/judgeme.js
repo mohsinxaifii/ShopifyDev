@@ -141,7 +141,9 @@
   /* Cards far down a collection only ask Judge.me once they near the screen.
      The rating itself is display: none until it has something to show, and a
      box that is not rendered never intersects - so what is watched is the
-     element it sits in (the card's photo, the product headline). */
+     nearest element it sits in that has a box of its own (the card's photo,
+     the product headline). A display: contents wrapper has none - the PDP
+     headline on phones is one - so it is skipped. */
   const waiting = new Map(); // watched parent -> ratings inside it
   const observer =
     'IntersectionObserver' in window
@@ -159,7 +161,8 @@
       : null;
 
   function watch(rating) {
-    const target = rating.parentElement;
+    let target = rating.parentElement;
+    while (target && getComputedStyle(target).display === 'contents') target = target.parentElement;
     if (!observer || !target) return rating.load();
     if (!waiting.has(target)) {
       waiting.set(target, []);
