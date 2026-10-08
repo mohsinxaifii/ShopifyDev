@@ -24,17 +24,28 @@
     assign saving_percent = saving | divided_by: current_variant.compare_at_price | round
   endif
 
-  assign material_name = section.settings.kj_material_name | default: 'Gold Vermeil'
+  comment
+    Blocks whose settings are also needed outside their own spot: the
+    explainer copy feeds the material link and the savings calculator sheet;
+    the offers, help and reviews blocks carry the copy of the sheets they open.
+  endcomment
+  assign kj_block = section.blocks | where: 'type', 'know_jewellery' | first
+  assign kj = kj_block.settings
+  assign offers_block = section.blocks | where: 'type', 'offers' | first
+  assign help_block = section.blocks | where: 'type', 'help' | first
+  assign reviews_block = section.blocks | where: 'type', 'reviews' | first
+
+  assign material_name = kj.kj_material_name | default: 'Gold Vermeil'
   comment
     The explainer accordion and the link that opens it both disappear when the
-    section's "Know your jewellery" settings hold none of the content they
+    "Know your jewellery" block is missing or holds none of the content they
     would show.
   endcomment
   assign has_explainer = false
-  if section.settings.kj_callouts != blank
+  if kj.kj_callouts != blank
     assign has_explainer = true
   endif
-  if section.settings.kj_mined_label != blank and section.settings.kj_lab_label != blank
+  if kj.kj_mined_label != blank and kj.kj_lab_label != blank
     assign has_explainer = true
   endif
   assign material_tags = product.metafields.custom.pdp_material_tags.value
@@ -50,11 +61,6 @@
   if current_variant.available and current_variant.inventory_quantity > 0
     assign ship_label = ship_fast_label
   endif
-  comment
-    "Why you'll love it" is the same for every product: one line of the
-    section's textarea per bullet.
-  endcomment
-  assign highlights = section.settings.highlights | strip | newline_to_br | split: '<br />'
   comment
     Add-ons come from the product's add-on set (custom.pdp_addon_set, a
     pdp_addon_set entry) when it has one: the products on offer, the default
@@ -799,13 +805,15 @@
 
   {%- comment -%} ------------------------------------------------- overlays {%- endcomment -%}
   {%- render 'pdp-lightbox', product: product -%}
-  {%- if section.settings.review_endpoint != blank -%}
-    {%- render 'pdp-review-sheet', product: product, endpoint: section.settings.review_endpoint -%}
+  {%- if reviews_block.settings.review_endpoint != blank -%}
+    {%- render 'pdp-review-sheet', product: product, endpoint: reviews_block.settings.review_endpoint -%}
   {%- endif -%}
   {%- if has_size_guide -%}
-    {%- render 'pdp-size-guide', product: product, whatsapp_url: section.settings.whatsapp_url -%}
+    {%- render 'pdp-size-guide', product: product, whatsapp_url: help_block.settings.whatsapp_url -%}
   {%- endif -%}
-  {%- render 'pdp-offers-sheet', offer_handles: offer_handles, labels: section.settings -%}
+  {%- if offers_block != blank -%}
+    {%- render 'pdp-offers-sheet', offer_handles: offer_handles, labels: offers_block.settings -%}
+  {%- endif -%}
   {%- render 'pdp-addons-sheet',
     addons: addons,
     hero: addons_hero,
@@ -813,16 +821,17 @@
     labels: section.settings
   -%}
   {%- render 'pdp-sgl-modal', certificate: section.settings.certificate_image, labels: section.settings -%}
-  {%- if section.settings.video_call_endpoint != blank -%}
-    {%- render 'pdp-video-call', product: product, endpoint: section.settings.video_call_endpoint, labels: section.settings -%}
+  {%- if help_block.settings.video_call_endpoint != blank -%}
+    {%- render 'pdp-video-call', product: product, endpoint: help_block.settings.video_call_endpoint, labels: help_block.settings -%}
   {%- endif -%}
   {%- render 'pdp-price-difference',
     product: product,
     current_variant: current_variant,
-    kj: section.settings,
+    kj: kj,
+    labels: section.settings,
     certificate: section.settings.certificate_image,
-    vermeil_image: section.settings.vermeil_image,
-    diamond_image: section.settings.diamond_image,
+    vermeil_image: kj.vermeil_image,
+    diamond_image: kj.diamond_image,
     sgl_logo: section.settings.sgl_logo
   -%}
 
