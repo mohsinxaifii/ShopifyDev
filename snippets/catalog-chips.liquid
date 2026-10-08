@@ -19,7 +19,28 @@
   endcase
 -%}
 
-{%- if children != blank and children.size > 0 -%}
+{%- capture child_chips -%}
+  {%- assign position = 1 -%}
+  {%- for child in children -%}
+    {%- assign child_collection = child.collection.value -%}
+    {%- if child_collection == blank -%}
+      {%- continue -%}
+    {%- endif -%}
+    {%- assign position = position | plus: 1 -%}
+    <a
+      href="{{ child_collection.url }}"
+      class="collection_wrapper_main_chips_chip"
+      data-analytics="plp_chip_click"
+      data-analytics-chip-name="{{ child.name.value | escape }}"
+      data-analytics-collection-name="{{ collection.title | escape }}"
+      data-analytics-position="{{ position }}"
+    >
+      {{- child.name.value -}}
+    </a>
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if child_chips != blank -%}
   <nav class="collection_wrapper_main_chips" aria-label="{{ 'collection.filters' | t }}">
     <a
       href="{{ collection.url }}"
@@ -32,23 +53,6 @@
     >
       All
     </a>
-    {%- assign position = 1 -%}
-    {%- for child in children -%}
-      {%- assign child_collection = child.collection.value -%}
-      {%- if child_collection == blank -%}
-        {%- continue -%}
-      {%- endif -%}
-      {%- assign position = position | plus: 1 -%}
-      <a
-        href="{{ child_collection.url }}"
-        class="collection_wrapper_main_chips_chip"
-        data-analytics="plp_chip_click"
-        data-analytics-chip-name="{{ child.name.value | escape }}"
-        data-analytics-collection-name="{{ collection.title | escape }}"
-        data-analytics-position="{{ position }}"
-      >
-        {{- child.name.value -}}
-      </a>
-    {%- endfor -%}
+    {{- child_chips -}}
   </nav>
 {%- endif -%}

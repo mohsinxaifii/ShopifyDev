@@ -837,7 +837,16 @@
 
         <scroll-carousel class="pdp_related_panel" data-panel="also-like">
           <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
-            {%- if related_products != blank -%}
+            {%- comment -%}
+              The catalogue hierarchy first (same vertical, then sub-category,
+              then category); products outside it keep the older sources.
+            {%- endcomment -%}
+            {%- capture hierarchy_cards -%}
+              {%- render 'catalog-related', product: product, limit: 12 -%}
+            {%- endcapture -%}
+            {%- if hierarchy_cards != blank -%}
+              {{ hierarchy_cards }}
+            {%- elsif related_products != blank -%}
               {%- for item in related_products limit: 12 -%}
                 {%- render 'product-card', product: item, variant: 'grid' -%}
               {%- endfor -%}
