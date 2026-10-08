@@ -1,0 +1,33 @@
+{%- doc -%}
+  One "Shop with confidence" badge. The SGL one opens the certificate popup.
+
+  @param {object} block - a "Trust item" block
+{%- enddoc -%}
+
+<li class="pdp_trust_grid_item" {{ block.shopify_attributes }}>
+  {%- if block.settings.action == 'sgl' -%}
+    <button
+      type="button"
+      class="pdp_trust_grid_item_inner"
+      data-open="sgl"
+      data-analytics="trust_badge_click certificate_view"
+      data-analytics-badge-name="sgl_certified"
+      data-analytics-certificate-type="sgl"
+    >
+      <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
+        {%- render 'pdp-icon', name: block.settings.icon, image: block.settings.icon_image -%}
+      </span>
+      <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
+      <span class="pdp_trust_grid_item_inner_out" aria-hidden="true">
+        {{- 'icon-arrow-square-out.svg' | inline_asset_content -}}
+      </span>
+    </button>
+  {%- else -%}
+    <span class="pdp_trust_grid_item_inner">
+      <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
+        {%- render 'pdp-icon', name: block.settings.icon, image: block.settings.icon_image -%}
+      </span>
+      <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
+    </span>
+  {%- endif -%}
+</li>

@@ -42,7 +42,7 @@
     would show.
   endcomment
   assign has_explainer = false
-  if kj.kj_callouts != blank
+  if kj.kj_callout_1 != blank or kj.kj_callout_2 != blank or kj.kj_callout_3 != blank
     assign has_explainer = true
   endif
   if kj.kj_mined_label != blank and kj.kj_lab_label != blank
@@ -783,8 +783,10 @@
   {%- if help_block.settings.video_call_endpoint != blank -%}
     {%- render 'pdp-video-call', product: product, endpoint: help_block.settings.video_call_endpoint, labels: help_block.settings -%}
   {%- endif -%}
+  {%- assign calc_facts = section.blocks | where: 'type', 'calc_fact' -%}
   {%- render 'pdp-price-difference',
     product: product,
+    facts: calc_facts,
     current_variant: current_variant,
     kj: kj,
     labels: section.settings,
