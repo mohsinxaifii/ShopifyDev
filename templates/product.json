@@ -193,7 +193,7 @@
         "kj": {
           "type": "know_jewellery",
           "settings": {
-            "kj_heading": "Know your jewellery",
+            "kj_heading": "Get to know your jewellery",
             "kj_material_name": "Gold Vermeil",
             "kj_base_metal_label": "Base metal",
             "kj_base_metal": "Sterling Silver 925",
@@ -395,11 +395,11 @@
         "ship_fast_label": "Ships in 24 hours",
         "addons_link_label": "Add-ons available",
         "addons_sheet_title": "Add ons",
-        "addons_sheet_intro": "Elevate your piece with curated add-ons",
+        "addons_sheet_intro": "Personalise your piece with our add-ons",
         "addons_image": "shopify://shop_images/zinara-pdp-addons-hero.png",
-        "addons_done_label": "Done",
+        "addons_done_label": "Add to Cart",
         "trust_heading": "Shop with confidence",
-        "certificate_image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
+        "certificate_image": "shopify://shop_images/SGL_Report.png",
         "sgl_title": "SGL certified diamonds",
         "sgl_logo": "shopify://shop_images/zinara-pdp-sgl-logo.png",
         "difference_heading": "The [Zinara] Difference",
