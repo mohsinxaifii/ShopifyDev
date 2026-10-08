@@ -64,49 +64,82 @@
           {%- endif -%}
         </p>
 
-        {%- if show_guide -%}
-          {%- assign size_guide_inline = true -%}
-          <button
-            type="button"
-            class="pdp_link pdp_option_guide"
-            data-open="size-guide"
-            data-analytics="size_guide_open"
-            data-analytics-product-category="{{ product.type | escape }}"
-            data-analytics-click-location="pdp"
-          >
-            <span class="pdp_option_guide_icon" aria-hidden="true">
-              {{- 'icon-ruler.svg' | inline_asset_content -}}
-            </span>
-            {{ block.settings.size_guide_label | default: 'Size guide' }}
-          </button>
-        {%- endif -%}
       </div>
 
-      <div class="pdp_option_values">
-        {%- for value in option.values -%}
-          <label class="pdp_option_values_value">
-            <input
-              type="radio"
-              name="option-{{ option.position }}"
-              value="{{ value | escape }}"
-              data-option-input
-              {% if value == option.selected_value %}
-                checked
-              {% endif %}
-            >
-            {%- if is_swatch -%}
-              <span
-                class="pdp_option_values_value_swatch"
-                style="--pdp-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--pdp-swatch-{{ value | handle }}, #ddd){% endif %};"
+      {%- comment -%}
+        With the size guide on this row, the values and the link share one
+        line: the link keeps the right-hand end of the first line and any
+        values that do not fit wrap onto the next lines, never under it.
+      {%- endcomment -%}
+      {%- if show_guide -%}
+        <div class="pdp_option_body">
+          <div class="pdp_option_values">
+            {%- for value in option.values -%}
+              <label class="pdp_option_values_value">
+                <input
+                  type="radio"
+                  name="option-{{ option.position }}"
+                  value="{{ value | escape }}"
+                  data-option-input
+                  {% if value == option.selected_value %}
+                    checked
+                  {% endif %}
+                >
+                {%- if is_swatch -%}
+                  <span
+                    class="pdp_option_values_value_swatch"
+                    style="--pdp-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--pdp-swatch-{{ value | handle }}, #ddd){% endif %};"
+                  >
+                    <span class="visually-hidden">{{ value }}</span>
+                  </span>
+                {%- else -%}
+                  <span class="pdp_option_values_value_chip">{{ value }}</span>
+                {%- endif -%}
+              </label>
+            {%- endfor -%}
+          </div>
+        {%- assign size_guide_inline = true -%}
+        <button
+          type="button"
+          class="pdp_link pdp_option_guide"
+          data-open="size-guide"
+          data-analytics="size_guide_open"
+          data-analytics-product-category="{{ product.type | escape }}"
+          data-analytics-click-location="pdp"
+        >
+          <span class="pdp_option_guide_icon" aria-hidden="true">
+            {{- 'icon-ruler.svg' | inline_asset_content -}}
+          </span>
+          {{ block.settings.size_guide_label | default: 'Size guide' }}
+        </button>
+        </div>
+      {%- else -%}
+        <div class="pdp_option_values">
+          {%- for value in option.values -%}
+            <label class="pdp_option_values_value">
+              <input
+                type="radio"
+                name="option-{{ option.position }}"
+                value="{{ value | escape }}"
+                data-option-input
+                {% if value == option.selected_value %}
+                  checked
+                {% endif %}
               >
-                <span class="visually-hidden">{{ value }}</span>
-              </span>
-            {%- else -%}
-              <span class="pdp_option_values_value_chip">{{ value }}</span>
-            {%- endif -%}
-          </label>
-        {%- endfor -%}
-      </div>
+              {%- if is_swatch -%}
+                <span
+                  class="pdp_option_values_value_swatch"
+                  style="--pdp-swatch: {% if value.swatch.image %}url({{ value.swatch.image | image_url: width: 64 }}){% elsif value.swatch.color %}{{ value.swatch.color }}{% else %}var(--pdp-swatch-{{ value | handle }}, #ddd){% endif %};"
+                >
+                  <span class="visually-hidden">{{ value }}</span>
+                </span>
+              {%- else -%}
+                <span class="pdp_option_values_value_chip">{{ value }}</span>
+              {%- endif -%}
+            </label>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
     </div>
   {%- endfor -%}
 
