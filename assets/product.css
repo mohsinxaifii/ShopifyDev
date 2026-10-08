@@ -2840,6 +2840,31 @@ button.pdp_trust_grid_item_inner {
   color: var(--pdp-text-secondary);
 }
 
+/* The video call form's button while its request is on the way. */
+[data-video-call-submit].is-loading {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: progress;
+}
+
+[data-video-call-submit].is-loading::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 999px;
+  animation: pdp-spin 0.7s linear infinite;
+}
+
+@keyframes pdp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .pdp-review-form_submit {
   width: 100%;
 }

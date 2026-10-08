@@ -1029,7 +1029,19 @@
           return;
         }
 
+        // Loader on the button until the request is through and the thank-you
+        // shows (the pincode lookup and the send can take a few seconds).
+        const restLabel = submit.textContent.trim();
         submit.disabled = true;
+        submit.classList.add('is-loading');
+        submit.setAttribute('aria-busy', 'true');
+        submit.textContent = 'Sending…';
+        const stopLoading = () => {
+          submit.disabled = false;
+          submit.classList.remove('is-loading');
+          submit.removeAttribute('aria-busy');
+          submit.textContent = restLabel;
+        };
         status.hidden = true;
 
         let pincodeAvailable = '';
@@ -1057,13 +1069,13 @@
         } catch (error) {
           status.textContent = 'Could not send your request. Please check your connection and try again.';
           status.hidden = false;
-          submit.disabled = false;
+          stopLoading();
           return;
         }
 
         // There is no booking id or slot yet - the team calls back to fix one.
         window.zinaraTrack?.('video_call_booked', {});
-        submit.disabled = false;
+        stopLoading();
         fields.hidden = true;
         done.hidden = false;
         submit.hidden = true;
