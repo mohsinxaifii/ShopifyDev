@@ -3,7 +3,9 @@
 
   Each card toggles a selection rather than adding straight to the cart, so the
   shopper can pick several and commit once with Done - which is also what keeps
-  the add-ons in the same cart request as the main product.
+  the add-ons in the same cart request as the main product. As with "Pair
+  beautifully with", there is no variant picking: an add-on goes in as its
+  first available variant, and one with nothing available cannot be ticked.
 
   The hero above the grid follows the selection: each `pdp_addon_preview`
   entry pairs a combination of add-on products with an image, and product.js
@@ -73,7 +75,7 @@
 
       <ul class="pdp-addons_grid">
         {%- for addon in addons -%}
-          {%- assign addon_variant = addon.selected_or_first_available_variant -%}
+          {%- assign addon_variant = addon.first_available_variant -%}
           <li class="pdp-addons_grid_card">
             <span class="pdp-addons_grid_card_media">
               {%- if addon.featured_image -%}
@@ -90,13 +92,14 @@
               class="pdp-addons_grid_card_toggle"
               data-addon-toggle
               data-variant-id="{{ addon_variant.id }}"
-              data-variant-count="{{ addon.variants.size }}"
-              data-product-url="{{ addon.url }}"
               data-product-id="{{ addon.id }}"
               data-addon-name="{{ addon.title | escape }}"
               data-addon-price="{{ addon_variant.price | divided_by: 100.0 }}"
               aria-pressed="false"
               aria-label="Add {{ addon.title | escape }}"
+              {% if addon_variant == blank %}
+                disabled
+              {% endif %}
             >
               <span class="pdp-addons_grid_card_toggle_plus" aria-hidden="true">
                 {{- 'icon-plus.svg' | inline_asset_content -}}
@@ -107,7 +110,6 @@
             </button>
 
             <span class="pdp-addons_grid_card_title">{{ addon.title }}</span>
-            <span class="pdp-addons_grid_card_variant" data-addon-variant hidden></span>
             <span class="pdp-addons_grid_card_price">+{% render 'money', amount: addon.price %}</span>
           </li>
         {%- endfor -%}

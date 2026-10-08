@@ -3160,6 +3160,12 @@ button.pdp_trust_grid_item_inner {
   height: 16px;
 }
 
+/* Nothing available to add. */
+.pdp-addons_grid_card_toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .pdp-addons_grid_card_toggle[aria-pressed='true'] {
   border-color: var(--pdp-brand);
   background-color: var(--pdp-brand);
@@ -3180,14 +3186,6 @@ button.pdp_trust_grid_item_inner {
   font-size: 14px;
   line-height: 20px;
   color: var(--pdp-brand);
-}
-
-/* The variant picked for an add-on with options, under its name. */
-.pdp-addons_grid_card_variant {
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--pdp-text-secondary);
 }
 
 .pdp-addons_grid_card_price {

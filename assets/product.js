@@ -1265,21 +1265,7 @@
         const chosen = selectedItems();
         const pieces = chosen.length > 0 ? chosen : pendingItems();
 
-        // A piece with options (metal colour, size) is picked in the variant
-        // drawer first, one after another, instead of going in as whatever
-        // its first variant is. Backing out of any picker cancels the add.
-        const lines = [];
-        for (const item of pieces) {
-          const id = window.zinaraVariants
-            ? await window.zinaraVariants.pick({
-                productUrl: item.dataset.productUrl,
-                variantCount: item.dataset.variantCount,
-                variantId: item.dataset.variantId,
-              })
-            : Number(item.dataset.variantId);
-          if (!id) return;
-          lines.push({ id: Number(id), quantity: 1 });
-        }
+        const lines = pieces.map((item) => ({ id: Number(item.dataset.variantId), quantity: 1 }));
         if (lines.length === 0) return;
         const ok = await this.addToCart(lines, { trigger: button });
         if (ok) {
@@ -1303,37 +1289,19 @@
       this.syncPair?.();
     }
 
-    /* Ticking an add-on that has options asks for the variant first (the
-       drawer opens over the add-ons sheet); backing out leaves it unticked.
-       The chosen variant is what Done / Add to cart later sends. */
-    async toggleAddon(toggle) {
-      const label = toggle.closest('.pdp-addons_grid_card')?.querySelector('[data-addon-variant]');
+    /* Ticking an add-on just marks it, as a paired piece is marked: Done /
+       Add to cart later sends its first available variant. */
+    toggleAddon(toggle) {
       const track = (action) =>
         window.zinaraTrack?.('addon_select', {
           addon_name: toggle.dataset.addonName,
           addon_price: Number(toggle.dataset.addonPrice) || undefined,
           action,
         });
-      if (toggle.getAttribute('aria-pressed') === 'true') {
-        toggle.setAttribute('aria-pressed', 'false');
-        if (label) label.hidden = true;
-        this.syncAddonHero();
-        track('remove');
-        return;
-      }
-
-      if (Number(toggle.dataset.variantCount) > 1 && window.zinaraVariants) {
-        const chosen = await window.zinaraVariants.choose(toggle.dataset.productUrl);
-        if (!chosen) return;
-        toggle.dataset.variantId = chosen.id;
-        if (label) {
-          label.textContent = chosen.title;
-          label.hidden = false;
-        }
-      }
-      toggle.setAttribute('aria-pressed', 'true');
+      const pressed = toggle.getAttribute('aria-pressed') === 'true';
+      toggle.setAttribute('aria-pressed', String(!pressed));
       this.syncAddonHero();
-      track('add');
+      track(pressed ? 'remove' : 'add');
     }
 
     /* The add-ons hero follows the ticked set. Each preview image lists the
