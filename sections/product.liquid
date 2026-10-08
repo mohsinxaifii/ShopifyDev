@@ -425,6 +425,7 @@
         endcapture
         assign group = ''
         assign in_highlights = false
+        assign highlights_header = nil
       -%}
       {%- for block in section.blocks -%}
         {%- liquid
@@ -470,14 +471,19 @@
             assign group = family
           endif
 
+          comment
+            The heading waits for the first bullet with text, so a "Why you'll
+            love it" with no bullets shows nothing at all.
+          endcomment
           if block.type == 'highlights'
-            render 'pdp-highlights-open', block: block
-            assign in_highlights = true
+            assign highlights_header = block
           elsif block.type == 'highlight'
-            unless in_highlights
-              render 'pdp-highlights-open'
+            if in_highlights == false and block.settings.text != blank
+              render 'pdp-highlights-open', block: highlights_header
               assign in_highlights = true
-            endunless
+            endif
+          else
+            assign highlights_header = nil
           endif
         -%}
         {%- case block.type -%}
