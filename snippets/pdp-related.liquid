@@ -1,69 +1,77 @@
 {%- doc -%}
   "You may also like" / "Recently viewed" tabs. Figma 7930:96277.
-  You may also like: the catalogue hierarchy first (same vertical, then
-  sub-category, then category); products outside it fall back to
-  custom.pdp_related / Search & Discovery, then their first collection.
-  Recently viewed is filled by product.js.
+  You may also like: the catalogue hierarchy (same vertical, then
+  sub-category, then category), or the product's own custom.pdp_related list
+  when it is outside the hierarchy - nothing else. Recently viewed is filled
+  by product.js from the shopper's own history.
+  Each tab shows only with something in it: with no "You may also like"
+  cards the section starts hidden and product.js reveals it (Recently viewed
+  only) when there is history; with neither, nothing shows.
 
   @param {object} product - the product being viewed
   @param {object} [related_products] - products from custom.pdp_related or Search & Discovery
   @param {object} [block] - its block, for the theme editor
-  @param {object} labels - the product section's settings (tab names, empty text)
+  @param {object} labels - the block's settings (tab names)
 {%- enddoc -%}
 
-<section class="pdp_related" data-related data-animate {{ block.shopify_attributes }}>
+{%- capture also_like -%}
+  {%- render 'catalog-related', product: product, limit: 12 -%}
+{%- endcapture -%}
+{%- if also_like == blank and related_products != blank -%}
+  {%- capture also_like -%}
+    {%- for item in related_products limit: 12 -%}
+      {%- render 'product-card', product: item, variant: 'grid' -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+{%- endif -%}
+{%- assign has_also_like = false -%}
+{%- if also_like != blank -%}
+  {%- assign has_also_like = true -%}
+{%- endif -%}
+
+<section
+  class="pdp_related"
+  data-related
+  data-animate
+  {{ block.shopify_attributes }}
+  {% unless has_also_like %}
+    hidden
+  {% endunless %}
+>
   <div class="pdp_related_tabs" role="tablist">
+    {%- if has_also_like -%}
+      <button
+        type="button"
+        class="pdp_related_tabs_tab is-active"
+        role="tab"
+        aria-selected="true"
+        data-tab="also-like"
+      >
+        {{ labels.related_heading | default: 'You may also like' }}
+      </button>
+    {%- endif -%}
     <button
       type="button"
-      class="pdp_related_tabs_tab is-active"
+      class="pdp_related_tabs_tab{% unless has_also_like %} is-active{% endunless %}"
       role="tab"
-      aria-selected="true"
-      data-tab="also-like"
-    >
-      {{ labels.related_heading | default: 'You may also like' }}
-    </button>
-    <button
-      type="button"
-      class="pdp_related_tabs_tab"
-      role="tab"
-      aria-selected="false"
+      aria-selected="{% if has_also_like %}false{% else %}true{% endif %}"
       data-tab="recent"
+      hidden
     >
       {{ labels.recent_heading | default: 'Recently viewed' }}
     </button>
   </div>
 
-  <scroll-carousel class="pdp_related_panel" data-panel="also-like">
-    <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
-      {%- comment -%}
-        The catalogue hierarchy first (same vertical, then sub-category,
-        then category); products outside it keep the older sources.
-      {%- endcomment -%}
-      {%- capture hierarchy_cards -%}
-        {%- render 'catalog-related', product: product, limit: 12 -%}
-      {%- endcapture -%}
-      {%- if hierarchy_cards != blank -%}
-        {{ hierarchy_cards }}
-      {%- elsif related_products != blank -%}
-        {%- for item in related_products limit: 12 -%}
-          {%- render 'product-card', product: item, variant: 'grid' -%}
-        {%- endfor -%}
-      {%- else -%}
-        {%- assign fallback = product.collections.first -%}
-        {%- for item in fallback.products limit: 12 -%}
-          {%- unless item.id == product.id -%}
-            {%- render 'product-card', product: item, variant: 'grid' -%}
-          {%- endunless -%}
-        {%- endfor -%}
-      {%- endif -%}
-    </div>
-    <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
-  </scroll-carousel>
+  {%- if has_also_like -%}
+    <scroll-carousel class="pdp_related_panel" data-panel="also-like">
+      <div class="pdp_related_panel_track" data-track data-animate-group data-animate-stagger="0.06">
+        {{ also_like }}
+      </div>
+      <div class="pdp_related_panel_dots scroll-carousel_dots" data-dots></div>
+    </scroll-carousel>
+  {%- endif -%}
 
-  <div class="pdp_related_panel" data-panel="recent" hidden>
+  <div class="pdp_related_panel" data-panel="recent"{% if has_also_like %} hidden{% endif %}>
     <div class="pdp_related_panel_track" data-recent-track></div>
-    <p class="pdp_related_panel_empty" data-recent-empty>
-      {{- labels.recent_empty | default: 'Nothing here yet — browse a few pieces first.' -}}
-    </p>
   </div>
 </section>
