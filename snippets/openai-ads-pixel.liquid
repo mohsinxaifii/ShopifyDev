@@ -17,6 +17,29 @@
   endif
 -%}
 
+{%- liquid
+  comment
+    The logged-in customer's identifiers are normalized (OpenAI's rules) and
+    SHA-256 hashed here, on Shopify's side, so the raw email, phone and name
+    are never written into the page where other scripts could read them.
+    Phone: digits only, country code kept - a 10-digit Indian number (or one
+    with a leading 0) gets 91. Names: lowercase, no spaces or punctuation.
+  endcomment
+  if customer
+    assign oai_email = customer.email | strip | downcase
+    assign oai_phone = customer.phone | default: customer.default_address.phone | append: ''
+    assign oai_phone = oai_phone | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')' | remove: '.'
+    assign oai_first_char = oai_phone | slice: 0
+    if oai_phone.size == 11 and oai_first_char == '0'
+      assign oai_phone = oai_phone | remove_first: '0'
+    endif
+    if oai_phone.size == 10
+      assign oai_phone = oai_phone | prepend: '91'
+    endif
+    assign oai_first = customer.first_name | downcase | remove: ' ' | remove: '.' | remove: '-' | remove: "'" | remove: ',' | remove: '_'
+    assign oai_last = customer.last_name | downcase | remove: ' ' | remove: '.' | remove: '-' | remove: "'" | remove: ',' | remove: '_'
+  endif
+-%}
 {%- if settings.openai_ads_enabled and oai_pixel_id != blank -%}
   <!-- OpenAI Ads Pixel -->
   <script>
@@ -49,11 +72,13 @@
       },
       user: {
         {%- if customer -%}
-          email: {{ customer.email | json }},
-          phone: {{ customer.phone | default: customer.default_address.phone | json }},
-          firstName: {{ customer.first_name | json }},
-          lastName: {{ customer.last_name | json }},
-          externalId: {{ customer.id | json }},
+          hashed: {
+            {%- if oai_email != blank %}email_sha256: {{ oai_email | sha256 | json }},{% endif -%}
+            {%- if oai_phone != blank %}phone_number_sha256: {{ oai_phone | sha256 | json }},{% endif -%}
+            {%- if oai_first != blank %}first_name_sha256: {{ oai_first | sha256 | json }},{% endif -%}
+            {%- if oai_last != blank %}last_name_sha256: {{ oai_last | sha256 | json }},{% endif -%}
+            external_id_sha256: {{ customer.id | append: '' | sha256 | json }}
+          },
           city: {{ customer.default_address.city | json }},
           region: {{ customer.default_address.province | json }},
           country: {{ customer.default_address.country_code | json }},
@@ -145,9 +170,11 @@
           });
       }
 
-      // Identity gathered so far, stored normalized — seeded from the logged-in
-      // customer and topped up by identify() whenever a form gives us an email/phone.
+      // Identity gathered so far, stored normalized — topped up by identify()
+      // whenever a form gives us an email/phone. The logged-in customer's
+      // identifiers arrive already hashed by Liquid (`hashed`), never raw.
       var identity = {};
+      var prehashed = {};
 
       var NORMALIZERS = {
         email: normalizeEmail,
@@ -162,6 +189,14 @@
       function merge(raw) {
         var changed = false;
         if (!raw) return changed;
+        if (raw.hashed) {
+          Object.keys(raw.hashed).forEach(function (key) {
+            if (/_sha256$/.test(key) && /^[0-9a-f]{64}$/.test(raw.hashed[key]) && prehashed[key] !== raw.hashed[key]) {
+              prehashed[key] = raw.hashed[key];
+              changed = true;
+            }
+          });
+        }
         ['email', 'phone', 'firstName', 'lastName', 'externalId', 'city', 'region', 'country', 'postalCode'].forEach(
           function (key) {
             if (!raw[key]) return;
@@ -178,6 +213,9 @@
 
       function hashIdentity() {
         var user = {};
+        Object.keys(prehashed).forEach(function (key) {
+          user[key] = prehashed[key];
+        });
 
         if (identity.city) user.city = identity.city;
         if (identity.region) user.region = identity.region;
