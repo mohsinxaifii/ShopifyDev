@@ -2429,6 +2429,15 @@ button.pdp_trust_grid_item_inner {
    the chart - 12px muted cells on 22px lines, an 8px band either side of each
    rule, headings set as written (only RING SIZE is in capitals), the outer
    columns 94px and 96px with the middle taking the rest. */
+/* The "how to measure" video, shown whole (it is not cropped like a photo). */
+.pdp-sheet_panel_body_guide-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background-color: #000;
+}
+
 .pdp-sheet_panel_body_guide-image {
   display: block;
   width: 100%;
