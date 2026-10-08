@@ -667,33 +667,7 @@
         -%}
         {%- case block.type -%}
           {%- when 'trust' -%}
-          <li class="pdp_trust_grid_item" {{ block.shopify_attributes }}>
-            {%- if block.settings.action == 'sgl' -%}
-              <button
-                type="button"
-                class="pdp_trust_grid_item_inner"
-                data-open="sgl"
-                data-analytics="trust_badge_click certificate_view"
-                data-analytics-badge-name="sgl_certified"
-                data-analytics-certificate-type="sgl"
-              >
-                <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
-                  {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
-                </span>
-                <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
-                <span class="pdp_trust_grid_item_inner_out" aria-hidden="true">
-                  {{- 'icon-arrow-square-out.svg' | inline_asset_content -}}
-                </span>
-              </button>
-            {%- else -%}
-              <span class="pdp_trust_grid_item_inner">
-                <span class="pdp_trust_grid_item_inner_icon" aria-hidden="true">
-                  {{- block.settings.icon | append: '.svg' | inline_asset_content -}}
-                </span>
-                <span class="pdp_trust_grid_item_inner_label">{{ block.settings.label }}</span>
-              </span>
-            {%- endif -%}
-          </li>
+            {%- render 'pdp-trust-item', block: block -%}
 
           {%- when 'delivery' -%}
             {%- render 'pdp-delivery', block: block -%}
@@ -705,18 +679,7 @@
             {%- render 'pdp-help', block: block -%}
 
           {%- when 'description' -%}
-            {%- if product.description != blank -%}
-              <details class="pdp_accordion" {{ block.shopify_attributes }}{% if block.settings.open %} open{% endif %}>
-                <summary class="pdp_accordion_summary">
-                  <span>{{ block.settings.description_heading | default: 'Description' }}</span>
-                  <span class="pdp_accordion_summary_sign" aria-hidden="true">
-                    <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
-                    <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
-                  </span>
-                </summary>
-                <div class="pdp_accordion_body pdp_accordion_body--rte">{{ product.description }}</div>
-              </details>
-            {%- endif -%}
+            {%- render 'pdp-description', block: block, product: product -%}
 
           {%- when 'highlights' -%}
             {%- render 'pdp-highlights', block: block -%}
@@ -728,16 +691,7 @@
             {%- render 'pdp-care-guide', block: block -%}
 
           {%- when 'accordion' -%}
-            <details class="pdp_accordion" {{ block.shopify_attributes }}>
-              <summary class="pdp_accordion_summary">
-                <span>{{ block.settings.heading }}</span>
-                <span class="pdp_accordion_summary_sign" aria-hidden="true">
-                  <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
-                  <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
-                </span>
-              </summary>
-              <div class="pdp_accordion_body pdp_accordion_body--rte">{{ block.settings.content }}</div>
-            </details>
+            {%- render 'pdp-accordion', block: block -%}
 
           {%- when 'know_jewellery' -%}
           <details

@@ -1,0 +1,28 @@
+{%- doc -%}
+  The "What is Gold Vermeil?" link - Figma 7930:96109. Opens the Know your
+  jewellery accordion; hidden when that block has nothing to show.
+
+  @param {object} block - the "Material link" block
+  @param {string} material_name - the Know your jewellery material name
+  @param {boolean} has_explainer - whether the explainer has content
+{%- enddoc -%}
+
+{%- comment -%} Material explainer link - Figma 7930:96109 {%- endcomment -%}
+<button
+  type="button"
+  class="pdp_explainer"
+  {{ block.shopify_attributes }}
+  data-open="know-jewellery"
+  data-analytics="material_info_click"
+  data-analytics-info-type="{{ material_name | handleize | replace: '-', '_' }}"
+  data-analytics-click-location="pdp"
+  {% unless has_explainer %}
+    hidden
+  {% endunless %}
+>
+  <span class="pdp_explainer_dot" aria-hidden="true"></span>
+  <span class="pdp_explainer_text">
+    {{- block.settings.explainer_label | default: 'What is [material]?' | replace: '[material]', material_name -}}
+  </span>
+  {{ 'icon-caret-right.svg' | inline_asset_content }}
+</button>

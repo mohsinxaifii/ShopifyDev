@@ -1,0 +1,19 @@
+{%- doc -%}
+  The product's own description from Shopify admin, as an accordion.
+
+  @param {object} block - the "Description" block
+  @param {object} product - the product being viewed
+{%- enddoc -%}
+
+{%- if product.description != blank -%}
+  <details class="pdp_accordion" {{ block.shopify_attributes }}{% if block.settings.open %} open{% endif %}>
+    <summary class="pdp_accordion_summary">
+      <span>{{ block.settings.description_heading | default: 'Description' }}</span>
+      <span class="pdp_accordion_summary_sign" aria-hidden="true">
+        <span class="pdp_accordion_summary_sign_plus">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+        <span class="pdp_accordion_summary_sign_minus">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+      </span>
+    </summary>
+    <div class="pdp_accordion_body pdp_accordion_body--rte">{{ product.description }}</div>
+  </details>
+{%- endif -%}
