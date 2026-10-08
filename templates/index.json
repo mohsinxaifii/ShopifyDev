@@ -15,8 +15,8 @@
         "slide-1": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/zinara-hero-slide-1.png",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
+            "image": "shopify://shop_images/new_arrivals_v2_desktop.png",
+            "mobile_image": "shopify://shop_images/new_arrivals_v2_mobile.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
@@ -25,6 +25,7 @@
         },
         "slide_mkRNm4": {
           "type": "slide",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
             "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
@@ -36,6 +37,7 @@
         },
         "slide_BEYVhA": {
           "type": "slide",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
             "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
@@ -47,6 +49,7 @@
         },
         "slide_4KCA4Q": {
           "type": "slide",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-hero-slide-1.png",
             "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
@@ -606,14 +609,14 @@
     "split-promo": {
       "type": "split-promo",
       "settings": {
-        "left_image": "shopify://shop_images/zinara-custom-design-bg.png",
+        "left_image": "shopify://shop_images/design_your_jewellery_desktop.png",
         "left_heading": "Craft Your Dream Jewellery",
         "left_subheading": "Turn your inspiration into a one-of-a-kind piece with us.",
         "left_button_label": "Start designing",
         "left_button_url": "/pages/get-your-own-design",
         "right_image_1": "shopify://shop_images/zinara-collection-siesta.png",
         "right_image_2": "shopify://shop_images/zinara-video-thumb-generic.jpg",
-        "right_image_mobile": "shopify://shop_images/zinara-split-promo-mobile.png",
+        "right_image_mobile": "shopify://shop_images/get_to_know_us_mobile.png",
         "right_heading": "Premium Jewelry.\nMade to be lived in.",
         "right_button_label": "Get to know us",
         "right_button_url": "/pages/about-us"
