@@ -1,61 +1,41 @@
 {%- doc -%}
-  Ring size guide sheet - a sidesheet on desktop, a bottom sheet on phones.
+  Size guide sheet - a sidesheet on desktop, a bottom sheet on phones.
   Figma Mobile 8106:60328 (Size guide bottomsheet).
 
-  One guide for every ring, kept in the shop's "Ring size guide" metaobject
-  (type `ring_size_guide`, entry `ring-size-guide`), so it is edited in the
-  admin rather than per product:
-  - title            single line text    sheet heading
-  - measure_heading  single line text    above the photo
-  - measure_image    file (image)        only for a ring with no photo of its
-                                         own - the photo is the ring's featured
-                                         image
-  - chart_heading    single line text    above the table
-  - columns          list of single line the three column headings
-  - rows             list of single line one row each, cells split by "|"
-                                         e.g. "8 | 48.1 | 15"
-  - cta_label        single line text    the WhatsApp button
+  The same sources as the live theme (layout/theme.liquid there):
+  - Gold Rings / Vermeil Rings (product type): the fixed ring chart - the
+    "how to measure" video and sizes 8-27 with circumference and diameter.
+  - Anything else: the product's own metafields - custom.size_chart_video,
+    custom.size_chart_headings (column names) and custom.size_chart (rows,
+    metaobjects with column_1 ... column_5).
+  The section shows the "Size guide" link only when one of them has content
+  (see has_size_guide in sections/product.liquid).
 
-  Any field left empty falls back to the Figma copy below, so the sheet is
-  complete before the entry exists.
-
-  @param {object} product - the ring; its featured image is the photo
+  @param {object} product - the product being viewed
   @param {string} [whatsapp_url] - the footer CTA's link; no button without it
 {%- enddoc -%}
 
 {%- liquid
-  comment
-    The `ring-size-guide` entry, or failing that whichever one there is - the
-    values list is paginated, so `.first` on it comes back empty.
-  endcomment
-  assign guide = metaobjects.ring_size_guide['ring-size-guide']
-  if guide == blank
-    for entry in metaobjects.ring_size_guide.values limit: 1
-      assign guide = entry
-    endfor
+  assign product_type = product.type | downcase | strip
+  assign is_ring = false
+  if product_type == 'gold rings' or product_type == 'vermeil rings'
+    assign is_ring = true
   endif
 
-  assign guide_title = guide.title.value | default: 'Size guide'
-  assign measure_heading = guide.measure_heading.value | default: 'How to measure your ring size'
-  assign measure_image = product.featured_image | default: guide.measure_image.value
-  assign chart_heading = guide.chart_heading.value | default: 'Size chart'
-  assign cta_label = guide.cta_label.value | default: 'Whatsapp us'
-
-  assign columns = guide.columns.value
-  if columns == blank
-    assign columns = 'RING SIZE|Circumference (mm)|Diameter (mm)' | split: '|'
-  endif
-
-  assign rows = guide.rows.value
-  if rows == blank
-    assign rows = '8 | 48.1 | 15,9 | 49.0 | 15.4,10 | 50.0 | 15.7,11 | 50.9 | 16,12 | 51.8 | 16.4,13 | 52.8 | 16.7,14 | 54.0 | 17.1' | split: ','
+  if is_ring
+    assign columns = 'Ring Size|Circumference (mm)|Diameter (mm)' | split: '|'
+    assign ring_rows = '8|48.1|15,9|49.0|15.4,10|50.0|15.7,11|50.9|16,12|51.8|16.4,13|52.8|16.7,14|54.0|17.1,15|55.0|17.4,16|55.9|17.8,17|56.9|18,18|57.8|18.4,19|59.1|18.7,20|60.0|19,21|60.9|19.3,22|61.9|19.7,23|62.8|20,24|63.8|20.3,25|64.7|20.6,26|66.0|20.9,27|66.9|21.2' | split: ','
+  else
+    assign columns = product.metafields.custom.size_chart_headings.value
+    assign chart_rows = product.metafields.custom.size_chart.value
+    assign video = product.metafields.custom.size_chart_video.value
   endif
 -%}
 
 <dialog class="pdp-sheet" data-bottom-sheet data-sheet="size-guide" scroll-lock aria-labelledby="PdpSizeGuideTitle">
   <div class="pdp-sheet_panel">
     <div class="pdp-sheet_panel_head">
-      <h2 class="pdp-sheet_panel_head_title" id="PdpSizeGuideTitle">{{ guide_title }}</h2>
+      <h2 class="pdp-sheet_panel_head_title" id="PdpSizeGuideTitle">Size Guide</h2>
       <button
         type="button"
         class="pdp-sheet_panel_head_close"
@@ -68,23 +48,18 @@
 
     <div class="pdp-sheet_panel_body">
       <div class="pdp-sheet_panel_body_group">
-        <p class="pdp-sheet_panel_body_group_label">{{ measure_heading }}</p>
-        {%- if measure_image != blank -%}
-          {{
-            measure_image
-            | image_url: width: 806
-            | image_tag:
-              loading: 'lazy',
-              widths: '403,806',
-              sizes: '(min-width: 750px) 403px, calc(100vw - 32px)',
-              alt: measure_heading,
-              class: 'pdp-sheet_panel_body_guide-image'
-          }}
+        <p class="pdp-sheet_panel_body_group_label">How to measure your ring size</p>
+        {%- if is_ring -%}
+          <video class="pdp-sheet_panel_body_guide-video" controls playsinline preload="metadata">
+            <source src="https://cdn.shopify.com/videos/c/o/v/d0d213af2061422a837e2656892a022b.mp4" type="video/mp4">
+          </video>
+        {%- elsif video != blank -%}
+          {{ video | video_tag: controls: true, playsinline: true, preload: 'metadata', class: 'pdp-sheet_panel_body_guide-video' }}
         {%- endif -%}
       </div>
 
       <div class="pdp-sheet_panel_body_group">
-        <p class="pdp-sheet_panel_body_group_label">{{ chart_heading }}</p>
+        <p class="pdp-sheet_panel_body_group_label">Size Chart</p>
         <div class="pdp-sheet_panel_body_table">
           <table class="pdp-table pdp-table--size-guide">
             <thead>
@@ -95,14 +70,27 @@
               </tr>
             </thead>
             <tbody>
-              {%- for row in rows -%}
-                {%- assign cells = row | split: '|' -%}
-                <tr>
-                  {%- for column in columns -%}
-                    <td>{{ cells[forloop.index0] | strip }}</td>
-                  {%- endfor -%}
-                </tr>
-              {%- endfor -%}
+              {%- if is_ring -%}
+                {%- for row in ring_rows -%}
+                  {%- assign cells = row | split: '|' -%}
+                  <tr>
+                    {%- for cell in cells -%}
+                      <td>{{ cell }}</td>
+                    {%- endfor -%}
+                  </tr>
+                {%- endfor -%}
+              {%- else -%}
+                {%- for row in chart_rows -%}
+                  <tr>
+                    {%- for position in (1..5) -%}
+                      {%- assign cell_key = 'column_' | append: position -%}
+                      {%- if row[cell_key] != blank -%}
+                        <td>{{ row[cell_key] }}</td>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </tr>
+                {%- endfor -%}
+              {%- endif -%}
             </tbody>
           </table>
         </div>
@@ -119,7 +107,7 @@
           <span class="pdp_button_icon pdp-sheet_panel_body_cta_icon" aria-hidden="true">
             {{- 'icon-whatsapp.svg' | inline_asset_content -}}
           </span>
-          {{ cta_label }}
+          WhatsApp us
         </a>
       {%- endif -%}
     </div>
