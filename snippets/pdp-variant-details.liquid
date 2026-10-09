@@ -1,6 +1,6 @@
 {%- doc -%}
   The product information accordions for one variant: one accordion per entry
-  in its custom.product_details_1 ... _4 metafields (this theme's own; the
+  in its custom.details_accordion_1 ... _4 metafields (this theme's own; the
   sync sheet's "Variant metafield ... (LIST n)" columns):
 
     [{ "heading": "Product Details", "items": [{ "label": "SKU", "value": "..." }] }]
@@ -10,7 +10,7 @@
   @param {object} variant - a Shopify variant object
 {%- enddoc -%}
 
-{%- assign list_keys = 'product_details_1,product_details_2,product_details_3,product_details_4' | split: ',' -%}
+{%- assign list_keys = 'details_accordion_1,details_accordion_2,details_accordion_3,details_accordion_4' | split: ',' -%}
 {%- for list_key in list_keys -%}
   {%- for list in variant.metafields.custom[list_key].value -%}
     {%- if list.items == blank -%}

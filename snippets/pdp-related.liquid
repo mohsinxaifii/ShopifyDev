@@ -1,29 +1,21 @@
 {%- doc -%}
   "You may also like" / "Recently viewed" tabs. Figma 7930:96277.
-  You may also like: the catalogue hierarchy (same vertical, then
-  sub-category, then category), or the product's own custom.you_may_also_like_products list
-  when it is outside the hierarchy - nothing else. Recently viewed is filled
-  by product.js from the shopper's own history.
+  You may also like: up to 10 pieces from the catalogue hierarchy within 20%
+  of the product's price - same vertical, then same sub-category (see
+  snippets/catalog-related). Nothing is linked by hand. Recently viewed is
+  filled by product.js from the shopper's own history.
   Each tab shows only with something in it: with no "You may also like"
   cards the section starts hidden and product.js reveals it (Recently viewed
   only) when there is history; with neither, nothing shows.
 
   @param {object} product - the product being viewed
-  @param {object} [related_products] - products from custom.you_may_also_like_products or Search & Discovery
   @param {object} [block] - its block, for the theme editor
   @param {object} labels - the block's settings (tab names)
 {%- enddoc -%}
 
 {%- capture also_like -%}
-  {%- render 'catalog-related', product: product, limit: 12 -%}
+  {%- render 'catalog-related', product: product, limit: 10 -%}
 {%- endcapture -%}
-{%- if also_like == blank and related_products != blank -%}
-  {%- capture also_like -%}
-    {%- for item in related_products limit: 12 -%}
-      {%- render 'product-card', product: item, variant: 'grid' -%}
-    {%- endfor -%}
-  {%- endcapture -%}
-{%- endif -%}
 {%- assign has_also_like = false -%}
 {%- if also_like != blank -%}
   {%- assign has_also_like = true -%}

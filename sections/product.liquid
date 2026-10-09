@@ -48,7 +48,7 @@
   if kj.kj_mined_label != blank and kj.kj_lab_label != blank
     assign has_explainer = true
   endif
-  assign material_tags = product.metafields.custom.price_card_material_tags.value
+  assign material_tags = product.metafields.custom.material_tags.value
 
   comment
     Ship time (Figma 8106:57906): "Ships in 24 hours" only while the selected
@@ -62,13 +62,13 @@
     assign ship_label = ship_fast_label
   endif
   comment
-    Add-ons come from the product's add-on set (custom.addons_set, a
-    pdp_addon_set entry) when it has one: the products on offer, the default
-    hero and a hero per combination of ticked add-ons. Products without a set
-    keep the older custom.addons_products list and the section's add-ons image.
+    Add-ons come only from the product's add-on set (custom.addon_set, a
+    pdp_addon_set entry): the products on offer, the default hero and a hero
+    per combination of ticked add-ons. Without a set there are no add-ons; the
+    section's add-ons image stands in only for a set without a hero.
   endcomment
-  assign addon_set = product.metafields.custom.addons_set.value
-  assign addons = addon_set.addons.value | default: product.metafields.custom.addons_products.value
+  assign addon_set = product.metafields.custom.addon_set.value
+  assign addons = addon_set.addons.value
   assign addons_hero = addon_set.hero_image.value | default: section.settings.addons_image
   assign addon_previews = addon_set.previews.value
   comment
@@ -86,7 +86,6 @@
     render 'pdp-pair-handles', product: product
   endcapture
   assign pair_handles = pair_handles | strip | split: ','
-  assign related_products = product.metafields.custom.you_may_also_like_products.value
 
   comment
     Offers are a shop-level list and each entry may pin itself to particular
@@ -231,6 +230,7 @@
             >
               {{- ship_label -}}
             </span>
+            {%- render 'photo-badges', product: product, class: 'pdp_gallery_stage_bottom_pill' -%}
           </div>
 
           {%- comment -%}
@@ -539,7 +539,7 @@
           </details>
 
           {%- when 'related' -%}
-            {%- render 'pdp-related', product: product, related_products: related_products, labels: block.settings, block: block -%}
+            {%- render 'pdp-related', product: product, labels: block.settings, block: block -%}
 
           {%- when 'difference' -%}
             {%- render 'pdp-difference-row', block: block, sgl_logo: section.settings.sgl_logo -%}
@@ -1846,7 +1846,7 @@
         },
         {
           "type": "paragraph",
-          "content": "Products from the same vertical, then sub-category, then category (product tags), or the product's own \"You may also like · Products\" list. Each tab shows only when it has products; with none, the section is hidden."
+          "content": "Up to 10 products within 20% of this product's price: same vertical first, then same sub-category (catalogue hierarchy, from product tags). Each tab shows only when it has products; with none, the section is hidden."
         }
       ],
       "limit": 1

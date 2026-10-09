@@ -18,7 +18,7 @@
     assign compare_text = compare_text | prepend: money_symbol
   endunless
 
-  assign feature_badge = product.metafields.custom.product_card_badges.first
+  assign feature_badge = product.metafields.custom.card_top_badge.first
   assign current = product.selected_or_first_available_variant
   comment
     "Ready to ship" follows the picked variant (variant-drawer.js swaps it), so
@@ -75,13 +75,18 @@
         {%- endif -%}
       </span>
 
-      {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
-      <judgeme-rating data-handle="{{ product.handle }}" hidden>
-        <span class="product-card_media_rating">
-          {{ 'icon-star.svg' | inline_asset_content }}
-          <span class="product-card_media_rating_value" data-judgeme-value></span>
+      <span class="product-card_media_bottom">
+        {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
+        <judgeme-rating data-handle="{{ product.handle }}" hidden>
+          <span class="product-card_media_rating">
+            {{ 'icon-star.svg' | inline_asset_content }}
+            <span class="product-card_media_rating_value" data-judgeme-value></span>
+          </span>
+        </judgeme-rating>
+        <span class="product-card_media_bottom_badges">
+          {%- render 'photo-badges', product: product, class: 'product-card_media_bottom_badges_pill' -%}
         </span>
-      </judgeme-rating>
+      </span>
     </a>
 
     <span class="variant-drawer_panel_body_card_info">

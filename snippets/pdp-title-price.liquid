@@ -8,7 +8,7 @@
   @param {object} current_variant - the variant the page opened on
   @param {boolean} has_compare - whether the variant is discounted
   @param {number} [saving_percent] - the discount, in percent
-  @param {string[]} [material_tags] - custom.price_card_material_tags
+  @param {string[]} [material_tags] - custom.material_tags
   @param {object[]} [addons] - the product's add-ons
   @param {string} addons_label - the "Add-ons available" text
 {%- enddoc -%}
@@ -56,7 +56,7 @@
   {%- comment -%}
     Always offered while the block's switch is on. The sheet's "You save"
     comparison needs the product's mined-diamond price
-    (custom.price_card_mined_diamond_price) and is left out without one; its highlights,
+    (custom.mined_diamond_price) and is left out without one; its highlights,
     certificates and explainer show either way.
   {%- endcomment -%}
   {%- if block.settings.show_savings_calculator -%}
@@ -67,7 +67,7 @@
         data-open="price-difference"
         data-analytics="savings_calculator_open"
         data-analytics-price="{{ current_variant.price | divided_by: 100.0 }}"
-        data-analytics-mined-equivalent-price="{{ product.metafields.custom.price_card_mined_diamond_price.value }}"
+        data-analytics-mined-equivalent-price="{{ product.metafields.custom.mined_diamond_price.value }}"
       >
         <span>{{ block.settings.savings_calculator_label | default: 'Your savings calculator' }}</span>
         {{ 'icon-caret-right.svg' | inline_asset_content }}

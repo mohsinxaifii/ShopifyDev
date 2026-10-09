@@ -1,39 +1,71 @@
 {%- doc -%}
   "You may also like" cards from the catalogue hierarchy (see
-  snippets/catalog-path): pieces from the product's own vertical first, then
-  the rest of its sub-category, then its category - up to `limit` cards,
-  never the product itself or the same piece twice. Outputs nothing for a
-  product outside the hierarchy.
+  snippets/catalog-path), priced within 20% of the product either way:
+
+  1. its own vertical; if that gives fewer than `limit`,
+  2. its sub-category; if that still gives fewer than `limit`,
+  3. everything 1 and 2 found together.
+
+  The vertical sits inside the sub-category, so this is one list - vertical
+  pieces first, then the rest of the sub-category - cut at `limit`. Never the
+  product itself or the same piece twice. A product with no sub-category in
+  the hierarchy gets nothing, and so may one with too few pieces in its price
+  band.
+
+  Each collection's products are read without pagination, so only its first
+  50 (in the collection's sort order) are considered.
 
   @param {object} product - the product being viewed
-  @param {number} [limit] - how many cards at most, 12 by default
+  @param {number} [limit] - how many cards at most, 10 by default
 {%- enddoc -%}
 
 {%- liquid
-  assign max_cards = limit | default: 12
+  assign max_cards = limit | default: 10
+  assign price_min = product.price | times: 0.8
+  assign price_max = product.price | times: 1.2
+
   capture catalog_path
     render 'catalog-path', product: product
   endcapture
   assign handles = catalog_path | strip | split: ','
-  assign types = 'catalog_category,catalog_subcategory,catalog_vertical' | split: ','
+
+  comment
+    handles: 0 = catalog_category, 1 = catalog_subcategory, 2 = catalog_vertical.
+    Searched in order: vertical (when there is one), then sub-category.
+  endcomment
+  assign levels = ''
+  if handles.size > 2
+    assign levels = 'catalog_vertical:' | append: handles[2] | append: ','
+  endif
+  if handles.size > 1
+    assign levels = levels | append: 'catalog_subcategory:' | append: handles[1]
+  endif
+  assign levels = levels | split: ','
+
   assign seen = '|' | append: product.handle | append: '|'
   assign shown = 0
 -%}
 
-{%- for node_handle in handles reversed -%}
+{%- for level in levels -%}
   {%- liquid
     if shown >= max_cards
       break
     endif
-    assign type_index = handles.size | minus: forloop.index
-    assign node_collection = metaobjects[types[type_index]][node_handle].collection.value
+    assign level_type = level | split: ':' | first
+    assign level_handle = level | split: ':' | last
+    assign node_collection = metaobjects[level_type][level_handle].collection.value
   -%}
   {%- for item in node_collection.products -%}
-    {%- assign item_key = '|' | append: item.handle | append: '|' -%}
-    {%- if seen contains item_key -%}
-      {%- continue -%}
-    {%- endif -%}
-    {%- assign seen = seen | append: item.handle | append: '|' -%}
+    {%- liquid
+      assign item_key = '|' | append: item.handle | append: '|'
+      if seen contains item_key
+        continue
+      endif
+      if item.price < price_min or item.price > price_max
+        continue
+      endif
+      assign seen = seen | append: item.handle | append: '|'
+    -%}
     {%- render 'product-card', product: item, variant: 'grid' -%}
     {%- assign shown = shown | plus: 1 -%}
     {%- if shown >= max_cards -%}

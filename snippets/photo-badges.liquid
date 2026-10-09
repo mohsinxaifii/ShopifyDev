@@ -1,0 +1,22 @@
+{%- doc -%}
+  The product's photo badges (custom.photo_badges, e.g. "With chain"), one pill
+  each. Used on the PDP gallery, product cards and the variant drawer.
+
+  Anything about shipping or dispatch is skipped: ship time is "Ships in 24
+  hours" while the variant has stock, and nothing otherwise, so a badge must
+  not promise a time of its own.
+
+  @param {object} product - a Shopify product object
+  @param {string} class - the class for each pill
+{%- enddoc -%}
+
+{%- for badge in product.metafields.custom.photo_badges.value -%}
+  {%- liquid
+    assign badge_text = badge | strip
+    assign badge_check = badge_text | downcase
+    if badge_text == blank or badge_check contains 'ship' or badge_check contains 'dispatch'
+      continue
+    endif
+  -%}
+  <span class="{{ class }}">{{ badge_text }}</span>
+{%- endfor -%}
