@@ -1,15 +1,21 @@
 {%- doc -%}
-  The chips above a collection's grid, from the catalogue hierarchy (see
-  snippets/catalog-path): "All" for the page itself, then
+  The rail of chips above a collection's grid, from the catalogue hierarchy
+  (see snippets/catalog-path): "All" for the page itself, then
   - a category: its sub-categories
   - a sub-category: its verticals
   - a vertical: nothing (the last level)
   - a collection outside the hierarchy (a campaign such as "Gifting"): the
-    categories its products carry, each narrowing this same collection by
-    that category's tag (/collections/gifting/rings), so "Rings" here means
-    this collection's rings, not every ring.
-  Entries without a collection page are skipped, and the row is left out
-  when no chip would link anywhere.
+    categories its products carry.
+
+  Every chip narrows THIS collection by its entry's tag rather than opening
+  the entry's own page - /collections/rings/daily-wear is Rings x Daily Wear -
+  so the rail stays the same while the shopper moves between its chips, with
+  the applied one highlighted ("All" when none is). A collection set as a
+  category's own collection (a campaign "A" with its sub-categories linked)
+  gets that category's sub-categories the same way.
+
+  Linked entries always show; the outside-the-hierarchy categories show only
+  when this collection has products carrying their tag.
 
   @param {string} path - this collection's path from catalog-path (empty when outside it)
   @param {object} collection - the collection being viewed
@@ -17,12 +23,12 @@
 
 {%- liquid
   assign handles = path | split: ','
-  assign narrows = false
   assign current_tag = current_tags.first | handleize
+  assign only_present = false
   case handles.size
     when 0
       assign children = metaobjects.catalog_category.values
-      assign narrows = true
+      assign only_present = true
       assign collection_tags = '|'
       for collection_tag in collection.all_tags
         assign collection_tags = collection_tags | append: collection_tag | handleize | append: '|'
@@ -40,22 +46,16 @@
   {%- assign position = 1 -%}
   {%- for child in children -%}
     {%- liquid
-      if narrows
-        assign child_tag = child.tag.value | default: child.name.value | handleize
+      assign child_tag = child.tag.value | default: child.name.value | handleize
+      if only_present
         assign needle = '|' | append: child_tag | append: '|'
         unless collection_tags contains needle
           continue
         endunless
-        assign child_url = collection.url | append: '/' | append: child_tag
-      else
-        assign child_collection = child.collection.value
-        if child_collection == blank
-          continue
-        endif
-        assign child_url = child_collection.url
       endif
+      assign child_url = collection.url | append: '/' | append: child_tag
       assign child_active = false
-      if narrows and child_tag == current_tag
+      if child_tag == current_tag
         assign child_active = true
       endif
       assign position = position | plus: 1
