@@ -26,6 +26,18 @@
   min-width: 0;
 }
 
+/* A collection narrowed by a chip's tag has no filter rail (collection.liquid):
+   the grid takes the whole row, four across so the cards keep their size. */
+.collection_wrapper--no-filters {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media screen and (min-width: 990px) {
+  .collection_wrapper--no-filters .collection_wrapper_main_grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* Desktop: the rail stays in view beside the grid, 24px under the sticky
    header block (--header-sticky-offset, header.js) and following it as it
    slides away and back. A rail taller than the screen scrolls on its own, its

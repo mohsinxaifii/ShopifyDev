@@ -8,11 +8,16 @@
   so the groups, their values and the counts are whatever Search & Discovery is
   configured to expose - the design's Product type / Colour / Diamond shape /
   Occassion / Collection / Shipping groups are all `list` filters, and Price is
-  the one `price_range`. The category chips above the grid are navigational
-  rather than filters, and come from the catalogue hierarchy (see
-  snippets/catalog-path): a category shows its sub-categories, a sub-category
-  its verticals, a vertical none, and any collection outside the hierarchy
-  the categories themselves.
+  the one `price_range`. The category chips above the grid come from
+  the catalogue hierarchy (see snippets/catalog-path): a category shows its
+  sub-categories, a sub-category its verticals, a vertical none - all links to
+  those pages. A collection outside the hierarchy shows the categories it
+  holds, and those chips narrow this collection by tag
+  (/collections/gifting/rings).
+
+  Shopify can't combine that tag URL with storefront filters, so while a
+  chip's tag is applied the filter rail and the phone Filters button are left
+  out, and sorting keeps the tag in the URL.
 {%- endcomment -%}
 
 {%- liquid
@@ -21,29 +26,38 @@
     render 'catalog-path', collection: collection
   endcapture
   assign catalog_path = catalog_path | strip
+
+  assign page_url = collection.url
+  assign has_filters = true
+  if current_tags != blank
+    assign page_url = collection.url | append: '/' | append: current_tags.first | handleize
+    assign has_filters = false
+  endif
 -%}
 
 <collection-page
   class="collection full-width"
-  data-collection-url="{{ collection.url }}"
+  data-collection-url="{{ page_url }}"
   data-analytics-collection="{{ collection.title | escape }}"
 >
   {%- render 'plp-skeleton' -%}
 
   <form
     id="CollectionFilterForm"
-    class="collection_wrapper"
+    class="collection_wrapper{% unless has_filters %} collection_wrapper--no-filters{% endunless %}"
     data-filter-form
   >
     {%- comment -%} Keep the chosen sort with the filter params on submit. {%- endcomment -%}
     <input type="hidden" name="sort_by" value="{{ sort_by }}" data-sort-input>
 
-    {%- capture clear_url -%}{{ collection.url }}?sort_by={{ sort_by }}{%- endcapture -%}
-    {%- render 'filter-rail',
-      filters: collection.filters,
-      clear_url: clear_url,
-      analytics_collection: collection.title
-    -%}
+    {%- if has_filters -%}
+      {%- capture clear_url -%}{{ collection.url }}?sort_by={{ sort_by }}{%- endcapture -%}
+      {%- render 'filter-rail',
+        filters: collection.filters,
+        clear_url: clear_url,
+        analytics_collection: collection.title
+      -%}
+    {%- endif -%}
 
     <div class="collection_wrapper_main">
       {%- comment -%} The design shows no title; this one is for search engines and screen readers. {%- endcomment -%}
@@ -137,7 +151,7 @@
     </div>
   </form>
 
-  {%- render 'plp-mobile-bar', filters: collection.filters -%}
+  {%- render 'plp-mobile-bar', filters: collection.filters, show_filters: has_filters -%}
 </collection-page>
 
 

@@ -6,6 +6,7 @@
   bar is swapped with the grid on every filter request (see collection.js).
 
   @param {object} filters - collection.filters or search.filters
+  @param {boolean} [show_filters] - false leaves the Filters button out (a tag-narrowed collection has no rail)
 {%- enddoc -%}
 
 {%- liquid
@@ -30,12 +31,14 @@
     </span>
     {{- 'collection.sort' | t -}}
   </button>
-  <span class="plp-mobile-bar_divider" aria-hidden="true"></span>
-  <button type="button" class="plp-mobile-bar_button" data-mobile-filters>
-    <span class="plp-mobile-bar_button_icon" aria-hidden="true">
-      {{- 'icon-funnel.svg' | inline_asset_content -}}
-    </span>
-    {{- 'collection.filters' | t -}}
-    {%- if active_filters > 0 %} ({{ active_filters }}){% endif -%}
-  </button>
+  {%- unless show_filters == false -%}
+    <span class="plp-mobile-bar_divider" aria-hidden="true"></span>
+    <button type="button" class="plp-mobile-bar_button" data-mobile-filters>
+      <span class="plp-mobile-bar_button_icon" aria-hidden="true">
+        {{- 'icon-funnel.svg' | inline_asset_content -}}
+      </span>
+      {{- 'collection.filters' | t -}}
+      {%- if active_filters > 0 %} ({{ active_filters }}){% endif -%}
+    </button>
+  {%- endunless -%}
 </div>
