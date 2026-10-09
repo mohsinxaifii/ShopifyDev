@@ -8,414 +8,584 @@
  * ------------------------------------------------------------
  */
 {
-    "sections": {
-        "breadcrumb": {
-            "type": "breadcrumb",
-            "settings": {
-                "home_label": "Home",
-                "current_label": ""
-            }
-        },
-        "main": {
-            "type": "product",
-            "blocks": {
-                "title": {
-                    "type": "title_price",
-                    "settings": {
-                        "tax_note": "Price inclusive of all taxes",
-                        "show_savings_calculator": true
-                    }
-                },
-                "offers": {
-                    "type": "offers",
-                    "settings": {}
-                },
-                "options": {
-                    "type": "variant_picker",
-                    "settings": {}
-                },
-                "material": {
-                    "type": "material_link",
-                    "settings": {}
-                },
-                "buy": {
-                    "type": "buy_buttons",
-                    "settings": {}
-                },
-                "trust-1": {
-                    "type": "trust",
-                    "settings": {
-                        "icon": "icon-return",
-                        "label": "7 days free return",
-                        "action": "none"
-                    }
-                },
-                "trust-2": {
-                    "type": "trust",
-                    "settings": {
-                        "icon": "icon-certificate",
-                        "label": "SGL certified diamonds",
-                        "action": "sgl"
-                    }
-                },
-                "trust-3": {
-                    "type": "trust",
-                    "settings": {
-                        "icon": "icon-handshake",
-                        "label": "Lifetime buyback & exchange",
-                        "action": "none"
-                    }
-                },
-                "trust-4": {
-                    "type": "trust",
-                    "settings": {
-                        "icon": "icon-diamond-outline",
-                        "label": "Lifetime free replating service",
-                        "action": "none"
-                    }
-                },
-                "delivery": {
-                    "type": "delivery",
-                    "settings": {}
-                },
-                "gift": {
-                    "type": "gift",
-                    "settings": {
-                        "gift_label": "Add a gift sleeve"
-                    }
-                },
-                "help": {
-                    "type": "help",
-                    "settings": {
-                        "help_heading": "Need help choosing?",
-                        "help_body": "Our experts can help you understand materials, sizing, care, and anything else before you make your choice.",
-                        "whatsapp_url": "https://wa.me/919217975782",
-                        "video_call_endpoint": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec"
-                    }
-                },
-                "description": {
-                    "type": "description",
-                    "settings": {}
-                },
-                "highlights": {
-                    "type": "highlights",
-                    "settings": {}
-                },
-                "details": {
-                    "type": "product_details",
-                    "settings": {}
-                },
-                "care": {
-                    "type": "care_guide",
-                    "settings": {
-                        "care_guide_image": "shopify://shop_images/JewelAI_Luxury_Studio_Shot_3.png"
-                    }
-                },
-                "shipping": {
-                    "type": "accordion",
-                    "settings": {
-                        "heading": "Shipping policy",
-                        "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"/pages/shipping-policy\">shipping policy</a> page.</p>"
-                    }
-                },
-                "kj": {
-                    "type": "know_jewellery",
-                    "settings": {
-                        "diamond_image": "shopify://shop_images/zinara-kyj-diamond-icon.png"
-                    }
-                },
-                "related": {
-                    "type": "related",
-                    "settings": {}
-                },
-                "diff-1": {
-                    "type": "difference",
-                    "settings": {
-                        "label": "Gold Vermeil",
-                        "show_sgl": false
-                    }
-                },
-                "diff-2": {
-                    "type": "difference",
-                    "settings": {
-                        "label": "Lab-Grown Diamonds",
-                        "show_sgl": true
-                    }
-                },
-                "diff-3": {
-                    "type": "difference",
-                    "settings": {
-                        "label": "925 Sterling Silver",
-                        "show_sgl": false
-                    }
-                },
-                "diff-4": {
-                    "type": "difference",
-                    "settings": {
-                        "label": "Transparent Pricing",
-                        "show_sgl": false
-                    }
-                },
-                "diff-5": {
-                    "type": "difference",
-                    "settings": {
-                        "label": "Lifetime Buyback",
-                        "show_sgl": false
-                    }
-                },
-                "diff-6": {
-                    "type": "difference",
-                    "settings": {
-                        "label": "Insured Shipping",
-                        "show_sgl": false
-                    }
-                },
-                "diff-7": {
-                    "type": "difference",
-                    "settings": {
-                        "label": "Certificate of Authenticity",
-                        "show_sgl": false
-                    }
-                },
-                "pair": {
-                    "type": "pair",
-                    "settings": {
-                        "pair_heading": "Pair beautifully with"
-                    }
-                },
-                "curated": {
-                    "type": "curated",
-                    "settings": {
-                        "ugc_heading": "Curated trends for you"
-                    }
-                },
-                "reviews": {
-                    "type": "reviews",
-                    "settings": {
-                        "reviews_shown": 3,
-                        "review_url": "",
-                        "review_endpoint": "https://67r.6d1.mytemp.website/zinara-reviews/submit.php"
-                    }
-                },
-                "highlight-1": {
-                    "type": "highlight",
-                    "settings": {
-                        "icon": "icon-leaf",
-                        "text": "Skin Friendly Jewellery"
-                    }
-                },
-                "highlight-2": {
-                    "type": "highlight",
-                    "settings": {
-                        "icon": "icon-sparkles",
-                        "text": "Anti Tarnish, Made for Daily Wear"
-                    }
-                },
-                "highlight-3": {
-                    "type": "highlight",
-                    "settings": {
-                        "icon": "icon-zap",
-                        "text": "Long Lasting and Durable Vermeil"
-                    }
-                },
-                "highlight-4": {
-                    "type": "highlight",
-                    "settings": {
-                        "icon": "icon-bacteria",
-                        "text": "Hypoallergenic finish"
-                    }
-                },
-                "highlight-5": {
-                    "type": "highlight",
-                    "settings": {
-                        "icon": "icon-honour-star",
-                        "text": "Premium look, smart choice"
-                    }
-                },
-                "fact-1": {
-                    "type": "calc_fact",
-                    "settings": {
-                        "icon": "icon-certificate",
-                        "text": "SGL certified"
-                    }
-                },
-                "fact-2": {
-                    "type": "calc_fact",
-                    "settings": {
-                        "icon": "icon-alms",
-                        "text": "Lifetime buyback"
-                    }
-                },
-                "fact-3": {
-                    "type": "calc_fact",
-                    "settings": {
-                        "icon": "icon-eco-energy",
-                        "text": "Environment friendly"
-                    }
-                },
-                "fact-4": {
-                    "type": "calc_fact",
-                    "settings": {
-                        "icon": "icon-percent-circle",
-                        "text": "Save upto 40-60% with gold vermeil"
-                    }
-                },
-                "certificate-1": {
-                    "type": "calc_certificate",
-                    "settings": {
-                        "image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
-                        "alt": "Sample SGL diamond certificate"
-                    }
-                }
-            },
-            "block_order": [
-                "title",
-                "offers",
-                "options",
-                "material",
-                "buy",
-                "trust-1",
-                "trust-2",
-                "trust-3",
-                "trust-4",
-                "delivery",
-                "gift",
-                "help",
-                "description",
-                "highlights",
-                "highlight-1",
-                "highlight-2",
-                "highlight-3",
-                "highlight-4",
-                "highlight-5",
-                "details",
-                "care",
-                "shipping",
-                "kj",
-                "related",
-                "diff-1",
-                "diff-2",
-                "diff-3",
-                "diff-4",
-                "diff-5",
-                "diff-6",
-                "diff-7",
-                "pair",
-                "curated",
-                "reviews",
-                "fact-1",
-                "fact-2",
-                "fact-3",
-                "fact-4",
-                "certificate-1"
-            ],
-            "settings": {
-                "trust_heading": "Shop with confidence",
-                "addons_image": "shopify://shop_images/zinara-pdp-addons-hero.png",
-                "certificate_image": "shopify://shop_images/zinara-pdp-sgl-certificate.png",
-                "sgl_logo": "shopify://shop_images/zinara-pdp-sgl-logo.png",
-                "difference_heading": "The [Zinara] Difference"
-            }
-        },
-        "faq": {
-            "type": "faq",
-            "blocks": {
-                "q1": {
-                    "type": "question",
-                    "settings": {
-                        "question": "Are lab grown diamonds real?",
-                        "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
-                    }
-                },
-                "q2": {
-                    "type": "question",
-                    "settings": {
-                        "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
-                        "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
-                    }
-                },
-                "q3": {
-                    "type": "question",
-                    "settings": {
-                        "question": "Are ZINARA lab grown diamonds graded and certified?",
-                        "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
-                    }
-                },
-                "q4": {
-                    "type": "question",
-                    "settings": {
-                        "question": "Do you deliver pan India?",
-                        "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
-                    }
-                },
-                "q5": {
-                    "type": "question",
-                    "settings": {
-                        "question": "Is ID proof required for delivery?",
-                        "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
-                    }
-                },
-                "q6": {
-                    "type": "question",
-                    "settings": {
-                        "question": "What payment options are available?",
-                        "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
-                    }
-                }
-            },
-            "block_order": [
-                "q1",
-                "q2",
-                "q3",
-                "q4",
-                "q5",
-                "q6"
-            ],
-            "settings": {
-                "heading": "Frequently Asked Questions"
-            }
-        },
-        "featured-in": {
-            "type": "logo-marquee",
-            "blocks": {
-                "logo-1": {
-                    "type": "logo",
-                    "settings": {
-                        "image": "shopify://shop_images/zinara-press-a.png",
-                        "height": 35
-                    }
-                },
-                "logo-2": {
-                    "type": "logo",
-                    "settings": {
-                        "image": "shopify://shop_images/zinara-press-b.png",
-                        "height": 23
-                    }
-                },
-                "logo-3": {
-                    "type": "logo",
-                    "settings": {
-                        "image": "shopify://shop_images/zinara-press-c.png",
-                        "height": 29
-                    }
-                }
-            },
-            "block_order": [
-                "logo-1",
-                "logo-2",
-                "logo-3"
-            ],
-            "settings": {
-                "heading": "Featured in",
-                "background_color": "#fef4e2",
-                "speed": 25
-            }
-        }
+  "sections": {
+    "breadcrumb": {
+      "type": "breadcrumb",
+      "settings": {
+        "home_label": "Home",
+        "current_label": "",
+        "parent_collection": "",
+        "show_on": "all"
+      }
     },
-    "order": [
-        "breadcrumb",
-        "main",
-        "faq",
-        "featured-in"
-    ]
+    "main": {
+      "type": "product",
+      "blocks": {
+        "title": {
+          "type": "title_price",
+          "settings": {
+            "tax_note": "Price inclusive of all taxes",
+            "save_label": "Save [percent]%",
+            "show_savings_calculator": true,
+            "savings_calculator_label": "Your savings calculator"
+          }
+        },
+        "offers": {
+          "type": "offers",
+          "settings": {
+            "offers_heading": "Offers",
+            "offers_count_label": "[count] available",
+            "offers_view_all_label": "View all",
+            "offers_sheet_title": "All offers",
+            "offers_sheet_label": "Coupons"
+          }
+        },
+        "options": {
+          "type": "variant_picker",
+          "settings": {
+            "size_guide_label": "Size guide"
+          }
+        },
+        "material": {
+          "type": "material_link",
+          "settings": {
+            "explainer_label": "What is [material]?"
+          }
+        },
+        "buy": {
+          "type": "buy_buttons",
+          "settings": {
+            "add_to_cart_label": "Add to cart",
+            "sold_out_label": "Sold out",
+            "buy_now_label": "Buy now"
+          }
+        },
+        "trust-1": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-return",
+            "label": "7 days free return",
+            "action": "none"
+          }
+        },
+        "trust-2": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-certificate",
+            "label": "SGL certified diamonds",
+            "action": "sgl"
+          }
+        },
+        "trust-3": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-handshake",
+            "label": "Lifetime buyback & exchange",
+            "action": "none"
+          }
+        },
+        "trust-4": {
+          "type": "trust",
+          "settings": {
+            "icon": "icon-diamond-outline",
+            "label": "Lifetime free replating service",
+            "action": "none"
+          }
+        },
+        "delivery": {
+          "type": "delivery",
+          "settings": {
+            "delivery_heading": "Delivery Estimate",
+            "pincode_placeholder": "Enter pincode",
+            "pincode_button_label": "Check"
+          }
+        },
+        "gift": {
+          "type": "gift",
+          "settings": {
+            "gift_product": "",
+            "gift_label": "Add a gift sleeve"
+          }
+        },
+        "help": {
+          "type": "help",
+          "settings": {
+            "help_heading": "Need help choosing?",
+            "help_body": "Not sure what’s right for you? Our jewellery experts are here to help with sizing, materials, care & more",
+            "chat_label": "Chat with us",
+            "whatsapp_url": "https://wa.me/919217975782",
+            "video_call_label": "Book video call",
+            "video_call_endpoint": "https://script.google.com/macros/s/AKfycbwXlP51gPGbGDWFnPGCa82BufYzqE8l-ImOF5sVriuCvYk4msBvksIQhk2cBdCX6HQwHw/exec",
+            "video_call_title": "Book a video call",
+            "video_call_intro": "A Zinara expert will call you to show this piece live. Leave your details and we'll be in touch shortly.",
+            "video_call_submit_label": "Request a video call",
+            "video_call_done_title": "Request received",
+            "video_call_done_text": "Your request has been submitted successfully. We'll contact you shortly."
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "description_heading": "Description",
+            "open": false
+          }
+        },
+        "highlights": {
+          "type": "highlights",
+          "settings": {
+            "highlights_heading": "Why you’ll love it",
+            "open": true
+          }
+        },
+        "highlight-1": {
+          "type": "highlight",
+          "settings": {
+            "icon": "icon-leaf",
+            "text": "Skin Friendly Jewellery"
+          }
+        },
+        "highlight-2": {
+          "type": "highlight",
+          "settings": {
+            "icon": "icon-sparkles",
+            "text": "Anti Tarnish, Made for Daily Wear"
+          }
+        },
+        "highlight-3": {
+          "type": "highlight",
+          "settings": {
+            "icon": "icon-zap",
+            "text": "Long Lasting and Durable Vermeil"
+          }
+        },
+        "highlight-4": {
+          "type": "highlight",
+          "settings": {
+            "icon": "icon-bacteria",
+            "text": "Hypoallergenic finish"
+          }
+        },
+        "highlight-5": {
+          "type": "highlight",
+          "settings": {
+            "icon": "icon-honour-star",
+            "text": "Premium look, smart choice"
+          }
+        },
+        "details": {
+          "type": "product_details",
+          "settings": {}
+        },
+        "care": {
+          "type": "care_guide",
+          "settings": {
+            "care_guide_heading": "Care guide",
+            "care_guide_image": "shopify://shop_images/Jewelry_care_guide.png"
+          }
+        },
+        "shipping": {
+          "type": "accordion",
+          "disabled": true,
+          "settings": {
+            "heading": "Shipping policy",
+            "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"/pages/shipping-policy\">shipping policy</a> page.</p>"
+          }
+        },
+        "kj": {
+          "type": "know_jewellery",
+          "settings": {
+            "kj_heading": "Get to know your jewellery",
+            "kj_material_name": "Gold Vermeil",
+            "kj_base_metal_label": "Base metal",
+            "kj_base_metal": "Sterling Silver 925",
+            "kj_plating_label": "Plating",
+            "kj_plating": "18 KT Gold",
+            "kj_callout_1": "Looks and feels like solid gold",
+            "kj_callout_1_icon": "icon-sparkles",
+            "kj_callout_2": "Sweat and waterproof",
+            "kj_callout_2_icon": "icon-droplet",
+            "kj_callout_3": "5x thicker gold plating",
+            "kj_callout_3_icon": "icon-layers",
+            "kj_stone_name": "Lab Grown Diamonds",
+            "kj_mined_label": "Mined diamond",
+            "kj_lab_label": "Lab grown diamond",
+            "kj_compare_note_1": "Same sparkle",
+            "kj_compare_note_2": "100% same composition",
+            "diamond_image": "shopify://shop_images/zinara-kyj-diamond-icon.png",
+            "kj_certification_heading": "Certification",
+            "kj_certification_label": "SGL certified",
+            "kj_pricing_heading": "Pricing",
+            "kj_pricing_claim": "40-60% easier on your pocket"
+          }
+        },
+        "related": {
+          "type": "related",
+          "settings": {
+            "related_heading": "You may also like",
+            "recent_heading": "Recently viewed"
+          }
+        },
+        "diff-1": {
+          "type": "difference",
+          "settings": {
+            "label": "5x Thicker Gold Plating",
+            "show_sgl": false
+          }
+        },
+        "diff-2": {
+          "type": "difference",
+          "settings": {
+            "label": "Lab-Grown Diamonds",
+            "show_sgl": true
+          }
+        },
+        "diff-3": {
+          "type": "difference",
+          "settings": {
+            "label": "925 Sterling Silver",
+            "show_sgl": false
+          }
+        },
+        "diff-4": {
+          "type": "difference",
+          "settings": {
+            "label": "Transparent Pricing",
+            "show_sgl": false
+          }
+        },
+        "diff-5": {
+          "type": "difference",
+          "settings": {
+            "label": "Water & Sweat Proof",
+            "show_sgl": false
+          }
+        },
+        "diff-6": {
+          "type": "difference",
+          "settings": {
+            "label": "Built for daily wear",
+            "show_sgl": false
+          }
+        },
+        "diff-7": {
+          "type": "difference",
+          "settings": {
+            "label": "Value for Money",
+            "show_sgl": false
+          }
+        },
+        "difference_4Apmkp": {
+          "type": "difference",
+          "settings": {
+            "label": "Verified Quality",
+            "show_sgl": false
+          }
+        },
+        "pair": {
+          "type": "pair",
+          "settings": {
+            "pair_heading": "Pairs beautifully with",
+            "pair_button_label": "Add set to cart"
+          }
+        },
+        "curated": {
+          "type": "curated",
+          "settings": {
+            "ugc_heading": "Zinara, IRL"
+          }
+        },
+        "reviews": {
+          "type": "reviews",
+          "settings": {
+            "reviews_heading": "Customer reviews",
+            "write_review_label": "Write a review",
+            "verified_label": "Verified buyer",
+            "show_more_reviews_label": "Show more reviews",
+            "review_endpoint": "https://67r.6d1.mytemp.website/zinara-reviews/submit.php",
+            "review_url": "",
+            "reviews_shown": 3
+          }
+        },
+        "fact-1": {
+          "type": "calc_fact",
+          "settings": {
+            "icon": "icon-certificate",
+            "text": "SGL certified"
+          }
+        },
+        "fact-2": {
+          "type": "calc_fact",
+          "settings": {
+            "icon": "icon-alms",
+            "text": "Lifetime buyback"
+          }
+        },
+        "fact-3": {
+          "type": "calc_fact",
+          "settings": {
+            "icon": "icon-eco-energy",
+            "text": "Environment friendly"
+          }
+        },
+        "fact-4": {
+          "type": "calc_fact",
+          "settings": {
+            "icon": "icon-percent-circle",
+            "text": "Save upto 40-60% with gold vermeil"
+          }
+        },
+        "certificate-1": {
+          "type": "calc_certificate",
+          "settings": {
+            "image": "shopify://shop_images/XRF_Report.png",
+            "alt": "Gold Plating Lab Test Report"
+          }
+        },
+        "calc_certificate_EbJAQJ": {
+          "type": "calc_certificate",
+          "settings": {
+            "image": "shopify://shop_images/SGL_Report.png",
+            "alt": "SGL Diamond Certificate"
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "offers",
+        "options",
+        "material",
+        "buy",
+        "trust-1",
+        "trust-2",
+        "trust-3",
+        "trust-4",
+        "delivery",
+        "gift",
+        "help",
+        "description",
+        "highlights",
+        "highlight-1",
+        "highlight-2",
+        "highlight-3",
+        "highlight-4",
+        "highlight-5",
+        "details",
+        "care",
+        "shipping",
+        "kj",
+        "related",
+        "diff-1",
+        "diff-2",
+        "diff-3",
+        "diff-4",
+        "diff-5",
+        "diff-6",
+        "diff-7",
+        "difference_4Apmkp",
+        "pair",
+        "curated",
+        "reviews",
+        "fact-1",
+        "fact-2",
+        "fact-3",
+        "fact-4",
+        "certificate-1",
+        "calc_certificate_EbJAQJ"
+      ],
+      "settings": {
+        "ship_fast_label": "Ships in 24 hours",
+        "addons_link_label": "Add-ons available",
+        "addons_sheet_title": "Add ons",
+        "addons_sheet_intro": "Personalise your piece with our add-ons",
+        "addons_image": "shopify://shop_images/zinara-pdp-addons-hero.png",
+        "addons_done_label": "Add to Cart",
+        "trust_heading": "Shop with confidence",
+        "certificate_image": "shopify://shop_images/SGL_Report.png",
+        "sgl_title": "SGL certified diamonds",
+        "sgl_logo": "shopify://shop_images/zinara-pdp-sgl-logo.png",
+        "difference_heading": "The [Zinara] Difference",
+        "difference_col_feature": "Feature",
+        "difference_col_ours": "Zinara",
+        "difference_col_others": "Typical Brands",
+        "calc_title": "Savings calculator",
+        "calc_saving_label": "You save [amount] vs mined diamond",
+        "calc_mined_label": "Gold + Mined diamond",
+        "calc_ours_label": "Your Zinara piece",
+        "calc_explainer_intro": "Learn about Gold Vermeil & Lab-Grown Diamonds",
+        "calc_cta_label": "Add to Cart"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "What can I do if I lose my jewellery certificate?",
+            "answer": "All our lab-grown diamonds are graded and certified by SGL, with key diamond characteristics verified on the certificate. If you lose it, a duplicate can be arranged for ₹2,000–₹4,000, depending on diamond weight. The piece will need to be sent to the lab, and the duplicate certificate will carry a “COPY/DUPLICATE” watermark."
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Why are lab-grown diamonds better than mined diamonds?",
+            "answer": "Lab-grown diamonds offer the same sparkle and quality as mined diamonds, while being a more ethical and sustainable choice. With fewer impurities, they can offer exceptional brilliance — and they're up to 90% more affordable than comparable mined diamonds."
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "What is the difference between gold vermeil, gold plating and solid gold?",
+            "answer": "Solid gold is gold throughout the piece. Our Gold vermeil uses 925 sterling silver with 6 layers of gold on top, and is 5X thicker. Gold plating typically uses a thinner layer of gold over another base metal. Vermeil gives you the look and feel of solid gold without the hefty price tag ideal for daily wear."
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Will the gold vermeil wear off?",
+            "answer": "Gold vermeil is a high-quality, durable finish designed for everyday wear. With proper care, it can maintain its shine for a long time. However, like any gold-plated jewellery, the gold layer can naturally wear over time with frequent friction or exposure to chemicals. We offer lifetime free replating on eligible pieces to keep your jewellery looking its best."
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "Can I wear Zinara jewellery every day?",
+            "answer": "Absolutely. Our 18KT gold vermeil features a 2.5-micron gold layer over 925 sterling silver and is designed for everyday wear. It's water- and sweat-resistant, so you can wear it with confidence."
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "Does Zinara offer a buyback?",
+            "answer": "Yes! We offer lifetime buyback and exchange, subject to our applicable policy terms. So when your style changes, your jewellery doesn't have to go to waste."
+          }
+        },
+        "question_FhU3cV": {
+          "type": "question",
+          "settings": {
+            "question": "How safe is my jewellery shipping?",
+            "answer": "Very! Your jewellery is packed in durable, tamper-proof packaging, shipped through reputed courier partners and fully insured until it reaches your doorstep."
+          }
+        },
+        "question_R6xz6i": {
+          "type": "question",
+          "settings": {
+            "question": "Can I customise a piece?",
+            "answer": "Looking for something more personal? We offer customisation on select designs. WhatsApp our jewellery experts on +91 ____ with your requirements and we'll let you know what's possible."
+          }
+        },
+        "question_y4YhY3": {
+          "type": "question",
+          "settings": {
+            "question": "Can Zinara repair my jewellery?",
+            "answer": "Our team can assess your jewellery and guide you on the best repair option, with a hassle free process. WhatsApp us on  +91 88518 12814 with your order details and a photo, and we'll take it from there."
+          }
+        },
+        "question_NEND9e": {
+          "type": "question",
+          "settings": {
+            "question": "Can I place an order through WhatsApp?",
+            "answer": "Absolutely! WhatsApp our jewellery experts on +91 88518 12814 to get help with product details, sizing, availability and placing your order."
+          }
+        },
+        "question_MrxjJN": {
+          "type": "question",
+          "settings": {
+            "question": "Can I speak to someone before I buy?",
+            "answer": "Of course! Our jewellery experts can help with design selection, sizing, materials and any questions you may have. Chat with an expert or book a video consultation for personalised guidance."
+          }
+        },
+        "question_83QUY3": {
+          "type": "question",
+          "settings": {
+            "question": "What does the packaging include?",
+            "answer": "Your Zinara box includes everything you need to care for your jewellery:\nJewellery piece, Jewellery pouch, Care tips, Thank-you card, Polishing cloth, SGL certificate, Product invoice. And sometimes, a little surprise from us! ✨"
+          }
+        },
+        "question_bpNpQH": {
+          "type": "question",
+          "settings": {
+            "question": "What payment options are available?",
+            "answer": "We accept credit cards, debit cards, net banking, international cards, and Cash on Delivery (COD). COD is available on orders up to ₹35,000."
+          }
+        },
+        "question_8hhCEw": {
+          "type": "question",
+          "settings": {
+            "question": "Do you deliver pan India?",
+            "answer": "We deliver across India to over 1900+ pincodes, so you can shop your favourite Zinara pieces from wherever you are. Delivery timelines may vary depending on your location and will be shown at checkout."
+          }
+        },
+        "question_VNwT3K": {
+          "type": "question",
+          "settings": {
+            "question": "Are there shipping charges?",
+            "answer": "Shipping within India is free and insured. For details on return shipping charges, please refer to the Shipping Policy section."
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "question_FhU3cV",
+        "question_R6xz6i",
+        "question_y4YhY3",
+        "question_NEND9e",
+        "question_MrxjJN",
+        "question_83QUY3",
+        "question_bpNpQH",
+        "question_8hhCEw",
+        "question_VNwT3K"
+      ],
+      "settings": {
+        "heading": "Frequently Asked Questions"
+      }
+    },
+    "featured-in": {
+      "type": "logo-marquee",
+      "blocks": {
+        "logo-1": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/zinara-press-a.png",
+            "height": 35
+          }
+        },
+        "logo-2": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/zinara-press-b.png",
+            "height": 23
+          }
+        },
+        "logo-3": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/zinara-press-c.png",
+            "height": 29
+          }
+        }
+      },
+      "block_order": [
+        "logo-1",
+        "logo-2",
+        "logo-3"
+      ],
+      "settings": {
+        "heading": "Featured in",
+        "background_color": "#fef4e2",
+        "speed": 25
+      }
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "main",
+    "faq",
+    "featured-in"
+  ]
 }
