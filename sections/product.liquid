@@ -309,7 +309,11 @@
     </div>
 
     {%- comment -%} ------------------------------------------------- info {%- endcomment -%}
-    <div class="pdp_info" data-animate data-animate-from="right">
+    {%- comment -%}
+      A fade, not a slide: on phones this column holds the fixed buy bar, and
+      a sliding (transformed) column would carry the bar along with it.
+    {%- endcomment -%}
+    <div class="pdp_info" data-animate data-animate-from="fade">
       {%- comment -%}
         Everything in this column is a block, in the order set in the theme
         editor. The buy box - title & price, offers, variant picker, material

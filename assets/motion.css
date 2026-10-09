@@ -40,9 +40,12 @@
 
 /* Only hidden once the layout confirms motion is on, so a blocked script or a
    reduced-motion preference leaves every section visible from the start. */
+/* will-change names opacity only: will-change: transform would already make
+   each element the containing block of its position: fixed children (the
+   PDP's phone buy bar) before the reveal has even started. */
 html.motion [data-animate] {
   opacity: 0;
-  will-change: transform, opacity;
+  will-change: opacity;
 }
 
 [data-animate].is-visible {

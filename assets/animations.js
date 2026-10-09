@@ -76,6 +76,18 @@
       }
     };
 
+    // The resting state for an offset. A "fade" has no offset and gets no
+    // transform at all: an element with any transform - even translate(0, 0)
+    // mid-tween - becomes the box its position: fixed children pin to, which
+    // dragged the PDP's phone buy bar up the page with its column.
+    const restFor = (offset) => {
+      const rest = {};
+      if ('x' in offset) rest.x = 0;
+      if ('y' in offset) rest.y = 0;
+      if ('scale' in offset) rest.scale = 1;
+      return rest;
+    };
+
     // Group members animate together, so they are pulled out of the individual
     // pass and handled by their container's single trigger.
     const grouped = new Set();
@@ -84,12 +96,11 @@
       if (members.length === 0) return;
       members.forEach((member) => grouped.add(member));
 
-      gsap.set(members, { opacity: 0, ...offsetFor(members[0]) });
+      const offset = offsetFor(members[0]);
+      gsap.set(members, { opacity: 0, ...offset });
       gsap.to(members, {
         opacity: 1,
-        x: 0,
-        y: 0,
-        scale: 1,
+        ...restFor(offset),
         duration: 0.7,
         ease: 'power3.out',
         stagger: Number(group.getAttribute('data-animate-stagger')) || 0.08,
@@ -102,12 +113,11 @@
     elements
       .filter((el) => !grouped.has(el))
       .forEach((el) => {
-        gsap.set(el, { opacity: 0, ...offsetFor(el) });
+        const offset = offsetFor(el);
+        gsap.set(el, { opacity: 0, ...offset });
         gsap.to(el, {
           opacity: 1,
-          x: 0,
-          y: 0,
-          scale: 1,
+          ...restFor(offset),
           duration: 0.7,
           delay: (Number(el.getAttribute('data-animate-delay')) || 0) / 1000,
           ease: 'power3.out',
