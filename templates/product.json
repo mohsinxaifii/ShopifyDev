@@ -185,6 +185,7 @@
         },
         "shipping": {
           "type": "accordion",
+          "disabled": true,
           "settings": {
             "heading": "Shipping policy",
             "content": "<p>Every order ships fully insured and is dispatched within 2 business days. Delivery is free across India and needs a photo ID at handover. Full details are on our <a href=\"/pages/shipping-policy\">shipping policy</a> page.</p>"
