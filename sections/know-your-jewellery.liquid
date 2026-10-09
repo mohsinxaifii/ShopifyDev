@@ -4,6 +4,13 @@
 {%- liquid
   assign vermeil_blocks = section.blocks | where: 'type', 'vermeil_fact'
   assign flip_blocks = section.blocks | where: 'type', 'myth_fact'
+  assign shown_cards = 0
+  assign card_count = 0
+  for block in flip_blocks
+    if block.settings.fact_image != blank or request.design_mode
+      assign card_count = card_count | plus: 1
+    endif
+  endfor
 -%}
 
 <section class="know-your-jewellery full-width">
@@ -94,74 +101,20 @@
       <div class="know-your-jewellery_wrapper_grid_diamonds" data-animate>
         <h3 class="know-your-jewellery_wrapper_grid_diamonds_title">{{ section.settings.diamonds_title }}</h3>
 
+        {%- if card_count > 0 -%}
         <card-stack class="know-your-jewellery_wrapper_grid_diamonds_carousel">
           <div class="know-your-jewellery_wrapper_grid_diamonds_stack_wrap">
             <div class="know-your-jewellery_wrapper_grid_diamonds_stack">
-              <div class="know-your-jewellery_wrapper_grid_diamonds_stack_item is-active" data-stack-item>
-                <div class="know-your-jewellery_wrapper_grid_diamonds_compare">
-                  <span class="know-your-jewellery_wrapper_grid_diamonds_compare_tag">FACT</span>
-                  <div class="know-your-jewellery_wrapper_grid_diamonds_compare_row">
-                    <div class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--mined">
-                      <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_media">
-                        {%- if section.settings.mined_image -%}
-                          {{
-                            section.settings.mined_image
-                            | image_url: width: 80
-                            | image_tag: loading: 'lazy', alt: 'Mined diamond'
-                          }}
-                        {%- endif -%}
-                      </span>
-                      {%- render 'stat-value', value: section.settings.mined_value -%}
-                      <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_label">
-                        {{- section.settings.mined_label -}}
-                      </span>
-                    </div>
-                    <div class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--accent">
-                      <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value--accent">
-                        {{ section.settings.co2_reduction }}
-                        {{ 'icon-trend-down.svg' | inline_asset_content }}
-                      </span>
-                      <svg
-                        class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_arrow"
-                        viewBox="0 0 82 8"
-                        fill="none"
-                        aria-hidden="true"
-                      >
-                        <path d="M0 4 L80 4" />
-                        <path d="M77.5 0.5 L81 4 L77.5 7.5" />
-                      </svg>
-                      <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_label">
-                        {{- section.settings.co2_label -}}
-                      </span>
-                    </div>
-                    <div class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--lab">
-                      <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_media">
-                        {%- if section.settings.mined_image -%}
-                          {{
-                            section.settings.mined_image
-                            | image_url: width: 40
-                            | image_tag: loading: 'lazy', alt: 'Lab grown diamond'
-                          }}
-                        {%- endif -%}
-                      </span>
-                      {%- render 'stat-value', value: section.settings.lab_grown_value -%}
-                      <span class="know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_label">
-                        {{- section.settings.lab_grown_label -}}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {%- for block in flip_blocks -%}
                 {%- comment -%}
-                  A myth with no fact would flip to an empty card; on the live
-                  site it is left out (the theme editor still shows it, to be
-                  filled in).
+                  A myth with no fact image would flip to an empty card; on the
+                  live site it is left out (the theme editor still shows it, to
+                  be filled in).
                 {%- endcomment -%}
-                {%- if block.settings.fact == blank and request.design_mode == false -%}{%- continue -%}{%- endif -%}
+                {%- if block.settings.fact_image == blank and request.design_mode == false -%}{%- continue -%}{%- endif -%}
+                {%- assign shown_cards = shown_cards | plus: 1 -%}
                 <flip-card
-                  class="know-your-jewellery_wrapper_grid_diamonds_stack_item know-your-jewellery_wrapper_grid_diamonds_flip_card"
+                  class="know-your-jewellery_wrapper_grid_diamonds_stack_item know-your-jewellery_wrapper_grid_diamonds_flip_card{% if shown_cards == 1 %} is-active{% endif %}"
                   data-stack-item
                   role="button"
                   tabindex="0"
@@ -174,16 +127,31 @@
                     >
                     <span class="know-your-jewellery_wrapper_grid_diamonds_flip_card_hint">Tap to reveal fact</span>
                   </span>
+                  {%- comment -%}
+                    The fact is one transparent PNG (heading, figures, icons and
+                    all) laid inside the card's own border and background.
+                  {%- endcomment -%}
                   <span class="know-your-jewellery_wrapper_grid_diamonds_flip_card_face know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact">
-                    <span class="know-your-jewellery_wrapper_grid_diamonds_flip_card_label">FACT</span>
-                    <span class="know-your-jewellery_wrapper_grid_diamonds_flip_card_quote">
-                      {{- block.settings.fact -}}
-                    </span>
+                    {%- if block.settings.fact_image -%}
+                      {{
+                        block.settings.fact_image
+                        | image_url: width: 1080
+                        | image_tag:
+                          loading: 'lazy',
+                          widths: '361,722,1080',
+                          sizes: '(max-width: 749px) calc(100vw - 32px), 361px',
+                          alt: block.settings.fact_alt,
+                          class: 'know-your-jewellery_wrapper_grid_diamonds_flip_card_face_image'
+                      }}
+                    {%- else -%}
+                      <span class="know-your-jewellery_wrapper_grid_diamonds_flip_card_hint">Add a fact image</span>
+                    {%- endif -%}
                   </span>
                 </flip-card>
               {%- endfor -%}
             </div>
 
+            {%- if card_count > 1 -%}
             <button
               type="button"
               class="know-your-jewellery_wrapper_grid_diamonds_stack_arrow know-your-jewellery_wrapper_grid_diamonds_stack_arrow--prev"
@@ -200,10 +168,12 @@
             >
               {{ 'icon-caret-right.svg' | inline_asset_content }}
             </button>
+            {%- endif -%}
           </div>
 
           <div class="scroll-carousel_dots" data-dots></div>
         </card-stack>
+        {%- endif -%}
       </div>
     </div>
   </div>
@@ -239,51 +209,6 @@
       "id": "diamonds_title",
       "label": "Right card title",
       "default": "Lab Grown Diamonds"
-    },
-    {
-      "type": "header",
-      "content": "Diamond comparison stat"
-    },
-    {
-      "type": "image_picker",
-      "id": "mined_image",
-      "label": "Diamond icon"
-    },
-    {
-      "type": "text",
-      "id": "mined_value",
-      "label": "Mined diamond value",
-      "default": "160kg / carat"
-    },
-    {
-      "type": "text",
-      "id": "mined_label",
-      "label": "Mined diamond label",
-      "default": "Mined diamond"
-    },
-    {
-      "type": "text",
-      "id": "co2_reduction",
-      "label": "CO2 reduction stat",
-      "default": "96%"
-    },
-    {
-      "type": "text",
-      "id": "co2_label",
-      "label": "CO2 stat label",
-      "default": "CO2 emission"
-    },
-    {
-      "type": "text",
-      "id": "lab_grown_value",
-      "label": "Lab grown value",
-      "default": "6kg / carat"
-    },
-    {
-      "type": "text",
-      "id": "lab_grown_label",
-      "label": "Lab grown label",
-      "default": "Lab grown diamond"
     }
   ],
   "blocks": [
@@ -300,7 +225,13 @@
       "name": "Myth / fact card",
       "settings": [
         { "type": "text", "id": "myth", "label": "Myth", "default": "Lab grown diamonds are fake diamonds." },
-        { "type": "textarea", "id": "fact", "label": "Fact (revealed on tap)" }
+        {
+          "type": "image_picker",
+          "id": "fact_image",
+          "label": "Fact image (revealed on tap)",
+          "info": "A transparent PNG of everything inside the card - the theme draws the border and background. 1080 x 490 px (the card is 361 x 164). Cards without an image are hidden."
+        },
+        { "type": "text", "id": "fact_alt", "label": "Fact image text (for screen readers)" }
       ]
     }
   ],

@@ -1,5 +1,5 @@
-/* Analytics (know_your_jewellery_interaction): the deck's first card is the
-   lab-grown comparison, the flip cards are myth / fact. */
+/* Analytics (know_your_jewellery_interaction): every card in the deck is a
+   myth / fact flip card. */
 function trackJewelleryCard(item, action) {
   const stack = item?.closest('card-stack');
   const items = stack ? Array.from(stack.querySelectorAll('[data-stack-item]')) : [];

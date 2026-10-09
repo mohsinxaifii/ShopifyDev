@@ -169,164 +169,8 @@
   }
 }
 
-/* Diamond comparison stat card. Spacing follows the Figma card: 13px side
-   padding, FACT centred 19px from the top, then a three-column stat row. */
-.know-your-jewellery_wrapper_grid_diamonds_compare {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  gap: 8px;
-  justify-content: center;
-  padding: 12px;
-  background: linear-gradient(180deg, #ffffff, #efe6ea);
-  border: 1px solid #e0e0e0;
-  border-radius: 16px;
-  transition: border-color 0.3s ease;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_tag {
-  font-family: var(--font-secondary--family);
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 22px;
-  color: var(--color-brand, #712242);
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 4px;
-  width: 100%;
-  max-width: 297px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-/* Column widths mirror the Figma frames (103 / 81 / 105) but stay fluid. */
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--mined {
-  flex: 103 1 0;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--accent {
-  flex: 81 1 0;
-  padding-top: 25px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--lab {
-  flex: 105 1 0;
-}
-
-/* Both diamonds sit on the same baseline; the lab-grown one is smaller. */
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_media {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  height: 48px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_media img {
-  display: block;
-  object-fit: contain;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--mined img {
-  width: 39px;
-  height: 40px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--lab img {
-  width: 20px;
-  height: 20px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 3px;
-  height: 22px;
-  color: var(--color-text-secondary, #494949);
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value_amount {
-  font-family: var(--font-secondary--family);
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 22px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value_unit {
-  font-family: var(--font-secondary--family);
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 20px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value--accent {
-  align-items: center;
-  height: 20px;
-  font-family: var(--font-tertiary--family);
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 20px;
-  color: var(--color-brand, #712242);
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_value--accent svg {
-  width: 20px;
-  height: 20px;
-  color: #2a7d21;
-}
-
-/* The grey arrow running from the mined stat toward the lab-grown one. */
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_arrow {
-  width: 100%;
-  height: 8px;
-  margin-top: 4px;
-  overflow: visible;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_arrow path {
-  fill: none;
-  stroke: #999;
-  stroke-width: 1;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_label {
-  font-family: var(--font-secondary--family);
-  font-weight: 600;
-  font-size: 10px;
-  line-height: 18px;
-  color: var(--color-text-secondary, #494949);
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--mined
-  .know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_label,
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--lab
-  .know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_label {
-  margin-top: 8px;
-}
-
-.know-your-jewellery_wrapper_grid_diamonds_compare_row_stat--accent
-  .know-your-jewellery_wrapper_grid_diamonds_compare_row_stat_label {
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-/* Diamonds column: a stack of cards (compare-stat card on top by default,
-   myth/fact cards behind it) with prev/next arrows and dots to cycle through */
+/* Diamonds column: a stack of myth/fact cards with prev/next arrows and dots
+   to cycle through */
 .know-your-jewellery_wrapper_grid_diamonds_carousel {
   display: flex;
   flex-direction: column;
@@ -367,9 +211,7 @@
 /* Cards in the deck carry a neutral border; the brand border marks whichever
    card is at the front, so it fades out as a card drops back and fades in on
    the one coming forward. */
-.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-active,
-.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-active
-  .know-your-jewellery_wrapper_grid_diamonds_compare {
+.know-your-jewellery_wrapper_grid_diamonds_stack_item.is-active {
   border-color: var(--color-brand, #712242);
 }
 
@@ -495,13 +337,25 @@
   justify-content: space-between;
   gap: 8px;
   padding: 40px 12px 12px;
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform: rotateY(0deg);
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card_face--fact {
+  justify-content: center;
+  padding: 0;
   transform: rotateY(-180deg);
+}
+
+/* The fact PNG fills the card inside its border, kept whole at any width. */
+.know-your-jewellery_wrapper_grid_diamonds_flip_card_face_image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .know-your-jewellery_wrapper_grid_diamonds_flip_card.is-flipped
