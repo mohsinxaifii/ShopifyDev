@@ -72,14 +72,17 @@
 
       <div class="scroll-carousel_dots" data-dots></div>
 
-      <a
-        href="{{ section.blocks.first.settings.url | default: '#' }}"
-        class="zinara-collections_wrapper_link"
-        data-analytics="section_cta_click"
-        data-analytics-section-name="zinara_collections"
-      >
-        {{- 'accessibility.view_all' | t -}}
-      </a>
+      {%- comment -%} Only with a page to go to - it used to fall back to "#". {%- endcomment -%}
+      {%- if section.settings.view_all_url != blank -%}
+        <a
+          href="{{ section.settings.view_all_url }}"
+          class="zinara-collections_wrapper_link"
+          data-analytics="section_cta_click"
+          data-analytics-section-name="zinara_collections"
+        >
+          {{- 'accessibility.view_all' | t -}}
+        </a>
+      {%- endif -%}
     </div>
   </scroll-carousel>
 
@@ -105,6 +108,12 @@
       "id": "background_color",
       "label": "Background color",
       "default": "#FEF4E2"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "View all link",
+      "info": "Leave empty to hide the View all button."
     }
   ],
   "blocks": [
