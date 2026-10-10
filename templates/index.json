@@ -703,14 +703,14 @@
           "settings": {
             "image": "shopify://shop_images/1_ig.png",
             "video_url": "",
-            "link": ""
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-2": {
           "type": "post",
           "settings": {
             "video_url": "https://cdn.shopify.com/videos/c/o/v/412b962e778549828821f18296fbe95b.mp4",
-            "link": ""
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-3": {
@@ -718,7 +718,7 @@
           "settings": {
             "image": "shopify://shop_images/3_ig.png",
             "video_url": "",
-            "link": ""
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-4": {
@@ -726,7 +726,7 @@
           "settings": {
             "image": "shopify://shop_images/4_ig.png",
             "video_url": "",
-            "link": ""
+            "link": "https://www.instagram.com/heyzinara/"
           }
         }
       },
