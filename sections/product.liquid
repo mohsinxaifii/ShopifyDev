@@ -204,7 +204,7 @@
               The product's card top badge (custom.card_top_badge, e.g. "Save
               10%"), as on its cards - no automatic "Price drop".
             {%- endcomment -%}
-            {%- assign gallery_badge = product.metafields.custom.card_top_badge.first -%}
+            {%- assign gallery_badge = product.metafields.custom.card_top_badge.value.first -%}
             {%- if gallery_badge != blank -%}
               <span class="pdp_gallery_stage_top_badge">{{ gallery_badge }}</span>
             {%- else -%}

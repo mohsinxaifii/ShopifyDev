@@ -23,7 +23,7 @@
     (custom.card_top_badge, e.g. "Save 10%"). A compare-at price no longer
     adds a "Price drop" badge - the struck-out price already says it.
   endcomment
-  assign feature_badge = product.metafields.custom.card_top_badge.first
+  assign feature_badge = product.metafields.custom.card_top_badge.value.first
   assign is_ready_to_ship = false
 
   comment

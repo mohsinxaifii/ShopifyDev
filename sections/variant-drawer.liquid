@@ -18,7 +18,7 @@
     assign compare_text = compare_text | prepend: money_symbol
   endunless
 
-  assign feature_badge = product.metafields.custom.card_top_badge.first
+  assign feature_badge = product.metafields.custom.card_top_badge.value.first
   assign current = product.selected_or_first_available_variant
   comment
     "Ready to ship" follows the picked variant (variant-drawer.js swaps it), so
