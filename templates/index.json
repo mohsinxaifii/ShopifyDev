@@ -311,7 +311,12 @@
             "video_url": "https://cdn.shopify.com/videos/c/o/v/a375f40a49f74c5d92625612f1f778a0.mp4",
             "link": "",
             "product": "",
-            "products": []
+            "products": [
+              "infinity-knot-diamond-ring",
+              "opulent-grace-pendant",
+              "floral-prism-diamond-ring",
+              "petal-luster-diamond-ring"
+            ]
           }
         },
         "video-5": {
@@ -320,7 +325,12 @@
             "video_url": "https://cdn.shopify.com/videos/c/o/v/cd41a07be7b64036a4494b6e762fa0d8.mp4",
             "link": "",
             "product": "",
-            "products": []
+            "products": [
+              "lustrous-flow-chain-bracelet",
+              "elegant-solitaire-diamond-ring",
+              "curve-bar-lab-diamond-necklace",
+              "opulent-grace-pendant"
+            ]
           }
         }
       },
