@@ -474,18 +474,18 @@
 
     onFilter(chip) {
       const value = chip.dataset.wishlistFilter || '';
-      /* Clicking the active chip clears it, so the full list is always one tap
-         away without a separate "all" chip. */
+      /* The "All" chip's value is empty. Clicking the active category chip
+         goes back to All too. */
       this.filter = this.filter === value ? '' : value;
 
       this.querySelectorAll('[data-wishlist-filter]').forEach((other) => {
-        const isActive = other.dataset.wishlistFilter === this.filter && this.filter !== '';
+        const isActive = (other.dataset.wishlistFilter || '') === this.filter;
         other.classList.toggle('is-active', isActive);
         other.setAttribute('aria-pressed', String(isActive));
       });
 
       this.apply();
-      if (this.filter) {
+      if (this.filter || value === '') {
         window.zinaraTrack?.('wishlist_tab_select', {
           tab_name: chip.querySelector('.wishlist_wrapper_filters_item_label')?.textContent.trim() || value,
           items_count: Array.from(this.querySelectorAll('[data-wishlist-item]')).filter((item) => !item.hidden).length,

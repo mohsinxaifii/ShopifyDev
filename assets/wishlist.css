@@ -143,6 +143,16 @@
   border-color: var(--color-accent, #f0166e);
 }
 
+/* The "All" chip without an image: its label centred in the circle. */
+.wishlist_wrapper_filters_item_image--text {
+  display: grid;
+  place-items: center;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-brand, #712242);
+}
+
 .wishlist_wrapper_filters_item_image img {
   display: block;
   width: 100%;

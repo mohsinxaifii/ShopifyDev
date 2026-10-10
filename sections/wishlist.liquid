@@ -12,9 +12,9 @@
   real loading state rather than a cover over finished markup - the one in the
   theme that is.
 
-  The filters are toggles: clicking one narrows the grid, clicking it again
-  clears it. Figma shows a chip in its selected state but no "all" chip to
-  escape through, and a toggle is the way to have both without inventing one.
+  The filters start with an "All" chip (selected by default) that shows every
+  saved product; a category chip narrows the grid, and clicking it again goes
+  back to All.
 {%- endcomment -%}
 
 {{ 'product-card.css' | asset_url | stylesheet_tag }}
@@ -46,6 +46,25 @@
 
     {%- if section.blocks.size > 0 -%}
       <div class="wishlist_wrapper_filters" data-wishlist-filters hidden>
+        <button
+          type="button"
+          class="wishlist_wrapper_filters_item is-active"
+          data-wishlist-filter=""
+          aria-pressed="true"
+        >
+          <span class="wishlist_wrapper_filters_item_image{% if section.settings.all_image == blank %} wishlist_wrapper_filters_item_image--text{% endif %}">
+            {%- if section.settings.all_image -%}
+              {{
+                section.settings.all_image
+                | image_url: width: 160
+                | image_tag: loading: 'lazy', widths: '80,120,160', sizes: '80px', alt: section.settings.all_label
+              }}
+            {%- else -%}
+              {{- section.settings.all_label | default: 'All' -}}
+            {%- endif -%}
+          </span>
+          <span class="wishlist_wrapper_filters_item_label">{{ section.settings.all_label | default: 'All' }}</span>
+        </button>
         {%- for block in section.blocks -%}
           <button
             type="button"
@@ -104,6 +123,18 @@
       "id": "heading",
       "label": "Heading",
       "default": "My wishlist"
+    },
+    {
+      "type": "text",
+      "id": "all_label",
+      "label": "\"All\" filter label",
+      "default": "All"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_image",
+      "label": "\"All\" filter image",
+      "info": "Without an image the circle shows the label."
     }
   ],
   "blocks": [
