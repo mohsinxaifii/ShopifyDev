@@ -93,7 +93,7 @@
         "category-3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/pendant_category.png",
+            "image": "shopify://shop_images/pendant_category_updated.png",
             "label": "Pendants",
             "url": "/collections/all-pendants"
           }
@@ -101,7 +101,7 @@
         "category-4": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/bracelet_category.png",
+            "image": "shopify://shop_images/bracelet_category_updated.png",
             "label": "Bracelets",
             "url": "/collections/all-bracelets"
           }
