@@ -568,14 +568,6 @@
     "gifting": {
       "type": "product-carousel",
       "blocks": {
-        "gtab-1": {
-          "type": "tab",
-          "settings": {
-            "label": "Bestsellers",
-            "collection": "bestsellers",
-            "product_limit": 10
-          }
-        },
         "gtab-2": {
           "type": "tab",
           "settings": {
@@ -595,22 +587,21 @@
         "gtab-4": {
           "type": "tab",
           "settings": {
-            "label": "Everyday rings",
-            "collection": "all-bracelets",
+            "label": "Under 15k",
+            "collection": "under-15000",
             "product_limit": 10
           }
         },
         "gtab-5": {
           "type": "tab",
           "settings": {
-            "label": "Pendants",
-            "collection": "all-pendants",
+            "label": "Under 20k",
+            "collection": "under-20000",
             "product_limit": 10
           }
         }
       },
       "block_order": [
-        "gtab-1",
         "gtab-2",
         "gtab-3",
         "gtab-4",
