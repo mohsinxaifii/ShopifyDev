@@ -228,14 +228,14 @@
           "type": "myth_fact",
           "settings": {
             "myth": "Lab grown diamonds are fake diamonds.",
-            "fact": ""
+            "fact_alt": ""
           }
         },
         "myth-2": {
           "type": "myth_fact",
           "settings": {
             "myth": "Lab grown diamonds are fake diamonds.",
-            "fact": ""
+            "fact_alt": ""
           }
         }
       },
@@ -249,14 +249,7 @@
       "settings": {
         "heading": "Know Your Jewellery",
         "vermeil_title": "Gold Vermeil",
-        "diamonds_title": "Lab Grown Diamonds",
-        "mined_image": "shopify://shop_images/zinara-kyj-diamond-icon.png",
-        "mined_value": "160kg / carat",
-        "mined_label": "Mined diamond",
-        "co2_reduction": "96%",
-        "co2_label": "CO2 emission",
-        "lab_grown_value": "6kg / carat",
-        "lab_grown_label": "Lab grown diamond"
+        "diamonds_title": "Lab Grown Diamonds"
       }
     },
     "curated-trends": {
@@ -421,7 +414,8 @@
       ],
       "settings": {
         "heading": "Shop By Collections",
-        "background_color": "#fef4e2"
+        "background_color": "#fef4e2",
+        "view_all_url": ""
       }
     },
     "testimonials": {
@@ -733,7 +727,7 @@
         "heading": "Join our Instagram community",
         "background_color": "#fef4e2",
         "instagram_url": "https://www.instagram.com/heyzinara/",
-        "handle": "@zinara",
+        "handle": "@heyzinara",
         "layout": "inset"
       }
     },
