@@ -4193,8 +4193,17 @@ button.pdp_trust_grid_item_inner {
     white-space: nowrap;
   }
 
+  /* Phones: the middle column takes the room between the two diamonds and the
+     arrow spans exactly that. A fixed 149px arrow over the 81px column ran
+     past the 16px gaps into both diamond images. */
+  .pdp-kj_diamonds_compare_link {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
   .pdp-kj_diamonds_compare_link_arrow {
-    width: 149px;
+    width: 100%;
   }
 
   /* You may also like: 168px cards, image + price + title only (8106:58204). */

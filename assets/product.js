@@ -1147,7 +1147,15 @@
       if (tab) tab.hidden = false;
       root.hidden = false;
 
+      /* Each card is the theme's real product card, fetched through the
+         wishlist-card section (as the wishlist page does), so it carries the
+         same badges (Ready to ship, card top badge), struck-out compare-at
+         price and rating as everywhere else, live rather than as they were
+         when viewed. Laid out in order first from what was saved, each one is
+         swapped for the real card as it arrives; a product that no longer
+         resolves is dropped, and a failed request keeps the saved card. */
       track.innerHTML = '';
+      const shopRoot = window.Shopify?.routes?.root || '/';
       items.forEach((item) => {
         const card = document.createElement('a');
         card.className = 'product-card product-card--grid';
@@ -1164,6 +1172,24 @@
           </span>`;
         card.querySelector('.product-card_info_title').textContent = item.title;
         track.appendChild(card);
+
+        fetch(`${shopRoot}products/${encodeURIComponent(item.handle)}?section_id=wishlist-card`)
+          .then((response) => {
+            if (response.status === 404) {
+              card.remove();
+              return null;
+            }
+            return response.ok ? response.text() : null;
+          })
+          .then((html) => {
+            if (!html) return;
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const fresh = doc.querySelector('.product-card');
+            if (fresh && card.isConnected) card.replaceWith(fresh);
+          })
+          .catch(() => {
+            /* offline or a server hiccup - the saved card stays */
+          });
       });
     }
 
