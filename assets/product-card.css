@@ -83,9 +83,14 @@
   display: none;
 }
 
-.product-card_media_top_badge--feature,
 .product-card_media_top_badge--ready {
   background-color: #d38a0d;
+}
+
+/* The card top badge (custom.card_top_badge) wears the same red as on the
+   product page photo (.pdp_gallery_stage_top_badge); Ready to ship stays gold. */
+.product-card_media_top_badge--feature {
+  background-image: linear-gradient(-42.27deg, var(--color-brand, #712242) 24.5%, var(--color-accent, #f0166e) 90.6%);
 }
 
 .product-card_media_top_wishlist {
