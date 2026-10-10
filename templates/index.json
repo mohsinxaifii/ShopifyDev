@@ -432,12 +432,12 @@
         "review-1": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/Sheena_testimonial.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Sheena",
+            "quote": "“Their designs are elegant, modern, and unique. The quality of materials is excellent, and you can feel the durability in each piece. Whether for everyday wear or special occasions, their jewellery is both beautiful and well-crafted. Highly recommend!”",
+            "product": "bloom-sparkle-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         },
