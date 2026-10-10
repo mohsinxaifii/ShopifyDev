@@ -274,14 +274,15 @@
     button.setAttribute('aria-pressed', String(isActive));
 
     /* The markup ships the "add" label, so it is cached on the first sync and
-       the button can be swapped back and forth from then on. */
-    if (!button.dataset.addLabel) {
-      button.dataset.addLabel = button.getAttribute('aria-label') || '';
+       the button can be swapped back and forth from then on. Not under
+       data-add-label: that is the Add to cart label hook (product.js). */
+    if (!button.dataset.wishlistAddLabel) {
+      button.dataset.wishlistAddLabel = button.getAttribute('aria-label') || '';
     }
     const removeLabel = window.themeStrings?.wishlistRemove;
     button.setAttribute(
       'aria-label',
-      isActive && removeLabel ? removeLabel : button.dataset.addLabel,
+      isActive && removeLabel ? removeLabel : button.dataset.wishlistAddLabel,
     );
   }
 

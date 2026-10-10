@@ -488,7 +488,7 @@
 
       const addButton = this.querySelector('[data-add-to-cart]');
       const buyButton = this.querySelector('[data-buy-now]');
-      const label = this.querySelector('[data-add-label]');
+      const label = addButton?.querySelector('[data-add-label]');
       if (addButton) addButton.disabled = !match.available;
       if (buyButton) buyButton.disabled = !match.available;
       if (label) label.textContent = match.available ? label.dataset.labelAdd || 'Add to cart' : label.dataset.labelSold || 'Sold out';
