@@ -643,9 +643,9 @@
         "press-1": {
           "type": "press_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
-            "by_text": "Kirti Vij in",
-            "product": "radiant-essence-solitaire-pendant",
+            "image": "shopify://shop_images/kriti_vij_3.jpg",
+            "by_text": "Kriti Vij in",
+            "product": "majestic-gleam-solitaire-ring",
             "caption": "",
             "link": ""
           }
@@ -653,9 +653,9 @@
         "press-2": {
           "type": "press_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-video-thumb-generic.jpg",
-            "by_text": "Kirti Vij in",
-            "product": "radiant-essence-solitaire-pendant",
+            "image": "shopify://shop_images/karan_sareen_1.jpg",
+            "by_text": "Karan Sareen in",
+            "product": "velvet-radiance-studs",
             "caption": "",
             "link": ""
           }
@@ -663,15 +663,16 @@
         "press-3": {
           "type": "press_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
+            "image": "shopify://shop_images/kriti_vij_2.jpg",
             "by_text": "Kirti Vij in",
-            "product": "radiant-essence-solitaire-pendant",
+            "product": "radiance-drop-earrings",
             "caption": "",
             "link": ""
           }
         },
         "press-4": {
           "type": "press_card",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-video-thumb-generic.jpg",
             "by_text": "Kirti Vij in",
@@ -682,6 +683,7 @@
         },
         "press-5": {
           "type": "press_card",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
             "by_text": "Kirti Vij in",
