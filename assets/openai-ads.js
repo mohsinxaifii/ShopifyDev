@@ -95,7 +95,7 @@
       .slice(0, 64) || null;
 
   function forward(args) {
-    const [command, eventName, props = {}] = args;
+    const [command, eventName, props = {}, options = {}] = args;
     if ((command !== 'track' && command !== 'trackCustom') || !eventName || SKIP.has(eventName)) return;
     const name = customName(eventName);
     if (!name) return;
@@ -106,7 +106,8 @@
       data.amount = value;
       data.currency = props.currency || OA.currency;
     }
-    OA.track('custom', data, { custom_event_name: name });
+    // The Meta event's ID, so the two platforms' copies can be matched up.
+    OA.track('custom', data, { custom_event_name: name, ...(options?.eventID ? { event_id: options.eventID } : {}) });
   }
 
   function bridge() {

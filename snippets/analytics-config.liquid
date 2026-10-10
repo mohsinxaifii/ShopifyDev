@@ -63,6 +63,33 @@
   if customer and customer.orders_count > 0
     assign customer_type = 'returning'
   endif
+
+  comment
+    Advanced matching for the Meta pixel: the logged-in customer's details,
+    normalised the way Meta asks and SHA-256 hashed here, so the raw email and
+    phone never reach the page. Phone keeps its country code - a bare 10-digit
+    Indian number (or one with a leading 0) gets 91. Names, city and state:
+    lowercase with no spaces or punctuation. analytics.js adds what the site's
+    forms collect (hashed in the browser) on top.
+  endcomment
+  if customer
+    assign am_email = customer.email | strip | downcase
+    assign am_phone = customer.phone | default: customer.default_address.phone | append: ''
+    assign am_phone = am_phone | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')' | remove: '.'
+    assign am_phone_first = am_phone | slice: 0
+    if am_phone.size == 11 and am_phone_first == '0'
+      assign am_phone = am_phone | remove_first: '0'
+    endif
+    if am_phone.size == 10
+      assign am_phone = am_phone | prepend: '91'
+    endif
+    assign am_first = customer.first_name | downcase | remove: ' ' | remove: '.' | remove: '-' | remove: "'" | remove: ',' | remove: '_'
+    assign am_last = customer.last_name | downcase | remove: ' ' | remove: '.' | remove: '-' | remove: "'" | remove: ',' | remove: '_'
+    assign am_city = customer.default_address.city | downcase | remove: ' ' | remove: '.' | remove: '-' | remove: "'" | remove: ','
+    assign am_state = customer.default_address.province | downcase | remove: ' ' | remove: '.' | remove: '-' | remove: "'" | remove: ','
+    assign am_zip = customer.default_address.zip | downcase | remove: ' ' | remove: '-'
+    assign am_country = customer.default_address.country_code | downcase
+  endif
 -%}
 <script>
   window.zinaraTrackQueue = window.zinaraTrackQueue || [];
@@ -92,6 +119,19 @@
     customerType: {{ customer_type | json }},
     {%- comment -%} The plan asks for a hashed customer ID, never a phone number or email. {%- endcomment -%}
     userId: {% if customer %}{{ customer.id | append: '' | sha256 | json }}{% else %}null{% endif %},
+    {%- if customer %}
+      match: {
+        {%- if am_email != blank %}em: {{ am_email | sha256 | json }},{% endif -%}
+        {%- if am_phone != blank %}ph: {{ am_phone | sha256 | json }},{% endif -%}
+        {%- if am_first != blank %}fn: {{ am_first | sha256 | json }},{% endif -%}
+        {%- if am_last != blank %}ln: {{ am_last | sha256 | json }},{% endif -%}
+        {%- if am_city != blank %}ct: {{ am_city | sha256 | json }},{% endif -%}
+        {%- if am_state != blank %}st: {{ am_state | sha256 | json }},{% endif -%}
+        {%- if am_zip != blank %}zp: {{ am_zip | sha256 | json }},{% endif -%}
+        {%- if am_country != blank %}country: {{ am_country | sha256 | json }},{% endif -%}
+        external_id: {{ customer.id | append: '' | sha256 | json }}
+      },
+    {%- endif %}
     cart: { value: {{ cart.total_price | divided_by: 100.0 }}, count: {{ cart.item_count }} },
     {%- if template.name == 'product' %}
       product: {

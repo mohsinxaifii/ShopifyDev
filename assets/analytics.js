@@ -21,6 +21,13 @@
  *     (settings > Gokwik: its FB pixel / GA4 ID).
  *   - purchase / refund / cancel / RTO stay server-side, as the plan says.
  *
+ * Every Meta event from here carries an eventID (Meta drops a duplicate with
+ * the same one from the Conversions API or an app), and the pixel starts with
+ * advanced matching: the logged-in customer's details (hashed by Liquid in
+ * analytics-config) plus whatever a form on the site collected earlier
+ * (hashed in the browser and kept, hashed, in localStorage). The same form
+ * details go to the OpenAI Ads pixel.
+ *
  * Everything else in the plan is sent from here, to GA4 as the plan's event
  * name and to Meta as a custom event of the same name (or the matching Meta
  * standard event where one exists: AddToWishlist, Contact, InitiateCheckout,
@@ -193,6 +200,100 @@
   const gaId = config.ga4Id || '';
   const pixelId = config.metaPixelId || '';
 
+  /* ---------------------------------------------------- advanced matching */
+
+  // Hashed identifiers in Meta's keys (em, ph, fn, ln, ...). Form details are
+  // stored hashed so later pages start the pixel with them too.
+  const MATCH_KEY = 'zinara:match';
+  const readMatch = () => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(MATCH_KEY));
+      return stored && typeof stored === 'object' ? stored : {};
+    } catch (error) {
+      return {};
+    }
+  };
+  // The logged-in customer wins over details typed into a form earlier.
+  const storedMatch = readMatch();
+  const match = { ...storedMatch, ...(config.match || {}) };
+
+  // Meta and OpenAI ask for the same normalisation, so one hash serves both.
+  const normalise = {
+    em: (value) => String(value).trim().toLowerCase(),
+    ph: (value) => {
+      let digits = String(value).replace(/\D/g, '').replace(/^0+/, '');
+      if (digits.length === 10) digits = `91${digits}`; // a bare Indian number
+      return /^\d{8,15}$/.test(digits) ? digits : '';
+    },
+    name: (value) => String(value).toLowerCase().replace(/[\s!-\/:-@\[-`{-~]/g, ''),
+  };
+
+  async function sha256(value) {
+    if (!value || !window.crypto?.subtle || !window.TextEncoder) return '';
+    const buffer = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+    return Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  // The OpenAI pixel's names for the same hashes.
+  const toOpenAI = (hashed) => {
+    const keys = { em: 'email_sha256', ph: 'phone_number_sha256', fn: 'first_name_sha256', ln: 'last_name_sha256' };
+    const out = {};
+    Object.entries(keys).forEach(([meta, openai]) => {
+      if (hashed[meta]) out[openai] = hashed[meta];
+    });
+    return out;
+  };
+
+  /* A form handed over an email / phone / name: hash it, keep it for the next
+     pages' Meta pixel, and pass it to the OpenAI pixel now. Meta takes
+     matching data only when the pixel starts, so it applies from the next page. */
+  async function identify({ email, phone, name }) {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    const hashed = {};
+    const pairs = [
+      ['em', email && normalise.em(email)],
+      ['ph', phone && normalise.ph(phone)],
+      ['fn', parts[0] && normalise.name(parts[0])],
+      ['ln', parts.length > 1 && normalise.name(parts.slice(1).join(''))],
+    ];
+    for (const [key, value] of pairs) {
+      const hash = await sha256(value);
+      if (hash) hashed[key] = hash;
+    }
+    if (!hashed.em && !hashed.ph) return;
+    try {
+      window.localStorage.setItem(MATCH_KEY, JSON.stringify({ ...readMatch(), ...hashed }));
+    } catch (error) {
+      // Private mode: it still reaches OpenAI below.
+    }
+    window.OpenAIAds?.identify({ hashed: toOpenAI(hashed) });
+  }
+
+  // Every form on the site with an email or phone field: video call, reviews,
+  // blog comments, and any added later. A pincode box has too few digits to
+  // pass as a phone.
+  document.addEventListener(
+    'submit',
+    (event) => {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      const value = (selector) => form.querySelector(selector)?.value?.trim() || '';
+      const email = value('input[type="email"], input[name*="email" i]');
+      const phone = value('input[type="tel"], input[name*="phone" i], input[name*="mobile" i]');
+      if (!email && !phone) return;
+      const name = value('input[name="name"], input[name*="author" i], input[name*="first_name" i]');
+      identify({ email, phone, name });
+    },
+    true,
+  );
+
+  // Details a form collected on an earlier page reach the OpenAI pixel here
+  // (the logged-in customer's already do, from openai-ads-pixel.liquid).
+  if (Object.keys(storedMatch).length) window.OpenAIAds?.identify({ hashed: toOpenAI(storedMatch) });
+
+  const eventId = () =>
+    window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
   if (gaId) {
     window.gtag =
       window.gtag ||
@@ -237,7 +338,8 @@
     // Meta's automatic events (button clicks, page metadata) would add events
     // nobody asked for on top of the app's; the plan's events are explicit.
     window.fbq('set', 'autoConfig', false, pixelId);
-    window.fbq('init', pixelId);
+    if (Object.keys(match).length) window.fbq('init', pixelId, match);
+    else window.fbq('init', pixelId);
     // No PageView here - the Meta app sends it.
   }
 
@@ -392,8 +494,9 @@
     }
     if (pixelId && plan.meta && routing.meta !== false && typeof window.fbq === 'function') {
       const metaData = metaPayload(payload);
-      if (plan.meta === 'custom') window.fbq('trackCustom', name, metaData);
-      else window.fbq('track', plan.meta, metaData);
+      const options = { eventID: eventId() };
+      if (plan.meta === 'custom') window.fbq('trackCustom', name, metaData, options);
+      else window.fbq('track', plan.meta, metaData, options);
     }
     if (config.debug) console.info('[analytics]', name, payload);
   }
