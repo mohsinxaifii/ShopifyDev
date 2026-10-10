@@ -17,6 +17,7 @@
   const REVEAL_ATTR = 'data-animate';
   const VISIBLE_CLASS = 'is-visible';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const phone = window.matchMedia('(max-width: 749px)');
 
   const hasGsap = () => typeof window.gsap !== 'undefined';
 
@@ -48,8 +49,16 @@
    * fades.
    */
   function initReveals(root = document) {
-    const elements = Array.from(root.querySelectorAll(`[${REVEAL_ATTR}]:not(.${VISIBLE_CLASS})`));
-    if (elements.length === 0) return;
+    // Phones show section headings outright (see motion.css): one at the foot
+    // of the first screen would otherwise wait, blank, for a scroll.
+    const phoneHeading = (el) => phone.matches && el.matches('h1, h2, h3');
+    const all = Array.from(root.querySelectorAll(`[${REVEAL_ATTR}]:not(.${VISIBLE_CLASS})`));
+    all.filter(phoneHeading).forEach((el) => el.classList.add(VISIBLE_CLASS));
+    const elements = all.filter((el) => !phoneHeading(el));
+    if (elements.length === 0) {
+      ROOT.classList.remove('motion');
+      return;
+    }
 
     if (reduced.matches || !hasGsap()) {
       revealAll(root);
@@ -92,7 +101,9 @@
     // pass and handled by their container's single trigger.
     const grouped = new Set();
     root.querySelectorAll('[data-animate-group]').forEach((group) => {
-      const members = Array.from(group.querySelectorAll(`:scope > [${REVEAL_ATTR}]`));
+      const members = Array.from(group.querySelectorAll(`:scope > [${REVEAL_ATTR}]`)).filter(
+        (member) => !phoneHeading(member),
+      );
       if (members.length === 0) return;
       members.forEach((member) => grouped.add(member));
 

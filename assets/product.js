@@ -552,6 +552,17 @@
       this.querySelectorAll('[data-diff-price], [data-diff-cta-price]').forEach((node) => {
         node.textContent = this.money(variant.priceText);
       });
+
+      // Offer cards: "Get it at ₹x" is the new price less the offer's discount,
+      // worked out as snippets/pdp-offer-card does (in paise, whole rupees out).
+      this.querySelectorAll('[data-offer-price]').forEach((node) => {
+        const value = Number(node.dataset.offerValue) || 0;
+        const max = Number(node.dataset.offerMax) || 0;
+        let discount = node.dataset.offerType === 'fixed' ? value * 100 : Math.floor((variant.price * value) / 100);
+        if (node.dataset.offerType !== 'fixed' && max > 0) discount = Math.min(discount, max * 100);
+        const rupees = Math.floor(Math.max(variant.price - discount, 0) / 100);
+        node.textContent = this.money(rupees.toLocaleString('en-IN'));
+      });
     }
 
     /* Product information follows the variant: each variant's accordions are

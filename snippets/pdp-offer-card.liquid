@@ -3,14 +3,70 @@
   the code, split by a dashed rule. Figma 7930:96041 (rail) and 7930:98947
   (All offers sidesheet) - the same card, only the grid around it changes.
 
+  The title is the offer's highlight text ("Get it at") followed, when the
+  entry has a discount value, by the selected variant's price after that
+  discount ("Get it at ₹8,009") - as on the live theme. The discount is a
+  percentage of the price (capped at the max discount value) or, for a
+  "fixed" type, that many rupees off. product.js recomputes it when the
+  variant changes. With no highlight text the heading is shown instead.
+
   @param {object} offer - a `discount_offer` metaobject
+  @param {object} variant - the selected variant, whose price the offer price is worked out from
 {%- enddoc -%}
+
+{%- liquid
+  assign offer_type = 'percentage'
+  if offer.discount_type.value != blank
+    assign offer_type = offer.discount_type.value | downcase | strip
+  endif
+  assign offer_value = offer.discount_value.value | default: 0
+  assign offer_max = offer.max_discount_value.value | default: 0
+
+  assign offer_price_text = ''
+  if offer.highlight_text != blank and offer_value > 0 and variant != blank
+    if offer_type == 'fixed'
+      assign discount_amount = offer_value | times: 100
+    else
+      assign discount_amount = variant.price | times: offer_value | divided_by: 100
+      if offer_max > 0
+        assign max_amount = offer_max | times: 100
+        if discount_amount > max_amount
+          assign discount_amount = max_amount
+        endif
+      endif
+    endif
+    comment
+      Whole rupees, rounded down, like the live theme's offer price.
+    endcomment
+    assign offer_price = variant.price | minus: discount_amount | at_least: 0 | divided_by: 100 | times: 100
+    assign offer_price_text = offer_price | money_without_trailing_zeros
+    unless offer_price_text contains cart.currency.symbol
+      assign offer_price_text = offer_price_text | prepend: cart.currency.symbol
+    endunless
+  endif
+-%}
 
 <div class="pdp-offer">
   <div class="pdp-offer_head">
     <span class="pdp-offer_head_icon" aria-hidden="true">{{ 'icon-seal-percent.svg' | inline_asset_content }}</span>
     <span class="pdp-offer_head_text">
-      <span class="pdp-offer_head_text_title">{{ offer.heading }}</span>
+      <span class="pdp-offer_head_text_title">
+        {%- if offer.highlight_text != blank -%}
+          {{- offer.highlight_text | strip -}}
+          {%- if offer_price_text != blank %}
+            <span
+              data-offer-price
+              data-offer-type="{{ offer_type }}"
+              data-offer-value="{{ offer_value }}"
+              data-offer-max="{{ offer_max }}"
+            >
+              {{- offer_price_text -}}
+            </span>
+          {%- endif -%}
+        {%- else -%}
+          {{- offer.heading -}}
+        {%- endif -%}
+      </span>
       {%- if offer.description != blank -%}
         <span class="pdp-offer_head_text_sub">{{ offer.description }}</span>
       {%- endif -%}

@@ -53,6 +53,16 @@ html.motion [data-animate] {
   will-change: auto;
 }
 
+/* Phones: section headings are never hidden for the reveal. A heading at the
+   foot of the first screen sits just short of its reveal point, so it showed
+   as a blank band until the shopper scrolled (animations.js skips them too). */
+@media screen and (max-width: 749px) {
+  html.motion :is(h1, h2, h3)[data-animate] {
+    opacity: 1;
+    will-change: auto;
+  }
+}
+
 /* ------------------------------------------------------- interactive base */
 
 /**

@@ -357,7 +357,7 @@
                   {%- for handle in offer_handles -%}
                     {%- assign offer = shop.metaobjects.discount_offer[handle] -%}
                     {%- if offer != blank -%}
-                      {%- render 'pdp-offer-card', offer: offer -%}
+                      {%- render 'pdp-offer-card', offer: offer, variant: current_variant -%}
                     {%- endif -%}
                   {%- endfor -%}
                 </div>
@@ -592,7 +592,7 @@
     {%- render 'pdp-size-guide', whatsapp_url: help_block.settings.whatsapp_url -%}
   {%- endif -%}
   {%- if offers_block != blank -%}
-    {%- render 'pdp-offers-sheet', offer_handles: offer_handles, labels: offers_block.settings -%}
+    {%- render 'pdp-offers-sheet', offer_handles: offer_handles, labels: offers_block.settings, variant: current_variant -%}
   {%- endif -%}
   {%- render 'pdp-addons-sheet',
     addons: addons,

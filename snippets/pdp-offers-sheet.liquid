@@ -4,6 +4,7 @@
 
   @param {object} labels - the product section's settings (sheet title and label)
   @param {object} offer_handles - handles of the `discount_offer` metaobjects that apply to this product, in display order
+  @param {object} variant - the selected variant, for the offer prices
 {%- enddoc -%}
 
 <dialog class="pdp-sheet" data-bottom-sheet data-sheet="offers" scroll-lock aria-labelledby="PdpOffersTitle">
@@ -26,7 +27,7 @@
         {%- for handle in offer_handles -%}
           {%- assign offer = shop.metaobjects.discount_offer[handle] -%}
           {%- if offer != blank -%}
-            {%- render 'pdp-offer-card', offer: offer -%}
+            {%- render 'pdp-offer-card', offer: offer, variant: variant -%}
           {%- endif -%}
         {%- endfor -%}
       </div>
