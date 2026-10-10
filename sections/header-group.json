@@ -66,33 +66,6 @@
     "category-nav": {
       "type": "category-nav",
       "blocks": {
-        "link-1": {
-          "type": "link",
-          "settings": {
-            "label": "Shop all",
-            "url": "/collections/all",
-            "show_new_badge": false,
-            "align_end": false
-          }
-        },
-        "link-2": {
-          "type": "link",
-          "settings": {
-            "label": "New arrivals",
-            "url": "/collections/new-arrivals-18kt-gold-vermeil-and-lab-grown-diamond-jewellery",
-            "show_new_badge": false,
-            "align_end": false
-          }
-        },
-        "link-3": {
-          "type": "link",
-          "settings": {
-            "label": "Rakhi collection",
-            "url": "/collections/925-silver-rakhi-18kt-gold-vermeil-rakhi-with-lab-grown-diamonds",
-            "show_new_badge": true,
-            "align_end": false
-          }
-        },
         "link-4": {
           "type": "link",
           "settings": {
@@ -129,6 +102,15 @@
             "align_end": false
           }
         },
+        "link-3": {
+          "type": "link",
+          "settings": {
+            "label": "Evil Eye",
+            "url": "",
+            "show_new_badge": true,
+            "align_end": false
+          }
+        },
         "link-8": {
           "type": "link",
           "settings": {
@@ -149,13 +131,11 @@
         }
       },
       "block_order": [
-        "link-1",
-        "link-2",
-        "link-3",
         "link-4",
         "link-5",
         "link-6",
         "link-7",
+        "link-3",
         "link-8",
         "link-9"
       ],
