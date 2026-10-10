@@ -75,18 +75,13 @@
         {%- endif -%}
       </span>
 
-      <span class="product-card_media_bottom">
-        {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
-        <judgeme-rating data-handle="{{ product.handle }}" hidden>
-          <span class="product-card_media_rating">
-            {{ 'icon-star.svg' | inline_asset_content }}
-            <span class="product-card_media_rating_value" data-judgeme-value></span>
-          </span>
-        </judgeme-rating>
-        <span class="product-card_media_bottom_badges">
-          {%- render 'photo-badges', product: product, class: 'product-card_media_bottom_badges_pill' -%}
+      {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
+      <judgeme-rating data-handle="{{ product.handle }}" hidden>
+        <span class="product-card_media_rating">
+          {{ 'icon-star.svg' | inline_asset_content }}
+          <span class="product-card_media_rating_value" data-judgeme-value></span>
         </span>
-      </span>
+      </judgeme-rating>
     </a>
 
     <span class="variant-drawer_panel_body_card_info">

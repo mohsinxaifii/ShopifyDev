@@ -18,12 +18,13 @@
     assign is_grid = true
   endif
 
+  comment
+    One badge top-left: "Ready to ship", else the product's card top badge
+    (custom.card_top_badge, e.g. "Save 10%"). A compare-at price no longer
+    adds a "Price drop" badge - the struck-out price already says it.
+  endcomment
   assign feature_badge = product.metafields.custom.card_top_badge.first
-  assign is_price_drop = false
   assign is_ready_to_ship = false
-  if product.compare_at_price > product.price
-    assign is_price_drop = true
-  endif
 
   comment
     "Ready to ship" speaks for the variant the card opens on, not any variant:
@@ -95,8 +96,6 @@
     <span class="product-card_media_top">
       {%- if is_ready_to_ship -%}
         <span class="product-card_media_top_badge product-card_media_top_badge--ready">Ready to ship</span>
-      {%- elsif is_price_drop -%}
-        <span class="product-card_media_top_badge product-card_media_top_badge--price-drop">Price drop</span>
       {%- elsif feature_badge != blank -%}
         <span class="product-card_media_top_badge product-card_media_top_badge--feature">{{ feature_badge }}</span>
       {%- else -%}
@@ -118,18 +117,13 @@
       {%- endunless -%}
     </span>
 
-    <span class="product-card_media_bottom">
-      {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
-      <judgeme-rating data-handle="{{ product.handle }}" hidden>
-        <span class="product-card_media_rating">
-          {{ 'icon-star.svg' | inline_asset_content }}
-          <span class="product-card_media_rating_value" data-judgeme-value></span>
-        </span>
-      </judgeme-rating>
-      <span class="product-card_media_bottom_badges">
-        {%- render 'photo-badges', product: product, class: 'product-card_media_bottom_badges_pill' -%}
+    {%- comment -%} Filled from Judge.me by judgeme.js; stays hidden until it has reviews. {%- endcomment -%}
+    <judgeme-rating data-handle="{{ product.handle }}" hidden>
+      <span class="product-card_media_rating">
+        {{ 'icon-star.svg' | inline_asset_content }}
+        <span class="product-card_media_rating_value" data-judgeme-value></span>
       </span>
-    </span>
+    </judgeme-rating>
   </span>
 
   <span class="product-card_info">

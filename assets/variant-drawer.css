@@ -510,8 +510,7 @@
     aspect-ratio: 1 / 1;
   }
 
-  .variant-drawer_panel_body_card .product-card_media_top_badge,
-  .variant-drawer_panel_body_card .product-card_media_bottom_badges_pill {
+  .variant-drawer_panel_body_card .product-card_media_top_badge {
     padding: 2px 6px;
     font-weight: 500;
     font-size: 8px;
@@ -649,8 +648,7 @@
   display: none;
 }
 
-.variant-drawer.is-list .product-card_media_top_badge,
-.variant-drawer.is-list .product-card_media_bottom_badges_pill {
+.variant-drawer.is-list .product-card_media_top_badge {
   padding: 2px 6px;
   font-weight: 500;
   font-size: 8px;

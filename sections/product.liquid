@@ -200,8 +200,13 @@
           </div>
 
           <div class="pdp_gallery_stage_top">
-            {%- if has_compare -%}
-              <span class="pdp_gallery_stage_top_badge">{{ 'products.price_drop' | t }}</span>
+            {%- comment -%}
+              The product's card top badge (custom.card_top_badge, e.g. "Save
+              10%"), as on its cards - no automatic "Price drop".
+            {%- endcomment -%}
+            {%- assign gallery_badge = product.metafields.custom.card_top_badge.first -%}
+            {%- if gallery_badge != blank -%}
+              <span class="pdp_gallery_stage_top_badge">{{ gallery_badge }}</span>
             {%- else -%}
               <span></span>
             {%- endif -%}
