@@ -444,36 +444,48 @@
         "testimonial_YtDEyh": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/Pooja_testimonial.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Pooja",
+            "quote": "“Pretty ring 🥰,thanku Zinara for this wonderful ring and design.I love this 💖 Thanku for this stylish ring.😊I am so happy 😊”",
+            "product": "brilliant-mirage-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         },
         "testimonial_NaJqQq": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/Kumkum_testimonial.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Kumkum",
+            "quote": "“I found the perfect ring at Zinara.Iit’s simple, elegant, and beautifully made. It looks premium, but was still within my budget. I’ve been wearing it almost every day!”",
+            "product": "radiant-solitaire-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         },
         "testimonial_MnFhGq": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/mysha.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Vasudha",
+            "quote": "\"I ordered a set of earrings from Zinara and it exceeded my expectations. The design is elegant and it feels so luxurious. The price was a pleasant surprise too such great value for such a stunning piece!\"",
+            "product": "50-cent-classic-solitaire-studs",
+            "product_title": "",
+            "product_url": ""
+          }
+        },
+        "testimonial_pVrLHy": {
+          "type": "testimonial",
+          "settings": {
+            "image": "shopify://shop_images/Sameeksha_testimonial_5aa98d34-59dc-455d-bccc-09f08406bf8b.png",
+            "rating": 5,
+            "name": "Sameeksha",
+            "quote": "“I’ve always found diamond jewellery overwhelming - either too flashy or too expensive. Zinara changed that. I got a beautiful pair of rings that I wear every day. The quality, the elegance, and the service, everything was just perfect.”",
+            "product": "blossom-symphony-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         }
@@ -482,7 +494,8 @@
         "review-1",
         "testimonial_YtDEyh",
         "testimonial_NaJqQq",
-        "testimonial_MnFhGq"
+        "testimonial_MnFhGq",
+        "testimonial_pVrLHy"
       ],
       "settings": {
         "heading": "Love At First Wear"
