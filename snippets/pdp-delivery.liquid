@@ -5,7 +5,18 @@
   @param {object} block - the "Delivery estimate" block
 {%- enddoc -%}
 
-<section class="pdp_delivery" data-animate {{ block.shopify_attributes }}>
+{%- comment -%}
+  A served pincode gets an expected delivery date: today plus the in-stock
+  days when the picked variant has stock, else the out-of-stock days (making
+  time plus shipping). Both are block settings.
+{%- endcomment -%}
+<section
+  class="pdp_delivery"
+  data-animate
+  data-delivery-days-in-stock="{{ block.settings.delivery_days_in_stock | default: 3 }}"
+  data-delivery-days-made-to-order="{{ block.settings.delivery_days_made_to_order | default: 24 }}"
+  {{ block.shopify_attributes }}
+>
   <h2 class="pdp_section_title">{{ block.settings.delivery_heading | default: 'Delivery Estimate' }}</h2>
   <div class="pdp_delivery_row">
     <input

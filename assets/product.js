@@ -894,9 +894,9 @@
      * assets/pincodes.json lists the pincodes each lane serves ("gold" /
      * "silver"; the product's tags pick one - see data-pincode-set). The list
      * is half a megabyte, so it is fetched on first use, not with the page.
-     * No delivery date is promised: a served pincode gets the in-stock ship
-     * time when the picked variant has stock, and nothing about timing
-     * otherwise.
+     * A served pincode gets an expected delivery date, as on the live theme:
+     * today plus the block's in-stock days (3) when the picked variant has
+     * stock, else its out-of-stock days (21 + 3 = 24).
      */
     initPincode() {
       const button = this.querySelector('[data-pincode-check]');
@@ -944,8 +944,14 @@
         }
 
         const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
-        const shipFast = this.querySelector('[data-ship-time]')?.dataset.shipFast || 'Ships in 24 hours';
-        show(variant?.inStock ? `${shipFast}. We deliver to ${value}.` : `We deliver to ${value}.`, false);
+        const block = button.closest('.pdp_delivery');
+        const days = variant?.inStock
+          ? Number(block?.dataset.deliveryDaysInStock) || 3
+          : Number(block?.dataset.deliveryDaysMadeToOrder) || 24;
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        const dateText = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+        show(`We deliver to ${value}. Expected delivery by ${dateText}.`, false);
         window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: true });
       });
     }
