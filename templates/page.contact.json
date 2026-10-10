@@ -122,8 +122,7 @@
         "post-2": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-2.png",
-            "video_url": "",
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/412b962e778549828821f18296fbe95b.mp4",
             "link": "https://www.instagram.com/heyzinara/"
           }
         },
