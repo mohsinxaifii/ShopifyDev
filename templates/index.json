@@ -93,7 +93,7 @@
         "category-3": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/pendant_category.png",
+            "image": "shopify://shop_images/pendant_category_updated.png",
             "label": "Pendants",
             "url": "/collections/all-pendants"
           }
@@ -101,7 +101,7 @@
         "category-4": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/bracelet_category.png",
+            "image": "shopify://shop_images/bracelet_category_updated.png",
             "label": "Bracelets",
             "url": "/collections/all-bracelets"
           }
@@ -228,14 +228,21 @@
           "type": "myth_fact",
           "settings": {
             "myth": "Lab grown diamonds are fake diamonds.",
-            "fact": ""
+            "fact_alt": ""
           }
         },
         "myth-2": {
           "type": "myth_fact",
           "settings": {
             "myth": "Lab grown diamonds are fake diamonds.",
-            "fact": ""
+            "fact_alt": ""
+          }
+        },
+        "myth_fact_Yc9ceH": {
+          "type": "myth_fact",
+          "settings": {
+            "myth": "Lab grown diamonds are fake diamonds.",
+            "fact_alt": ""
           }
         }
       },
@@ -244,19 +251,13 @@
         "fact-2",
         "fact-3",
         "myth-1",
-        "myth-2"
+        "myth-2",
+        "myth_fact_Yc9ceH"
       ],
       "settings": {
         "heading": "Know Your Jewellery",
-        "vermeil_title": "Gold Vermeil",
-        "diamonds_title": "Lab Grown Diamonds",
-        "mined_image": "shopify://shop_images/zinara-kyj-diamond-icon.png",
-        "mined_value": "160kg / carat",
-        "mined_label": "Mined diamond",
-        "co2_reduction": "96%",
-        "co2_label": "CO2 emission",
-        "lab_grown_value": "6kg / carat",
-        "lab_grown_label": "Lab grown diamond"
+        "vermeil_title": "18 KT Gold Vermeil",
+        "diamonds_title": "Lab Grown Diamonds"
       }
     },
     "curated-trends": {
@@ -268,7 +269,9 @@
             "video_url": "https://cdn.shopify.com/videos/c/o/v/1516b72d8ae04c2e8bd79235c93277cf.mp4",
             "link": "",
             "product": "",
-            "products": []
+            "products": [
+              "sparkle-solitaire-diamond-ring"
+            ]
           }
         },
         "video-2": {
@@ -277,7 +280,12 @@
             "video_url": "https://cdn.shopify.com/videos/c/o/v/6f79319ad9af45beaab7d7d2ab5255b1.mp4",
             "link": "",
             "product": "",
-            "products": []
+            "products": [
+              "leafy-luster-diamond-pendant",
+              "velvet-spark-pendant",
+              "ethereal-essence-solitaire-diamond-earrings",
+              "leafy-luster-diamond-earrings"
+            ]
           }
         },
         "video-3": {
@@ -286,7 +294,15 @@
             "video_url": "https://cdn.shopify.com/videos/c/o/v/d8716e91ae5744a2be98cadfa0271cff.mp4",
             "link": "",
             "product": "",
-            "products": []
+            "products": [
+              "serene-charm-bracelet",
+              "graceful-gleam-ring",
+              "majestic-gleam-solitaire-ring",
+              "enduring-light-eternity-ring",
+              "golden-halo-pendant",
+              "limitless-harmony-solitaire-diamond-earrings",
+              "velvet-spark-pendant"
+            ]
           }
         },
         "video-4": {
@@ -295,7 +311,12 @@
             "video_url": "https://cdn.shopify.com/videos/c/o/v/a375f40a49f74c5d92625612f1f778a0.mp4",
             "link": "",
             "product": "",
-            "products": []
+            "products": [
+              "infinity-knot-diamond-ring",
+              "opulent-grace-pendant",
+              "floral-prism-diamond-ring",
+              "petal-luster-diamond-ring"
+            ]
           }
         },
         "video-5": {
@@ -304,7 +325,12 @@
             "video_url": "https://cdn.shopify.com/videos/c/o/v/cd41a07be7b64036a4494b6e762fa0d8.mp4",
             "link": "",
             "product": "",
-            "products": []
+            "products": [
+              "lustrous-flow-chain-bracelet",
+              "elegant-solitaire-diamond-ring",
+              "curve-bar-lab-diamond-necklace",
+              "opulent-grace-pendant"
+            ]
           }
         }
       },
@@ -329,15 +355,15 @@
         "cell-1": {
           "type": "cell",
           "settings": {
-            "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
+            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
             "text": "Lifetime buyback & exchange"
           }
         },
         "cell-2": {
           "type": "cell",
           "settings": {
-            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
-            "text": "Lifetime Replating"
+            "icon": "shopify://shop_images/zinara-icon-sparkles-small.svg",
+            "text": "Lifetime free replating"
           }
         },
         "cell-3": {
@@ -421,7 +447,8 @@
       ],
       "settings": {
         "heading": "Shop By Collections",
-        "background_color": "#fef4e2"
+        "background_color": "#fef4e2",
+        "view_all_url": ""
       }
     },
     "testimonials": {
@@ -430,48 +457,60 @@
         "review-1": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/Sheena_testimonial.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Sheena",
+            "quote": "“Their designs are elegant, modern, and unique. The quality of materials is excellent, and you can feel the durability in each piece. Whether for everyday wear or special occasions, their jewellery is both beautiful and well-crafted. Highly recommend!”",
+            "product": "bloom-sparkle-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         },
         "testimonial_YtDEyh": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/Pooja_testimonial.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Pooja",
+            "quote": "“Pretty ring 🥰,thanku Zinara for this wonderful ring and design.I love this 💖 Thanku for this stylish ring.😊I am so happy 😊”",
+            "product": "brilliant-mirage-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         },
         "testimonial_NaJqQq": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/Kumkum_testimonial.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Kumkum",
+            "quote": "“I found the perfect ring at Zinara.Iit’s simple, elegant, and beautifully made. It looks premium, but was still within my budget. I’ve been wearing it almost every day!”",
+            "product": "radiant-solitaire-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         },
         "testimonial_MnFhGq": {
           "type": "testimonial",
           "settings": {
-            "image": "shopify://shop_images/zinara-testimonial-person.png",
+            "image": "shopify://shop_images/mysha.png",
             "rating": 5,
-            "name": "Priya S.",
-            "quote": "\"I was a little unsure about gold vermeil at first, but the finish looks incredibly premium. I've been wearing my necklace almost every day, and it still looks as beautiful as when it arrived.\"",
-            "product": "25-cent-classic-solitaire-pendant",
-            "product_title": "Bloom Sparkle Pendant (with chain)",
+            "name": "Vasudha",
+            "quote": "\"I ordered a set of earrings from Zinara and it exceeded my expectations. The design is elegant and it feels so luxurious. The price was a pleasant surprise too such great value for such a stunning piece!\"",
+            "product": "50-cent-classic-solitaire-studs",
+            "product_title": "",
+            "product_url": ""
+          }
+        },
+        "testimonial_pVrLHy": {
+          "type": "testimonial",
+          "settings": {
+            "image": "shopify://shop_images/Sameeksha_testimonial_5aa98d34-59dc-455d-bccc-09f08406bf8b.png",
+            "rating": 5,
+            "name": "Sameeksha",
+            "quote": "“I’ve always found diamond jewellery overwhelming - either too flashy or too expensive. Zinara changed that. I got a beautiful pair of rings that I wear every day. The quality, the elegance, and the service, everything was just perfect.”",
+            "product": "blossom-symphony-diamond-ring",
+            "product_title": "",
             "product_url": ""
           }
         }
@@ -480,7 +519,8 @@
         "review-1",
         "testimonial_YtDEyh",
         "testimonial_NaJqQq",
-        "testimonial_MnFhGq"
+        "testimonial_MnFhGq",
+        "testimonial_pVrLHy"
       ],
       "settings": {
         "heading": "Love At First Wear"
@@ -553,14 +593,6 @@
     "gifting": {
       "type": "product-carousel",
       "blocks": {
-        "gtab-1": {
-          "type": "tab",
-          "settings": {
-            "label": "Bestsellers",
-            "collection": "bestsellers",
-            "product_limit": 10
-          }
-        },
         "gtab-2": {
           "type": "tab",
           "settings": {
@@ -580,22 +612,21 @@
         "gtab-4": {
           "type": "tab",
           "settings": {
-            "label": "Everyday rings",
-            "collection": "all-bracelets",
+            "label": "Under 15k",
+            "collection": "under-15000",
             "product_limit": 10
           }
         },
         "gtab-5": {
           "type": "tab",
           "settings": {
-            "label": "Pendants",
-            "collection": "all-pendants",
+            "label": "Under 20k",
+            "collection": "under-20000",
             "product_limit": 10
           }
         }
       },
       "block_order": [
-        "gtab-1",
         "gtab-2",
         "gtab-3",
         "gtab-4",
@@ -628,9 +659,9 @@
         "press-1": {
           "type": "press_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
-            "by_text": "Kirti Vij in",
-            "product": "radiant-essence-solitaire-pendant",
+            "image": "shopify://shop_images/kriti_vij_3.jpg",
+            "by_text": "Kriti Vij in",
+            "product": "majestic-gleam-solitaire-ring",
             "caption": "",
             "link": ""
           }
@@ -638,9 +669,9 @@
         "press-2": {
           "type": "press_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-video-thumb-generic.jpg",
-            "by_text": "Kirti Vij in",
-            "product": "radiant-essence-solitaire-pendant",
+            "image": "shopify://shop_images/karan_sareen_1.jpg",
+            "by_text": "Karan Sareen in",
+            "product": "velvet-radiance-studs",
             "caption": "",
             "link": ""
           }
@@ -648,15 +679,16 @@
         "press-3": {
           "type": "press_card",
           "settings": {
-            "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
+            "image": "shopify://shop_images/kriti_vij_2.jpg",
             "by_text": "Kirti Vij in",
-            "product": "radiant-essence-solitaire-pendant",
+            "product": "radiance-drop-earrings",
             "caption": "",
             "link": ""
           }
         },
         "press-4": {
           "type": "press_card",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-video-thumb-generic.jpg",
             "by_text": "Kirti Vij in",
@@ -667,6 +699,7 @@
         },
         "press-5": {
           "type": "press_card",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/zinara-as-seen-on-1.jpg",
             "by_text": "Kirti Vij in",
@@ -693,33 +726,32 @@
         "post-1": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-1.png",
+            "image": "shopify://shop_images/1_ig.png",
             "video_url": "",
-            "link": ""
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-2": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-2.png",
-            "video_url": "",
-            "link": ""
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/412b962e778549828821f18296fbe95b.mp4",
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-3": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-3.png",
+            "image": "shopify://shop_images/3_ig.png",
             "video_url": "",
-            "link": ""
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-4": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-4.png",
+            "image": "shopify://shop_images/4_ig.png",
             "video_url": "",
-            "link": ""
+            "link": "https://www.instagram.com/heyzinara/"
           }
         }
       },
@@ -733,7 +765,7 @@
         "heading": "Join our Instagram community",
         "background_color": "#fef4e2",
         "instagram_url": "https://www.instagram.com/heyzinara/",
-        "handle": "@zinara",
+        "handle": "@heyzinara",
         "layout": "inset"
       }
     },
@@ -882,12 +914,83 @@
             "image": "shopify://shop_images/zinara-press-c.png",
             "height": 29
           }
+        },
+        "logo_K3VzRn": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/bombaytimes_logo.png",
+            "height": 35
+          }
+        },
+        "logo_phjDNN": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/timesnow_logo.png",
+            "height": 35
+          }
+        },
+        "logo_rqzGy4": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/entrepreneurindia_logo.png",
+            "height": 35
+          }
+        },
+        "logo_gBBYii": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/et_entrepreneur.jpg",
+            "height": 35
+          }
+        },
+        "logo_nrR3DG": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/indian_startup_news_logo.webp",
+            "height": 35
+          }
+        },
+        "logo_B63bMf": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/indianjeweller_logo.png",
+            "height": 35
+          }
+        },
+        "logo_nQnx8L": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/etretail_logo.png",
+            "height": 35
+          }
+        },
+        "logo_6PFVBr": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/fashionnetworklogo.jpg",
+            "height": 35
+          }
+        },
+        "logo_FMnmCw": {
+          "type": "logo",
+          "settings": {
+            "height": 35
+          }
         }
       },
       "block_order": [
         "logo-1",
         "logo-2",
-        "logo-3"
+        "logo-3",
+        "logo_K3VzRn",
+        "logo_phjDNN",
+        "logo_rqzGy4",
+        "logo_gBBYii",
+        "logo_nrR3DG",
+        "logo_B63bMf",
+        "logo_nQnx8L",
+        "logo_6PFVBr",
+        "logo_FMnmCw"
       ],
       "settings": {
         "heading": "Featured in",

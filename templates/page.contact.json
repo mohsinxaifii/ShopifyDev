@@ -13,7 +13,9 @@
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": ""
+        "current_label": "",
+        "parent_collection": "",
+        "show_on": "all"
       }
     },
     "main": {
@@ -35,7 +37,8 @@
             "icon": "email",
             "label": "Write to us anytime",
             "value": "help@zinara.in",
-            "url": "mailto:help@zinara.in"
+            "url": "mailto:help@zinara.in",
+            "copy_on_click": false
           }
         },
         "channel-3": {
@@ -44,7 +47,8 @@
             "icon": "whatsapp",
             "label": "Whatsapp us",
             "value": "+91-9217975782",
-            "url": "https://wa.me/919217975782?text=Hi%20Zinara%2C%20I%27d%20like%20some%20help%20choosing%20a%20piece."
+            "url": "https://wa.me/919217975782?text=Hi%20Zinara%2C%20I%27d%20like%20some%20help%20choosing%20a%20piece.",
+            "copy_on_click": false
           }
         }
       },
@@ -66,22 +70,22 @@
         "cell-1": {
           "type": "cell",
           "settings": {
-            "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
+            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
             "text": "Lifetime buyback & exchange"
           }
         },
         "cell-2": {
           "type": "cell",
           "settings": {
-            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
-            "text": "Handcrafted"
+            "icon": "shopify://shop_images/zinara-icon-sparkles-small.svg",
+            "text": "Lifetime free replating"
           }
         },
         "cell-3": {
           "type": "cell",
           "settings": {
             "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
-            "text": "Lifetime buyback & exchange"
+            "text": "Hassle free 7 day returns"
           }
         },
         "cell-4": {
@@ -110,29 +114,32 @@
         "post-1": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-1.png",
-            "link": ""
+            "image": "shopify://shop_images/1_ig.png",
+            "video_url": "",
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-2": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-2.png",
-            "link": ""
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/412b962e778549828821f18296fbe95b.mp4",
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-3": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-3.png",
-            "link": ""
+            "image": "shopify://shop_images/3_ig.png",
+            "video_url": "",
+            "link": "https://www.instagram.com/heyzinara/"
           }
         },
         "post-4": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/zinara-insta-post-4.png",
-            "link": ""
+            "image": "shopify://shop_images/4_ig.png",
+            "video_url": "",
+            "link": "https://www.instagram.com/heyzinara/"
           }
         }
       },
@@ -146,7 +153,7 @@
         "heading": "Join our Instagram community",
         "background_color": "#fef4e2",
         "instagram_url": "https://www.instagram.com/heyzinara/",
-        "handle": "@zinara",
+        "handle": "@heyzinara",
         "layout": "fill"
       }
     }

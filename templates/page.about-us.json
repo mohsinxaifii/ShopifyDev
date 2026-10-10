@@ -103,7 +103,7 @@
     "about-belief": {
       "type": "about-belief",
       "settings": {
-        "image_front": "shopify://shop_images/zinara-about-belief-front.png",
+        "image_front": "shopify://shop_images/about_us_frontim.png",
         "image_back": "shopify://shop_images/zinara-about-belief-back.png",
         "heading": "The Zinara Standard",
         "lead": "Modern designs. Long-lasting materials. Honest pricing. ",
@@ -164,7 +164,8 @@
       ],
       "settings": {
         "heading": "Zinara Collections",
-        "background_color": "#fef4e2"
+        "background_color": "#fef4e2",
+        "view_all_url": ""
       }
     },
     "about-story": {
