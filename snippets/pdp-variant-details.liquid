@@ -7,12 +7,25 @@
 
   An item with an empty value is a note and spans the whole row.
 
+  Until launch the sheet still writes these lists to the live theme's keys
+  (content.product_details_list_1_json ... _4_json, same JSON), so an empty
+  details_accordion_n falls back to the live list n. Read only - the live
+  fields are never written. Drop the fallback once the sheet's LIST keys
+  move to details_accordion_n.
+
   @param {object} variant - a Shopify variant object
 {%- enddoc -%}
 
-{%- assign list_keys = 'details_accordion_1,details_accordion_2,details_accordion_3,details_accordion_4' | split: ',' -%}
-{%- for list_key in list_keys -%}
-  {%- for list in variant.metafields.custom[list_key].value -%}
+{%- for n in (1..4) -%}
+  {%- liquid
+    assign own_key = 'details_accordion_' | append: n
+    assign live_key = 'product_details_list_' | append: n | append: '_json'
+    assign lists = variant.metafields.custom[own_key].value
+    if lists == blank
+      assign lists = variant.metafields.content[live_key].value
+    endif
+  -%}
+  {%- for list in lists -%}
     {%- if list.items == blank -%}
       {%- continue -%}
     {%- endif -%}
