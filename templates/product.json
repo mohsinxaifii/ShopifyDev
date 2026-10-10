@@ -97,7 +97,9 @@
           "settings": {
             "delivery_heading": "Delivery Estimate",
             "pincode_placeholder": "Enter pincode",
-            "pincode_button_label": "Check"
+            "pincode_button_label": "Check",
+            "delivery_days_in_stock": 3,
+            "delivery_days_made_to_order": 24
           }
         },
         "gift": {
@@ -568,12 +570,75 @@
             "image": "shopify://shop_images/zinara-press-c.png",
             "height": 29
           }
+        },
+        "logo_tRWU7M": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/timesnow_logo.png",
+            "height": 35
+          }
+        },
+        "logo_WEQBeV": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/bombaytimes_logo.png",
+            "height": 35
+          }
+        },
+        "logo_RbLVhy": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/indian_startup_news_logo.webp",
+            "height": 35
+          }
+        },
+        "logo_RCXHbG": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/entrepreneurindia_logo.png",
+            "height": 35
+          }
+        },
+        "logo_8FRfhD": {
+          "type": "logo",
+          "settings": {
+            "height": 35
+          }
+        },
+        "logo_4ctgwD": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/Zee_Business_logo.webp",
+            "height": 35
+          }
+        },
+        "logo_Rjytir": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/indianjeweller_logo.png",
+            "height": 35
+          }
+        },
+        "logo_eYg4YG": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/fashionnetworklogo.jpg",
+            "height": 35
+          }
         }
       },
       "block_order": [
         "logo-1",
         "logo-2",
-        "logo-3"
+        "logo-3",
+        "logo_tRWU7M",
+        "logo_WEQBeV",
+        "logo_RbLVhy",
+        "logo_RCXHbG",
+        "logo_8FRfhD",
+        "logo_4ctgwD",
+        "logo_Rjytir",
+        "logo_eYg4YG"
       ],
       "settings": {
         "heading": "Featured in",
