@@ -13,7 +13,9 @@
       "type": "breadcrumb",
       "settings": {
         "home_label": "Home",
-        "current_label": ""
+        "current_label": "",
+        "parent_collection": "",
+        "show_on": "all"
       }
     },
     "main": {
@@ -22,33 +24,33 @@
         "chip-1": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/zinara-category-earrings.png",
             "label": "Earrings",
-            "match": "earrings",
-            "image": "shopify://shop_images/zinara-category-earrings.png"
+            "match": "earrings"
           }
         },
         "chip-2": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/zinara-category-pendants.png",
             "label": "Pendants",
-            "match": "pendants",
-            "image": "shopify://shop_images/zinara-category-pendants.png"
+            "match": "pendants"
           }
         },
         "chip-3": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/zinara-category-rings.png",
             "label": "Rings",
-            "match": "rings",
-            "image": "shopify://shop_images/zinara-category-rings.png"
+            "match": "rings"
           }
         },
         "chip-4": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/zinara-category-bracelets.png",
             "label": "Bracelets",
-            "match": "bracelets",
-            "image": "shopify://shop_images/zinara-category-bracelets.png"
+            "match": "bracelets"
           }
         }
       },
@@ -59,7 +61,8 @@
         "chip-4"
       ],
       "settings": {
-        "heading": "My wishlist"
+        "heading": "My wishlist",
+        "all_label": "All"
       }
     },
     "faq": {
@@ -150,6 +153,7 @@
         "logo-2",
         "logo-3"
       ],
+      "disabled": true,
       "settings": {
         "heading": "Featured in",
         "background_color": "#fef4e2",
