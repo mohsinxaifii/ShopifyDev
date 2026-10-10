@@ -70,22 +70,22 @@
         "cell-1": {
           "type": "cell",
           "settings": {
-            "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
+            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
             "text": "Lifetime buyback & exchange"
           }
         },
         "cell-2": {
           "type": "cell",
           "settings": {
-            "icon": "shopify://shop_images/zinara-icon-hand-heart.svg",
-            "text": "Handcrafted"
+            "icon": "shopify://shop_images/zinara-icon-sparkles-small.svg",
+            "text": "Lifetime free replating"
           }
         },
         "cell-3": {
           "type": "cell",
           "settings": {
             "icon": "shopify://shop_images/zinara-icon-return-arrow.svg",
-            "text": "Lifetime buyback & exchange"
+            "text": "Hassle free 7 day returns"
           }
         },
         "cell-4": {
