@@ -914,12 +914,83 @@
             "image": "shopify://shop_images/zinara-press-c.png",
             "height": 29
           }
+        },
+        "logo_K3VzRn": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/bombaytimes_logo.png",
+            "height": 35
+          }
+        },
+        "logo_phjDNN": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/timesnow_logo.png",
+            "height": 35
+          }
+        },
+        "logo_rqzGy4": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/entrepreneurindia_logo.png",
+            "height": 35
+          }
+        },
+        "logo_gBBYii": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/et_entrepreneur.jpg",
+            "height": 35
+          }
+        },
+        "logo_nrR3DG": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/indian_startup_news_logo.webp",
+            "height": 35
+          }
+        },
+        "logo_B63bMf": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/indianjeweller_logo.png",
+            "height": 35
+          }
+        },
+        "logo_nQnx8L": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/etretail_logo.png",
+            "height": 35
+          }
+        },
+        "logo_6PFVBr": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/fashionnetworklogo.jpg",
+            "height": 35
+          }
+        },
+        "logo_FMnmCw": {
+          "type": "logo",
+          "settings": {
+            "height": 35
+          }
         }
       },
       "block_order": [
         "logo-1",
         "logo-2",
-        "logo-3"
+        "logo-3",
+        "logo_K3VzRn",
+        "logo_phjDNN",
+        "logo_rqzGy4",
+        "logo_gBBYii",
+        "logo_nrR3DG",
+        "logo_B63bMf",
+        "logo_nQnx8L",
+        "logo_6PFVBr",
+        "logo_FMnmCw"
       ],
       "settings": {
         "heading": "Featured in",
