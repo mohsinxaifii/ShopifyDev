@@ -63,22 +63,22 @@
         "option-1": {
           "type": "option",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-option-carat.png",
+            "image": "shopify://shop_images/1_0b46b3d4-09ac-4d86-945d-b9bf56c4e5b8.png",
             "label": "Diamond carat"
           }
         },
         "option-2": {
           "type": "option",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-option-metal.png",
-            "label": "Metal"
+            "image": "shopify://shop_images/3_aba2b118-39b7-49be-ad11-9f9df562db4b.png",
+            "label": "Metal type"
           }
         },
         "option-3": {
           "type": "option",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-option-colour.png",
-            "label": "Colour"
+            "image": "shopify://shop_images/2_742e21ec-10f7-4ff7-b8e1-5ac0622c38ce.png",
+            "label": "Metal colour"
           }
         }
       },
