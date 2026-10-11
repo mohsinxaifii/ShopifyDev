@@ -99,15 +99,15 @@
           "type": "design",
           "settings": {
             "image": "shopify://shop_images/ruby_necklace_custom_made.png",
-            "title": "Ring",
-            "customer": "Anita Sharma, Jaipur"
+            "title": "Necklace",
+            "customer": "Seema, Jaipur"
           }
         },
         "design-2": {
           "type": "design",
           "settings": {
             "image": "shopify://shop_images/ring2_custom_made.png",
-            "title": "Pendant",
+            "title": "Ring",
             "customer": "Anita Sharma, Bengaluru"
           }
         },
@@ -115,7 +115,7 @@
           "type": "design",
           "settings": {
             "image": "shopify://shop_images/mangalsutra2_custom_made.png",
-            "title": "Pendant",
+            "title": "Mangalsutra",
             "customer": "Anita Sharma, Bengaluru"
           }
         },
@@ -123,7 +123,7 @@
           "type": "design",
           "settings": {
             "image": "shopify://shop_images/necklace_custom_made.png",
-            "title": "Pendant",
+            "title": "Necklace",
             "customer": "Anita Sharma, Bengaluru"
           }
         },
@@ -131,7 +131,7 @@
           "type": "design",
           "settings": {
             "image": "shopify://shop_images/mangalsutra1_custom_made.png",
-            "title": "Pendant",
+            "title": "Mangalsutra",
             "customer": "Anita Sharma, Bengaluru"
           }
         },
