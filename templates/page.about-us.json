@@ -174,42 +174,42 @@
         "card-6": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-6.png",
+            "image": "shopify://shop_images/replating_aboutus.png",
             "label": "5× Thicker 18KT Gold Plating"
           }
         },
         "card-5": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-5.png",
+            "image": "shopify://shop_images/sgl_about_us.png",
             "label": "SGL-Certified Lab-Grown Diamonds"
-          }
-        },
-        "card-2": {
-          "type": "card",
-          "settings": {
-            "image": "shopify://shop_images/zinara-about-story-2.png",
-            "label": "7 day hassle free returns"
           }
         },
         "card-1": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-1.png",
+            "image": "shopify://shop_images/5Xthicker_aboutus.png",
             "label": "Lifetime free replating"
+          }
+        },
+        "card-2": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/7day_aboutus.png",
+            "label": "7 day hassle free returns"
           }
         },
         "card-3": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-3.png",
+            "image": "shopify://shop_images/exchange_aboutus.png",
             "label": "Lifetime buyback and exchange"
           }
         },
         "card-4": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-4.png",
+            "image": "shopify://shop_images/shipping_aboutus.png",
             "label": "Free & Insured Shipping"
           }
         },
@@ -224,8 +224,8 @@
       "block_order": [
         "card-6",
         "card-5",
-        "card-2",
         "card-1",
+        "card-2",
         "card-3",
         "card-4",
         "card_RNx86B"
