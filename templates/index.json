@@ -79,7 +79,7 @@
           "settings": {
             "image": "shopify://shop_images/ring_category.png",
             "label": "Rings",
-            "url": "/collections/all-rings"
+            "url": "shopify://collections/rings"
           }
         },
         "category-2": {
@@ -87,7 +87,7 @@
           "settings": {
             "image": "shopify://shop_images/earring_category.png",
             "label": "Earrings",
-            "url": "/collections/all-earrings"
+            "url": "shopify://collections/earrings"
           }
         },
         "category-3": {
@@ -95,7 +95,7 @@
           "settings": {
             "image": "shopify://shop_images/pendant_category_updated.png",
             "label": "Pendants",
-            "url": "/collections/all-pendants"
+            "url": "shopify://collections/necklace"
           }
         },
         "category-4": {
@@ -103,7 +103,7 @@
           "settings": {
             "image": "shopify://shop_images/bracelet_category_updated.png",
             "label": "Bracelets",
-            "url": "/collections/all-bracelets"
+            "url": "shopify://collections/bracelet"
           }
         }
       },
