@@ -228,20 +228,23 @@
           "type": "myth_fact",
           "settings": {
             "myth": "Lab grown diamonds are fake diamonds.",
+            "fact_image": "shopify://shop_images/fact_fake.png",
             "fact_alt": ""
           }
         },
         "myth-2": {
           "type": "myth_fact",
           "settings": {
-            "myth": "Lab grown diamonds are fake diamonds.",
+            "myth": "Lab-grown diamonds harm the environment.",
+            "fact_image": "shopify://shop_images/fact_carbon.png",
             "fact_alt": ""
           }
         },
         "myth_fact_Yc9ceH": {
           "type": "myth_fact",
           "settings": {
-            "myth": "Lab grown diamonds are fake diamonds.",
+            "myth": "Lab-grown diamonds are expensive.",
+            "fact_image": "shopify://shop_images/fact_price.png",
             "fact_alt": ""
           }
         }
