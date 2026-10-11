@@ -22,18 +22,30 @@
   height: 100%;
 }
 
+/* Slides travel sideways: the incoming one slides in from the side it comes
+   from while the outgoing one slides out the other way. hero-banner.js parks
+   each slide on the right side before it moves, so wrapping from the last
+   slide to the first slides one step instead of rewinding the whole track.
+   Visibility only drops once a slide has finished leaving. */
 .hero-banner_wrapper_track_slide {
   position: absolute;
   inset: 0;
-  opacity: 0;
   visibility: hidden;
-  transition: opacity 0.8s ease;
+  transform: translateX(100%);
+  transition:
+    transform 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+    visibility 0s linear 0.7s;
+}
+
+.hero-banner_wrapper_track_slide.is-active,
+.hero-banner_wrapper_track_slide.is-leaving {
+  visibility: visible;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .hero-banner_wrapper_track_slide.is-active {
-  opacity: 1;
-  visibility: visible;
   z-index: 1;
+  transform: none;
 }
 
 /* contain, not cover: a slide whose shape matches the band fills it exactly

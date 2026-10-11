@@ -423,6 +423,11 @@ class CollectionPage extends HTMLElement {
       const currentCount = this.querySelector('.collection_wrapper_main_toolbar_count');
       if (count && currentCount) currentCount.textContent = count.textContent;
 
+      // A shorter grid pulls the sections below (the FAQ) up the page, but
+      // their scroll reveals were measured where they used to be - on a short
+      // page, below where it can scroll - so they would never fire.
+      window.ScrollTrigger?.refresh();
+
       if (push) window.history.pushState({}, '', url);
       this.setupPrice();
       if (push) this.trackChange(before, url);
