@@ -15,24 +15,23 @@
         "slide-1": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/new_arrivals_v2_desktop.png",
-            "mobile_image": "shopify://shop_images/mobile_web_banner_test.png",
+            "image": "shopify://shop_images/festive_banner_desktop.png",
+            "mobile_image": "shopify://shop_images/festive_banner_mobile.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "shopify://collections/zinara-best-sellers-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "slide_mkRNm4": {
           "type": "slide",
-          "disabled": true,
           "settings": {
-            "image": "shopify://shop_images/zinara-hero-slide-1.png",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
+            "image": "shopify://shop_images/evileye_banner_desktop.png",
+            "mobile_image": "shopify://shop_images/evileye_banner_mobile.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "shopify://collections/evil-eye-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "slide_BEYVhA": {
@@ -79,7 +78,7 @@
           "settings": {
             "image": "shopify://shop_images/ring_category.png",
             "label": "Rings",
-            "url": "/collections/all-rings"
+            "url": "shopify://collections/rings"
           }
         },
         "category-2": {
@@ -87,7 +86,7 @@
           "settings": {
             "image": "shopify://shop_images/earring_category.png",
             "label": "Earrings",
-            "url": "/collections/all-earrings"
+            "url": "shopify://collections/earrings"
           }
         },
         "category-3": {
@@ -95,7 +94,7 @@
           "settings": {
             "image": "shopify://shop_images/pendant_category_updated.png",
             "label": "Pendants",
-            "url": "/collections/all-pendants"
+            "url": "shopify://collections/necklace"
           }
         },
         "category-4": {
@@ -103,7 +102,7 @@
           "settings": {
             "image": "shopify://shop_images/bracelet_category_updated.png",
             "label": "Bracelets",
-            "url": "/collections/all-bracelets"
+            "url": "shopify://collections/bracelet"
           }
         }
       },
@@ -228,20 +227,23 @@
           "type": "myth_fact",
           "settings": {
             "myth": "Lab grown diamonds are fake diamonds.",
+            "fact_image": "shopify://shop_images/fact_fake.png",
             "fact_alt": ""
           }
         },
         "myth-2": {
           "type": "myth_fact",
           "settings": {
-            "myth": "Lab grown diamonds are fake diamonds.",
+            "myth": "Lab-grown diamonds harm the environment.",
+            "fact_image": "shopify://shop_images/fact_carbon.png",
             "fact_alt": ""
           }
         },
         "myth_fact_Yc9ceH": {
           "type": "myth_fact",
           "settings": {
-            "myth": "Lab grown diamonds are fake diamonds.",
+            "myth": "Lab-grown diamonds are expensive.",
+            "fact_image": "shopify://shop_images/fact_price.png",
             "fact_alt": ""
           }
         }
@@ -401,7 +403,7 @@
           "settings": {
             "image": "shopify://shop_images/evil_eye_collection.png",
             "label": "Evil Eye",
-            "url": ""
+            "url": "shopify://collections/evil-eye-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "card-2": {
@@ -409,7 +411,7 @@
           "settings": {
             "image": "shopify://shop_images/siesta_collection.png",
             "label": "Siesta",
-            "url": "/collections/siesta-collection"
+            "url": "shopify://collections/siesta-collection"
           }
         },
         "card-3": {
@@ -417,7 +419,7 @@
           "settings": {
             "image": "shopify://shop_images/prism3d_collection.png",
             "label": "Prism 3D",
-            "url": ""
+            "url": "shopify://collections/prism3d-pendants"
           }
         },
         "card-4": {
@@ -425,7 +427,7 @@
           "settings": {
             "image": "shopify://shop_images/double_take_collection.png",
             "label": "Double Take",
-            "url": "/collections/siesta-collection"
+            "url": "shopify://collections/double-take-two-stone-lab-grown-diamonds"
           }
         },
         "card-5": {
@@ -534,7 +536,7 @@
           "settings": {
             "image": "shopify://shop_images/work_occassion.png",
             "label": "Work",
-            "url": ""
+            "url": "shopify://collections/for-work-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-2": {
@@ -542,7 +544,7 @@
           "settings": {
             "image": "shopify://shop_images/night_out_occassion.png",
             "label": "Night Out",
-            "url": ""
+            "url": "shopify://collections/for-night-out-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-3": {
@@ -550,7 +552,7 @@
           "settings": {
             "image": "shopify://shop_images/date_night_occassion.png",
             "label": "Date Night",
-            "url": ""
+            "url": "shopify://collections/for-date-night-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-4": {
@@ -558,7 +560,7 @@
           "settings": {
             "image": "shopify://shop_images/day_out.png",
             "label": "Day Out",
-            "url": ""
+            "url": "shopify://collections/for-day-out-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-5": {
@@ -566,7 +568,7 @@
           "settings": {
             "image": "shopify://shop_images/festive_occassion.png",
             "label": "Festive",
-            "url": ""
+            "url": "shopify://collections/festive-wear-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occasion_card_QwRyyM": {
@@ -574,7 +576,7 @@
           "settings": {
             "image": "shopify://shop_images/self_love_occassion.png",
             "label": "Self Love",
-            "url": ""
+            "url": "shopify://collections/self-love-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         }
       },

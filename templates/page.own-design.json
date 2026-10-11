@@ -63,22 +63,22 @@
         "option-1": {
           "type": "option",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-option-carat.png",
+            "image": "shopify://shop_images/1_0b46b3d4-09ac-4d86-945d-b9bf56c4e5b8.png",
             "label": "Diamond carat"
           }
         },
         "option-2": {
           "type": "option",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-option-metal.png",
-            "label": "Metal"
+            "image": "shopify://shop_images/3_aba2b118-39b7-49be-ad11-9f9df562db4b.png",
+            "label": "Metal type"
           }
         },
         "option-3": {
           "type": "option",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-option-colour.png",
-            "label": "Colour"
+            "image": "shopify://shop_images/2_742e21ec-10f7-4ff7-b8e1-5ac0622c38ce.png",
+            "label": "Metal colour"
           }
         }
       },
@@ -98,41 +98,49 @@
         "design-1": {
           "type": "design",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-gallery.png",
-            "title": "Ring",
-            "customer": "Anita Sharma, Jaipur"
+            "image": "shopify://shop_images/ruby_necklace_custom_made.png",
+            "title": "Necklace",
+            "customer": "Seema, Jaipur"
           }
         },
         "design-2": {
           "type": "design",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-gallery.png",
-            "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru"
+            "image": "shopify://shop_images/ring2_custom_made.png",
+            "title": "Ring",
+            "customer": "Pooja, Delhi"
           }
         },
         "design-3": {
           "type": "design",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-gallery.png",
-            "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru"
+            "image": "shopify://shop_images/mangalsutra2_custom_made.png",
+            "title": "Mangalsutra",
+            "customer": "Kajal, Meerut"
           }
         },
         "design-4": {
           "type": "design",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-gallery.png",
-            "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru"
+            "image": "shopify://shop_images/necklace_custom_made.png",
+            "title": "Necklace",
+            "customer": "Joni, Delhi"
           }
         },
         "design-5": {
           "type": "design",
           "settings": {
-            "image": "shopify://shop_images/zinara-gyod-gallery.png",
-            "title": "Pendant",
-            "customer": "Anita Sharma, Bengaluru"
+            "image": "shopify://shop_images/mangalsutra1_custom_made.png",
+            "title": "Mangalsutra",
+            "customer": "Sakshi, Bengaluru"
+          }
+        },
+        "design_eT8p3a": {
+          "type": "design",
+          "settings": {
+            "image": "shopify://shop_images/ring1_custom_made.png",
+            "title": "Ring",
+            "customer": "Khushi, Mumbai"
           }
         }
       },
@@ -141,7 +149,8 @@
         "design-2",
         "design-3",
         "design-4",
-        "design-5"
+        "design-5",
+        "design_eT8p3a"
       ],
       "settings": {
         "heading": "Here’s what others have designed",

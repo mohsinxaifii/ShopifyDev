@@ -136,13 +136,13 @@
           "type": "highlights",
           "settings": {
             "highlights_heading": "Why you’ll love it",
-            "open": true
+            "open": false
           }
         },
         "highlight-1": {
           "type": "highlight",
           "settings": {
-            "icon": "icon-leaf",
+            "icon": "icon-seal-check",
             "text": "Skin Friendly Jewellery"
           }
         },
@@ -150,20 +150,20 @@
           "type": "highlight",
           "settings": {
             "icon": "icon-sparkles",
-            "text": "Anti Tarnish, Made for Daily Wear"
+            "text": "Anti Tarnish"
           }
         },
         "highlight-3": {
           "type": "highlight",
           "settings": {
             "icon": "icon-zap",
-            "text": "Long Lasting and Durable Vermeil"
+            "text": "Long Lasting and Durable"
           }
         },
         "highlight-4": {
           "type": "highlight",
           "settings": {
-            "icon": "icon-bacteria",
+            "icon": "icon-certificate",
             "text": "Hypoallergenic finish"
           }
         },
@@ -174,12 +174,20 @@
             "text": "Premium look, smart choice"
           }
         },
+        "highlight_tjyL6f": {
+          "type": "highlight",
+          "settings": {
+            "icon": "icon-diamond-outline",
+            "text": "Built for Daily Wear"
+          }
+        },
         "details": {
           "type": "product_details",
           "settings": {}
         },
         "care": {
           "type": "care_guide",
+          "disabled": true,
           "settings": {
             "care_guide_heading": "Care guide",
             "care_guide_image": "shopify://shop_images/Jewelry_care_guide.png"
@@ -217,7 +225,7 @@
             "kj_certification_heading": "Certification",
             "kj_certification_label": "SGL certified",
             "kj_pricing_heading": "Pricing",
-            "kj_pricing_claim": "40-60% easier on your pocket"
+            "kj_pricing_claim": "Upto 90% easier on your pocket"
           }
         },
         "related": {
@@ -333,7 +341,7 @@
           "type": "calc_fact",
           "settings": {
             "icon": "icon-percent-circle",
-            "text": "Save upto 40-60% with gold vermeil"
+            "text": "Save upto 80% with gold vermeil"
           }
         },
         "certificate-1": {
@@ -371,6 +379,7 @@
         "highlight-3",
         "highlight-4",
         "highlight-5",
+        "highlight_tjyL6f",
         "details",
         "care",
         "shipping",
@@ -411,8 +420,8 @@
         "difference_col_others": "Typical Brands",
         "calc_title": "Savings calculator",
         "calc_saving_label": "You save [amount] vs mined diamond",
-        "calc_mined_label": "Gold + Mined diamond",
-        "calc_ours_label": "Your Zinara piece",
+        "calc_mined_label": "Gold and Mined diamonds",
+        "calc_ours_label": "Zinara Vermeil and Lab Diamonds",
         "calc_explainer_intro": "Learn about Gold Vermeil & Lab-Grown Diamonds",
         "calc_cta_label": "Add to Cart"
       }

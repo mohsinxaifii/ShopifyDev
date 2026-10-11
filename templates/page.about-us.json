@@ -118,7 +118,7 @@
           "settings": {
             "image": "shopify://shop_images/evil_eye_collection.png",
             "label": "Evil Eye",
-            "url": ""
+            "url": "shopify://collections/evil-eye-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "card-2": {
@@ -126,7 +126,7 @@
           "settings": {
             "image": "shopify://shop_images/siesta_collection.png",
             "label": "Siesta",
-            "url": "/collections/siesta-collection"
+            "url": "shopify://collections/siesta-collection"
           }
         },
         "card-3": {
@@ -134,7 +134,7 @@
           "settings": {
             "image": "shopify://shop_images/prism3d_collection.png",
             "label": "Prism 3D",
-            "url": ""
+            "url": "shopify://collections/prism3d-pendants"
           }
         },
         "card-4": {
@@ -142,7 +142,7 @@
           "settings": {
             "image": "shopify://shop_images/double_take_collection.png",
             "label": "Double Take",
-            "url": "/collections/siesta-collection"
+            "url": "shopify://collections/double-take-two-stone-lab-grown-diamonds"
           }
         },
         "card-5": {
@@ -174,42 +174,42 @@
         "card-6": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-6.png",
+            "image": "shopify://shop_images/replating_aboutus.png",
             "label": "5× Thicker 18KT Gold Plating"
           }
         },
         "card-5": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-5.png",
+            "image": "shopify://shop_images/sgl_about_us.png",
             "label": "SGL-Certified Lab-Grown Diamonds"
-          }
-        },
-        "card-2": {
-          "type": "card",
-          "settings": {
-            "image": "shopify://shop_images/zinara-about-story-2.png",
-            "label": "7 day hassle free returns"
           }
         },
         "card-1": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-1.png",
+            "image": "shopify://shop_images/5Xthicker_aboutus.png",
             "label": "Lifetime free replating"
+          }
+        },
+        "card-2": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/7day_aboutus.png",
+            "label": "7 day hassle free returns"
           }
         },
         "card-3": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-3.png",
+            "image": "shopify://shop_images/exchange_aboutus.png",
             "label": "Lifetime buyback and exchange"
           }
         },
         "card-4": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/zinara-about-story-4.png",
+            "image": "shopify://shop_images/shipping_aboutus.png",
             "label": "Free & Insured Shipping"
           }
         },
@@ -224,8 +224,8 @@
       "block_order": [
         "card-6",
         "card-5",
-        "card-2",
         "card-1",
+        "card-2",
         "card-3",
         "card-4",
         "card_RNx86B"
@@ -240,7 +240,7 @@
     "about-founder": {
       "type": "about-founder",
       "settings": {
-        "image": "shopify://shop_images/zinara-about-founder.png",
+        "image": "shopify://shop_images/zinara_founders.jpg",
         "heading": "Founder",
         "quote": "“We wanted diamonds to feel less like an occasion, and more like a part of life.”",
         "body": "“Zinara started with a simple question: why should beautiful jewellery spend most of its life in a box? We wanted to create pieces that women could genuinely live in—pieces that feel special, but never too precious to wear.\n\nLab-grown diamonds gave us the opportunity to bring that vision to life in a way that felt modern, considered, and accessible.”",

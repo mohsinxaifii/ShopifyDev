@@ -14,13 +14,15 @@
       "settings": {
         "home_label": "Home",
         "current_label": "",
+        "parent_collection": "",
         "show_on": "mobile"
       }
     },
     "main": {
       "type": "article",
       "settings": {
-        "shop_heading": ""
+        "shop_heading": "",
+        "shop_collection": ""
       }
     },
     "breadcrumb": {
@@ -28,6 +30,7 @@
       "settings": {
         "home_label": "Home",
         "current_label": "",
+        "parent_collection": "",
         "show_on": "desktop"
       }
     },
@@ -36,6 +39,7 @@
       "settings": {
         "heading": "More from the journal",
         "link_label": "Read all",
+        "blog": "",
         "articles_to_show": 3
       }
     },
@@ -45,43 +49,64 @@
         "q1": {
           "type": "question",
           "settings": {
-            "question": "Are lab grown diamonds real?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can't be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can't also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "What is a lab-grown diamond?",
+            "answer": "A lab grown diamond is a diamond that is produced in a controlled laboratory environment and advanced technological processes that replicate the natural conditions under which diamonds form in the Earth's mantle. Lab grown diamonds are chemically, physically, and optically identical to natural diamonds. They have reduced environmental and ethical concerns associated with diamond mining."
           }
         },
         "q2": {
           "type": "question",
           "settings": {
-            "question": "Can you tell the difference between lab grown diamonds and natural diamonds?",
-            "answer": "Lab grown diamonds appear identical to natural diamonds and can’t be distinguished by the naked eye and with standard microscopic tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their origin."
+            "question": "How can you tell the difference between a lab-grown and natural diamond?",
+            "answer": "Lab-grown and natural diamonds can look identical to the naked eye and cannot be reliably distinguished with standard testing tools. Trained jewellers and experts can’t also tell the difference between them. They can only be distinguished from natural diamonds using specialized equipment that can detect the specific growth patterns and inclusions characteristic of their synthetic origin"
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Are ZINARA lab grown diamonds graded and certified?",
+            "question": "Are Zinara's lab-grown diamonds certified?",
             "answer": "Yes, lab grown diamonds are graded and certified by the same gemological laboratories that evaluate natural diamonds. Renowned organizations like GIA, IGI, and SGL provide these certifications. The grading process for lab grown diamonds is identical to that for natural diamonds, ensuring transparency and quality assurance. All lab grown diamonds used in jewellery offered by ZINARA are graded and certified by these laboratory organizations."
           }
         },
         "q4": {
           "type": "question",
           "settings": {
-            "question": "Do you deliver pan India?",
-            "answer": "Yes we deliver PAN India to 19000+ pincodes. To check if we deliver to your area, please enter your pincode or city on the product page."
+            "question": "What is gold vermeil?",
+            "answer": "Gold vermeil is 925 sterling silver finished with a layer of gold. Zinara jewellery features 18K gold vermeil with 6 layers of gold plating, making it 5× thicker than standard plating.\nOur pieces are designed to be waterproof, sweatproof and durable for everyday wear. And when your jewellery eventually needs a refresh, we also offer replating services to restore its finish"
           }
         },
         "q5": {
           "type": "question",
           "settings": {
-            "question": "Is ID proof required for delivery?",
-            "answer": "Some logistics partners may request ID proof, especially for high-value shipments, to ensure secure delivery."
+            "question": "How long does delivery take?",
+            "answer": "Delivery timelines vary depending on the product and delivery location. Your estimated delivery timeline will be provided at checkout/product level. For any assistance with your order, you can reach us at admin@zinara.in or +91 88518 12814."
           }
         },
         "q6": {
           "type": "question",
           "settings": {
-            "question": "What payment options are available?",
-            "answer": "Payment methods include credit cards, debit cards, net banking, international cards, and cash on delivery. Cash on delivery is available upto INR 35000"
+            "question": "What payment options do you offer?",
+            "answer": "We accept credit cards, debit cards, net banking, international cards and Cash on Delivery. COD is available for orders up to ₹35,000."
+          }
+        },
+        "question_QHxFa8": {
+          "type": "question",
+          "settings": {
+            "question": "How do I care for my Zinara jewellery?",
+            "answer": "Zinara jewellery is waterproof, sweatproof and made for everyday wear. That said, a little care can help keep your pieces looking their best for longer.\nAvoid prolonged exposure to perfumes, harsh chemicals, chlorine and abrasive products, and wipe your jewellery gently with a soft, dry cloth after wearing. When you're not wearing it, store it in a clean, dry place away from other jewellery."
+          }
+        },
+        "question_A9LQ3j": {
+          "type": "question",
+          "settings": {
+            "question": "Why vermeil instead of solid gold?",
+            "answer": "Gold vermeil gives you the look and long-lasting shine of solid gold jewelry at an accessible luxury price point. Crafted with a thick coating of 18k real gold (at least 2.5 microns) over a 925 sterling silver base, it offers superior durability over standard gold-plated pieces."
+          }
+        },
+        "question_6zY3hT": {
+          "type": "question",
+          "settings": {
+            "question": "Will it tarnish or fade over time?",
+            "answer": "No, gold vermeil is highly tarnish-resistant and lasts far longer than standard gold plating. With minimal care: avoiding moisture, perfumes, and harsh chemicals, it will retain its shine and gold finish for years."
           }
         }
       },
@@ -91,7 +116,10 @@
         "q3",
         "q4",
         "q5",
-        "q6"
+        "q6",
+        "question_QHxFa8",
+        "question_A9LQ3j",
+        "question_6zY3hT"
       ],
       "settings": {
         "heading": "Frequently Asked Questions"
@@ -103,21 +131,21 @@
         "logo-1": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-a.png",
+            "image": "shopify://shop_images/zinara-press-a.png",
             "height": 35
           }
         },
         "logo-2": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-b.png",
+            "image": "shopify://shop_images/zinara-press-b.png",
             "height": 23
           }
         },
         "logo-3": {
           "type": "logo",
           "settings": {
-            "image": "shopify:\/\/shop_images\/zinara-press-c.png",
+            "image": "shopify://shop_images/zinara-press-c.png",
             "height": 29
           }
         }
