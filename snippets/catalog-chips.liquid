@@ -14,8 +14,9 @@
   category's own collection (a campaign "A" with its sub-categories linked)
   gets that category's sub-categories the same way.
 
-  Linked entries always show; the outside-the-hierarchy categories show only
-  when this collection has products carrying their tag.
+  A chip shows only when this collection has products carrying its tag, so
+  an entry with nothing listed under it yet stays off the rail (the applied
+  chip always shows, so an old link still highlights where the shopper is).
 
   @param {string} path - this collection's path from catalog-path (empty when outside it)
   @param {object} collection - the collection being viewed
@@ -24,15 +25,13 @@
 {%- liquid
   assign handles = path | split: ','
   assign current_tag = current_tags.first | handleize
-  assign only_present = false
+  assign collection_tags = '|'
+  for collection_tag in collection.all_tags
+    assign collection_tags = collection_tags | append: collection_tag | handleize | append: '|'
+  endfor
   case handles.size
     when 0
       assign children = metaobjects.catalog_category.values
-      assign only_present = true
-      assign collection_tags = '|'
-      for collection_tag in collection.all_tags
-        assign collection_tags = collection_tags | append: collection_tag | handleize | append: '|'
-      endfor
     when 1
       assign children = metaobjects.catalog_category[handles[0]].subcategories.value
     when 2
@@ -47,12 +46,10 @@
   {%- for child in children -%}
     {%- liquid
       assign child_tag = child.tag.value | default: child.name.value | handleize
-      if only_present
-        assign needle = '|' | append: child_tag | append: '|'
-        unless collection_tags contains needle
-          continue
-        endunless
-      endif
+      assign needle = '|' | append: child_tag | append: '|'
+      unless collection_tags contains needle or child_tag == current_tag
+        continue
+      endunless
       assign child_url = collection.url | append: '/' | append: child_tag
       assign child_active = false
       if child_tag == current_tag
