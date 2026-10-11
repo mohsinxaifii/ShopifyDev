@@ -15,8 +15,8 @@
         "slide-1": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/new_arrivals_v2_desktop.png",
-            "mobile_image": "shopify://shop_images/mobile_web_banner_test.png",
+            "image": "shopify://shop_images/festive_banner_desktop.png",
+            "mobile_image": "shopify://shop_images/festive_banner_mobile.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
@@ -25,10 +25,9 @@
         },
         "slide_mkRNm4": {
           "type": "slide",
-          "disabled": true,
           "settings": {
-            "image": "shopify://shop_images/zinara-hero-slide-1.png",
-            "mobile_image": "shopify://shop_images/zinara-hero-mobile-rakhi.png",
+            "image": "shopify://shop_images/evileye_banner_desktop.png",
+            "mobile_image": "shopify://shop_images/evileye_banner_mobile.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
