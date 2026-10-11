@@ -70,7 +70,7 @@
           "type": "link",
           "settings": {
             "label": "Rings",
-            "url": "/collections/all-rings",
+            "url": "shopify://collections/rings",
             "show_new_badge": false,
             "align_end": false
           }
@@ -79,7 +79,7 @@
           "type": "link",
           "settings": {
             "label": "Earrings",
-            "url": "/collections/all-earrings",
+            "url": "shopify://collections/earrings",
             "show_new_badge": false,
             "align_end": false
           }
@@ -88,7 +88,7 @@
           "type": "link",
           "settings": {
             "label": "Pendants/Necklaces",
-            "url": "/collections/all-pendants",
+            "url": "shopify://collections/necklace",
             "show_new_badge": false,
             "align_end": false
           }
@@ -97,7 +97,7 @@
           "type": "link",
           "settings": {
             "label": "Bracelets",
-            "url": "/collections/all-bracelets",
+            "url": "shopify://collections/bracelet",
             "show_new_badge": false,
             "align_end": false
           }
@@ -106,7 +106,7 @@
           "type": "link",
           "settings": {
             "label": "Evil Eye",
-            "url": "",
+            "url": "shopify://collections/evil-eye-18kt-gold-vermeil-and-lab-grown-diamonds",
             "show_new_badge": true,
             "align_end": false
           }

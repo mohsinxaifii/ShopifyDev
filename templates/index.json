@@ -20,7 +20,7 @@
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "shopify://collections/zinara-best-sellers-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "slide_mkRNm4": {
@@ -31,7 +31,7 @@
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": ""
+            "button_url": "shopify://collections/evil-eye-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "slide_BEYVhA": {
@@ -403,7 +403,7 @@
           "settings": {
             "image": "shopify://shop_images/evil_eye_collection.png",
             "label": "Evil Eye",
-            "url": ""
+            "url": "shopify://collections/evil-eye-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "card-2": {
@@ -536,7 +536,7 @@
           "settings": {
             "image": "shopify://shop_images/work_occassion.png",
             "label": "Work",
-            "url": ""
+            "url": "shopify://collections/for-work-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-2": {
@@ -544,7 +544,7 @@
           "settings": {
             "image": "shopify://shop_images/night_out_occassion.png",
             "label": "Night Out",
-            "url": ""
+            "url": "shopify://collections/for-night-out-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-3": {
@@ -552,7 +552,7 @@
           "settings": {
             "image": "shopify://shop_images/date_night_occassion.png",
             "label": "Date Night",
-            "url": ""
+            "url": "shopify://collections/for-date-night-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-4": {
@@ -560,7 +560,7 @@
           "settings": {
             "image": "shopify://shop_images/day_out.png",
             "label": "Day Out",
-            "url": ""
+            "url": "shopify://collections/for-day-out-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occ-5": {
@@ -568,7 +568,7 @@
           "settings": {
             "image": "shopify://shop_images/festive_occassion.png",
             "label": "Festive",
-            "url": ""
+            "url": "shopify://collections/festive-wear-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         },
         "occasion_card_QwRyyM": {
@@ -576,7 +576,7 @@
           "settings": {
             "image": "shopify://shop_images/self_love_occassion.png",
             "label": "Self Love",
-            "url": ""
+            "url": "shopify://collections/self-love-18kt-gold-vermeil-and-lab-grown-diamonds"
           }
         }
       },
