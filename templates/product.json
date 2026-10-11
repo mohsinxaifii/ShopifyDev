@@ -341,7 +341,7 @@
           "type": "calc_fact",
           "settings": {
             "icon": "icon-percent-circle",
-            "text": "Save upto 40-60% with gold vermeil"
+            "text": "Save upto 80% with gold vermeil"
           }
         },
         "certificate-1": {
@@ -420,8 +420,8 @@
         "difference_col_others": "Typical Brands",
         "calc_title": "Savings calculator",
         "calc_saving_label": "You save [amount] vs mined diamond",
-        "calc_mined_label": "Gold + Mined diamond",
-        "calc_ours_label": "Your Zinara piece",
+        "calc_mined_label": "Gold and Mined diamonds",
+        "calc_ours_label": "Zinara Vermeil and Lab Diamonds",
         "calc_explainer_intro": "Learn about Gold Vermeil & Lab-Grown Diamonds",
         "calc_cta_label": "Add to Cart"
       }
