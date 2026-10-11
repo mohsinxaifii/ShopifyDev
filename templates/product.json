@@ -142,7 +142,7 @@
         "highlight-1": {
           "type": "highlight",
           "settings": {
-            "icon": "icon-leaf",
+            "icon": "icon-seal-check",
             "text": "Skin Friendly Jewellery"
           }
         },
@@ -150,20 +150,20 @@
           "type": "highlight",
           "settings": {
             "icon": "icon-sparkles",
-            "text": "Anti Tarnish, Made for Daily Wear"
+            "text": "Anti Tarnish"
           }
         },
         "highlight-3": {
           "type": "highlight",
           "settings": {
             "icon": "icon-zap",
-            "text": "Long Lasting and Durable Vermeil"
+            "text": "Long Lasting and Durable"
           }
         },
         "highlight-4": {
           "type": "highlight",
           "settings": {
-            "icon": "icon-bacteria",
+            "icon": "icon-certificate",
             "text": "Hypoallergenic finish"
           }
         },
@@ -174,12 +174,20 @@
             "text": "Premium look, smart choice"
           }
         },
+        "highlight_tjyL6f": {
+          "type": "highlight",
+          "settings": {
+            "icon": "icon-diamond-outline",
+            "text": "Built for Daily Wear"
+          }
+        },
         "details": {
           "type": "product_details",
           "settings": {}
         },
         "care": {
           "type": "care_guide",
+          "disabled": true,
           "settings": {
             "care_guide_heading": "Care guide",
             "care_guide_image": "shopify://shop_images/Jewelry_care_guide.png"
@@ -371,6 +379,7 @@
         "highlight-3",
         "highlight-4",
         "highlight-5",
+        "highlight_tjyL6f",
         "details",
         "care",
         "shipping",
