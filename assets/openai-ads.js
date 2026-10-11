@@ -66,7 +66,7 @@
       if (item) {
         contents = [
           {
-            id: String(item.item_id),
+            id: String(item.sku || item.item_id),
             name: item.item_name || '',
             content_type: 'product',
             quantity: 1,

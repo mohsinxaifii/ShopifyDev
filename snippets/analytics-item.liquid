@@ -3,6 +3,11 @@
   event tracking plan. Used by layout/theme.liquid (PDP, lists) and by the
   data-analytics-item attribute on product cards (assets/analytics.js).
 
+  item_id is the Google & YouTube app's own id (shopify_IN_<product>_<variant>,
+  its target country), so an item reads the same in GA4 whichever of us sent
+  it. product_id and sku ride along for analytics.js (Meta, OpenAI) and are
+  stripped before GA4.
+
   item_category3 is the product's first collection other than "All".
   item_category2 (metal), item_category4 (stone) and item_category5
   (sub-category / occasion) are left out: the shop has no per-product field
@@ -16,7 +21,7 @@
 {%- enddoc -%}
 {%- liquid
   assign item_variant = variant | default: product.selected_or_first_available_variant
-  assign item_id = item_variant.sku | default: item_variant.id
+  assign item_id = 'shopify_IN_' | append: product.id | append: '_' | append: item_variant.id
   assign item_price = item_variant.price | divided_by: 100.0
   assign item_discount = 0
   if item_variant.compare_at_price > item_variant.price
@@ -48,5 +53,6 @@
   "quantity": {{ quantity | default: 1 }}
   {%- if index != blank %}, "index": {{ index }}{% endif -%}
   {%- if list_name != blank %}, "item_list_name": {{ list_name | json }}{% endif %},
-  "product_id": {{ product.id | append: '' | json }}
+  "product_id": {{ product.id | append: '' | json }},
+  "sku": {{ item_variant.sku | default: item_variant.id | append: '' | json }}
 }

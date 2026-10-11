@@ -441,18 +441,21 @@
     return text.replace(/\s+/g, ' ').trim().slice(0, LIMIT);
   }
 
-  /** Meta reads ecommerce data as content_ids / contents. */
-  function metaPayload(params) {
+  /** Meta reads ecommerce data as content_ids / contents - keyed by product
+      id as a product_group, as the Facebook & Instagram app sends them, so
+      they match its catalog. `items` still carry product_id here. */
+  function metaPayload(params, items) {
     const payload = { ...params };
-    if (Array.isArray(params.items)) {
-      payload.content_type = 'product';
-      payload.content_ids = params.items.map((item) => item.item_id);
-      payload.contents = params.items.map((item) => ({
-        id: item.item_id,
+    if (Array.isArray(items)) {
+      const idOf = (item) => item.product_id || item.item_id;
+      payload.content_type = 'product_group';
+      payload.content_ids = [...new Set(items.map(idOf).filter(Boolean))];
+      payload.contents = items.map((item) => ({
+        id: idOf(item),
         quantity: item.quantity || 1,
         item_price: item.price,
       }));
-      payload.num_items = params.items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      payload.num_items = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
       delete payload.items;
     }
     return payload;
@@ -482,10 +485,11 @@
     // Guard the plan asks for: an ecommerce event with no items is noise.
     if (plan.params.includes('items') && (!Array.isArray(params.items) || params.items.length === 0)) return;
 
-    // product_id rides along on items for this file's own use; GA4 items
-    // carry only the fields in the plan's Items Array tab.
+    // product_id and sku ride along on items for this file's own use; GA4
+    // items carry only the fields in the plan's Items Array tab.
+    const fullItems = params.items;
     if (Array.isArray(params.items)) {
-      params.items = params.items.map(({ product_id: omitted, ...item }) => item);
+      params.items = params.items.map(({ product_id: omitted, sku: alsoOmitted, ...item }) => item);
     }
     const payload = { ...base, ...params };
 
@@ -493,7 +497,7 @@
       window.gtag('event', name, { ...payload, send_to: gaId });
     }
     if (pixelId && plan.meta && routing.meta !== false && typeof window.fbq === 'function') {
-      const metaData = metaPayload(payload);
+      const metaData = metaPayload(payload, fullItems);
       const options = { eventID: eventId() };
       if (plan.meta === 'custom') window.fbq('trackCustom', name, metaData, options);
       else window.fbq('track', plan.meta, metaData, options);
@@ -615,9 +619,10 @@
     } catch (error) {
       item = null;
     }
+    // No item_id here: the card has no product/variant ids yet, and a handle
+    // would be a third id format. GA4 accepts an item by name alone.
     if (!item) {
       item = {
-        item_id: handleFromUrl(card.getAttribute('href')),
         item_name: textOf(card.querySelector('.product-card_info_title')),
         item_brand: 'Zinara',
         quantity: 1,
@@ -909,7 +914,9 @@
   /** GA4 items from /cart.js lines. */
   function cartItems(lines) {
     return lines.map((line, index) => ({
-      item_id: line.sku || String(line.variant_id),
+      item_id: `shopify_IN_${line.product_id}_${line.variant_id}`,
+      product_id: String(line.product_id),
+      sku: line.sku || String(line.variant_id),
       item_name: line.product_title,
       item_brand: 'Zinara',
       item_category: line.product_type,

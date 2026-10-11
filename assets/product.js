@@ -1476,7 +1476,8 @@
       const { item_variant: omitted, ...rest } = base;
       return {
         ...rest,
-        item_id: variant.sku || String(variant.id),
+        item_id: `shopify_IN_${rest.product_id}_${variant.id}`,
+        sku: variant.sku || String(variant.id),
         ...(variant.title && variant.title !== 'Default Title' ? { item_variant: variant.title } : {}),
         price: variant.price / 100,
         discount: variant.compareAt > variant.price ? (variant.compareAt - variant.price) / 100 : 0,
