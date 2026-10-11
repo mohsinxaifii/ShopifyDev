@@ -136,7 +136,7 @@
           "type": "highlights",
           "settings": {
             "highlights_heading": "Why you’ll love it",
-            "open": true
+            "open": false
           }
         },
         "highlight-1": {
