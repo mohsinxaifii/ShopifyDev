@@ -27,7 +27,8 @@
   assign current_tag = current_tags.first | handleize
   assign collection_tags = '|'
   for collection_tag in collection.all_tags
-    assign collection_tags = collection_tags | append: collection_tag | handleize | append: '|'
+    assign tag_handle = collection_tag | handleize
+    assign collection_tags = collection_tags | append: tag_handle | append: '|'
   endfor
   case handles.size
     when 0
