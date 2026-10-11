@@ -411,7 +411,7 @@
           "settings": {
             "image": "shopify://shop_images/siesta_collection.png",
             "label": "Siesta",
-            "url": "/collections/siesta-collection"
+            "url": "shopify://collections/siesta-collection"
           }
         },
         "card-3": {
@@ -419,7 +419,7 @@
           "settings": {
             "image": "shopify://shop_images/prism3d_collection.png",
             "label": "Prism 3D",
-            "url": ""
+            "url": "shopify://collections/prism3d-pendants"
           }
         },
         "card-4": {
@@ -427,7 +427,7 @@
           "settings": {
             "image": "shopify://shop_images/double_take_collection.png",
             "label": "Double Take",
-            "url": "/collections/siesta-collection"
+            "url": "shopify://collections/double-take-two-stone-lab-grown-diamonds"
           }
         },
         "card-5": {
