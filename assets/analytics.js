@@ -557,6 +557,8 @@
   document.addEventListener(
     'click',
     (event) => {
+      // A tap held until KwikPass was ready and then replayed - already counted.
+      if (event.zinaraReplay) return;
       const element = event.target.closest?.('[data-analytics]');
       if (!element) return;
       // One element may stand for more than one plan event, space-separated

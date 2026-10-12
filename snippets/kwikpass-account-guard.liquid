@@ -1,10 +1,22 @@
 {%- doc -%}
-  Keeps KwikPass from dropping shoppers onto their account page uninvited.
+  Keeps account links on KwikPass, and keeps KwikPass from dropping shoppers
+  onto their account page uninvited.
 
-  KwikPass signs a returning shopper in by itself (single sign-on, from any
-  page - the home page included) and, because the store has its custom
-  account page switched on, then sends them to /pages/kp-account. Nobody asked
-  to go there, so it reads as a jump to a strange page.
+  1. Account links before KwikPass is ready. KwikPass's app embed only takes
+  over account links (the header icon, the menu's Login) on the window's load
+  event - after every image, video and app script on the page. A tap before
+  that is a plain /account link, so it lands on Shopify's own "Sign in with
+  Shop" page. Such a tap is held here (the link shows the embed's loading
+  cursor) and handed back to the link once KwikPass is listening, so KwikPass
+  opens its phone-OTP login. If the page is still loading after a few seconds
+  the tap goes to KwikPass's login function directly; with no KwikPass at all
+  the link just navigates.
+
+  2. Uninvited account visits. KwikPass signs a returning shopper in by itself
+  (single sign-on, from any page - the home page included) and, because the
+  store has its custom account page switched on, then sends them to
+  /pages/kp-account. Nobody asked to go there, so it reads as a jump to a
+  strange page.
 
   A visit to the account page counts as wanted when the shopper clicked
   something that leads to an account in the last ten minutes (the header
@@ -12,22 +24,90 @@
   account page, or when there is no referring page at all (a bookmark, a
   typed URL, an email link). Anything else is KwikPass's own redirect: the
   shopper - now signed in - goes straight back to the page they were on.
+
+  Rendered in <head>, ahead of the apps, so its click listener runs first.
 {%- enddoc -%}
 <script>
   (function () {
     var KEY = 'zinara:account-intent';
     var TTL = 10 * 60 * 1000;
     var ACCOUNT_PATH = /\/account|kp-account|customer_authentication/;
+    // How long a held tap waits for the page's load event before going to
+    // KwikPass directly.
+    var HOLD_LIMIT = 4000;
 
-    // Remember account intent - captured, so no handler can hide the click.
+    // The links KwikPass's own click handler takes over (kp-shopify-app-sdk.js).
+    function isKwikPassLink(link) {
+      var path = link.pathname || '';
+      if (link.origin !== window.location.origin) return false;
+      return (
+        path === '/account' ||
+        path.indexOf('/account/login') === 0 ||
+        path.indexOf('/account/register') === 0 ||
+        path === '/account/addresses' ||
+        /account$/.test(path) ||
+        path.indexOf('customer_authentication') !== -1
+      );
+    }
+
+    // Its login function (core functions) and its login modal (merchant v2,
+    // which sets KwikAnalytics) have both run.
+    function kwikPassReady() {
+      return typeof window.kpHandleLogin === 'function' && !!window.KwikAnalytics;
+    }
+
+    var held = null;
+
+    // Hands the held tap back to its link, now that KwikPass listens for it.
+    // zinaraReplay keeps analytics from counting the tap a second time.
+    function replay(link) {
+      var click = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+      click.zinaraReplay = true;
+      link.dispatchEvent(click);
+    }
+
+    function release(direct) {
+      if (!held) return;
+      var link = held;
+      held = null;
+      link.classList.remove('kwikpass-loading');
+      if (direct && kwikPassReady()) {
+        window.kpHandleLogin(link.dataset.redirectUrl || '/account');
+      } else {
+        replay(link);
+      }
+    }
+
+    // KwikPass adds its click handler from a load listener of its own, so wait
+    // one more turn for it to be in place.
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        release(false);
+      }, 0);
+    });
+
     document.addEventListener(
       'click',
       function (event) {
         var link = event.target.closest && event.target.closest('a[href]');
         if (!link || !ACCOUNT_PATH.test(link.getAttribute('href') || '')) return;
+
+        // Remember account intent - captured, so no handler can hide the click.
         try {
           sessionStorage.setItem(KEY, String(Date.now()));
         } catch (error) {}
+
+        if (event.zinaraReplay || document.readyState === 'complete') return;
+        if (!isKwikPassLink(link) || event.defaultPrevented) return;
+        if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+        event.preventDefault();
+        if (held) return;
+        held = link;
+        link.classList.add('kwikpass-loading');
+        setTimeout(function () {
+          if (held === link && kwikPassReady()) release(true);
+        }, HOLD_LIMIT);
       },
       true
     );
