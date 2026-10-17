@@ -890,10 +890,9 @@
     /* --------------------------------------------------------- pincode */
 
     /**
-     * Pincode check, with the live theme's serviceability rules:
-     * assets/pincodes.json lists the pincodes each lane serves ("gold" /
-     * "silver"; the product's tags pick one - see data-pincode-set). The list
-     * is half a megabyte, so it is fetched on first use, not with the page.
+     * Pincode check: assets/pincodes.json lists the served pincodes, one
+     * list for every product. The list is half a megabyte, so it is
+     * fetched on first use, not with the page.
      * A served pincode gets an expected delivery date, as on the live theme:
      * today plus the block's in-stock days (3) when the picked variant has
      * stock, else its out-of-stock days (21 + 3 = 24).
@@ -956,22 +955,22 @@
       });
     }
 
-    /* Whether this product's lane (data-pincode-set) serves a pincode. The
-       lists are fetched once, on first use; a failed fetch is retried. */
+    /* Whether a pincode is served. The list is fetched once, on first use;
+       a failed fetch is retried. */
     pincodeServes(pincode) {
-      if (!this.pincodeLists) {
-        this.pincodeLists = fetch(this.dataset.pincodesUrl)
+      if (!this.pincodeList) {
+        this.pincodeList = fetch(this.dataset.pincodesUrl)
           .then((response) => {
             if (!response.ok) throw new Error(`${response.status}`);
             return response.json();
           })
-          .then((data) => ({ gold: new Set(data.gold || []), silver: new Set(data.silver || []) }))
+          .then((data) => new Set(data))
           .catch((error) => {
-            this.pincodeLists = null;
+            this.pincodeList = null;
             throw error;
           });
       }
-      return this.pincodeLists.then((sets) => (sets[this.dataset.pincodeSet] || sets.gold).has(pincode));
+      return this.pincodeList.then((list) => list.has(pincode));
     }
 
     /* ------------------------------------------------------- video call */
