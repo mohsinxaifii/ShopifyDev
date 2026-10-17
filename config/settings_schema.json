@@ -364,5 +364,29 @@
         "info": "Logs every event to the browser console as [openai-ads]. Turn off once the Event Stream in Ads Manager shows the events."
       }
     ]
+  },
+  {
+    "name": "WhatsApp button",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "whatsapp_floater_enabled",
+        "label": "Show floating WhatsApp button",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_floater_phone",
+        "label": "WhatsApp number",
+        "default": "919217975782",
+        "info": "With country code, e.g. 919217975782."
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_floater_message",
+        "label": "Opening message",
+        "default": "Hi"
+      }
+    ]
   }
 ]

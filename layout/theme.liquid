@@ -96,6 +96,9 @@
     {% # Variant picker: every add-to-cart for a product with options asks here first %}
     {% render 'variant-drawer' %}
 
+    {% # Floating WhatsApp button (Theme settings > WhatsApp button) %}
+    {% render 'whatsapp-floater' %}
+
     <script>
       window.themeStrings = {
         adding: {{ 'cart.adding' | t | json }},

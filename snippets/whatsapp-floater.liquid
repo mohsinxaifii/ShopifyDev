@@ -1,0 +1,54 @@
+{%- doc -%}
+  Floating WhatsApp button, bottom right on every page - ported from the
+  previous live theme (Zinara-X-Revolv). Number and opening message are
+  theme settings (Theme settings > WhatsApp button).
+{%- enddoc -%}
+
+{%- liquid
+  assign wa_phone = settings.whatsapp_floater_phone | remove: '+' | remove: ' ' | remove: '-'
+  assign wa_message = settings.whatsapp_floater_message | default: 'Hi' | url_encode
+-%}
+{%- if settings.whatsapp_floater_enabled and wa_phone != blank -%}
+<a
+  class="whatsapp-floater"
+  href="https://api.whatsapp.com/send?phone={{ wa_phone }}&text={{ wa_message }}"
+  target="_blank"
+  rel="noopener"
+  aria-label="Chat with us on WhatsApp"
+>
+  {{- 'icon-whatsapp.svg' | inline_asset_content -}}
+</a>
+<style>
+  .whatsapp-floater {
+    position: fixed;
+    right: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 29;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    background-color: #25d366;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    color: #fff;
+  }
+
+  .whatsapp-floater svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .whatsapp-floater {
+      right: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* The product page pins its buy bar to the foot of the screen - sit above it. */
+    body:has(.pdp_buy) .whatsapp-floater {
+      bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+</style>
+{%- endif -%}
