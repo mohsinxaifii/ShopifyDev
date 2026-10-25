@@ -78,6 +78,16 @@
   padding: 4px;
 }
 
+/* Light type on the card's coloured pills and bars is smoothed in greyscale,
+   as Figma renders it: the browser's default (subpixel on macOS) draws white
+   text on a dark ground noticeably heavier than the design. */
+.product-card_media_top_badge,
+.product-card_delivery,
+.product-card_media_soldout {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .product-card_media_top_badge {
   display: inline-flex;
   align-items: center;

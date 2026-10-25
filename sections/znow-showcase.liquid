@@ -6,10 +6,9 @@
   ZNow showcase - Figma 8470:78220 (desktop) / 8470:68162 (mobile). Shown to
   everyone, in the ZNow area or not: the ZNow collection in the theme's
   product carousel (product-carousel.js, the same cards as everywhere), on
-  the ZNow gradient. "Check availability" goes through the ZNow flow
-  (snippets/znow-flow) exactly like the Shop by category tile - the location
-  dialog first for a shopper not known to be in the area, straight to the
-  collection (and its loader) for one who is.
+  the ZNow gradient. "Check availability" always opens the ZNow location
+  dialog (snippets/znow-flow, data-znow-check) - even for a shopper already
+  in the area - and a served pincode then goes on to the collection.
 {%- endcomment -%}
 {%- liquid
   assign znow_collection = section.settings.collection
@@ -41,7 +40,7 @@
         <a
           href="{{ znow_collection.url }}"
           class="znow-showcase_head_button"
-          data-znow-link
+          data-znow-check
           data-analytics="section_cta_click"
           data-analytics-section-name="{{ track_section }}"
         >
@@ -85,7 +84,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Shown to every shopper. Check availability opens the ZNow pincode check (shoppers already in the same-day area go straight to the collection)."
+      "content": "Shown to every shopper. Check availability always opens the ZNow pincode check; a same-day pincode then opens the collection."
     },
     {
       "type": "collection",

@@ -81,12 +81,13 @@
     return date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
   }
 
-  function openDialog(state) {
+  function openDialog(state, options = {}) {
     busy = false;
     input.value = state.pincode || '';
     say('');
-    // Following a ZNow link from outside the area: say so straight away.
-    if (target && state.source === 'gps' && state.status === 'granted' && !state.znow) {
+    // Following a ZNow link from outside the area: say so straight away
+    // (not when the shopper asked to check - they get the question).
+    if (!options.ask && target && state.source === 'gps' && state.status === 'granted' && !state.znow) {
       view('unavailable', { pincode: state.pincode });
     } else {
       view('ask');
@@ -304,6 +305,19 @@
     const state = window.zinaraLocation?.get() || {};
     if (state.znow) window.location.assign(target);
     else openDialog(state);
+  });
+
+  /* "Check availability" (data-znow-check, the ZNow showcase): the dialog
+     every time, even for a shopper already known to be in the area - it asks
+     rather than assumes. A same-day answer then opens the link. */
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[data-znow-check]');
+    if (!link || event.defaultPrevented) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (window.Shopify?.designMode) return;
+    event.preventDefault();
+    target = link.href;
+    openDialog(window.zinaraLocation?.get() || {}, { ask: true });
   });
 
   /* ---------------------------------------------------- deliver to (PLP) */
