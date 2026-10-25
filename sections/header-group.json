@@ -18,7 +18,7 @@
           "type": "znow",
           "settings": {
             "text": "Same day delivery",
-            "link": "/collections/all"
+            "link": "shopify://collections/znow"
           }
         },
         "message_3Mt9UH": {
