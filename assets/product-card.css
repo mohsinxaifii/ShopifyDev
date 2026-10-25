@@ -38,6 +38,13 @@
   pointer-events: none;
 }
 
+/* Photo + delivery bar, flush together; the card's gap starts below them. */
+.product-card_visual {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .product-card_media {
   position: relative;
   display: flex;
@@ -76,6 +83,97 @@
   font-weight: 600;
   font-size: 12px;
   line-height: 1.667;
+}
+
+/* ------------------------------------------------------ delivery bar */
+
+/* Figma 8470:33828-33845 (mobile S) and 8470:33833 (desktop L): a full-width
+   strip under the photo saying how it ships. The in-stock pair is chosen by
+   the shopper's area - html.is-znow, set by snippets/location before paint. */
+.product-card_delivery {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+html:not(.is-znow) .product-card_delivery[data-znow-only],
+html.is-znow .product-card_delivery[data-znow-hide] {
+  display: none;
+}
+
+.product-card_delivery--znow {
+  background: linear-gradient(to right, #4a162c, #712242);
+  color: #ecc0d2;
+}
+
+.product-card_delivery_znow {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.product-card_delivery_znow svg {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+/* Many sizes in stock: the list gives way before "Get it today" does. */
+.product-card_delivery_sizes {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-card_delivery--ready {
+  background-color: #ac3465;
+  color: #fff;
+}
+
+.product-card_delivery--made {
+  background-color: #ecc0d2;
+  color: var(--color-brand, #712242);
+}
+
+.product-card_delivery--soon {
+  background-color: #c4c4c4;
+  color: #666;
+}
+
+/* Not buyable: the photo veiled, "Out of stock" across its middle. */
+.product-card--coming-soon .product-card_media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.product-card_media_soldout {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: #000;
+  white-space: nowrap;
 }
 
 /* The variant drawer swaps badges with `hidden`, which display above outranks. */
@@ -363,6 +461,24 @@
   :is(.product-carousel, .article_wrapper_body_shop) .product-card_info_title {
     font-size: 12px;
     line-height: 20px;
+  }
+
+  /* Delivery bar, size S (Figma 8470:33828): 8px on a 16px line, 2px/6px. */
+  .product-card_delivery {
+    padding: 2px 6px;
+    font-size: 8px;
+    line-height: 16px;
+  }
+
+  .product-card_delivery_znow svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  .product-card_media_soldout {
+    padding: 2px 6px;
+    font-size: 8px;
+    line-height: 16px;
   }
 
   /* Grid card (PLP, search, wishlist - Figma Mobile 7930:118627): the same 8px tag

@@ -104,6 +104,7 @@
     data-animate-distance="20"
   {% endif %}
 >
+  <span class="product-card_visual">
   <span class="product-card_media">
     {%- if product.featured_image -%}
       {{
@@ -171,6 +172,7 @@
     {%- else -%}
       <span class="product-card_delivery product-card_delivery--soon">Coming soon</span>
   {%- endcase -%}
+  </span>
 
   <span class="product-card_info">
     <span class="product-card_info_price">
