@@ -334,10 +334,19 @@
 
   function findHost() {
     const host = document.querySelector('shadow-dom-container');
-    if (host?.shadowRoot) watch(host.shadowRoot);
+    if (host?.shadowRoot) {
+      watch(host.shadowRoot);
+      hostWatcher?.disconnect();
+    }
   }
 
-  new MutationObserver(findHost).observe(document.body, { childList: true });
+  // GoKwik mounts its container once, wherever it likes; look again only
+  // when an element is added, until it's found.
+  const hostWatcher = new MutationObserver((records) => {
+    if (root) return;
+    if (records.some((record) => [...record.addedNodes].some((node) => node.nodeType === 1))) findHost();
+  });
+  hostWatcher.observe(document.body, { childList: true, subtree: true });
   findHost();
 
   ['zinara:location', 'zinara:znow-cutoff'].forEach((type) => document.addEventListener(type, schedule));
