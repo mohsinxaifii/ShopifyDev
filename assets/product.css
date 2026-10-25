@@ -4698,3 +4698,76 @@ button.pdp_trust_grid_item_inner {
     height: 20px;
   }
 }
+
+/* ---------------------------------------------- ZNow: nothing snaps */
+
+/* Everything here that a shopper's own action reveals fades up (znow-appear,
+   defined in snippets/location): an animation restarts whenever an element
+   goes from display:none to shown, so each of these animates exactly when it
+   appears - a new pill on a variant change, a Z badge on a value now in
+   stock, a delivery row or message, the known-pincode field. */
+.pdp_ship_tag.is-changing .pdp_ship_tag_pill,
+html.znow-switching .pdp_ship_tag_pill,
+.pdp_option_values_value_znow,
+.pdp_delivery_known,
+.pdp_delivery_row,
+.pdp_delivery_option,
+.pdp_delivery_result {
+  animation: znow-appear 0.3s ease-out;
+}
+
+/* The Z badge pops rather than rises - it lands on the chip's corner. */
+.pdp_option_values_value_znow {
+  animation-name: pdp-znow-badge-in;
+}
+
+@keyframes pdp-znow-badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* Back prompt closes the way it opened (product.js adds .is-closing). */
+.pdp_znow_back.is-closing {
+  animation: pdp-znow-back-out 0.25s ease-in forwards;
+}
+
+.pdp_znow_back.is-closing::backdrop {
+  animation: pdp-znow-backdrop-out 0.25s ease-in forwards;
+}
+
+.pdp_znow_back[open]::backdrop {
+  animation: pdp-znow-backdrop-in 0.25s ease-out;
+}
+
+@keyframes pdp-znow-back-out {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+
+@keyframes pdp-znow-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pdp-znow-backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .pdp_znow_back.is-closing {
+    animation-name: pdp-znow-back-down;
+  }
+
+  @keyframes pdp-znow-back-down {
+    to {
+      transform: translateY(100%);
+    }
+  }
+}

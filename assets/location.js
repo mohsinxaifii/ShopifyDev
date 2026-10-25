@@ -100,10 +100,24 @@
     return pincodeIsZnow(state.pincode);
   }
 
+  /* A ZNow change on an open page: <html> carries "znow-switching" for a
+     moment, so everything that swaps with it (card bars, the header chip,
+     the PDP pills) fades in rather than snapping - and only then, not on
+     every page load. */
+  let switching;
+  function setZnow(on) {
+    const root = document.documentElement;
+    if (root.classList.contains('is-znow') === on) return;
+    root.classList.add('znow-switching');
+    root.classList.toggle('is-znow', on);
+    clearTimeout(switching);
+    switching = setTimeout(() => root.classList.remove('znow-switching'), 400);
+  }
+
   function save(changes) {
     state = { ...state, ...changes, updated: Date.now() };
     write(state);
-    document.documentElement.classList.toggle('is-znow', znowNow());
+    setZnow(znowNow());
     document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
     return api.get();
   }
@@ -210,8 +224,9 @@
   let detecting = null;
 
   /** Resolves with get() once the area is known (the pincode may still be
-      blank); rejects with an Error whose `code` is 'denied', 'unavailable',
-      'timeout' or 'area' (the outline could not be loaded). */
+      blank); rejects with an Error whose `code` is 'denied' (this site is
+      blocked), 'system' (the site is allowed but the device has location
+      off), 'unavailable', 'timeout' or 'area' (the outline could not load). */
   function detect() {
     if (detecting) return detecting;
     detecting = (async () => {
@@ -220,7 +235,10 @@
         ({ coords } = await position());
       } catch (error) {
         // GeolocationPositionError: 1 denied, 2 unavailable, 3 timeout.
-        const code = error.code === 1 ? 'denied' : error.code === 3 ? 'timeout' : 'unavailable';
+        let code = error.code === 1 ? 'denied' : error.code === 3 ? 'timeout' : 'unavailable';
+        // Denied although this site is allowed: the device itself has location
+        // off (Windows / macOS / Android settings) - the site setting is fine.
+        if (code === 'denied' && (await permission()) === 'granted') code = 'system';
         if (code === 'denied') save({ status: 'denied' });
         throw Object.assign(new Error(error.message || code), { code });
       }

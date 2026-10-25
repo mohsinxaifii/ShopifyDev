@@ -84,10 +84,17 @@
     var sync = function () {
       var time = window.zinaraZnowTime;
       var after = time.afterCutoff();
-      if (document.documentElement.classList.contains('znow-after-cutoff') !== after) {
-        document.documentElement.classList.toggle('znow-after-cutoff', after);
+      var root = document.documentElement;
+      if (root.classList.contains('znow-after-cutoff') !== after) {
+        // Not on the first run (page load) - only a flip on an open page fades.
+        if (time.synced) {
+          root.classList.add('znow-switching');
+          setTimeout(function () { root.classList.remove('znow-switching'); }, 400);
+        }
+        root.classList.toggle('znow-after-cutoff', after);
         document.dispatchEvent(new CustomEvent('zinara:znow-cutoff', { detail: { afterCutoff: after } }));
       }
+      time.synced = true;
       // Next check on the next cut-off or midnight, whichever is first.
       var now = time.now();
       var minutes = now.hour * 60 + now.minute;
@@ -103,6 +110,19 @@
   html:not(.znow-after-cutoff) [data-znow-when='tomorrow'],
   html.znow-after-cutoff [data-znow-when='today'] {
     display: none !important;
+  }
+
+  /* Shared by everything ZNow: what a ZNow or cut-off change reveals on an
+     open page fades up (html.znow-switching, set by location.js and above). */
+  @keyframes znow-appear {
+    from {
+      opacity: 0;
+      transform: translateY(3px);
+    }
+  }
+
+  html.znow-switching :is([data-znow-when], [data-znow-only], [data-znow-hide]) {
+    animation: znow-appear 0.3s ease-out;
   }
 </style>
 <script src="{{ 'location.js' | asset_url }}" defer="defer"></script>

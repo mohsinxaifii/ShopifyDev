@@ -112,8 +112,15 @@
   flex: none;
 }
 
-.delivery-location_button:hover .delivery-location_place {
+.delivery-location_place {
   text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.delivery-location_button:hover .delivery-location_place {
+  text-decoration-color: currentColor;
 }
 
 /* The ZNow chip only in the same-day area (html.is-znow, snippets/location). */
@@ -664,4 +671,15 @@ html.is-znow .delivery-location_znow {
     max-width: none;
     height: 44px;
   }
+}
+
+/* Deliver to: the ZNow chip fades in when a pincode change brings it (not on
+   load), and the place re-fades when it's rewritten (znow.js adds
+   .is-refreshed). */
+html.znow-switching .delivery-location_znow {
+  animation: znow-appear 0.3s ease-out;
+}
+
+.delivery-location_place.is-refreshed {
+  animation: znow-appear 0.3s ease-out;
 }

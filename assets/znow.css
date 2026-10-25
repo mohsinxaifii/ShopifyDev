@@ -351,6 +351,41 @@
   width: 100%;
 }
 
+/* ---------------------------------------------------- nothing snaps */
+
+/* Every part a view change reveals fades up as it appears (an animation
+   restarts when an element goes from display:none to shown); text rewritten
+   in place re-fades through .is-refreshed (znow.js). znow-appear is defined
+   in snippets/location. */
+.znow-dialog_intro,
+.znow-dialog_head_title,
+.znow-dialog_form,
+.znow-dialog_pending,
+.znow-dialog_check,
+.znow-dialog_actions,
+.znow-dialog_status,
+.znow-dialog .is-refreshed {
+  animation: znow-appear 0.25s ease-out;
+}
+
+.znow-dialog_locate {
+  transition: color 0.2s ease;
+}
+
+.znow-dialog_input {
+  transition: border-color 0.2s ease;
+}
+
+.znow-dialog_button {
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.znow-dialog_button--primary:hover {
+  background-color: #5a1b34;
+}
+
 /* --------------------------------------------------------------- views */
 
 .znow-dialog[data-view='checking'] .znow-dialog_form {

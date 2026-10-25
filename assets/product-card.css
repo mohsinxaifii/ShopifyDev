@@ -122,6 +122,13 @@ html.is-znow .product-card_delivery[data-znow-hide] {
   display: none;
 }
 
+/* A ZNow or cut-off change on an open page fades the swapped bar in
+   (html.znow-switching - location.js); a page load just shows it. */
+html.znow-switching .product-card_delivery[data-znow-only],
+html.znow-switching .product-card_delivery[data-znow-hide] {
+  animation: znow-appear 0.3s ease-out;
+}
+
 .product-card_delivery--znow {
   /* At least this much clear space before the sizes; the list is cut short
      with "…" rather than closing it up. */
