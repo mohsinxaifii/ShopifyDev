@@ -19,21 +19,46 @@
   endif
 
   comment
-    One badge top-left: "Ready to ship", else the product's card top badge
-    (custom.card_top_badge, e.g. "Save 10%"). A compare-at price no longer
-    adds a "Price drop" badge - the struck-out price already says it.
+    The one badge top-left is the product's card top badge only
+    (custom.card_top_badge, e.g. "Save 10%"). Stock speaks in the delivery bar
+    under the photo instead (Figma 8470:33828-33845).
   endcomment
   assign feature_badge = product.metafields.custom.card_top_badge.value.first
-  assign is_ready_to_ship = false
 
   comment
-    "Ready to ship" speaks for the variant the card opens on, not any variant:
-    a product whose only stock is in another size would otherwise promise a
-    page that lands on a made-to-order or sold-out variant.
+    Delivery bar, one of four:
+    - in stock (any variant with units on hand): "Get it today" + the sizes
+      in stock while the shopper is in the ZNow area, "Ready to ship" outside
+      it - both are rendered and html.is-znow picks one, so the card is right
+      from the first paint;
+    - buyable with nothing on hand: "Made to order";
+    - not buyable: "Coming soon", the photo veiled with "Out of stock".
+    The sizes are the in-stock values of the LAST option (silver 4, silver 5
+    -> "4, 5"), in the product's own option order; none for a product without
+    options.
   endcomment
-  assign card_default_variant = product.selected_or_first_available_variant
-  if card_default_variant.available and card_default_variant.inventory_quantity > 0
-    assign is_ready_to_ship = true
+  assign stock_state = 'coming-soon'
+  if product.available
+    assign stock_state = 'made-to-order'
+  endif
+  assign in_stock_values = ''
+  for card_stock_variant in product.variants
+    if card_stock_variant.available and card_stock_variant.inventory_quantity > 0
+      assign stock_state = 'in-stock'
+      assign in_stock_values = in_stock_values | append: '|' | append: card_stock_variant.options.last | append: '|'
+    endif
+  endfor
+  assign znow_sizes = ''
+  if stock_state == 'in-stock' and product.has_only_default_variant == false
+    for card_option_value in product.options_with_values.last.values
+      assign card_option_key = card_option_value | prepend: '|' | append: '|'
+      if in_stock_values contains card_option_key
+        if znow_sizes != blank
+          assign znow_sizes = znow_sizes | append: ', '
+        endif
+        assign znow_sizes = znow_sizes | append: card_option_value
+      endif
+    endfor
   endif
 
   assign card_image_alt = product.featured_image.alt | default: product.title
@@ -72,7 +97,7 @@
 {%- capture analytics_item -%}{%- render 'analytics-item', product: product -%}{%- endcapture -%}
 <a
   href="{{ product.url }}"
-  class="product-card{% if is_grid %} product-card--grid{% endif %}"
+  class="product-card product-card--{{ stock_state }}{% if is_grid %} product-card--grid{% endif %}"
   data-analytics-item="{{ analytics_item | strip_newlines | escape }}"
   {% if is_grid %}
     data-animate
@@ -94,9 +119,7 @@
     {%- endif -%}
 
     <span class="product-card_media_top">
-      {%- if is_ready_to_ship -%}
-        <span class="product-card_media_top_badge product-card_media_top_badge--ready">Ready to ship</span>
-      {%- elsif feature_badge != blank -%}
+      {%- if feature_badge != blank -%}
         <span class="product-card_media_top_badge product-card_media_top_badge--feature">{{ feature_badge }}</span>
       {%- else -%}
         <span></span>
@@ -124,7 +147,30 @@
         <span class="product-card_media_rating_value" data-judgeme-value></span>
       </span>
     </judgeme-rating>
+
+    {%- if stock_state == 'coming-soon' -%}
+      <span class="product-card_media_soldout">Out of stock</span>
+    {%- endif -%}
   </span>
+
+  {%- comment -%} Under the photo, never over it. {%- endcomment -%}
+  {%- case stock_state -%}
+    {%- when 'in-stock' -%}
+      <span class="product-card_delivery product-card_delivery--znow" data-znow-only>
+        <span class="product-card_delivery_znow">
+          {{- 'icon-znow.svg' | inline_asset_content -}}
+          <span>Get it today</span>
+        </span>
+        {%- if znow_sizes != blank -%}
+          <span class="product-card_delivery_sizes">{{ znow_sizes }}</span>
+        {%- endif -%}
+      </span>
+      <span class="product-card_delivery product-card_delivery--ready" data-znow-hide>Ready to ship</span>
+    {%- when 'made-to-order' -%}
+      <span class="product-card_delivery product-card_delivery--made">Made to order</span>
+    {%- else -%}
+      <span class="product-card_delivery product-card_delivery--soon">Coming soon</span>
+  {%- endcase -%}
 
   <span class="product-card_info">
     <span class="product-card_info_price">
