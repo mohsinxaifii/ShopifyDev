@@ -3,12 +3,36 @@
   shopper's location once (its own permission prompt, on the first page of the
   first visit) to get the delivery pincode ZNow and the delivery estimates
   read. Theme settings > Location & ZNow.
+
+  Rendered first in the body: the inline script below marks <html> with
+  "is-znow" when the saved pincode is in the same-day area, before the header
+  is parsed, so ZNow pieces never flash in or out. Anything ZNow-only hides
+  with `html:not(.is-znow) ...`; location.js keeps the class in step.
 {%- enddoc -%}
+
+{%- capture znow_pincodes -%}{% render 'znow-pincodes' %}{%- endcapture -%}
+{%- assign znow_pincodes = znow_pincodes | replace: ',', ' ' | split: ' ' | uniq -%}
 
 <script>
   window.zinaraLocationConfig = {
     enabled: {{ settings.location_prompt_enabled | json }},
     pageType: {{ request.page_type | json }},
+    znowPincodes: {{ znow_pincodes | json }},
+    {%- comment -%} The theme editor always shows the ZNow pieces, to edit them. {%- endcomment -%}
+    znowPreview: {{ request.design_mode | json }},
   };
+  (function () {
+    var config = window.zinaraLocationConfig;
+    var pincode = '';
+    try {
+      pincode = (JSON.parse(localStorage.getItem('zinara_location')) || {}).pincode || '';
+    } catch (error) {
+      var match = document.cookie.match(/(?:^|; )zinara_location=([^;]*)/);
+      try { pincode = match ? JSON.parse(decodeURIComponent(match[1])).pincode || '' : ''; } catch (e) {}
+    }
+    if (config.znowPreview || config.znowPincodes.indexOf(pincode) !== -1) {
+      document.documentElement.classList.add('is-znow');
+    }
+  })();
 </script>
 <script src="{{ 'location.js' | asset_url }}" defer="defer"></script>

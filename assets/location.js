@@ -13,11 +13,16 @@
  *   for (the product page's delivery check), which is saved here too.
  *
  * Other scripts read it through window.zinaraLocation:
- *   get()                 -> { pincode, city, state, source, status, updated } (a copy)
+ *   get()                 -> { pincode, city, state, source, status, updated, znow } (a copy)
  *   set(pincode, extra)   -> saves a pincode the shopper typed (source 'manual' by default)
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
+ *   isZnow(pincode)       -> whether a pincode gets same-day ZNow delivery
  *   and listen for the 'zinara:location' event on document (detail = get()).
+ *
+ * ZNow: snippets/znow-pincodes lists the same-day pincodes; <html> carries
+ * "is-znow" while the shopper's pincode is one of them (set early by
+ * snippets/location, kept in step here).
  */
 (() => {
   if (window.zinaraLocation) return;
@@ -31,6 +36,8 @@
   const SAME_PLACE = 0.001;
 
   const config = window.zinaraLocationConfig || {};
+  const znowPincodes = new Set(config.znowPincodes || []);
+  const isZnow = (pincode) => znowPincodes.has(String(pincode || ''));
 
   /* -------------------------------------------------------------- storage */
 
@@ -81,6 +88,7 @@
   function save(changes) {
     state = { ...state, ...changes, updated: Date.now() };
     write(state);
+    markZnow();
     document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
     return api.get();
   }
@@ -239,7 +247,7 @@
   const api = {
     get() {
       const { pincode = '', city = '', state: region = '', source = '', status = '', updated = 0 } = state;
-      return { pincode, city, state: region, source, status, updated };
+      return { pincode, city, state: region, source, status, updated, znow: isZnow(pincode) };
     },
     set(pincode, extra = {}) {
       const value = cleanPincode(pincode);
@@ -250,8 +258,14 @@
     detect,
     permission,
     isValid: (pincode) => PINCODE.test(cleanPincode(pincode)),
+    isZnow: (pincode) => isZnow(cleanPincode(pincode)),
   };
   window.zinaraLocation = api;
+
+  function markZnow() {
+    document.documentElement.classList.toggle('is-znow', Boolean(config.znowPreview) || isZnow(state.pincode));
+  }
+  markZnow();
 
   /* ---------------------------------------------------------------- start */
 
