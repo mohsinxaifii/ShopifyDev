@@ -4,7 +4,17 @@
 
   @param {object} block - the "Variant picker" block
   @param {object} product - the product being viewed
+  @param {object} current_variant - the variant the page opens on
   @param {boolean} has_size_guide - whether this product gets the size guide
+  @param {number} ship_days_in_stock - "Ready to ship · Get by" days
+  @param {number} ship_days_made - "Made to order · Get by" days
+
+  ZNow (Figma 8488:70168): the LAST option's heading (or the only option's)
+  carries the picked variant's shipping tag - "Now · Get today" (ZNow area)
+  or "Ready to ship · Get by 2nd Nov" when it has stock, "Made to order ·
+  Get by 13th Nov" when not - and each of its values in stock alongside the
+  other picks wears the Z badge (ZNow area only). product.js keeps both in
+  step as options change; Liquid draws the first paint from current_variant.
 {%- enddoc -%}
 
 <div class="pdp_block" {{ block.shopify_attributes }}>
@@ -18,6 +28,37 @@
     for option in product.options_with_values
       if option.name contains 'Size'
         assign has_size_option = true
+      endif
+    endfor
+
+    assign ship_state = 'none'
+    if current_variant.available
+      assign ship_state = 'made'
+      if current_variant.inventory_quantity > 0
+        assign ship_state = 'stock'
+      endif
+    endif
+
+    comment
+      Last-option values with stock alongside the current picks of the other
+      options: "|value|" keys, matched below.
+    endcomment
+    assign znow_stock_keys = ''
+    assign other_count = product.options.size | minus: 1
+    for stock_variant in product.variants
+      if stock_variant.available and stock_variant.inventory_quantity > 0
+        assign same_others = true
+        for i in (0..other_count)
+          if forloop.last
+            break
+          endif
+          if stock_variant.options[i] != current_variant.options[i]
+            assign same_others = false
+          endif
+        endfor
+        if same_others
+          assign znow_stock_keys = znow_stock_keys | append: '|' | append: stock_variant.options.last | append: '|'
+        endif
       endif
     endfor
   -%}
@@ -64,6 +105,27 @@
           {%- if is_swatch -%}
             <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
           {%- endif -%}
+          {%- if forloop.last -%}
+            <span class="pdp_ship_tag" data-ship-tag data-state="{{ ship_state }}">
+              <span class="pdp_ship_tag_pill pdp_ship_tag_pill--znow" data-znow-only>
+                <span class="pdp_ship_tag_now">
+                  {{- 'icon-znow-8.svg' | inline_asset_content -}}
+                  <span>Now</span>
+                </span>
+                <span aria-hidden="true">·</span>
+                <span data-znow-when="today">Get today</span>
+                <span data-znow-when="tomorrow">Get tomorrow</span>
+              </span>
+              <span class="pdp_ship_tag_pill pdp_ship_tag_pill--ready" data-znow-hide>
+                Ready to ship <span aria-hidden="true">·</span> Get by
+                <span data-ship-date="in-stock">{% render 'ship-date', days: ship_days_in_stock %}</span>
+              </span>
+              <span class="pdp_ship_tag_pill pdp_ship_tag_pill--made">
+                Made to order <span aria-hidden="true">·</span> Get by
+                <span data-ship-date="made">{% render 'ship-date', days: ship_days_made %}</span>
+              </span>
+            </span>
+          {%- endif -%}
         </p>
         {%- if show_guide -%}
           <button
@@ -83,8 +145,15 @@
       </div>
 
         <div class="pdp_option_values">
+          {%- assign option_is_last = forloop.last -%}
           {%- for value in option.values -%}
-            <label class="pdp_option_values_value">
+            {%- assign value_key = value | prepend: '|' | append: '|' -%}
+            <label
+              class="pdp_option_values_value{% if option_is_last and znow_stock_keys contains value_key %} is-znow-stock{% endif %}"
+              {% if option_is_last %}
+                data-znow-value
+              {% endif %}
+            >
               <input
                 type="radio"
                 name="option-{{ option.position }}"
@@ -103,6 +172,11 @@
                 </span>
               {%- else -%}
                 <span class="pdp_option_values_value_chip">{{ value }}</span>
+              {%- endif -%}
+              {%- if option_is_last -%}
+                <span class="pdp_option_values_value_znow" aria-hidden="true">
+                  {{- 'icon-znow-badge-8.svg' | inline_asset_content -}}
+                </span>
               {%- endif -%}
             </label>
           {%- endfor -%}
