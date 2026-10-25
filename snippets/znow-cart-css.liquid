@@ -1,4 +1,4 @@
-{%- comment -%} .sidecart Raw CSS for KwikCart's shadow root - see assets/znow-cart.js. {%- endcomment -%}
+{%- comment -%} Raw CSS for KwikCart's shadow root - see assets/znow-cart.js. {%- endcomment -%}
 /**
  * ZNow in KwikCart - injected INTO GoKwik's shadow root by assets/znow-cart.js
  * as a <style> (inlined by snippets/znow-cart, so no stale cached copy)
@@ -19,16 +19,13 @@
   animation: zk-appear 0.25s ease-out;
 }
 
-.sidecart /* GoKwik sets `.sidecart * { font-family: Inter; line-height: normal;
-   margin: 0 }.sidecart ` on every element in the cart,
-.sidecart which would land on each span
-   inside ours. Ours take their own family and lines back (these come before
-   the specific rules below,
-.sidecart which set their sizes). */
-.sidecart :is(.zk-deliver,
-.sidecart .zk-group,
-.sidecart .zk-notice,
-.sidecart .zk-chip) * {
+/* GoKwik puts font-family Inter, line-height normal and margin 0 on every
+   element in its cart (.sidecart *), which would land on each span inside
+   ours: they take their family and lines from our own blocks instead.
+
+   Every rule here starts with .sidecart, so each one outranks that catch-all
+   (one class plus *); among our own rules, source order decides as usual. */
+.sidecart :is(.zk-deliver, .zk-group, .zk-notice, .zk-chip) * {
   font-family: inherit;
   line-height: inherit;
 }
