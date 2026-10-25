@@ -69,6 +69,8 @@
     page_not_found: ['page_url', 'referrer'],
     scroll_depth: ['percent_scrolled', 'page_type', 'page_url'],
     location_permission: ['status', 'page_type'],
+    znow_dialog_open: ['reason', 'page_type'],
+    znow_loader_view: ['destination_url'],
     // 2. Homepage
     homepage_view: ['page_title', 'page_url', 'referrer'],
     home_banner_view: ['banner_id', 'banner_name', 'banner_position'],

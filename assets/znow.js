@@ -68,7 +68,7 @@
   function standardDate() {
     const date = new Date();
     date.setDate(date.getDate() + (Number(dialog.dataset.standardDays) || 3));
-    return date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', ',');
+    return date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
   }
 
   function openDialog(state) {
@@ -203,6 +203,7 @@
     running = [];
     loader.hidden = true;
     message.textContent = '';
+    [icon, message, drop, head, line, ground].forEach((element) => element.removeAttribute('style'));
     document.documentElement.classList.remove('is-scroll-locked');
   }
 
@@ -291,11 +292,7 @@
 
   // Back from the collection (page restored from the back/forward cache): no loader left over.
   window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      resetLoader();
-      icon.style.opacity = '';
-      message.style.opacity = '';
-    }
+    if (event.persisted) resetLoader();
   });
 
   /* --------------------------------------------------------------- links */
