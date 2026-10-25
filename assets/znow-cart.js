@@ -17,6 +17,7 @@
  * changes or the cut-off passes. If GoKwik's markup changes so the hooks
  * aren't found, nothing is added and the cart works as GoKwik built it.
  *
+ * Styles: snippets/znow-cart-css, injected as a <style>.
  * Which lines have stock comes from sections/znow-cart-data (inventory is
  * not in /cart.js); tiles are matched to lines by title and options.
  */
@@ -113,8 +114,9 @@
 
   /* ----------------------------------------------------------- the parts */
 
+  // A full row of its own across the header, after the title and the ✕.
   function deliverLine(sr, state) {
-    const sub = sr.querySelector('.side-cart-header .side-cart-subHeader');
+    const sub = sr.querySelector('.side-cart-header');
     if (!sub) return;
     let line = sub.querySelector(':scope > .zk-deliver');
     if (!line) {
@@ -260,7 +262,7 @@
         : `<span class="zk-group_when">By ${dayMonth(config.madeDays)}</span>`;
       setHTML(
         header,
-        `<span class="zk-group_label"><span class="zk-group_title">Delivery ${index + 1} of ${total}</span><span class="zk-group_count">· ${items(quantity(group))}</span></span>${by}`,
+        `<span class="zk-group_label"><span class="zk-group_check" aria-hidden="true">${isZnow ? config.icons.checkOn : config.icons.checkOff}</span><span class="zk-group_title">Delivery ${index + 1} of ${total}</span><span class="zk-group_count">· ${items(quantity(group))}</span></span>${by}`,
       );
       group.forEach(({ tile }, i) => {
         if (tile.style.order !== String(base + 2 + i)) tile.style.order = base + 2 + i;
@@ -319,12 +321,11 @@
   function watch(shadow) {
     if (root === shadow) return;
     root = shadow;
-    if (!shadow.querySelector('link[data-zk-style]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = config.cssUrl;
-      link.dataset.zkStyle = '';
-      shadow.append(link);
+    if (!shadow.querySelector('style[data-zk-style]')) {
+      const style = document.createElement('style');
+      style.dataset.zkStyle = '';
+      style.textContent = config.css || '';
+      shadow.append(style);
     }
     new MutationObserver((records) => {
       // Our own insertions don't count - only GoKwik's redraws.

@@ -1,5 +1,7 @@
+{%- comment -%} Raw CSS for KwikCart's shadow root - see assets/znow-cart.js. {%- endcomment -%}
 /**
- * ZNow in KwikCart - loaded INTO GoKwik's shadow root by assets/znow-cart.js
+ * ZNow in KwikCart - injected INTO GoKwik's shadow root by assets/znow-cart.js
+ * as a <style> (inlined by snippets/znow-cart, so no stale cached copy)
  * (Figma 8470:85436 two deliveries, 8470:86144 after the cut-off, 8470:86857
  * not available). Only ZNow's own elements (.zk-*) and the list's grouping
  * are styled here; GoKwik's tiles are left as GoKwik draws them.
@@ -24,23 +26,26 @@
   }
 }
 
-/* The header takes the extra "Delivering to" line. */
-.side-cart-header:has(.zk-deliver) {
+/* The header wraps to take "Delivering to" as a full row of its own, under
+   the title and the close button (Figma 8470:85440): "Change" lines up with
+   the ✕ on the right. */
+.side-cart-header:has(> .zk-deliver) {
+  flex-wrap: wrap;
+  row-gap: 6px;
   height: auto;
 }
 
-.side-cart-header:has(.zk-deliver) .side-cart-subHeader {
+.side-cart-header:has(> .zk-deliver) .side-cart-subHeader {
   height: auto;
 }
 
 /* "📍 Delivering to 110017, Saket ........ Change" */
 .zk-deliver {
   display: flex;
+  flex: 1 0 100%;
   align-items: center;
   gap: 4px;
-  width: 100%;
   min-width: 0;
-  margin-top: 6px;
   font-size: 12px;
   line-height: 20px;
 }
@@ -126,6 +131,20 @@
   gap: 6px;
   min-width: 0;
   white-space: nowrap;
+}
+
+/* The delivery's checkbox (Figma 8470:34434 / 8470:34437): ticked on the
+   ZNow delivery, open on the other. */
+.zk-group_check {
+  display: flex;
+  flex: none;
+  margin-right: 2px;
+}
+
+.zk-group_check svg {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .zk-group_title {
