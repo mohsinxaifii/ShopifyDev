@@ -480,6 +480,24 @@
   display: none;
 }
 
+/* The page under it stays put while it plays. */
+html:has(.znow-loader.is-playing) {
+  overflow: hidden;
+}
+
+/* Fallback: if assets/znow.js never runs, the cover lifts by itself rather
+   than hiding the collection. Playing (.is-playing) cancels it. */
+.znow-loader--intro:not(.is-playing) {
+  animation: znow-loader-fallback 0.4s ease-out 6s forwards;
+}
+
+@keyframes znow-loader-fallback {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 .znow-loader_ground {
   position: absolute;
   inset: 0;
