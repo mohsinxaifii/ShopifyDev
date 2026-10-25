@@ -158,8 +158,7 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
   color: #fff;
 }
 
-/* Desktop: 8px apart, and no arrow - the carets either side do that job.
-   Type as the other messages' (.announcement-bar_wrapper_track_slide_text),
+/* Desktop: 8px apart. Type as the other messages' (.announcement-bar_wrapper_track_slide_text),
    so the ZNow one reads as one of them. */
 .announcement-bar_znow {
   display: flex;
@@ -206,16 +205,12 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
 }
 
 .announcement-bar_znow_arrow {
-  display: none;
+  display: flex;
 }
 
 .announcement-bar_znow_arrow svg {
   width: 16px;
   height: 16px;
-}
-
-a.announcement-bar_znow:hover .announcement-bar_znow_text {
-  text-decoration: underline;
 }
 
 a.announcement-bar_znow:focus-visible {
@@ -249,8 +244,7 @@ a.announcement-bar_znow:focus-visible {
     font-weight: 600;
   }
 
-  /* Mobile: 6px apart, with the arrow (Figma 8470:67951), in the other
-     messages' 12px Medium. */
+  /* Mobile: 6px apart (Figma 8470:67951), in the other messages' 12px Medium. */
   .announcement-bar_znow {
     gap: 6px;
     font-weight: 500;
@@ -258,7 +252,4 @@ a.announcement-bar_znow:focus-visible {
     line-height: 22px;
   }
 
-  .announcement-bar_znow_arrow {
-    display: flex;
-  }
 }
