@@ -1,0 +1,14 @@
+{%- doc -%}
+  Shopper location - loads assets/location.js, which asks the browser for the
+  shopper's location once (its own permission prompt, on the first page of the
+  first visit) to get the delivery pincode ZNow and the delivery estimates
+  read. Theme settings > Location & ZNow.
+{%- enddoc -%}
+
+<script>
+  window.zinaraLocationConfig = {
+    enabled: {{ settings.location_prompt_enabled | json }},
+    pageType: {{ request.page_type | json }},
+  };
+</script>
+<script src="{{ 'location.js' | asset_url }}" defer="defer"></script>

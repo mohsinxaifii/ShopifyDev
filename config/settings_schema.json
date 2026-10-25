@@ -394,48 +394,13 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "Asks each shopper once for their location to get the delivery pincode used by ZNow and delivery estimates. Never asked again after any answer; refreshed quietly on later visits where the browser already allows it."
+        "content": "Asks each shopper once, with the browser's own location prompt on their first page, for the delivery pincode used by ZNow and delivery estimates. Never asked again after any answer; refreshed quietly on later visits where the browser already allows it."
       },
       {
         "type": "checkbox",
         "id": "location_prompt_enabled",
         "label": "Ask for location on first visit",
         "default": true
-      },
-      {
-        "type": "range",
-        "id": "location_prompt_delay",
-        "label": "Show after",
-        "min": 0,
-        "max": 10,
-        "step": 1,
-        "unit": "s",
-        "default": 2
-      },
-      {
-        "type": "text",
-        "id": "location_prompt_heading",
-        "label": "Heading",
-        "default": "Where should we deliver?"
-      },
-      {
-        "type": "textarea",
-        "id": "location_prompt_text",
-        "label": "Text",
-        "default": "Share your location to see same-day ZNow delivery and delivery dates for your area."
-      },
-      {
-        "type": "text",
-        "id": "location_prompt_allow",
-        "label": "Button label",
-        "default": "Use my current location"
-      },
-      {
-        "type": "text",
-        "id": "location_prompt_done",
-        "label": "Confirmation prefix",
-        "default": "Delivering to",
-        "info": "Followed by the city and pincode."
       }
     ]
   }
