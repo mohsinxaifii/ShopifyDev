@@ -1,0 +1,225 @@
+/**
+ * ZNow in KwikCart - loaded INTO GoKwik's shadow root by assets/znow-cart.js
+ * (Figma 8470:85436 two deliveries, 8470:86144 after the cut-off, 8470:86857
+ * not available). Only ZNow's own elements (.zk-*) and the list's grouping
+ * are styled here; GoKwik's tiles are left as GoKwik draws them.
+ *
+ * Theme custom properties inherit into the shadow root, so the type is the
+ * site's Montserrat (--font-secondary--family).
+ */
+
+.zk-deliver,
+.zk-group,
+.zk-notice,
+.zk-chip {
+  font-family: var(--font-secondary--family, Montserrat), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  animation: zk-appear 0.25s ease-out;
+}
+
+@keyframes zk-appear {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+/* The header takes the extra "Delivering to" line. */
+.side-cart-header:has(.zk-deliver) {
+  height: auto;
+}
+
+.side-cart-header:has(.zk-deliver) .side-cart-subHeader {
+  height: auto;
+}
+
+/* "📍 Delivering to 110017, Saket ........ Change" */
+.zk-deliver {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.zk-deliver_icon {
+  display: flex;
+  flex: none;
+}
+
+.zk-deliver_label {
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+}
+
+.zk-deliver_place {
+  overflow: hidden;
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.zk-deliver_change {
+  flex: none;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 12px/20px var(--font-secondary--family, Montserrat), sans-serif;
+  color: #712242;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Grouping: the list becomes a column and each tile takes the order of its
+   delivery (set by znow-cart.js) - GoKwik's tiles never leave their place in
+   the DOM, so its own updates are untouched. */
+.item-list-wrapper:has(> .zk-group) {
+  display: flex;
+  flex-direction: column;
+}
+
+/* "☐ Delivery 1 of 2 · 2 items ........ [Now · Today by 9 PM]" */
+.zk-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 10px 10px 0;
+  padding: 10px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #f7f3f5;
+}
+
+.zk-group--znow {
+  background-color: #efe6ea;
+}
+
+.zk-group_label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.zk-group_title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  color: #000;
+}
+
+.zk-group_count {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #666;
+}
+
+.zk-group_when {
+  flex: none;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.zk-group_pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #4a162c, #712242);
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 18px;
+  color: #ecc0d2;
+  white-space: nowrap;
+}
+
+.zk-group_pill svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+/* Cut-off and not-available notices: the pale yellow strip. */
+.zk-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 10px 10px 0;
+  padding: 12px 16px;
+  border: 1px solid #f5dcb0;
+  border-radius: 12px;
+  background-color: #fef4e2;
+}
+
+.zk-notice_icon {
+  display: flex;
+  flex: none;
+  padding-top: 2px;
+}
+
+.zk-notice_text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.zk-notice_title {
+  font-weight: 600;
+  line-height: 20px;
+  color: #000;
+}
+
+.zk-notice_body {
+  font-weight: 500;
+  line-height: 16px;
+  color: #494949;
+}
+
+/* Footer: "🚚 Z-Now · Free" in place of GoKwik's "FREE shipping included"
+   while the cart holds a ZNow delivery. */
+.price-chips:has(.zk-chip) .chip-green {
+  display: none;
+}
+
+.zk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #f7f3f5;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: #712242;
+}
+
+.zk-chip svg {
+  display: block;
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zk-deliver,
+  .zk-group,
+  .zk-notice,
+  .zk-chip {
+    animation: none;
+  }
+}
