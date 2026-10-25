@@ -10,6 +10,11 @@
  * - anything else (location blocked, never asked, typed pincode outside):
  *   the dialog asks for a pincode or "Use my location".
  *
+ * The "Deliver to" control on collection pages (snippets/delivery-location)
+ * opens the same dialog to change the pincode: no link to follow, so a
+ * served pincode just closes it, and the label updates from the
+ * 'zinara:location' event.
+ *
  * A pincode is checked against snippets/znow-pincodes (zinaraLocation.isZnow)
  * and saved as the shopper's pincode either way; a location fix is checked
  * against the area outline by assets/location.js.
@@ -39,7 +44,7 @@
   const pendingArea = $('[data-znow-pending-area]');
   const defaults = { title: title.textContent, subtitle: subtitle.textContent.trim() };
 
-  let target = null; // the link's URL, opened once the shopper is in the area
+  let target = null; // the link's URL, opened once the shopper is in the area; null when changing the pincode
   let busy = false;
 
   function say(text, isError = false) {
@@ -56,7 +61,7 @@
       subtitle.textContent = `Standard delivery: ${standardDate()}`;
       say('');
     } else {
-      title.textContent = defaults.title;
+      title.textContent = target ? defaults.title : 'Change delivery pincode';
       subtitle.textContent = defaults.subtitle;
     }
     if (name === 'checking') {
@@ -75,8 +80,8 @@
     busy = false;
     input.value = state.pincode || '';
     say('');
-    // Located outside the area: say so straight away.
-    if (state.source === 'gps' && state.status === 'granted' && !state.znow) {
+    // Following a ZNow link from outside the area: say so straight away.
+    if (target && state.source === 'gps' && state.status === 'granted' && !state.znow) {
       view('unavailable', { pincode: state.pincode });
     } else {
       view('ask');
@@ -309,6 +314,21 @@
     const state = window.zinaraLocation?.get() || {};
     if (state.znow) play(target);
     else openDialog(state);
+  });
+
+  /* ---------------------------------------------------- deliver to (PLP) */
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('[data-delivery-location]')) return;
+    target = null;
+    openDialog(window.zinaraLocation?.get() || {});
+  });
+
+  document.addEventListener('zinara:location', (event) => {
+    const { city, pincode } = event.detail;
+    const text = [city, pincode].filter(Boolean).join(' ');
+    if (!text) return;
+    document.querySelectorAll('[data-delivery-location-place]').forEach((place) => (place.textContent = text));
   });
 
   window.zinaraZnow = { open: (url) => ((target = url), openDialog(window.zinaraLocation?.get() || {})), play };
