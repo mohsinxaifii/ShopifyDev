@@ -19,6 +19,15 @@
   animation: zk-appear 0.25s ease-out;
 }
 
+/* GoKwik sets `.sidecart * { font-family: Inter; line-height: normal;
+   margin: 0 }` on every element in the cart, which would land on each span
+   inside ours. Ours take their own family and lines back (these come before
+   the specific rules below, which set their sizes). */
+.sidecart :is(.zk-deliver, .zk-group, .zk-notice, .zk-chip) * {
+  font-family: inherit;
+  line-height: inherit;
+}
+
 @keyframes zk-appear {
   from {
     opacity: 0;
@@ -29,14 +38,18 @@
 /* The header wraps to take "Delivering to" as a full row of its own, under
    the title and the close button (Figma 8470:85440): "Change" lines up with
    the ✕ on the right. */
+/* GoKwik fixes the header at 60px (and its title block at 50px) with
+   three-class selectors; !important is the one way past them, and only
+   while our row is there. */
 .side-cart-header:has(> .zk-deliver) {
-  flex-wrap: wrap;
+  flex-wrap: wrap !important;
+  align-items: center;
   row-gap: 6px;
-  height: auto;
+  height: auto !important;
 }
 
 .side-cart-header:has(> .zk-deliver) .side-cart-subHeader {
-  height: auto;
+  height: auto !important;
 }
 
 /* "📍 Delivering to 110017, Saket ........ Change" */
@@ -133,8 +146,7 @@
   white-space: nowrap;
 }
 
-/* The delivery's checkbox (Figma 8470:34434 / 8470:34437): ticked on the
-   ZNow delivery, open on the other. */
+/* The delivery's tick icon (Figma 8470:34434), on every delivery. */
 .zk-group_check {
   display: flex;
   flex: none;

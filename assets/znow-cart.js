@@ -262,7 +262,7 @@
         : `<span class="zk-group_when">By ${dayMonth(config.madeDays)}</span>`;
       setHTML(
         header,
-        `<span class="zk-group_label"><span class="zk-group_check" aria-hidden="true">${isZnow ? config.icons.checkOn : config.icons.checkOff}</span><span class="zk-group_title">Delivery ${index + 1} of ${total}</span><span class="zk-group_count">· ${items(quantity(group))}</span></span>${by}`,
+        `<span class="zk-group_label"><span class="zk-group_check" aria-hidden="true">${config.icons.checkOn}</span><span class="zk-group_title">Delivery ${index + 1} of ${total}</span><span class="zk-group_count">· ${items(quantity(group))}</span></span>${by}`,
       );
       group.forEach(({ tile }, i) => {
         if (tile.style.order !== String(base + 2 + i)) tile.style.order = base + 2 + i;
