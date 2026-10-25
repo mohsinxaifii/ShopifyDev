@@ -953,13 +953,30 @@
         const buyable = Boolean(variant?.available);
         const zNow = isKnown && state.znow && variant?.inStock;
         znowRow.hidden = !zNow;
-        standardRow.hidden = !isKnown || zNow || !buyable;
-        if (!standardRow.hidden) {
-          const days = variant.inStock
-            ? Number(block.dataset.deliveryDaysInStock) || 3
-            : Number(block.dataset.deliveryDaysMadeToOrder) || 24;
-          block.querySelector('[data-delivery-standard-date]').textContent = this.shipDate(days, 'weekday');
-        }
+        standardRow.hidden = true;
+        if (!isKnown || zNow || !buyable) return;
+
+        // Standard only where it is delivered at all (a pincode saved from the
+        // ZNow dialog was never checked against the list); a late answer for
+        // a pincode since changed is dropped.
+        const token = (this.deliveryToken = (this.deliveryToken || 0) + 1);
+        const check = pincode ? this.pincodeServes(pincode) : Promise.resolve(true);
+        check
+          .then((served) => {
+            if (token !== this.deliveryToken) return;
+            if (!served) {
+              show(`Sorry, we don't deliver to ${pincode} yet. Try another pincode.`, true);
+              return;
+            }
+            const days = variant.inStock
+              ? Number(block.dataset.deliveryDaysInStock) || 3
+              : Number(block.dataset.deliveryDaysMadeToOrder) || 24;
+            block.querySelector('[data-delivery-standard-date]').textContent = this.shipDate(days, 'weekday');
+            standardRow.hidden = false;
+          })
+          .catch(() => {
+            if (token === this.deliveryToken) show('Could not check this pincode right now. Please try again.', true);
+          });
       };
 
       // Digits only, as the shopper types; start the download meanwhile.
@@ -1148,9 +1165,11 @@
       });
     }
 
-    /* Whether a pincode is served. The list is fetched once, on first use;
-       a failed fetch is retried. */
+    /* Whether a pincode is served - the one list for the whole page, in
+       assets/location.js, when it's there. The list is fetched once, on
+       first use; a failed fetch is retried. */
     pincodeServes(pincode) {
+      if (window.zinaraLocation?.serves) return window.zinaraLocation.serves(pincode);
       if (!this.pincodeList) {
         this.pincodeList = fetch(this.dataset.pincodesUrl)
           .then((response) => {
