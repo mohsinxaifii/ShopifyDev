@@ -84,6 +84,12 @@
   </head>
 
   <body>
+    {%- comment -%}
+      First in the body so location.js (deferred) runs before any section
+      script that reads window.zinaraLocation.
+    {%- endcomment -%}
+    {% render 'location-prompt' %}
+
     {% sections 'header-group' %}
 
     {{ content_for_layout }}

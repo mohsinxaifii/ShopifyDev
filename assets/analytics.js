@@ -68,6 +68,7 @@
     faq_expand: ['question', 'faq_position', 'page_type'],
     page_not_found: ['page_url', 'referrer'],
     scroll_depth: ['percent_scrolled', 'page_type', 'page_url'],
+    location_prompt: ['action', 'trigger', 'status', 'page_type'],
     // 2. Homepage
     homepage_view: ['page_title', 'page_url', 'referrer'],
     home_banner_view: ['banner_id', 'banner_name', 'banner_position'],
