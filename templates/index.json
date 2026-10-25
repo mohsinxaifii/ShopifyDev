@@ -544,6 +544,15 @@
         "heading": "Love At First Wear"
       }
     },
+    "znow-showcase": {
+      "type": "znow-showcase",
+      "settings": {
+        "collection": "znow",
+        "text": "Same-day delivery now in Delhi NCR.",
+        "button_label": "Check availability",
+        "product_limit": 12
+      }
+    },
     "occasion-showcase": {
       "type": "occasion-showcase",
       "blocks": {
@@ -1028,6 +1037,7 @@
     "zinara-collections",
     "testimonials",
     "occasion-showcase",
+    "znow-showcase",
     "gifting",
     "split-promo",
     "as-seen-on",
