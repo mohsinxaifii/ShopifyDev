@@ -624,8 +624,8 @@ html:has(.znow-loader.is-playing) {
   }
 }
 
-/* The icon sits a little above centre with the message 36px under it, as the
-   prototype places them on its 393 x 850 / 1280 x 832 screens. */
+/* Icon and message together in the middle of the screen, the message 36px
+   (32px on desktop) under the icon. */
 .znow-loader_content {
   position: absolute;
   inset: 0;
@@ -634,7 +634,7 @@ html:has(.znow-loader.is-playing) {
   align-items: center;
   justify-content: center;
   gap: 36px;
-  padding: 0 24px 18vh;
+  padding: 0 24px;
   text-align: center;
 }
 
