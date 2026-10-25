@@ -9,9 +9,17 @@
 
       <div class="shop-by-category_wrapper_grid">
         {%- for block in section.blocks -%}
+          {%- comment -%}
+            The ZNow tile (Figma 8470:77908) opens through the ZNow flow
+            (snippets/znow-flow): the loader for shoppers in the same-day
+            area, the location dialog for everyone else.
+          {%- endcomment -%}
           <a
             href="{{ block.settings.url | default: '#' }}"
-            class="shop-by-category_wrapper_grid_item"
+            class="shop-by-category_wrapper_grid_item{% if block.type == 'znow' %} shop-by-category_wrapper_grid_item--znow{% endif %}"
+            {% if block.type == 'znow' %}
+              data-znow-link
+            {% endif %}
             data-analytics="category_click"
             data-analytics-category-name="{{ block.settings.label | escape }}"
             data-analytics-category-url="{{ block.settings.url }}"
@@ -22,7 +30,12 @@
             {{ block.shopify_attributes }}
           >
             <span class="shop-by-category_wrapper_grid_item_image">
-              {%- if block.settings.image -%}
+              {%- if block.type == 'znow' -%}
+                <span class="shop-by-category_znow" aria-hidden="true">
+                  {{- 'icon-znow-20.svg' | inline_asset_content -}}
+                  <span>Now</span>
+                </span>
+              {%- elsif block.settings.image -%}
                 {{
                   block.settings.image
                   | image_url: width: 600
@@ -75,6 +88,26 @@
           "type": "url",
           "id": "url",
           "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "znow",
+      "name": "ZNow same day",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Same day delivery"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link",
+          "default": "/collections/all",
+          "info": "Shoppers outside the same-day area are asked for their pincode first."
         }
       ]
     }

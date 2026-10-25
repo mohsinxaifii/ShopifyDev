@@ -76,6 +76,29 @@
   color: var(--color-brand, #712242);
 }
 
+/* ZNow tile (Figma 8470:77908): the ZNow gradient with the mark centred. */
+.shop-by-category_wrapper_grid_item--znow .shop-by-category_wrapper_grid_item_image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(41.72deg, #4a162c 44.38%, #712242 99.86%);
+}
+
+.shop-by-category_znow {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-primary--family);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ecc0d2;
+}
+
+.shop-by-category_znow svg {
+  flex: none;
+}
+
 /* Figma Mobile 7930:106706: all four tiles share one row with no scroller - 24/16
    padding, a 20px heading, 12px gutters, 14px labels on a 22px line. */
 @media screen and (max-width: 749px) {

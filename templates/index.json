@@ -73,6 +73,13 @@
     "shop-by-category": {
       "type": "shop-by-category",
       "blocks": {
+        "znow": {
+          "type": "znow",
+          "settings": {
+            "label": "Same day delivery",
+            "url": "shopify://collections/znow"
+          }
+        },
         "category-1": {
           "type": "category",
           "settings": {
@@ -107,6 +114,7 @@
         }
       },
       "block_order": [
+        "znow",
         "category-1",
         "category-2",
         "category-3",

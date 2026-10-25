@@ -401,6 +401,16 @@
         "id": "location_prompt_enabled",
         "label": "Ask for location on first visit",
         "default": true
+      },
+      {
+        "type": "range",
+        "id": "znow_standard_delivery_days",
+        "label": "Standard delivery (days)",
+        "min": 1,
+        "max": 15,
+        "step": 1,
+        "default": 3,
+        "info": "For the date shown when same-day isn't available at a pincode."
       }
     ]
   }
