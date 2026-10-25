@@ -774,6 +774,101 @@
   outline-offset: 2px;
 }
 
+/* ZNow shipping tag on the last option's heading (Figma 8488:70168 / desktop
+   8470:83144). data-state comes from the picked variant: "stock" shows the
+   ZNow pill in the ZNow area (html.is-znow) and Ready to ship elsewhere,
+   "made" shows Made to order, "none" (not buyable) shows nothing. */
+.pdp_ship_tag {
+  display: inline-flex;
+  align-self: center;
+}
+
+.pdp_ship_tag_pill {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--ready,
+.pdp_ship_tag[data-state='made'] .pdp_ship_tag_pill--made {
+  display: inline-flex;
+}
+
+html.is-znow .pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--znow {
+  display: inline-flex;
+}
+
+html.is-znow .pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--ready {
+  display: none;
+}
+
+.pdp_ship_tag_pill--znow {
+  background: linear-gradient(to right, #4a162c, #712242);
+  color: #ecc0d2;
+}
+
+.pdp_ship_tag_now {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.pdp_ship_tag_now svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pdp_ship_tag_pill--ready {
+  background-color: #ac3465;
+  color: #fff;
+}
+
+.pdp_ship_tag_pill--made {
+  background-color: #ecc0d2;
+  color: var(--pdp-brand);
+}
+
+/* The Z badge on a last-option value in stock with the other picks: a 14px
+   pink disc on the chip's top-right edge, in the ZNow area only. */
+.pdp_option_values_value[data-znow-value] {
+  position: relative;
+}
+
+.pdp_option_values_value_znow {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  display: none;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background-color: #ecc0d2;
+  pointer-events: none;
+}
+
+.pdp_option--swatch .pdp_option_values_value_znow {
+  top: 0;
+  right: 2px;
+}
+
+html.is-znow .pdp_option_values_value.is-znow-stock .pdp_option_values_value_znow {
+  display: grid;
+}
+
+.pdp_option_values_value_znow svg {
+  width: 8px;
+  height: 8px;
+}
+
 /* Vermeil explainer link - Figma 7930:96109 */
 
 .pdp_explainer {
