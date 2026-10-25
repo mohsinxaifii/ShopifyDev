@@ -16,7 +16,7 @@
           {%- endcomment -%}
           <a
             href="{{ block.settings.url | default: '#' }}"
-            class="shop-by-category_wrapper_grid_item{% if block.type == 'znow' %} shop-by-category_wrapper_grid_item--znow{% endif %}"
+            class="shop-by-category_wrapper_grid_item shop-by-category_wrapper_grid_item--{{ block.type }}"
             {% if block.type == 'znow' %}
               data-znow-link
             {% endif %}
@@ -34,6 +34,11 @@
                 <span class="shop-by-category_znow" aria-hidden="true">
                   {{- 'icon-znow-20.svg' | inline_asset_content -}}
                   <span>Now</span>
+                </span>
+              {%- elsif block.type == 'shop_all' -%}
+                <span class="shop-by-category_shop-all" aria-hidden="true">
+                  <span class="shop-by-category_shop-all_desktop">{{- 'icon-arrow-right-24.svg' | inline_asset_content -}}</span>
+                  <span class="shop-by-category_shop-all_mobile">{{- 'icon-arrow-right-20.svg' | inline_asset_content -}}</span>
                 </span>
               {%- elsif block.settings.image -%}
                 {{
@@ -108,6 +113,25 @@
           "label": "Link",
           "default": "/collections/all",
           "info": "Shoppers outside the same-day area are asked for their pincode first."
+        }
+      ]
+    },
+    {
+      "type": "shop_all",
+      "name": "Shop all",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Shop all"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link",
+          "default": "/collections/all"
         }
       ]
     }
