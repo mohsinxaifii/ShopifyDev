@@ -909,8 +909,20 @@
         result.hidden = false;
       };
 
+      // Start from the shopper's delivery pincode (assets/location.js), and
+      // follow it if it is found while the page is open - unless they typed.
+      const prefill = (pincode) => {
+        if (pincode && (!input.value || input.dataset.prefilled)) {
+          input.value = pincode;
+          input.dataset.prefilled = 'true';
+        }
+      };
+      prefill(window.zinaraLocation?.get().pincode);
+      document.addEventListener('zinara:location', (event) => prefill(event.detail.pincode));
+
       // Digits only, as the shopper types; start the download meanwhile.
       input.addEventListener('input', () => {
+        delete input.dataset.prefilled;
         input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
       });
       input.addEventListener('focus', () => this.pincodeServes('').catch(() => {}), { once: true });
@@ -951,6 +963,7 @@
         date.setDate(date.getDate() + days);
         const dateText = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
         show(`We deliver to ${value}. Expected delivery by ${dateText}.`, false);
+        if (value !== window.zinaraLocation?.get().pincode) window.zinaraLocation?.set(value, { source: 'pdp' });
         window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: true });
       });
     }

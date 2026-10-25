@@ -376,7 +376,7 @@
       }
       if (!prompt) return;
       save({ asked: Date.now(), status: browser === 'denied' ? 'denied' : state.status || '' });
-      setTimeout(() => prompt.open(false), Number(config.delay) || 1500);
+      setTimeout(() => prompt.open(false), Number(config.delay ?? 1500) || 0);
       return;
     }
 
