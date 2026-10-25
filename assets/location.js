@@ -27,6 +27,8 @@
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
  *   isZnow(pincode)       -> whether a pincode gets same-day ZNow delivery
+ *   serves(pincode)       -> Promise: whether it is delivered to at all
+ *                            (ZNow pincodes at once, others by assets/pincodes.json)
  *   and listen for the 'zinara:location' event on document (detail = get()).
  */
 (() => {
@@ -266,6 +268,30 @@
     return detecting;
   }
 
+  /* --------------------------------------------------------- delivered to */
+
+  let served = null;
+
+  // Fetched once, on first use; a failed fetch is retried next time.
+  function serves(pincode) {
+    const value = cleanPincode(pincode);
+    if (!PINCODE.test(value)) return Promise.resolve(false);
+    if (pincodeIsZnow(value)) return Promise.resolve(true);
+    if (!served) {
+      served = fetch(config.pincodesUrl, { credentials: 'omit' })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.json();
+        })
+        .then((list) => new Set(list.map(String)))
+        .catch((error) => {
+          served = null;
+          throw error;
+        });
+    }
+    return served.then((list) => list.has(value));
+  }
+
   /* ------------------------------------------------------------------ api */
 
   const cleanPincode = (value) => String(value || '').replace(/\s+/g, '');
@@ -285,6 +311,7 @@
     permission,
     isValid: (pincode) => PINCODE.test(cleanPincode(pincode)),
     isZnow: (pincode) => pincodeIsZnow(cleanPincode(pincode)),
+    serves,
   };
   window.zinaraLocation = api;
   document.documentElement.classList.toggle('is-znow', znowNow());

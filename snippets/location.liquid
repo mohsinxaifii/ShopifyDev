@@ -23,6 +23,8 @@
     pageType: {{ request.page_type | json }},
     znowPincodes: {{ znow_pincodes | json }},
     znowAreaUrl: {{ 'znow-area.json' | asset_url | json }},
+    // Every pincode delivered to (half a megabyte - fetched only when asked).
+    pincodesUrl: {{ 'pincodes.json' | asset_url | json }},
     {%- comment -%} The theme editor always shows the ZNow pieces, to edit them. {%- endcomment -%}
     znowPreview: {{ request.design_mode | json }},
   };
