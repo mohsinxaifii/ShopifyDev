@@ -130,8 +130,24 @@
   Pincode serviceability: assets/pincodes.json lists the pincodes served
   (the vermeil list), one list for every product.
 {%- endcomment -%}
+{%- liquid
+  comment
+    Ship days from the Delivery estimate block (in stock / made to order),
+    shared by the variant picker's shipping tag and the delivery estimate.
+  endcomment
+  assign ship_days_in_stock = 3
+  assign ship_days_made = 24
+  for ship_block in section.blocks
+    if ship_block.type == 'delivery'
+      assign ship_days_in_stock = ship_block.settings.delivery_days_in_stock | default: 3
+      assign ship_days_made = ship_block.settings.delivery_days_made_to_order | default: 24
+    endif
+  endfor
+-%}
 <product-page
   class="pdp"
+  data-ship-days-in-stock="{{ ship_days_in_stock }}"
+  data-ship-days-made="{{ ship_days_made }}"
   data-product-url="{{ product.url }}"
   data-product-handle="{{ product.handle }}"
   data-pincodes-url="{{ 'pincodes.json' | asset_url }}"
@@ -361,7 +377,14 @@
             {%- endif -%}
 
             {%- when 'variant_picker' -%}
-              {%- render 'pdp-variant-picker', block: block, product: product, has_size_guide: has_size_guide -%}
+              {%- render 'pdp-variant-picker',
+                block: block,
+                product: product,
+                current_variant: current_variant,
+                has_size_guide: has_size_guide,
+                ship_days_in_stock: ship_days_in_stock,
+                ship_days_made: ship_days_made
+              -%}
 
             {%- when 'material_link' -%}
               {%- render 'pdp-material-link', block: block, material_name: material_name, has_explainer: has_explainer -%}
@@ -489,7 +512,7 @@
             {%- render 'pdp-trust-item', block: block -%}
 
           {%- when 'delivery' -%}
-            {%- render 'pdp-delivery', block: block -%}
+            {%- render 'pdp-delivery', block: block, current_variant: current_variant -%}
 
           {%- when 'gift' -%}
             {%- render 'pdp-gift', block: block -%}
