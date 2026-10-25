@@ -25,11 +25,15 @@
   color: var(--color-text-secondary, #494949);
 }
 
-/* Figma 8470:77908: every tile on one row, equal widths, 24px apart. */
+/* Figma 8470:77908: one row of eighths, 24px apart - each tile keeps that
+   width (121px at the 1136px page) however many there are, and the row is
+   centred, so six tiles look like the design's eight, not stretched. */
 .shop-by-category_wrapper_grid {
+  --sbc-gap: 24px;
+
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: var(--sbc-gap);
   width: 100%;
 }
 
@@ -38,9 +42,8 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  flex: 1 1 0;
+  flex: 0 1 calc((100% - 7 * var(--sbc-gap)) / 8);
   min-width: 0;
-  max-width: 266px;
   text-decoration: none;
 }
 
@@ -136,10 +139,6 @@
     gap: 16px 8px;
   }
 
-  .shop-by-category_wrapper_grid_item {
-    max-width: none;
-  }
-
   .shop-by-category_wrapper_grid_item_label {
     font-weight: 500;
     font-size: 12px;
@@ -162,6 +161,6 @@
 /* Tablet: still one row, closer together. */
 @media screen and (min-width: 750px) and (max-width: 989px) {
   .shop-by-category_wrapper_grid {
-    gap: 16px;
+    --sbc-gap: 16px;
   }
 }
