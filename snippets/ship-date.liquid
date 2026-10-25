@@ -1,0 +1,31 @@
+{%- doc -%}
+  A date some days from today, as the ZNow designs write it. product.js
+  rewrites these on the page (shipDate) so a cached page never shows a stale
+  day; this is only what the first paint shows.
+
+  @param {number} days - days from today
+  @param {string} [style] - 'ordinal' (default, "2nd Nov") or 'weekday' ("Thu, 23 Oct")
+{%- enddoc -%}
+
+{%- liquid
+  assign ship_seconds = days | default: 0 | times: 86400
+  assign ship_ts = 'now' | date: '%s' | plus: ship_seconds
+  if style == 'weekday'
+    echo ship_ts | date: '%a, %-d %b'
+  else
+    assign ship_day = ship_ts | date: '%-d' | plus: 0
+    assign ship_mod = ship_day | modulo: 10
+    assign ship_suffix = 'th'
+    if ship_day < 11 or ship_day > 13
+      if ship_mod == 1
+        assign ship_suffix = 'st'
+      elsif ship_mod == 2
+        assign ship_suffix = 'nd'
+      elsif ship_mod == 3
+        assign ship_suffix = 'rd'
+      endif
+    endif
+    assign ship_month = ship_ts | date: '%b'
+    echo ship_day | append: ship_suffix | append: ' ' | append: ship_month
+  endif
+-%}
