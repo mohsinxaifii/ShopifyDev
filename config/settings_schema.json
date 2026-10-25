@@ -419,6 +419,16 @@
         "info": "For the date shown when same-day isn't available at a pincode."
       },
       {
+        "type": "range",
+        "id": "znow_made_to_order_days",
+        "label": "Made to order (days)",
+        "min": 5,
+        "max": 45,
+        "step": 1,
+        "default": 24,
+        "info": "For the cart's second delivery: items without stock arrive by today + this."
+      },
+      {
         "type": "text",
         "id": "znow_collection_handle",
         "label": "ZNow collection handle",

@@ -1,0 +1,320 @@
+{%- comment -%} Raw CSS for KwikCart's shadow root - see assets/znow-cart.js. {%- endcomment -%}
+/**
+ * ZNow in KwikCart - injected INTO GoKwik's shadow root by assets/znow-cart.js
+ * as a <style> (inlined by snippets/znow-cart, so no stale cached copy)
+ * (Figma 8470:85436 two deliveries, 8470:86144 after the cut-off, 8470:86857
+ * not available). Only ZNow's own elements (.zk-*) and the list's grouping
+ * are styled here; GoKwik's tiles are left as GoKwik draws them.
+ *
+ * Theme custom properties inherit into the shadow root, so the type is the
+ * site's Montserrat (--font-secondary--family).
+ */
+
+.sidecart .zk-deliver,
+.sidecart .zk-group,
+.sidecart .zk-notice,
+.sidecart .zk-chip {
+  font-family: var(--font-secondary--family, Montserrat), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  animation: zk-appear 0.25s ease-out;
+}
+
+/* GoKwik puts font-family Inter, line-height normal and margin 0 on every
+   element in its cart (.sidecart *), which would land on each span inside
+   ours: they take their family and lines from our own blocks instead.
+
+   Every rule here starts with .sidecart, so each one outranks that catch-all
+   (one class plus *); among our own rules, source order decides as usual. */
+.sidecart :is(.zk-deliver, .zk-group, .zk-notice, .zk-chip) * {
+  font-family: inherit;
+  line-height: inherit;
+}
+
+@keyframes zk-appear {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+/* Header with "Delivering to" (Figma 8470:85437): a two-row grid -
+     [ Your Cart (3 items) ............ ✕ ]
+     [ 📍 Delivering to 110017 .... Change ]
+   16px around, 12px under, 6px between the rows. A grid rather than
+   GoKwik's flex row, so its fixed heights (60px header, 50px title block)
+   and any spacing it changes later can't push the rows into each other or
+   into the banner below. !important only where GoKwik's three-class
+   selectors set the same property. */
+.sidecart .side-cart-header:has(> .zk-deliver) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'title close'
+    'deliver deliver';
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 6px;
+  height: auto !important;
+  padding: 16px 16px 12px !important;
+}
+
+.sidecart .side-cart-header:has(> .zk-deliver) > .side-cart-subHeader {
+  grid-area: title;
+  display: block !important;
+  height: auto !important;
+  min-width: 0;
+  padding: 0 !important;
+}
+
+.sidecart .side-cart-header:has(> .zk-deliver) > .side-cart-subHeader > p {
+  display: flex;
+  align-items: center;
+  height: auto !important;
+  min-height: 24px;
+}
+
+.sidecart .side-cart-header:has(> .zk-deliver) > .close-btn {
+  grid-area: close;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px !important;
+}
+
+.sidecart .side-cart-header:has(> .zk-deliver) > .zk-deliver {
+  grid-area: deliver;
+}
+
+/* The promo banner then follows the header straight away, as drawn (GoKwik's
+   own custom CSS gives it margin: 10px 0, which opened a gap under the
+   "Delivering to" row). Its bottom margin is GoKwik's and stays. */
+.sidecart .side-cart-header:has(> .zk-deliver) ~ .promotion-banner {
+  margin-top: 0 !important;
+}
+
+/* "📍 Delivering to 110017, Saket ........ Change" */
+.sidecart .zk-deliver {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.sidecart .zk-deliver_icon {
+  display: flex;
+  flex: none;
+}
+
+.sidecart .zk-deliver_label {
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+}
+
+.sidecart .zk-deliver_place {
+  overflow: hidden;
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sidecart .zk-deliver_change {
+  flex: none;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 12px/20px var(--font-secondary--family, Montserrat), sans-serif;
+  color: #712242;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Grouping: the list becomes a column and each tile takes the order of its
+   delivery (set by znow-cart.js) - GoKwik's tiles never leave their place in
+   the DOM, so its own updates are untouched. */
+.sidecart .item-list-wrapper:has(> .zk-group) {
+  display: flex;
+  flex-direction: column;
+}
+
+/* "Delivery 1 of 2 · 2 items ........ [Now · Today by 9 PM]" - a band
+   across the whole list, ruled above and below (Figma 8470:85465). The
+   list's own padding (--zk-pad-*, measured by znow-cart.js) is taken back
+   with negative margins so it meets both edges. */
+.sidecart .zk-group,
+.sidecart .zk-notice {
+  margin-left: calc(-1 * var(--zk-pad-left, 0px));
+  margin-right: calc(-1 * var(--zk-pad-right, 0px));
+  border-radius: 0;
+}
+
+.sidecart .zk-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 10px 16px;
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f7f3f5;
+}
+
+/* The first band starts the list: flush with its top, no rule above. */
+.sidecart .zk-group[data-zk-group='znow'],
+.sidecart .zk-group:only-of-type {
+  margin-top: calc(-1 * var(--zk-pad-top, 0px));
+  border-top: 0;
+}
+
+.sidecart .zk-group--znow {
+  background-color: #efe6ea;
+}
+
+.sidecart .zk-group_label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* The delivery's tick icon (Figma 8470:34434), on every delivery. */
+.sidecart .zk-group_check {
+  display: flex;
+  flex: none;
+  margin-right: 2px;
+}
+
+.sidecart .zk-group_check svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.sidecart .zk-group_title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  color: #000;
+}
+
+.sidecart .zk-group_count {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #666;
+}
+
+.sidecart .zk-group_when {
+  flex: none;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.sidecart .zk-group_pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #4a162c, #712242);
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 18px;
+  color: #ecc0d2;
+  white-space: nowrap;
+}
+
+.sidecart .zk-group_pill svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+/* Cut-off and not-available notices: the pale yellow band (8470:86184). */
+.sidecart .zk-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fef4e2;
+}
+
+/* "Not available" leads the list when there are no bands above it. */
+.sidecart .zk-notice[data-zk-notice='unavailable'] {
+  margin-top: calc(-1 * var(--zk-pad-top, 0px));
+}
+
+.sidecart .zk-notice_icon {
+  display: flex;
+  flex: none;
+  padding-top: 2px;
+}
+
+.sidecart .zk-notice_text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.sidecart .zk-notice_title {
+  font-weight: 600;
+  line-height: 20px;
+  color: #000;
+}
+
+.sidecart .zk-notice_body {
+  font-weight: 500;
+  line-height: 16px;
+  color: #494949;
+}
+
+/* Footer: "🚚 Z-Now · Free" in place of GoKwik's "FREE shipping included"
+   while the cart holds a ZNow delivery. */
+.sidecart .price-chips:has(.zk-chip) .chip-green {
+  display: none;
+}
+
+.sidecart .zk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #f7f3f5;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: #712242;
+}
+
+.sidecart .zk-chip svg {
+  display: block;
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidecart .zk-deliver,
+.sidecart .zk-group,
+.sidecart .zk-notice,
+.sidecart .zk-chip {
+    animation: none;
+  }
+}

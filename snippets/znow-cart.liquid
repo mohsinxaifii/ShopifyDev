@@ -1,0 +1,29 @@
+{%- doc -%}
+  ZNow in KwikCart (assets/znow-cart.js, snippets/znow-cart-css,
+  sections/znow-cart-data) - delivery grouping, "Delivering to", the cut-off
+  and not-available notices, the "Z-Now · Free" chip.
+{%- enddoc -%}
+
+{%- comment -%}
+  The styles ride in the page itself (snippets/znow-cart-css), injected into
+  KwikCart's shadow root as a <style> - a linked file could be served stale
+  from the CDN cache, and would flash the additions unstyled while it loads.
+{%- endcomment -%}
+{%- capture zk_css -%}{% render 'znow-cart-css' %}{%- endcapture -%}
+<script>
+  window.zinaraKwikCart = {
+    root: {{ routes.root_url | json }},
+    css: {{ zk_css | json }},
+    standardDays: {{ settings.znow_standard_delivery_days | default: 3 | json }},
+    madeDays: {{ settings.znow_made_to_order_days | default: 24 | json }},
+    icons: {
+      pin: {{ 'icon-cart-pin.svg' | inline_asset_content | json }},
+      truck: {{ 'icon-cart-truck.svg' | inline_asset_content | json }},
+      clock: {{ 'icon-cart-clock.svg' | inline_asset_content | json }},
+      info: {{ 'icon-cart-info.svg' | inline_asset_content | json }},
+      znow: {{ 'icon-znow.svg' | inline_asset_content | json }},
+      checkOn: {{ 'icon-cart-check-on.svg' | inline_asset_content | json }},
+    },
+  };
+</script>
+<script src="{{ 'znow-cart.js' | asset_url }}" defer="defer"></script>

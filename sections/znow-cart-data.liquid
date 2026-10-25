@@ -1,0 +1,27 @@
+{%- comment -%}
+  Not a visible section: assets/znow-cart.js reads it through the Section
+  Rendering API (/?sections=znow-cart-data) to learn which cart lines have
+  stock on hand - /cart.js doesn't carry inventory. One entry per line, in
+  cart order, enough to match it to KwikCart's tiles (title + options).
+{%- endcomment -%}
+<script type="application/json" data-znow-cart-data>
+  [
+    {%- for item in cart.items -%}
+      {
+        "key": {{ item.key | json }},
+        "title": {{ item.product.title | json }},
+        "options": {{ item.variant.options | json }},
+        "free": {% if item.final_line_price == 0 %}true{% else %}false{% endif %},
+        "inStock": {% if item.variant.available and item.variant.inventory_quantity >= item.quantity and item.variant.inventory_quantity > 0 %}true{% else %}false{% endif %},
+        "quantity": {{ item.quantity }}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+</script>
+
+{% schema %}
+{
+  "name": "ZNow cart data",
+  "class": "shopify-section--znow-cart-data"
+}
+{% endschema %}
