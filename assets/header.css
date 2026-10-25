@@ -61,6 +61,116 @@
   box-sizing: border-box;
 }
 
+/* Collection pages (Figma 8470:82045): the navbar closes up to 20px to make
+   room for "Deliver to" between the logo and the search. */
+.header_wrapper:has(> .delivery-location) {
+  gap: 20px;
+}
+
+/* ------------------------------------------------- delivery location */
+
+.delivery-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.delivery-location_button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-primary--family);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--color-text-secondary, #494949);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.delivery-location_pin {
+  display: flex;
+  flex: none;
+  margin-right: 2px; /* 6px from the text, as drawn */
+}
+
+.delivery-location_place {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: var(--color-brand, #712242);
+}
+
+.delivery-location_caret {
+  display: flex;
+  flex: none;
+}
+
+.delivery-location_button:hover .delivery-location_place {
+  text-decoration: underline;
+}
+
+/* The ZNow chip only in the same-day area (html.is-znow, snippets/location). */
+.delivery-location_znow {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #4a162c, #712242);
+  font-family: var(--font-primary--family);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 10px;
+  line-height: 18px;
+  color: #ecc0d2;
+}
+
+html.is-znow .delivery-location_znow {
+  display: flex;
+}
+
+.delivery-location_znow > span:first-child {
+  display: flex;
+  padding-top: 2px;
+}
+
+/* Mobile strip under the navbar (Figma 8470:71160), shown with the mobile
+   navbar below 990px; the desktop one hides there. */
+.delivery-location--mobile {
+  display: none;
+  justify-content: space-between;
+  padding: 6px 16px;
+  border-top: 1px solid var(--color-border, #f2f2f2);
+}
+
+.delivery-location--mobile .delivery-location_button {
+  font-size: 10px;
+  line-height: 18px;
+}
+
+.delivery-location--mobile .delivery-location_caret svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media screen and (max-width: 989px) {
+  .header_wrapper > .delivery-location--desktop {
+    display: none;
+  }
+
+  .delivery-location--mobile {
+    display: flex;
+  }
+}
+
 /* Brand cluster: menu toggle + logo */
 .header_wrapper_brand {
   display: flex;

@@ -39,6 +39,11 @@
       </a>
     </div>
 
+    {%- comment -%} Collection pages: where it delivers, and ZNow (snippets/delivery-location). {%- endcomment -%}
+    {%- if request.page_type == 'collection' -%}
+      {%- render 'delivery-location', variant: 'desktop' -%}
+    {%- endif -%}
+
     {%- render 'search-suggest' -%}
 
     <div class="header_wrapper_actions">
@@ -96,6 +101,10 @@
       </a>
     </div>
   </div>
+
+  {%- if request.page_type == 'collection' -%}
+    {%- render 'delivery-location', variant: 'mobile' -%}
+  {%- endif -%}
 
   {%- comment -%}
     Both are popovers so header.js can lift them into the browser's top layer
