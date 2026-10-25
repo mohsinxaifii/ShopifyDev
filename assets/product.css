@@ -1069,6 +1069,147 @@ button.pdp_trust_grid_item_inner {
   color: #c62828;
 }
 
+.pdp_delivery_row[hidden],
+.pdp_delivery_known[hidden],
+.pdp_delivery_option[hidden] {
+  display: none;
+}
+
+/* "110017 | Saket ........ Change" (Figma 8470:83200). */
+.pdp_delivery_known {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+}
+
+.pdp_delivery_known_place {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pdp_delivery_known_pincode {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--pdp-text);
+}
+
+.pdp_delivery_known_area {
+  overflow: hidden;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--pdp-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pdp_delivery_known_area:empty {
+  display: none;
+}
+
+.pdp_delivery_known_change {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 12px/1 var(--font-primary--family);
+  color: var(--pdp-brand);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Delivery rows: ZNow (Figma 8470:83209) and Standard (8470:73167). */
+.pdp_delivery_option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.pdp_delivery_option--znow {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp_delivery_option_icon,
+.pdp_delivery_option_icon > span {
+  display: flex;
+  flex: none;
+}
+
+.pdp_delivery_option_icon_mobile {
+  display: none !important;
+}
+
+.pdp_delivery_option_text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pdp_delivery_option:not(.pdp_delivery_option--znow) .pdp_delivery_option_text {
+  gap: 2px;
+}
+
+.pdp_delivery_option_znow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #4a162c, #712242);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: #ecc0d2;
+}
+
+.pdp_delivery_option_znow_now {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 16px;
+}
+
+.pdp_delivery_option_znow_now svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pdp_delivery_option_title {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-text);
+}
+
+.pdp_delivery_option_line {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_delivery_option:not(.pdp_delivery_option--znow) .pdp_delivery_option_line {
+  font-size: 12px;
+  line-height: 20px;
+}
+
 /* Gift sleeve - Figma 7930:96141 */
 
 .pdp_gift {
@@ -4344,5 +4485,30 @@ button.pdp_trust_grid_item_inner {
   .pdp_ship_tag_now svg {
     width: 8px;
     height: 8px;
+  }
+}
+
+/* Delivery estimate, mobile (Figma 8488:70168): 16px truck, 12px lines. */
+@media screen and (max-width: 749px) {
+  .pdp_delivery_option_icon_desktop {
+    display: none !important;
+  }
+
+  .pdp_delivery_option_icon_mobile {
+    display: flex !important;
+  }
+
+  .pdp_delivery_option_text {
+    gap: 2px;
+  }
+
+  .pdp_delivery_option_line {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .pdp_delivery_known_area {
+    font-size: 12px;
+    line-height: 20px;
   }
 }
