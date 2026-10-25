@@ -25,16 +25,25 @@
   color: var(--color-text-secondary, #494949);
 }
 
-/* Figma 8470:77908: one row of eighths, 24px apart - each tile keeps that
-   width (121px at the 1136px page) however many there are, and the row is
-   centred, so six tiles look like the design's eight, not stretched. */
+/* Figma 8470:77908: tiles an eighth of the row wide, 24px apart (121px at the
+   1136px page) however many there are, from the left. More than eight and
+   the row scrolls (assets/swipe.js lets a mouse drag it), with Shop all held
+   at the right-hand end while the others pass under it. */
 .shop-by-category_wrapper_grid {
   --sbc-gap: 24px;
+  --sbc-tile: calc((100% - 7 * var(--sbc-gap)) / 8);
 
   display: flex;
-  justify-content: center;
   gap: var(--sbc-gap);
   width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.shop-by-category_wrapper_grid::-webkit-scrollbar {
+  display: none;
 }
 
 .shop-by-category_wrapper_grid_item {
@@ -42,9 +51,24 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  flex: 0 1 calc((100% - 7 * var(--sbc-gap)) / 8);
+  flex: 0 0 var(--sbc-tile);
   min-width: 0;
+  scroll-snap-align: start;
   text-decoration: none;
+}
+
+/* Pinned: sticky at the right edge, on a white strip as wide as the gap so
+   the tiles scrolling beneath it don't show through. The negative margin
+   gives that gap back, so at rest it sits exactly where a plain tile would. */
+.shop-by-category_wrapper_grid_item--shop_all {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  box-sizing: content-box;
+  margin-left: calc(-1 * var(--sbc-gap));
+  padding-left: var(--sbc-gap);
+  background-color: #fff;
+  scroll-snap-align: end;
 }
 
 .shop-by-category_wrapper_grid_item_image {
@@ -133,10 +157,18 @@
     line-height: normal;
   }
 
+  /* No scrolling here: the grid takes as many rows as it needs. */
   .shop-by-category_wrapper_grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px 8px;
+    overflow: visible;
+  }
+
+  .shop-by-category_wrapper_grid_item--shop_all {
+    position: static;
+    margin-left: 0;
+    padding-left: 0;
   }
 
   .shop-by-category_wrapper_grid_item_label {

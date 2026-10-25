@@ -7,7 +7,7 @@
         <h2 class="shop-by-category_wrapper_heading" data-animate>{{ section.settings.heading }}</h2>
       {%- endif -%}
 
-      <div class="shop-by-category_wrapper_grid">
+      <div class="shop-by-category_wrapper_grid" data-sbc-track>
         {%- for block in section.blocks -%}
           {%- comment -%}
             The ZNow tile (Figma 8470:77908) opens through the ZNow flow
@@ -58,6 +58,12 @@
       </div>
     </div>
   </section>
+  <script>
+    // Mouse drag for the row once it overflows (touch and trackpads scroll it already).
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-sbc-track]').forEach((track) => window.zinaraDragScroll?.(track));
+    });
+  </script>
 {%- endif -%}
 
 {% schema %}
