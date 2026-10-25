@@ -130,8 +130,8 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
   display: none;
 }
 
-/* Figma 8470:67951: the bar turns to the ZNow gradient while its message
-   shows. A gradient cannot be animated to or from a flat colour, so it sits
+/* Figma 8470:77886 (desktop), 8470:67951 (mobile): the bar turns to the
+   ZNow gradient while its message shows. A gradient cannot be animated to or from a flat colour, so it sits
    on a layer of its own that fades with the messages (same 0.35s). */
 .announcement-bar {
   position: relative;
@@ -155,13 +155,14 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
 
 .announcement-bar.is-znow .announcement-bar_wrapper_prev,
 .announcement-bar.is-znow .announcement-bar_wrapper_next {
-  color: #ecc0d2;
+  color: #fff;
 }
 
+/* Desktop: 8px apart, and no arrow - the carets either side do that job. */
 .announcement-bar_znow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   font-family: var(--font-primary--family);
   font-size: 12px;
@@ -203,7 +204,7 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
 }
 
 .announcement-bar_znow_arrow {
-  display: flex;
+  display: none;
 }
 
 .announcement-bar_znow_arrow svg {
@@ -244,5 +245,14 @@ a.announcement-bar_znow:focus-visible {
 
   .announcement-bar_wrapper_track_slide_text strong {
     font-weight: 600;
+  }
+
+  /* Mobile: 6px apart, with the arrow (Figma 8470:67951). */
+  .announcement-bar_znow {
+    gap: 6px;
+  }
+
+  .announcement-bar_znow_arrow {
+    display: flex;
   }
 }
