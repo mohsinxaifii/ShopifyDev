@@ -43,10 +43,12 @@
     saved = saved || {};
     // Read by snippets/delivery-location to fill its text before first paint.
     window.zinaraSavedLocation = saved;
-    // As znowNow() in location.js: a location fix decides by the area, a typed pincode by the list.
+    // As znowNow() in location.js: the list decides; a location fix must
+    // also be inside the area (and alone decides only with no pincode yet).
+    var listed = config.znowPincodes.indexOf(saved.pincode || '') !== -1;
     var znow = saved.source === 'gps' && typeof saved.inZnowArea === 'boolean'
-      ? saved.inZnowArea
-      : config.znowPincodes.indexOf(saved.pincode || '') !== -1;
+      ? saved.inZnowArea && (!saved.pincode || listed)
+      : listed;
     if (config.znowPreview || znow) {
       document.documentElement.classList.add('is-znow');
     }

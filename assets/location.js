@@ -92,11 +92,16 @@
 
   let state = read();
 
-  /* Same rule as the inline script in snippets/location: a typed pincode
-     decides by the list; a location fix by the area. */
+  /* Same rule as the inline script in snippets/location. The pincode list
+     (snippets/znow-pincodes) decides: a typed pincode by the list alone; a
+     location fix has to be inside the area AND, once its pincode is known,
+     on the list too - the outline alone decides only while no pincode has
+     been found for it. */
   function znowNow() {
     if (config.znowPreview) return true;
-    if (state.source === 'gps' && typeof state.inZnowArea === 'boolean') return state.inZnowArea;
+    if (state.source === 'gps' && typeof state.inZnowArea === 'boolean') {
+      return state.inZnowArea && (!state.pincode || pincodeIsZnow(state.pincode));
+    }
     return pincodeIsZnow(state.pincode);
   }
 
