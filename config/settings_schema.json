@@ -24,6 +24,12 @@
         "unit": "px",
         "label": "t:labels.logo_width",
         "default": 82
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Square, at least 48 x 48px. Empty: the Z from the logo on white."
       }
     ]
   },
