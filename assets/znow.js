@@ -184,12 +184,12 @@
       if (!busy) return;
       busy = false;
       view('ask');
-      say(
-        error.code === 'denied'
-          ? 'Location is blocked in your browser. Enter your pincode instead.'
-          : "We couldn't find your location. Enter your pincode instead.",
-        true
-      );
+      const messages = {
+        denied: 'Location is blocked for this site in your browser. Enter your pincode instead.',
+        system: 'Location is turned off on this device. Turn it on in your device settings, or enter your pincode.',
+        timeout: "Finding your location took too long. Try again, or enter your pincode.",
+      };
+      say(messages[error.code] || "We couldn't find your location. Enter your pincode instead.", true);
       input.focus();
     }
   });

@@ -224,8 +224,9 @@
   let detecting = null;
 
   /** Resolves with get() once the area is known (the pincode may still be
-      blank); rejects with an Error whose `code` is 'denied', 'unavailable',
-      'timeout' or 'area' (the outline could not be loaded). */
+      blank); rejects with an Error whose `code` is 'denied' (this site is
+      blocked), 'system' (the site is allowed but the device has location
+      off), 'unavailable', 'timeout' or 'area' (the outline could not load). */
   function detect() {
     if (detecting) return detecting;
     detecting = (async () => {
@@ -234,7 +235,10 @@
         ({ coords } = await position());
       } catch (error) {
         // GeolocationPositionError: 1 denied, 2 unavailable, 3 timeout.
-        const code = error.code === 1 ? 'denied' : error.code === 3 ? 'timeout' : 'unavailable';
+        let code = error.code === 1 ? 'denied' : error.code === 3 ? 'timeout' : 'unavailable';
+        // Denied although this site is allowed: the device itself has location
+        // off (Windows / macOS / Android settings) - the site setting is fine.
+        if (code === 'denied' && (await permission()) === 'granted') code = 'system';
         if (code === 'denied') save({ status: 'denied' });
         throw Object.assign(new Error(error.message || code), { code });
       }
