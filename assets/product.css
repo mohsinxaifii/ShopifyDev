@@ -778,6 +778,13 @@
    8470:83144). data-state comes from the picked variant: "stock" shows the
    ZNow pill in the ZNow area (html.is-znow) and Ready to ship elsewhere,
    "made" shows Made to order, "none" (not buyable) shows nothing. */
+/* The option carrying the ZNow tag keeps Figma's 12px between its heading
+   and the values (8470:73039) - the Z badges rise 4px above the chips, so
+   anything less leaves them touching the pill. */
+.pdp_option:has(.pdp_ship_tag) {
+  gap: 12px;
+}
+
 /* The heading lines its name and value up on the text baseline; with the
    pill beside it, everything centres instead (Figma: items-center). */
 .pdp_option_head:has(.pdp_ship_tag) {
