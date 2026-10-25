@@ -778,9 +778,15 @@
    8470:83144). data-state comes from the picked variant: "stock" shows the
    ZNow pill in the ZNow area (html.is-znow) and Ready to ship elsewhere,
    "made" shows Made to order, "none" (not buyable) shows nothing. */
+/* The heading lines its name and value up on the text baseline; with the
+   pill beside it, everything centres instead (Figma: items-center). */
+.pdp_option_head:has(.pdp_ship_tag) {
+  align-items: center;
+}
+
 .pdp_ship_tag {
   display: inline-flex;
-  align-self: center;
+  align-items: center;
 }
 
 .pdp_ship_tag_pill {
@@ -822,6 +828,8 @@ html.is-znow .pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--ready {
 }
 
 .pdp_ship_tag_now svg {
+  display: block;
+  flex: none;
   width: 12px;
   height: 12px;
 }
