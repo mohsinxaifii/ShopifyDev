@@ -59,10 +59,18 @@
     </div>
   </section>
   <script>
-    // Mouse drag for the row once it overflows (touch and trackpads scroll it already).
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('[data-sbc-track]').forEach((track) => window.zinaraDragScroll?.(track));
-    });
+    // Mouse drag for the row once it overflows (touch and trackpads scroll it
+    // already); again after the theme editor re-renders the section.
+    (() => {
+      const init = () =>
+        document.querySelectorAll('[data-sbc-track]:not([data-sbc-ready])').forEach((track) => {
+          track.dataset.sbcReady = '';
+          window.zinaraDragScroll?.(track);
+        });
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
+      document.addEventListener('shopify:section:load', init);
+    })();
   </script>
 {%- endif -%}
 
