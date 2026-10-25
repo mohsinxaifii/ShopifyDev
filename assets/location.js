@@ -268,6 +268,7 @@
     const input = root.querySelector('[data-location-input]');
     const done = root.querySelector('[data-location-done]');
     let closeTimer;
+    let hideTimer;
 
     const view = (name) => views.forEach((node) => (node.hidden = node.dataset.locationView !== name));
     const say = (text, invalid = false) => {
@@ -280,7 +281,7 @@
       clearTimeout(closeTimer);
       root.classList.remove('is-open');
       // Hidden once the slide-out ends; straight away with reduced motion.
-      setTimeout(() => (root.hidden = true), 250);
+      hideTimer = setTimeout(() => (root.hidden = true), 250);
       if (action) track(action);
     }
 
@@ -293,6 +294,7 @@
 
     function open(byShopper) {
       clearTimeout(closeTimer);
+      clearTimeout(hideTimer);
       say('');
       input.value = state.pincode || '';
       const canAsk = Boolean(navigator.geolocation && window.isSecureContext);
@@ -357,8 +359,9 @@
     const root = document.querySelector('[data-location-prompt]');
     if (root) prompt = buildPrompt(root);
 
-    // Never in the theme editor, nor for automated browsers (Lighthouse, bots).
-    if (window.Shopify?.designMode || navigator.webdriver) return;
+    // Switched off in theme settings, in the theme editor, or for automated
+    // browsers (Lighthouse, bots): the API still works, nothing runs by itself.
+    if (config.enabled === false || window.Shopify?.designMode || navigator.webdriver) return;
 
     const firstPageOfVisit = !sessionStarted();
     const browser = await permission();
@@ -371,13 +374,15 @@
         detect().catch(() => {});
         return;
       }
-      if (!prompt || config.enabled === false) return;
+      if (!prompt) return;
       save({ asked: Date.now(), status: browser === 'denied' ? 'denied' : state.status || '' });
       setTimeout(() => prompt.open(false), Number(config.delay) || 1500);
       return;
     }
 
-    if (firstPageOfVisit && browser === 'granted' && state.source !== 'manual') {
+    // A pincode the shopper typed (here or on a product page) is kept - it may
+    // be where they want delivery, not where they are.
+    if (firstPageOfVisit && browser === 'granted' && (!state.source || state.source === 'gps')) {
       detect().catch(() => {});
     }
   }
