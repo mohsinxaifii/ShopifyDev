@@ -1,0 +1,124 @@
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'product-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'znow-showcase.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  ZNow showcase - Figma 8470:78220 (desktop) / 8470:68162 (mobile). Shown to
+  everyone, in the ZNow area or not: the ZNow collection in the theme's
+  product carousel (product-carousel.js, the same cards as everywhere), on
+  the ZNow gradient. "Check availability" goes through the ZNow flow
+  (snippets/znow-flow) exactly like the Shop by category tile - the location
+  dialog first for a shopper not known to be in the area, straight to the
+  collection (and its loader) for one who is.
+{%- endcomment -%}
+{%- liquid
+  assign znow_collection = section.settings.collection
+  if znow_collection == blank
+    assign znow_handle = settings.znow_collection_handle | default: 'znow' | strip
+    assign znow_collection = collections[znow_handle]
+  endif
+  assign track_section = section.id | split: '__' | last | replace: '-', '_'
+-%}
+
+{%- if znow_collection != blank and znow_collection.products_count > 0 -%}
+  <product-carousel class="product-carousel product-carousel--znow full-width" data-analytics-section="{{ track_section }}">
+    <div class="product-carousel_wrapper">
+      <div class="znow-showcase_head" data-animate>
+        <div class="znow-showcase_head_text">
+          <h2 class="znow-showcase_head_logo">
+            <span class="znow-showcase_head_logo_mark" aria-hidden="true">
+              <span class="znow-showcase_head_logo_mark--desktop">{{- 'icon-znow-28.svg' | inline_asset_content -}}</span>
+              <span class="znow-showcase_head_logo_mark--mobile">{{- 'icon-znow-20.svg' | inline_asset_content -}}</span>
+            </span>
+            <span aria-hidden="true">Now</span>
+            <span class="visually-hidden">Z-Now</span>
+          </h2>
+          {%- if section.settings.text != blank -%}
+            <p class="znow-showcase_head_tagline">{{ section.settings.text }}</p>
+          {%- endif -%}
+        </div>
+
+        <a
+          href="{{ znow_collection.url }}"
+          class="znow-showcase_head_button"
+          data-znow-link
+          data-analytics="section_cta_click"
+          data-analytics-section-name="{{ track_section }}"
+        >
+          <span class="znow-showcase_head_button_icon" aria-hidden="true">
+            {{- 'icon-map-pin-white-16.svg' | inline_asset_content -}}
+          </span>
+          {{ section.settings.button_label | default: 'Check availability' }}
+        </a>
+      </div>
+
+      <div class="product-carousel_wrapper_stage">
+        <div class="product-carousel_wrapper_stage_panel is-active">
+          <div class="product-carousel_wrapper_stage_panel_track">
+            {%- for product in znow_collection.products limit: section.settings.product_limit -%}
+              {%- render 'product-card', product: product -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <button type="button" class="product-carousel_wrapper_stage_prev" aria-label="{{ 'accessibility.previous_page' | t }}">
+          {{ 'icon-caret-left.svg' | inline_asset_content }}
+        </button>
+        <button type="button" class="product-carousel_wrapper_stage_next" aria-label="{{ 'accessibility.next_page' | t }}">
+          {{ 'icon-caret-right.svg' | inline_asset_content }}
+        </button>
+      </div>
+
+      <div class="product-carousel_wrapper_dots" data-dots></div>
+    </div>
+  </product-carousel>
+
+  <script src="{{ 'carousel-scroll.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-carousel.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "ZNow showcase",
+  "tag": "section",
+  "class": "shopify-section--znow-showcase",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shown to every shopper. Check availability opens the ZNow pincode check (shoppers already in the same-day area go straight to the collection)."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Empty: the ZNow collection (Theme settings > Location & ZNow)."
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Tagline",
+      "default": "Same-day delivery now in Delhi NCR."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Check availability"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Products to show",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "ZNow showcase"
+    }
+  ]
+}
+{% endschema %}
