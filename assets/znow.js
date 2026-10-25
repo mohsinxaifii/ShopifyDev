@@ -51,8 +51,8 @@
     dialog.dataset.view = name;
     locate.disabled = name === 'checking';
     if (name === 'unavailable') {
-      const where = options.pincode || 'your area';
-      title.textContent = `Same-day isn’t available at ${where} yet`;
+      const where = options.pincode ? `at ${options.pincode}` : 'in your area';
+      title.textContent = `Same-day isn’t available ${where} yet`;
       subtitle.textContent = `Standard delivery: ${standardDate()}`;
       say('');
     } else {
