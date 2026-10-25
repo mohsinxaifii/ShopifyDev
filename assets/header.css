@@ -112,8 +112,15 @@
   flex: none;
 }
 
-.delivery-location_button:hover .delivery-location_place {
+.delivery-location_place {
   text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.delivery-location_button:hover .delivery-location_place {
+  text-decoration-color: currentColor;
 }
 
 /* The ZNow chip only in the same-day area (html.is-znow, snippets/location). */
