@@ -31,6 +31,7 @@
   color: #000;
   cursor: pointer;
   transition:
+    color 0.35s ease,
     opacity 0.2s ease,
     transform 0.2s ease;
 }
@@ -129,9 +130,27 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
   display: none;
 }
 
-/* Figma 8470:67951: the bar turns to the ZNow gradient while its message shows. */
-.announcement-bar.is-znow {
+/* Figma 8470:67951: the bar turns to the ZNow gradient while its message
+   shows. A gradient cannot be animated to or from a flat colour, so it sits
+   on a layer of its own that fades with the messages (same 0.35s). */
+.announcement-bar {
+  position: relative;
+  isolation: isolate;
+}
+
+.announcement-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: linear-gradient(to right, #4a162c, #712242);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.announcement-bar.is-znow::before {
+  opacity: 1;
 }
 
 .announcement-bar.is-znow .announcement-bar_wrapper_prev,
