@@ -1,0 +1,52 @@
+{%- doc -%}
+  "Still arrives today" - shown once when a shopper in the ZNow area presses
+  Back on a product page with stock (Figma 8488:70185 desktop card,
+  8488:70191 mobile sheet). product.js (initZnowBack) arms and opens it.
+
+  - Size picked (and in stock): "Add to cart · Size 12" + "Keep browsing".
+  - Not picked yet: "Choose a size" (scrolls to the options) + "Go back to
+    browsing".
+  Before the cut-off it promises today, after it tomorrow (snippets/location).
+
+  @param {object} product - the product being viewed
+{%- enddoc -%}
+
+{%- assign back_option_name = product.options.last | default: 'size' | downcase -%}
+<dialog class="pdp_znow_back" aria-labelledby="PdpZnowBackTitle" data-znow-back data-picked="false" scroll-lock>
+  <div class="pdp_znow_back_panel">
+    <button type="button" class="pdp_znow_back_close" aria-label="Close" data-znow-back-close>
+      {{- 'icon-x-white-24.svg' | inline_asset_content -}}
+    </button>
+
+    <p class="pdp_znow_back_logo" aria-label="Z-Now">
+      <span aria-hidden="true">{{- 'icon-znow-24.svg' | inline_asset_content -}}</span>
+      <span aria-hidden="true">Now</span>
+    </p>
+
+    <div class="pdp_znow_back_copy" id="PdpZnowBackTitle">
+      <p class="pdp_znow_back_title" data-znow-when="today">
+        This piece can still arrive today by <span data-znow-today-by>9 PM</span>
+      </p>
+      <p class="pdp_znow_back_title" data-znow-when="tomorrow">
+        This piece can arrive tomorrow by <span data-znow-tomorrow-by>1 PM</span>
+      </p>
+      <p class="pdp_znow_back_note" data-znow-when="today">Order by <span data-znow-cutoff>2 PM</span></p>
+      <p class="pdp_znow_back_note" data-znow-when="tomorrow">Order today</p>
+    </div>
+
+    <div class="pdp_znow_back_actions">
+      <button type="button" class="pdp_znow_back_button pdp_znow_back_button--light pdp_znow_back_button--picked" data-znow-back-add>
+        <span class="pdp_znow_back_button_icon" aria-hidden="true">{{- 'icon-shopping-bag-brand-24.svg' | inline_asset_content -}}</span>
+        <span>Add to cart<span data-znow-back-choice></span></span>
+      </button>
+      <button type="button" class="pdp_znow_back_button pdp_znow_back_button--light pdp_znow_back_button--unpicked" data-znow-back-choose>
+        <span class="pdp_znow_back_button_icon" aria-hidden="true">{{- 'icon-ruler-brand-24.svg' | inline_asset_content -}}</span>
+        <span>Choose a {{ back_option_name }}</span>
+      </button>
+      <button type="button" class="pdp_znow_back_button pdp_znow_back_button--brand" data-znow-back-leave>
+        <span class="pdp_znow_back_button--picked">Keep browsing</span>
+        <span class="pdp_znow_back_button--unpicked">Go back to browsing</span>
+      </button>
+    </div>
+  </div>
+</dialog>
