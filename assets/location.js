@@ -100,10 +100,24 @@
     return pincodeIsZnow(state.pincode);
   }
 
+  /* A ZNow change on an open page: <html> carries "znow-switching" for a
+     moment, so everything that swaps with it (card bars, the header chip,
+     the PDP pills) fades in rather than snapping - and only then, not on
+     every page load. */
+  let switching;
+  function setZnow(on) {
+    const root = document.documentElement;
+    if (root.classList.contains('is-znow') === on) return;
+    root.classList.add('znow-switching');
+    root.classList.toggle('is-znow', on);
+    clearTimeout(switching);
+    switching = setTimeout(() => root.classList.remove('znow-switching'), 400);
+  }
+
   function save(changes) {
     state = { ...state, ...changes, updated: Date.now() };
     write(state);
-    document.documentElement.classList.toggle('is-znow', znowNow());
+    setZnow(znowNow());
     document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
     return api.get();
   }
