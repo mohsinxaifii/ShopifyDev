@@ -593,7 +593,8 @@
     updateUrl(variant) {
       const url = new URL(window.location.href);
       url.searchParams.set('variant', variant.id);
-      window.history.replaceState({}, '', url);
+      // Keeps the entry's state - wiping it would forget the ZNow back marker (initZnowBack).
+      window.history.replaceState(window.history.state, '', url);
     }
 
     /* --------------------------------------------------------- lightbox */
@@ -1071,25 +1072,39 @@
       }
 
       const eligible = () => document.documentElement.classList.contains('is-znow');
-      let armed = false;
+      const isMarker = (state) => Boolean(state?.zinaraZnowBack);
       let shown = false;
+      // Whether the entry we're on is our marker. It's checked on load too: a
+      // shopper who left by a link and came back with Back lands on it, and
+      // must not have to press Back twice to leave.
+      let onMarker = isMarker(window.history.state);
 
       const arm = () => {
-        if (armed || shown || !eligible()) return;
-        armed = true;
-        window.history.pushState({ zinaraZnowBack: true }, '', window.location.href);
+        if (onMarker || shown || !eligible()) return;
+        onMarker = true;
+        window.history.pushState({ ...(window.history.state || {}), zinaraZnowBack: true }, '', window.location.href);
       };
       ['pointerdown', 'keydown'].forEach((type) => document.addEventListener(type, arm, { once: true, capture: true }));
 
-      window.addEventListener('popstate', () => {
-        if (!armed || shown) return;
-        armed = false;
-        if (!eligible()) {
-          window.history.back(); // no longer applies - finish the Back
+      // Back from the marker: the prompt, once; any other time (shown already,
+      // or no longer in the area) carry the Back on, so the press is never
+      // spent on the marker alone.
+      window.addEventListener('popstate', (event) => {
+        const wasMarker = onMarker;
+        onMarker = isMarker(event.state);
+        if (!wasMarker || onMarker) return; // not leaving the marker (e.g. Forward onto it)
+        if (dialog.open) return;
+        if (shown || !eligible()) {
+          window.history.back();
           return;
         }
         shown = true;
         this.openZnowBack(dialog);
+      });
+
+      // Restored from the back/forward cache: re-read where we are.
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) onMarker = isMarker(window.history.state);
       });
 
       const close = () => dialog.close();
