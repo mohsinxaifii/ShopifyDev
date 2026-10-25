@@ -1087,12 +1087,15 @@
       // must not have to press Back twice to leave.
       let onMarker = isMarker(window.history.state);
 
+      // Tried on every tap or key press until it holds - not just the first:
+      // a shopper who becomes eligible on the page (sets a same-day pincode in
+      // the delivery estimate) is armed by their next tap.
       const arm = () => {
         if (onMarker || shown || !eligible()) return;
         onMarker = true;
         window.history.pushState({ ...(window.history.state || {}), zinaraZnowBack: true }, '', window.location.href);
       };
-      ['pointerdown', 'keydown'].forEach((type) => document.addEventListener(type, arm, { once: true, capture: true }));
+      ['pointerdown', 'keydown'].forEach((type) => document.addEventListener(type, arm, { capture: true }));
 
       // Back from the marker: the prompt, once; any other time (shown already,
       // or no longer in the area) carry the Back on, so the press is never
