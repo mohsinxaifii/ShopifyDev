@@ -4332,3 +4332,17 @@ button.pdp_trust_grid_item_inner {
   }
 }
 
+
+/* ZNow shipping tag, mobile (Figma 8488:70168): 10px on an 18px line. */
+@media screen and (max-width: 749px) {
+  .pdp_ship_tag_pill {
+    padding: 4px 8px;
+    font-size: 10px;
+    line-height: 18px;
+  }
+
+  .pdp_ship_tag_now svg {
+    width: 8px;
+    height: 8px;
+  }
+}
