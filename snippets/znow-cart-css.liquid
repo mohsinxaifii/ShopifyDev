@@ -85,6 +85,13 @@
   grid-area: deliver;
 }
 
+/* The promo banner then follows the header straight away, as drawn (GoKwik's
+   own custom CSS gives it margin: 10px 0, which opened a gap under the
+   "Delivering to" row). Its bottom margin is GoKwik's and stays. */
+.sidecart .side-cart-header:has(> .zk-deliver) ~ .promotion-banner {
+  margin-top: 0 !important;
+}
+
 /* "📍 Delivering to 110017, Saket ........ Change" */
 .sidecart .zk-deliver {
   display: flex;
