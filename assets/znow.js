@@ -56,8 +56,14 @@
     locate.disabled = name === 'checking';
     if (name === 'unavailable') {
       const where = options.pincode ? `at ${options.pincode}` : 'in your area';
-      title.textContent = `Same-day isn’t available ${where} yet`;
-      subtitle.textContent = `Standard delivery: ${standardDate()}`;
+      if (options.served === false) {
+        // Not on the delivery list at all: no standard date to promise.
+        title.textContent = `We don’t deliver to ${options.pincode} yet`;
+        subtitle.textContent = 'Please try another pincode.';
+      } else {
+        title.textContent = `Same-day isn’t available ${where} yet`;
+        subtitle.textContent = `Standard delivery: ${standardDate()}`;
+      }
       say('');
     } else {
       title.textContent = target ? defaults.title : 'Change delivery pincode';
@@ -130,11 +136,20 @@
     if (!busy) return; // closed or changed meanwhile
 
     window.zinaraLocation.set(pincode, { source: 'manual' });
-    const served = window.zinaraLocation.isZnow(pincode);
-    track('pincode_check', { pincode, serviceable: served, page_type: 'znow' });
+    const sameDay = window.zinaraLocation.isZnow(pincode);
+    let delivered = true;
+    if (!sameDay) {
+      try {
+        delivered = await window.zinaraLocation.serves(pincode);
+      } catch (error) {
+        delivered = true; // list unreachable: don't claim we never deliver there
+      }
+      if (!busy) return;
+    }
+    track('pincode_check', { pincode, serviceable: delivered, page_type: 'znow' });
     busy = false;
-    if (served) proceed();
-    else view('unavailable', { pincode });
+    if (sameDay) proceed();
+    else view('unavailable', { pincode, served: delivered });
   });
 
   locate.addEventListener('click', async () => {
