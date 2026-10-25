@@ -24,6 +24,15 @@
   if (!dialog) return;
 
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Re-fades text rewritten in place, so a change reads as one rather than a
+     snap (.is-refreshed in znow.css / header.css). */
+  const replay = (element) => {
+    if (!element) return;
+    element.classList.remove('is-refreshed');
+    void element.offsetWidth;
+    element.classList.add('is-refreshed');
+  };
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const track = (event, params) => window.zinaraTrack?.(event, params);
 
@@ -47,11 +56,14 @@
   let busy = false;
 
   function say(text, isError = false) {
+    const changed = status.textContent !== (text || '');
     status.textContent = text || '';
     status.classList.toggle('is-error', isError);
+    if (changed && text) replay(status);
   }
 
   function view(name, options = {}) {
+    const before = [title.textContent, subtitle.textContent];
     dialog.dataset.view = name;
     locate.disabled = name === 'checking';
     if (name === 'unavailable') {
@@ -72,6 +84,10 @@
     if (name === 'checking') {
       pendingPincode.textContent = options.pincode || '';
       pendingArea.textContent = options.area ? `| ${options.area}` : '';
+    }
+    if (dialog.open) {
+      if (title.textContent !== before[0]) replay(title);
+      if (subtitle.textContent !== before[1]) replay(subtitle);
     }
   }
 
@@ -332,7 +348,11 @@
     const { city, pincode } = event.detail;
     const text = [city, pincode].filter(Boolean).join(' ');
     if (!text) return;
-    document.querySelectorAll('[data-delivery-location-place]').forEach((place) => (place.textContent = text));
+    document.querySelectorAll('[data-delivery-location-place]').forEach((place) => {
+      if (place.textContent === text) return;
+      place.textContent = text;
+      replay(place);
+    });
   });
 
   window.zinaraZnow = {

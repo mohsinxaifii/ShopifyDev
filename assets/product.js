@@ -945,7 +945,15 @@
         ask.hidden = isKnown;
         known.hidden = !isKnown;
         if (isKnown) {
-          block.querySelector('[data-delivery-pincode]').textContent = pincode || 'Your location';
+          const label = block.querySelector('[data-delivery-pincode]');
+          const next = pincode || 'Your location';
+          // A new pincode in the field re-fades it rather than snapping.
+          if (label.textContent && label.textContent !== next) {
+            known.style.animation = 'none';
+            void known.offsetWidth;
+            known.style.animation = '';
+          }
+          label.textContent = next;
           block.querySelector('[data-delivery-area]').textContent = state.city ? `| ${state.city}` : '';
           show('');
         }
@@ -1107,7 +1115,20 @@
         if (event.persisted) onMarker = isMarker(window.history.state);
       });
 
-      const close = () => dialog.close();
+      // Out the way it came in (product.css .is-closing), then actually closed.
+      const close = () => {
+        if (!dialog.open || dialog.classList.contains('is-closing')) return;
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        dialog.classList.add('is-closing');
+        setTimeout(() => {
+          dialog.classList.remove('is-closing');
+          dialog.close();
+        }, reduce ? 0 : 250);
+      };
+      dialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        close();
+      });
       dialog.querySelector('[data-znow-back-close]').addEventListener('click', close);
       dialog.addEventListener('click', (event) => {
         if (event.target === dialog) close();
@@ -1159,6 +1180,9 @@
       const tag = this.querySelector('[data-ship-tag]');
       const variant = this.currentVariant();
       if (tag) {
+        // From the first variant change on, a pill swap fades in (product.css).
+        if (this.shipTagSynced) tag.classList.add('is-changing');
+        this.shipTagSynced = true;
         tag.dataset.state = !variant?.available ? 'none' : variant.inStock ? 'stock' : 'made';
         const inStockDays = Number(this.dataset.shipDaysInStock) || 3;
         const madeDays = Number(this.dataset.shipDaysMade) || 24;
