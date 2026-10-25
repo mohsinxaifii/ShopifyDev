@@ -37,27 +37,57 @@
   }
 }
 
-/* The header wraps to take "Delivering to" as a full row of its own, under
-   the title and the close button (Figma 8470:85440): "Change" lines up with
-   the ✕ on the right. */
-/* GoKwik fixes the header at 60px (and its title block at 50px) with
-   three-class selectors; !important is the one way past them, and only
-   while our row is there. */
+/* Header with "Delivering to" (Figma 8470:85437): a two-row grid -
+     [ Your Cart (3 items) ............ ✕ ]
+     [ 📍 Delivering to 110017 .... Change ]
+   16px around, 12px under, 6px between the rows. A grid rather than
+   GoKwik's flex row, so its fixed heights (60px header, 50px title block)
+   and any spacing it changes later can't push the rows into each other or
+   into the banner below. !important only where GoKwik's three-class
+   selectors set the same property. */
 .sidecart .side-cart-header:has(> .zk-deliver) {
-  flex-wrap: wrap !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'title close'
+    'deliver deliver';
   align-items: center;
+  column-gap: 12px;
   row-gap: 6px;
   height: auto !important;
+  padding: 16px 16px 12px !important;
 }
 
-.sidecart .side-cart-header:has(> .zk-deliver) .side-cart-subHeader {
+.sidecart .side-cart-header:has(> .zk-deliver) > .side-cart-subHeader {
+  grid-area: title;
+  display: block !important;
   height: auto !important;
+  min-width: 0;
+  padding: 0 !important;
+}
+
+.sidecart .side-cart-header:has(> .zk-deliver) > .side-cart-subHeader > p {
+  display: flex;
+  align-items: center;
+  height: auto !important;
+  min-height: 24px;
+}
+
+.sidecart .side-cart-header:has(> .zk-deliver) > .close-btn {
+  grid-area: close;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px !important;
+}
+
+.sidecart .side-cart-header:has(> .zk-deliver) > .zk-deliver {
+  grid-area: deliver;
 }
 
 /* "📍 Delivering to 110017, Saket ........ Change" */
 .sidecart .zk-deliver {
   display: flex;
-  flex: 1 0 100%;
   align-items: center;
   gap: 4px;
   min-width: 0;
