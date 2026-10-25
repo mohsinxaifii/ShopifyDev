@@ -1,0 +1,282 @@
+{%- doc -%}
+  Location prompt - asks once per browser for the shopper's location, to get
+  the delivery pincode ZNow and the delivery estimates read. Everything it does
+  is in assets/location.js (window.zinaraLocation); this is only the card,
+  shown bottom-left on desktop and as a bottom sheet on phones. It never blocks
+  the page: the shopper can ignore it and keep shopping.
+
+  Theme settings > Location & ZNow.
+{%- enddoc -%}
+
+<script>
+  window.zinaraLocationConfig = {
+    enabled: {{ settings.location_prompt_enabled | json }},
+    delay: {{ settings.location_prompt_delay | times: 1000 | json }},
+    pageType: {{ request.page_type | json }},
+    doneText: {{ settings.location_prompt_done | default: 'Delivering to' | json }},
+  };
+</script>
+<script src="{{ 'location.js' | asset_url }}" defer="defer"></script>
+
+{%- if settings.location_prompt_enabled -%}
+<div
+  class="location-prompt"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="LocationPromptTitle"
+  data-location-prompt
+  hidden
+>
+  <button type="button" class="location-prompt_close" aria-label="Close" data-location-dismiss>
+    {{- 'icon-close.svg' | inline_asset_content -}}
+  </button>
+
+  <div class="location-prompt_view" data-location-view="ask">
+    <div class="location-prompt_head">
+      <span class="location-prompt_icon" aria-hidden="true">{{- 'icon-location-pin.svg' | inline_asset_content -}}</span>
+      <div>
+        <p class="location-prompt_title" id="LocationPromptTitle">
+          {{- settings.location_prompt_heading | default: 'Where should we deliver?' -}}
+        </p>
+        <p class="location-prompt_text">
+          {{- settings.location_prompt_text
+            | default: 'Share your location to see same-day ZNow delivery and delivery dates for your area.'
+          -}}
+        </p>
+      </div>
+    </div>
+
+    <button type="button" class="location-prompt_button location-prompt_button--primary" data-location-allow>
+      {{- settings.location_prompt_allow | default: 'Use my current location' -}}
+    </button>
+
+    <form class="location-prompt_form" data-location-form novalidate>
+      <input
+        type="text"
+        class="location-prompt_input"
+        inputmode="numeric"
+        autocomplete="postal-code"
+        maxlength="6"
+        placeholder="Or enter pincode"
+        aria-label="Pincode"
+        data-location-input
+      >
+      <button type="submit" class="location-prompt_button location-prompt_button--outline">Apply</button>
+    </form>
+    <p class="location-prompt_message" role="alert" data-location-message hidden></p>
+
+    <button type="button" class="location-prompt_skip" data-location-dismiss>Not now</button>
+  </div>
+
+  <div class="location-prompt_view location-prompt_status" data-location-view="busy" hidden>
+    <span class="location-prompt_spinner" aria-hidden="true">{{- 'icon-spinner.svg' | inline_asset_content -}}</span>
+    <p role="status">Finding your pincode...</p>
+  </div>
+
+  <div class="location-prompt_view location-prompt_status" data-location-view="done" hidden>
+    <span class="location-prompt_icon" aria-hidden="true">{{- 'icon-location-pin.svg' | inline_asset_content -}}</span>
+    <p role="status" data-location-done></p>
+  </div>
+</div>
+
+<style>
+  .location-prompt {
+    --location-brand: var(--color-brand, #712242);
+
+    position: fixed;
+    left: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    padding: 20px;
+    border: 1px solid var(--color-border, #e5e5e5);
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.3);
+    color: var(--color-foreground, #000);
+    font-family: var(--font-primary--family);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .location-prompt.is-open {
+    opacity: 1;
+    transform: none;
+  }
+
+  .location-prompt[hidden] {
+    display: none;
+  }
+
+  .location-prompt_close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .location-prompt_view {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .location-prompt_view[hidden] {
+    display: none;
+  }
+
+  .location-prompt_head {
+    display: flex;
+    gap: 12px;
+    padding-right: 24px;
+  }
+
+  .location-prompt_icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--location-brand) 10%, #fff);
+    color: var(--location-brand);
+  }
+
+  .location-prompt_title {
+    margin: 0 0 4px;
+    font-family: var(--font-secondary--family);
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .location-prompt_text,
+  .location-prompt_status p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--color-text-secondary, #555);
+  }
+
+  .location-prompt_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--location-brand);
+    border-radius: 8px;
+    font-family: var(--font-secondary--family);
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  .location-prompt_button--primary {
+    background-color: var(--location-brand);
+    color: #fff;
+  }
+
+  .location-prompt_button--outline {
+    background-color: #fff;
+    color: var(--location-brand);
+  }
+
+  .location-prompt_button[hidden] {
+    display: none;
+  }
+
+  .location-prompt_form {
+    display: flex;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .location-prompt_input {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border, #ccc);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px; /* 16px stops iOS zooming into the field */
+  }
+
+  .location-prompt_message {
+    margin: -4px 0 0;
+    font-size: 13px;
+  }
+
+  .location-prompt_message.is-invalid {
+    color: #b3261e;
+  }
+
+  .location-prompt_skip {
+    align-self: center;
+    padding: 4px 8px;
+    border: 0;
+    background: none;
+    color: var(--color-text-secondary, #555);
+    font: inherit;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .location-prompt_status {
+    flex-direction: row;
+    align-items: center;
+    padding-right: 24px;
+  }
+
+  .location-prompt_status p {
+    color: var(--color-foreground, #000);
+  }
+
+  .location-prompt_spinner {
+    display: grid;
+    color: var(--location-brand);
+    animation: location-prompt-spin 0.9s linear infinite;
+  }
+
+  .location-prompt_spinner svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  @keyframes location-prompt-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .location-prompt {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      max-width: none;
+      padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+      border-width: 1px 0 0;
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .location-prompt {
+      transition: none;
+    }
+  }
+</style>
+{%- endif -%}
