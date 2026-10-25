@@ -31,8 +31,9 @@
   color: #000;
   cursor: pointer;
   transition:
+    color 0.35s ease,
     opacity 0.2s ease,
-    transform 0.2s ease;
+    scale 0.2s ease;
 }
 
 .announcement-bar_wrapper_prev svg,
@@ -44,7 +45,7 @@
 .announcement-bar_wrapper_prev:hover,
 .announcement-bar_wrapper_next:hover {
   opacity: 1;
-  transform: scale(1.1);
+  scale: 1.1;
 }
 
 .announcement-bar_wrapper_prev:focus-visible,
@@ -116,6 +117,107 @@ a.announcement-bar_wrapper_track_slide_text:hover {
   text-decoration: underline;
 }
 
+/* ------------------------------------------------------------------ ZNow */
+
+.announcement-bar[hidden] {
+  display: none;
+}
+
+/* Out of the same-day area the ZNow message never shows, not even for the
+   moment before announcement-bar.js runs (<html class="is-znow">, set by
+   snippets/location before the header is parsed). */
+html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
+  display: none;
+}
+
+/* Figma 8470:77886 (desktop), 8470:67951 (mobile): the bar turns to the
+   ZNow gradient while its message shows. A gradient cannot be animated to or from a flat colour, so it sits
+   on a layer of its own that fades with the messages (same 0.35s). */
+.announcement-bar {
+  position: relative;
+  isolation: isolate;
+}
+
+.announcement-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to right, #4a162c, #712242);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.announcement-bar.is-znow::before {
+  opacity: 1;
+}
+
+.announcement-bar.is-znow .announcement-bar_wrapper_prev,
+.announcement-bar.is-znow .announcement-bar_wrapper_next {
+  color: #fff;
+}
+
+/* Desktop: 8px apart. Type as the other messages' (.announcement-bar_wrapper_track_slide_text),
+   so the ZNow one reads as one of them. */
+.announcement-bar_znow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-primary--family);
+  font-size: 14px;
+  line-height: 1.21;
+  color: #ecc0d2;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.announcement-bar_znow_logo {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.announcement-bar_znow_logo svg {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+/* The design's 15px rule, drawn across and turned upright. */
+.announcement-bar_znow_divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1px;
+  height: 15px;
+}
+
+.announcement-bar_znow_divider svg {
+  flex: none;
+  transform: rotate(90deg);
+}
+
+.announcement-bar_znow_text {
+  font-weight: inherit;
+}
+
+.announcement-bar_znow_arrow {
+  display: flex;
+}
+
+.announcement-bar_znow_arrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+a.announcement-bar_znow:focus-visible {
+  outline: 2px solid #ecc0d2;
+  outline-offset: 2px;
+}
+
 /* Figma Mobile 7930:106694: a 38px strip - 8/16 padding, no carets, 12px
    Montserrat Medium on a 22px line with the offer in SemiBold. */
 @media screen and (max-width: 749px) {
@@ -141,4 +243,13 @@ a.announcement-bar_wrapper_track_slide_text:hover {
   .announcement-bar_wrapper_track_slide_text strong {
     font-weight: 600;
   }
+
+  /* Mobile: 6px apart (Figma 8470:67951), in the other messages' 12px Medium. */
+  .announcement-bar_znow {
+    gap: 6px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 22px;
+  }
+
 }

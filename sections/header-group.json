@@ -14,6 +14,13 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
+        "znow": {
+          "type": "znow",
+          "settings": {
+            "text": "Same day delivery",
+            "link": "shopify://collections/znow"
+          }
+        },
         "message_3Mt9UH": {
           "type": "message",
           "settings": {
@@ -38,6 +45,7 @@
         }
       },
       "block_order": [
+        "znow",
         "message_3Mt9UH",
         "message-1",
         "message_RXiUML"

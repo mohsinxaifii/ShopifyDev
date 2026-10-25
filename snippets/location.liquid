@@ -1,0 +1,108 @@
+{%- doc -%}
+  Shopper location - loads assets/location.js, which asks the browser for the
+  shopper's location once (its own permission prompt, on the first page of the
+  first visit) to get the delivery pincode ZNow and the delivery estimates
+  read. Theme settings > Location & ZNow.
+
+  ZNow area: assets/znow-area.json (the outline a location fix is tested
+  against) and snippets/znow-pincodes (the pincodes a typed pincode is
+  tested against).
+
+  Rendered first in the body: the inline script below marks <html> with
+  "is-znow" from what was saved on an earlier page, before the header is
+  parsed, so ZNow pieces never flash in or out. Anything ZNow-only hides with
+  `html:not(.is-znow) ...`; location.js keeps the class in step.
+{%- enddoc -%}
+
+{%- capture znow_pincodes -%}{% render 'znow-pincodes' %}{%- endcapture -%}
+{%- assign znow_pincodes = znow_pincodes | replace: ',', ' ' | split: ' ' | uniq -%}
+
+<script>
+  window.zinaraLocationConfig = {
+    enabled: {{ settings.location_prompt_enabled | json }},
+    pageType: {{ request.page_type | json }},
+    znowPincodes: {{ znow_pincodes | json }},
+    znowAreaUrl: {{ 'znow-area.json' | asset_url | json }},
+    // Every pincode delivered to (half a megabyte - fetched only when asked).
+    pincodesUrl: {{ 'pincodes.json' | asset_url | json }},
+    {%- comment -%} The theme editor always shows the ZNow pieces, to edit them. {%- endcomment -%}
+    znowPreview: {{ request.design_mode | json }},
+  };
+  (function () {
+    var config = window.zinaraLocationConfig;
+    var saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem('zinara_location'));
+    } catch (error) {}
+    if (!saved) {
+      try {
+        var match = document.cookie.match(/(?:^|; )zinara_location=([^;]*)/);
+        saved = match && JSON.parse(decodeURIComponent(match[1]));
+      } catch (error) {}
+    }
+    saved = saved || {};
+    // Read by snippets/delivery-location to fill its text before first paint.
+    window.zinaraSavedLocation = saved;
+    // As znowNow() in location.js: a location fix decides by the area, a typed pincode by the list.
+    var znow = saved.source === 'gps' && typeof saved.inZnowArea === 'boolean'
+      ? saved.inZnowArea
+      : config.znowPincodes.indexOf(saved.pincode || '') !== -1;
+    if (config.znowPreview || znow) {
+      document.documentElement.classList.add('is-znow');
+    }
+  })();
+</script>
+{%- comment -%}
+  ZNow cut-off (Theme settings > Location & ZNow): an order placed before it
+  (India time, whatever the shopper's clock) arrives today, after it
+  tomorrow. <html> carries "znow-after-cutoff" past it, so every "today" line
+  has its "tomorrow" twin beside it and CSS shows the right one before first
+  paint ([data-znow-when="today"] / [data-znow-when="tomorrow"]). The class
+  flips at the cut-off and at midnight on a page left open.
+{%- endcomment -%}
+<script>
+  (function () {
+    var cutoff = {{ settings.znow_cutoff_hour | default: 14 | json }};
+    var label = function (hour) {
+      var h = hour % 12 || 12;
+      return h + ' ' + (hour < 12 ? 'AM' : 'PM');
+    };
+    window.zinaraZnowTime = {
+      cutoffHour: cutoff,
+      cutoffLabel: label(cutoff),
+      todayBy: {{ settings.znow_today_by | default: '9 PM' | json }},
+      tomorrowBy: {{ settings.znow_tomorrow_by | default: '1 PM' | json }},
+      // Hours and minutes now in India.
+      now: function () {
+        var parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+          .formatToParts(new Date());
+        var get = function (type) { return Number((parts.filter(function (p) { return p.type === type; })[0] || {}).value || 0); };
+        return { hour: get('hour'), minute: get('minute') };
+      },
+      afterCutoff: function () { return window.zinaraZnowTime.now().hour >= cutoff; },
+    };
+    var sync = function () {
+      var time = window.zinaraZnowTime;
+      var after = time.afterCutoff();
+      if (document.documentElement.classList.contains('znow-after-cutoff') !== after) {
+        document.documentElement.classList.toggle('znow-after-cutoff', after);
+        document.dispatchEvent(new CustomEvent('zinara:znow-cutoff', { detail: { afterCutoff: after } }));
+      }
+      // Next check on the next cut-off or midnight, whichever is first.
+      var now = time.now();
+      var minutes = now.hour * 60 + now.minute;
+      var next = minutes < cutoff * 60 ? cutoff * 60 : 24 * 60;
+      setTimeout(sync, Math.max(1, next - minutes) * 60000 + 1000);
+    };
+    try {
+      sync();
+    } catch (error) {}
+  })();
+</script>
+<style>
+  html:not(.znow-after-cutoff) [data-znow-when='tomorrow'],
+  html.znow-after-cutoff [data-znow-when='today'] {
+    display: none !important;
+  }
+</style>
+<script src="{{ 'location.js' | asset_url }}" defer="defer"></script>

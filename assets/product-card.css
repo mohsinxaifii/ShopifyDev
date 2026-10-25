@@ -4,6 +4,11 @@
    which meant the collection page rendered its cards unstyled. */
 
 .product-card {
+  /* The card's side padding: the info block uses it and the delivery bar
+     sits 2px inside it (Figma: 8px and 6px), so "Get it today" starts in the
+     price's column on every card shape. */
+  --product-card-pad: 16px;
+
   /* Keeps the stroke's z-index (below) inside the card. */
   position: relative;
   isolation: isolate;
@@ -38,6 +43,13 @@
   pointer-events: none;
 }
 
+/* Photo + delivery bar, flush together; the card's gap starts below them. */
+.product-card_visual {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .product-card_media {
   position: relative;
   display: flex;
@@ -66,6 +78,16 @@
   padding: 4px;
 }
 
+/* Light type on the card's coloured pills and bars is smoothed in greyscale,
+   as Figma renders it: the browser's default (subpixel on macOS) draws white
+   text on a dark ground noticeably heavier than the design. */
+.product-card_media_top_badge,
+.product-card_delivery,
+.product-card_media_soldout {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .product-card_media_top_badge {
   display: inline-flex;
   align-items: center;
@@ -76,6 +98,104 @@
   font-weight: 600;
   font-size: 12px;
   line-height: 1.667;
+}
+
+/* ------------------------------------------------------ delivery bar */
+
+/* Figma 8470:33828-33845 (mobile S) and 8470:33833 (desktop L): a full-width
+   strip under the photo saying how it ships. The in-stock pair is chosen by
+   the shopper's area - html.is-znow, set by snippets/location before paint. */
+.product-card_delivery {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px calc(var(--product-card-pad) - 2px);
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+html:not(.is-znow) .product-card_delivery[data-znow-only],
+html.is-znow .product-card_delivery[data-znow-hide] {
+  display: none;
+}
+
+.product-card_delivery--znow {
+  /* At least this much clear space before the sizes; the list is cut short
+     with "…" rather than closing it up. */
+  gap: 24px;
+  background: linear-gradient(to right, #4a162c, #712242);
+  color: #ecc0d2;
+}
+
+.product-card_delivery_znow {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.product-card_delivery_znow svg {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+/* One line always, so every card keeps the same height: the sizes sit at
+   the right, and a list too long for it ends in "…" before "Get it today"
+   gives way. */
+.product-card_delivery_sizes {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 40%;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-card_delivery--ready {
+  background-color: #ac3465;
+  color: #fff;
+}
+
+.product-card_delivery--made {
+  background-color: #ecc0d2;
+  color: var(--color-brand, #712242);
+}
+
+.product-card_delivery--soon {
+  background-color: #c4c4c4;
+  color: #666;
+}
+
+/* Not buyable: the photo veiled, "Out of stock" across its middle. */
+.product-card--coming-soon .product-card_media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.product-card_media_soldout {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: #fff;
+  font-family: var(--font-secondary--family);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: #000;
+  white-space: nowrap;
 }
 
 /* The variant drawer swaps badges with `hidden`, which display above outranks. */
@@ -107,7 +227,7 @@
   cursor: pointer;
   transition:
     background-color 0.2s ease,
-    transform 0.2s ease;
+    scale 0.2s ease;
 }
 
 .product-card_media_top_wishlist svg {
@@ -116,7 +236,7 @@
 }
 
 .product-card_media_top_wishlist:hover {
-  transform: scale(1.08);
+  scale: 1.08;
 }
 
 /* .product-card_media_top_wishlist.is-active {
@@ -155,7 +275,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 0 16px 12px;
+  padding: 0 var(--product-card-pad) 12px;
 }
 
 .product-card_info_price {
@@ -209,9 +329,13 @@
   aspect-ratio: 1;
 }
 
+.product-card--grid {
+  --product-card-pad: 8px;
+}
+
 .product-card--grid .product-card_info {
   gap: 8px;
-  padding: 0 8px 8px;
+  padding: 0 var(--product-card-pad) 8px;
 }
 
 .product-card--grid .product-card_info_price {
@@ -245,7 +369,7 @@
   color: var(--color-brand, #712242);
   cursor: pointer;
   transform: translateY(-50%);
-  transition: transform 0.2s ease;
+  transition: scale 0.2s ease;
 }
 
 .product-card--grid .product-card_info_price_wishlist svg {
@@ -254,7 +378,7 @@
 }
 
 .product-card--grid .product-card_info_price_wishlist:hover {
-  transform: translateY(-50%) scale(1.08);
+  scale: 1.08; /* composes with the translateY above - see motion.css, button:active */
 }
 
 .product-card--grid .product-card_info_title {
@@ -343,8 +467,12 @@
     line-height: 18px;
   }
 
+  :is(.product-carousel, .article_wrapper_body_shop) .product-card {
+    --product-card-pad: 8px;
+  }
+
   :is(.product-carousel, .article_wrapper_body_shop) .product-card_info {
-    padding: 0 8px 8px;
+    padding: 0 var(--product-card-pad) 8px;
   }
 
   :is(.product-carousel, .article_wrapper_body_shop) .product-card_info_price {
@@ -363,6 +491,28 @@
   :is(.product-carousel, .article_wrapper_body_shop) .product-card_info_title {
     font-size: 12px;
     line-height: 20px;
+  }
+
+  /* Delivery bar, size S (Figma 8470:33828): 8px on a 16px line, 2px/6px. */
+  .product-card_delivery {
+    padding-block: 2px;
+    font-size: 8px;
+    line-height: 16px;
+  }
+
+  .product-card_delivery_znow svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  .product-card_delivery--znow {
+    gap: 16px;
+  }
+
+  .product-card_media_soldout {
+    padding: 2px 6px;
+    font-size: 8px;
+    line-height: 16px;
   }
 
   /* Grid card (PLP, search, wishlist - Figma Mobile 7930:118627): the same 8px tag

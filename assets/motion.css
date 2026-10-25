@@ -87,22 +87,30 @@ textarea,
     border-color var(--motion-fast) var(--motion-ease),
     box-shadow var(--motion-base) var(--motion-ease),
     opacity var(--motion-fast) var(--motion-ease),
-    transform var(--motion-base) var(--motion-ease);
+    transform var(--motion-base) var(--motion-ease),
+    scale var(--motion-base) var(--motion-ease);
 }
 
 /* Anything clickable dips slightly on press - the cheapest possible signal that
-   the tap registered, and the one thing every surface here was missing. */
+   the tap registered, and the one thing every surface here was missing.
+
+   Every press and hover scale in this file is the `scale` property, never
+   `transform: scale()`. `transform` is one value: setting it on :active threw
+   away whatever the element already had - every carousel arrow centred with
+   translateY(-50%) jumped by half its height when clicked. `scale` composes
+   with an element's own transform instead, so nothing positioned by a
+   transform can be knocked out of place by a press or a hover. */
 button:active,
 a:active,
 label:active,
 summary:active {
-  transform: scale(0.985);
+  scale: 0.985;
 }
 
 /* A product card is one big link, so pressing the heart or Add to cart inside it
    would also press - and dip - the whole card. The press belongs to the button. */
 .product-card:active:has(button:active) {
-  transform: none;
+  scale: none;
 }
 
 /* Keyboard focus should be as visible as hover, and arrive just as smoothly. */
@@ -128,7 +136,7 @@ summary:active {
 .product-card_media_top_wishlist:hover,
 .product-card_info_price_wishlist:hover,
 .pdp_gallery_stage_top_wishlist:hover {
-  transform: scale(1.12);
+  scale: 1.12;
 }
 
 /* A wishlist toggle is a state change with no layout consequence, so it gets a
@@ -189,7 +197,7 @@ summary:active {
 }
 
 .pdp_option_values_value_swatch:hover {
-  transform: scale(1.08);
+  scale: 1.08;
 }
 
 .pdp_option_values_value input:checked + .pdp_option_values_value_swatch,
@@ -221,7 +229,7 @@ summary:active {
 .pdp_gallery_thumbs_arrow:active,
 .pdp-lightbox_body_arrow:active,
 .pdp-ugc-box_reel_arrow:active {
-  transform: scale(0.92);
+  scale: 0.92;
 }
 
 .pdp-lightbox_body_arrow:hover,
@@ -257,7 +265,7 @@ summary:active {
 }
 
 .pdp-addons_grid_card_toggle:hover {
-  transform: scale(1.1);
+  scale: 1.1;
 }
 
 /* --------------------------------------------------------------- filters */
@@ -412,13 +420,19 @@ html:not(.motion-dialogs) .pdp-ugc-box[open] .pdp-ugc-box_reel {
     opacity: 1;
   }
 
+  /* The press is a scale only - `transform: none` here would strip an
+     arrow's translateY(-50%) and drop it, the bug the scale property fixes. */
   a:active,
   button:active,
   label:active,
-  summary:active,
+  summary:active {
+    scale: none;
+  }
+
   .product-card:hover,
   .pdp_button:hover,
   .pdp_trust_grid_item_inner:hover {
     transform: none;
+    scale: none;
   }
 }

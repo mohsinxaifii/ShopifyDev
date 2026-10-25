@@ -38,7 +38,7 @@
   cursor: pointer;
   transition:
     background-color 0.2s ease,
-    transform 0.2s ease;
+    scale 0.2s ease;
 }
 
 .scroll-carousel_arrow svg {
@@ -46,9 +46,11 @@
   height: 100%;
 }
 
+/* `scale`, not `transform: scale()`: a section centring its arrow with
+   translateY(-50%) keeps it - see the note at button:active in motion.css. */
 .scroll-carousel_arrow:hover {
   background-color: #5a1b34;
-  transform: scale(1.05);
+  scale: 1.05;
 }
 
 /* Figma Mobile draws no carousel arrows - rows are swiped. Hidden here rather than

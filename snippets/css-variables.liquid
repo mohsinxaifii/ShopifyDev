@@ -26,6 +26,12 @@
   assign secondary_bold = secondary | font_modify: 'weight', 'bold'
   assign secondary_italic = secondary | font_modify: 'style', 'italic'
   assign secondary_regular_italic = secondary_regular | font_modify: 'style', 'italic'
+  comment
+    The ZNow "Now" mark is set in SemiBold and Bold Italic (Figma); without
+    these the browser slants and thickens the 500 italic instead.
+  endcomment
+  assign secondary_semibold_italic = secondary_semibold | font_modify: 'style', 'italic'
+  assign secondary_bold_italic = secondary_bold | font_modify: 'style', 'italic'
 
   assign tertiary_semibold = tertiary | font_modify: 'weight', '600'
   assign tertiary_bold = tertiary | font_modify: 'weight', 'bold'
@@ -47,6 +53,8 @@
   {%- if secondary_bold %}{{ secondary_bold | font_face: font_display: 'swap' }}{% endif -%}
   {%- if secondary_italic %}{{ secondary_italic | font_face: font_display: 'swap' }}{% endif -%}
   {%- if secondary_regular_italic %}{{ secondary_regular_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if secondary_semibold_italic %}{{ secondary_semibold_italic | font_face: font_display: 'swap' }}{% endif -%}
+  {%- if secondary_bold_italic %}{{ secondary_bold_italic | font_face: font_display: 'swap' }}{% endif -%}
 
   {%- comment -%}
     Skipped for Libre Baskerville: the layout loads that one from Google as a

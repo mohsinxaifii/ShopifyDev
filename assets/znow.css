@@ -1,0 +1,754 @@
+/**
+ * ZNow entry flow (snippets/znow-flow): the location dialog - Figma 8479:70166
+ * desktop (a 558px card), 8479:70167 mobile (a bottom sheet) - and the
+ * full-screen loader that plays before the ZNow collection opens.
+ *
+ * The dialog has three views, set as data-view by assets/znow.js:
+ *   ask         - pincode field + Check, "OR", Use my location
+ *   checking    - the pincode with a spinner, "Checking delivery to ..."
+ *   unavailable - "Same-day isn't available at ..." + two buttons
+ */
+
+.znow-dialog {
+  --znow-brand: var(--color-brand, #712242);
+  --znow-muted: #666;
+  --znow-disabled: #999;
+  --znow-error: #f0166e;
+
+  width: 558px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: #fff;
+  color: #000;
+  font-family: var(--font-secondary--family);
+  overflow: auto;
+}
+
+.znow-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.znow-dialog[open] {
+  animation: znow-dialog-in 0.25s ease-out;
+}
+
+.znow-dialog.is-closing {
+  animation: znow-dialog-out 0.25s ease-out forwards;
+}
+
+.znow-dialog[open]::backdrop {
+  animation: znow-fade-in 0.25s ease-out;
+}
+
+.znow-dialog.is-closing::backdrop {
+  animation: znow-fade-out 0.25s ease-out forwards;
+}
+
+@keyframes znow-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+
+@keyframes znow-dialog-out {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+
+@keyframes znow-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes znow-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.znow-dialog_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px 16px 16px;
+}
+
+.znow-dialog_head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Mobile's "checking" view only (Figma 8470:68791). */
+.znow-dialog_head_title {
+  display: none;
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.znow-dialog_close {
+  display: flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.znow-dialog_close_mobile {
+  display: none;
+}
+
+.znow-dialog_body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.znow-dialog_intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.znow-dialog_intro_icon {
+  display: flex;
+  padding: 12px;
+  border-radius: 999px;
+  background-color: #f7f3f5;
+}
+
+.znow-dialog_intro_text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-inline: 24px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.znow-dialog_intro_title {
+  margin: 0;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--znow-brand);
+}
+
+.znow-dialog_intro_subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: #494949;
+}
+
+.znow-dialog_check {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.znow-dialog_check_field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.znow-dialog_form {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+}
+
+.znow-dialog_input {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--znow-muted);
+  cursor: text;
+}
+
+.znow-dialog_input:focus-within {
+  border-color: var(--znow-brand);
+}
+
+.znow-dialog_input_icon {
+  display: flex;
+  flex: none;
+}
+
+.znow-dialog_input input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  font: 500 16px/24px var(--font-secondary--family);
+  color: #000;
+}
+
+.znow-dialog_input input::placeholder {
+  color: var(--znow-muted);
+  opacity: 1;
+}
+
+.znow-dialog_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--znow-brand);
+  border-radius: 8px;
+  font: 500 18px/1 var(--font-secondary--family);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.znow-dialog_button--primary {
+  background-color: var(--znow-brand);
+  color: #fff;
+}
+
+.znow-dialog_button--secondary {
+  background-color: #fff;
+  color: var(--znow-brand);
+}
+
+.znow-dialog_button--secondary:hover {
+  background-color: #f7f3f5;
+}
+
+.znow-dialog_pending {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.znow-dialog_pending_spinner {
+  display: flex;
+  flex: none;
+  color: var(--znow-brand);
+  animation: znow-spin 0.9s linear infinite;
+}
+
+@keyframes znow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.znow-dialog_pending_pincode {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.znow-dialog_pending_area {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--znow-muted);
+}
+
+.znow-dialog_pending_area:empty {
+  display: none;
+}
+
+.znow-dialog_pending_change {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 12px/1 var(--font-secondary--family);
+  color: var(--znow-brand);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.znow-dialog_status {
+  margin: 0;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--znow-brand);
+}
+
+.znow-dialog_status:empty {
+  display: none;
+}
+
+.znow-dialog_status.is-error {
+  color: var(--znow-error);
+}
+
+.znow-dialog_alt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.znow-dialog_alt_or {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--znow-muted);
+}
+
+.znow-dialog_locate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 16px/1 var(--font-secondary--family);
+  color: var(--znow-brand);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.znow-dialog_locate span {
+  display: flex;
+}
+
+.znow-dialog_locate:disabled {
+  color: var(--znow-disabled);
+  cursor: default;
+}
+
+.znow-dialog_actions {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------- views */
+
+.znow-dialog[data-view='checking'] .znow-dialog_form {
+  display: none;
+}
+
+.znow-dialog[data-view='checking'] .znow-dialog_pending {
+  display: flex;
+}
+
+.znow-dialog[data-view='checking'] .znow-dialog_status {
+  text-align: center;
+}
+
+.znow-dialog[data-view='checking'] .znow-dialog_alt_or {
+  color: var(--znow-disabled);
+}
+
+.znow-dialog[data-view='unavailable'] .znow-dialog_check {
+  display: none;
+}
+
+.znow-dialog[data-view='unavailable'] .znow-dialog_intro_text {
+  gap: 8px;
+}
+
+.znow-dialog[data-view='unavailable'] .znow-dialog_actions {
+  display: flex;
+}
+
+/* -------------------------------------------------------------- mobile */
+
+@media screen and (max-width: 749px) {
+  .znow-dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90dvh;
+    margin: auto 0 0;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .znow-dialog[open] {
+    animation-name: znow-sheet-in;
+  }
+
+  .znow-dialog.is-closing {
+    animation-name: znow-sheet-out;
+  }
+
+  .znow-dialog_panel {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .znow-dialog_close_desktop {
+    display: none;
+  }
+
+  .znow-dialog_close_mobile {
+    display: flex;
+  }
+
+  .znow-dialog_intro_title {
+    font-size: 18px;
+    line-height: 26px;
+  }
+
+  .znow-dialog_button--secondary,
+  .znow-dialog[data-view='unavailable'] .znow-dialog_button {
+    height: auto;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  /* Checking: a titled sheet without the icon and intro (Figma 8470:68791). */
+  .znow-dialog[data-view='checking'] .znow-dialog_head {
+    justify-content: space-between;
+  }
+
+  .znow-dialog[data-view='checking'] .znow-dialog_head_title {
+    display: block;
+  }
+
+  .znow-dialog[data-view='checking'] .znow-dialog_intro {
+    display: none;
+  }
+
+  .znow-dialog[data-view='checking'] .znow-dialog_check {
+    gap: 12px;
+  }
+
+  .znow-dialog[data-view='checking'] .znow-dialog_alt {
+    gap: 8px;
+  }
+}
+
+@keyframes znow-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes znow-sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* -------------------------------------------------------------- loader */
+
+@property --znow-reveal {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+.znow-loader {
+  --kx: 1;
+
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  overflow: hidden;
+  background-color: #371120;
+}
+
+.znow-loader[hidden] {
+  display: none;
+}
+
+/* The page under it stays put while it plays. */
+html:has(.znow-loader.is-playing) {
+  overflow: hidden;
+}
+
+/* Fallback: if assets/znow.js never runs, the cover lifts by itself rather
+   than hiding the collection. Playing (.is-playing) cancels it. */
+.znow-loader--intro:not(.is-playing) {
+  animation: znow-loader-fallback 0.4s ease-out 6s forwards;
+}
+
+@keyframes znow-loader-fallback {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.znow-loader_ground {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to top, #000 calc(var(--znow-reveal) - 45%), transparent var(--znow-reveal));
+  mask-image: linear-gradient(to top, #000 calc(var(--znow-reveal) - 45%), transparent var(--znow-reveal));
+}
+
+.znow-loader_blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.znow-loader_blob--1 {
+  width: 620px;
+  height: 620px;
+  left: -200px;
+  bottom: -280px;
+  background: #712242;
+  filter: blur(60px);
+  animation: znow-drift-1 9s ease-in-out infinite alternate;
+}
+
+.znow-loader_blob--2 {
+  width: 520px;
+  height: 520px;
+  right: -220px;
+  top: -40px;
+  background: #371120;
+  filter: blur(70px);
+  animation: znow-drift-2 11s ease-in-out infinite alternate;
+}
+
+.znow-loader_blob--3 {
+  width: 560px;
+  height: 560px;
+  left: -60px;
+  top: 60px;
+  background: #4a162c;
+  filter: blur(70px);
+  animation: znow-drift-3 12s ease-in-out infinite alternate;
+}
+
+.znow-loader_blob--4 {
+  width: 320px;
+  height: 320px;
+  left: 90px;
+  bottom: 20px;
+  background: #d5729a;
+  opacity: 0.28;
+  filter: blur(70px);
+  animation: znow-drift-4 10s ease-in-out infinite alternate;
+}
+
+.znow-loader_blob--5 {
+  width: 380px;
+  height: 380px;
+  right: -140px;
+  bottom: -60px;
+  background: #d5729a;
+  opacity: 0.3;
+  filter: blur(75px);
+  animation: znow-drift-5 13s ease-in-out infinite alternate;
+}
+
+@keyframes znow-drift-1 {
+  35% {
+    transform: translate(calc(200px * var(--kx)), -120px) scale(1.18);
+  }
+  70% {
+    transform: translate(calc(120px * var(--kx)), -330px) scale(0.92);
+  }
+  100% {
+    transform: translate(calc(300px * var(--kx)), -420px) scale(1.2);
+  }
+}
+
+@keyframes znow-drift-2 {
+  40% {
+    transform: translate(calc(-260px * var(--kx)), 160px) scale(1.2);
+  }
+  75% {
+    transform: translate(calc(-120px * var(--kx)), 380px) scale(0.9);
+  }
+  100% {
+    transform: translate(calc(-300px * var(--kx)), 520px) scale(1.15);
+  }
+}
+
+@keyframes znow-drift-3 {
+  0% {
+    transform: scale(1.1);
+  }
+  40% {
+    transform: translate(calc(260px * var(--kx)), 120px) scale(0.9);
+  }
+  70% {
+    transform: translate(calc(120px * var(--kx)), 360px) scale(1.2);
+  }
+  100% {
+    transform: translate(calc(300px * var(--kx)), 280px) scale(1);
+  }
+}
+
+@keyframes znow-drift-4 {
+  40% {
+    transform: translate(calc(180px * var(--kx)), -220px) scale(1.25);
+  }
+  100% {
+    transform: translate(calc(-60px * var(--kx)), -420px) scale(0.85);
+  }
+}
+
+@keyframes znow-drift-5 {
+  35% {
+    transform: translate(calc(-150px * var(--kx)), -200px) scale(1.2);
+  }
+  70% {
+    transform: translate(calc(-40px * var(--kx)), -400px) scale(0.9);
+  }
+  100% {
+    transform: translate(calc(-200px * var(--kx)), -560px) scale(1.15);
+  }
+}
+
+/* Icon and message together in the middle of the screen, the message 36px
+   (32px on desktop) under the icon. */
+.znow-loader_content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.znow-loader_icon {
+  height: 96px;
+  opacity: 0;
+}
+
+.znow-loader_icon svg {
+  display: block;
+  width: auto;
+  height: 100%;
+  overflow: visible;
+}
+
+.znow-loader_icon_drop,
+.znow-loader_icon_head {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+
+.znow-loader_icon_line {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.znow-loader_message {
+  margin: 0;
+  font-family: var(--font-tertiary--family);
+  font-style: italic;
+  font-size: 24px;
+  line-height: 32px;
+  color: #efe6ea;
+}
+
+.znow-loader_message span {
+  display: inline-block;
+  opacity: 0;
+  will-change: transform;
+}
+
+@media screen and (min-width: 750px) {
+  .znow-loader {
+    --kx: 3;
+  }
+
+  .znow-loader_blob--1 {
+    width: 900px;
+    height: 900px;
+    left: -260px;
+    bottom: -480px;
+    filter: blur(90px);
+  }
+
+  .znow-loader_blob--2 {
+    width: 760px;
+    height: 760px;
+    right: -260px;
+    top: -160px;
+    filter: blur(100px);
+  }
+
+  .znow-loader_blob--3 {
+    width: 820px;
+    height: 820px;
+    left: 120px;
+    top: -20px;
+    filter: blur(100px);
+  }
+
+  .znow-loader_blob--4 {
+    width: 520px;
+    height: 520px;
+    left: 260px;
+    bottom: -60px;
+    filter: blur(100px);
+  }
+
+  .znow-loader_blob--5 {
+    width: 560px;
+    height: 560px;
+    right: -160px;
+    bottom: -180px;
+    filter: blur(100px);
+  }
+
+  .znow-loader_content {
+    gap: 32px;
+  }
+
+  .znow-loader_icon {
+    height: 120px;
+  }
+
+  .znow-loader_message {
+    font-size: 32px;
+    line-height: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .znow-dialog[open],
+  .znow-dialog.is-closing,
+  .znow-dialog[open]::backdrop,
+  .znow-dialog.is-closing::backdrop {
+    animation-duration: 0.01s;
+  }
+
+  .znow-loader_blob {
+    animation: none;
+  }
+
+  .znow-dialog_pending_spinner {
+    animation-duration: 2s;
+  }
+}

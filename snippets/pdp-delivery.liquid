@@ -1,29 +1,45 @@
 {%- doc -%}
-  Delivery estimate - Figma 7930:96136. The pincode check itself is in
-  product.js (initPincode).
+  Delivery estimate - Figma 8470:83197 (desktop) / 8488:70168 states. The
+  logic is in product.js (initPincode).
+
+  With no pincode yet: a pincode field and Check. Once the shopper's pincode
+  is known (typed here, or from assets/location.js) it reads "110017 | Saket
+  · Change" - Change opens the ZNow location dialog - over one delivery row:
+  - ZNow (pincode in the same-day area, picked variant in stock): "Now ·
+    Free" and "Order before 2 PM for delivery today by 9 PM", or past the
+    cut-off "Past 2 PM · Order arrives tomorrow by 1 PM";
+  - otherwise "Standard · Free · Arrives Thu, 23 Oct" - today plus the
+    in-stock days, or the made-to-order days when the variant has no stock.
 
   @param {object} block - the "Delivery estimate" block
+  @param {object} current_variant - the variant the page opens on
 {%- enddoc -%}
 
-{%- comment -%}
-  A served pincode gets an expected delivery date: today plus the in-stock
-  days when the picked variant has stock, else the out-of-stock days (making
-  time plus shipping). Both are block settings.
-{%- endcomment -%}
+{%- liquid
+  assign days_in_stock = block.settings.delivery_days_in_stock | default: 3
+  assign days_made = block.settings.delivery_days_made_to_order | default: 24
+  assign standard_days = days_made
+  if current_variant.inventory_quantity > 0
+    assign standard_days = days_in_stock
+  endif
+-%}
 <section
   class="pdp_delivery"
   data-animate
-  data-delivery-days-in-stock="{{ block.settings.delivery_days_in_stock | default: 3 }}"
-  data-delivery-days-made-to-order="{{ block.settings.delivery_days_made_to_order | default: 24 }}"
+  data-pdp-delivery
+  data-delivery-days-in-stock="{{ days_in_stock }}"
+  data-delivery-days-made-to-order="{{ days_made }}"
   {{ block.shopify_attributes }}
 >
   <h2 class="pdp_section_title">{{ block.settings.delivery_heading | default: 'Delivery Estimate' }}</h2>
-  <div class="pdp_delivery_row">
+
+  <div class="pdp_delivery_row" data-delivery-ask>
     <input
       type="text"
       class="pdp_delivery_row_input"
       inputmode="numeric"
       maxlength="6"
+      autocomplete="postal-code"
       placeholder="{{ block.settings.pincode_placeholder | default: 'Enter pincode' | escape }}"
       aria-label="{{ block.settings.pincode_placeholder | default: 'Enter pincode' | escape }}"
       data-pincode
@@ -32,5 +48,48 @@
       {{ block.settings.pincode_button_label | default: 'Check' }}
     </button>
   </div>
+
+  <div class="pdp_delivery_known" data-delivery-known hidden>
+    <span class="pdp_delivery_known_place">
+      <span class="pdp_delivery_known_pincode" data-delivery-pincode></span>
+      <span class="pdp_delivery_known_area" data-delivery-area></span>
+    </span>
+    <button type="button" class="pdp_delivery_known_change" data-delivery-change>Change</button>
+  </div>
+
   <p class="pdp_delivery_result" data-pincode-result hidden></p>
+
+  <div class="pdp_delivery_option pdp_delivery_option--znow" data-delivery-option="znow" hidden>
+    <span class="pdp_delivery_option_icon" aria-hidden="true">
+      <span class="pdp_delivery_option_icon_desktop">{{- 'icon-truck-24.svg' | inline_asset_content -}}</span>
+      <span class="pdp_delivery_option_icon_mobile">{{- 'icon-truck-16.svg' | inline_asset_content -}}</span>
+    </span>
+    <span class="pdp_delivery_option_text">
+      <span class="pdp_delivery_option_znow">
+        <span class="pdp_delivery_option_znow_now">
+          {{- 'icon-znow.svg' | inline_asset_content -}}
+          <span>Now</span>
+        </span>
+        <span aria-hidden="true">·</span>
+        <span>Free</span>
+      </span>
+      <span class="pdp_delivery_option_line" data-znow-when="today">
+        Order before <span data-znow-cutoff>2 PM</span> for delivery today by <span data-znow-today-by>9 PM</span>
+      </span>
+      <span class="pdp_delivery_option_line" data-znow-when="tomorrow">
+        Past <span data-znow-cutoff>2 PM</span> <b aria-hidden="true">·</b> Order arrives tomorrow by
+        <span data-znow-tomorrow-by>1 PM</span>
+      </span>
+    </span>
+  </div>
+
+  <div class="pdp_delivery_option" data-delivery-option="standard" hidden>
+    <span class="pdp_delivery_option_icon" aria-hidden="true">{{- 'icon-package-16.svg' | inline_asset_content -}}</span>
+    <span class="pdp_delivery_option_text">
+      <span class="pdp_delivery_option_title">Standard · Free</span>
+      <span class="pdp_delivery_option_line">
+        Arrives <span data-delivery-standard-date>{% render 'ship-date', days: standard_days, style: 'weekday' %}</span>
+      </span>
+    </span>
+  </div>
 </section>

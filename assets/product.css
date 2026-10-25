@@ -774,6 +774,116 @@
   outline-offset: 2px;
 }
 
+/* ZNow shipping tag on the last option's heading (Figma 8488:70168 / desktop
+   8470:83144). data-state comes from the picked variant: "stock" shows the
+   ZNow pill in the ZNow area (html.is-znow) and Ready to ship elsewhere,
+   "made" shows Made to order, "none" (not buyable) shows nothing. */
+/* The option carrying the ZNow tag keeps Figma's 12px between its heading
+   and the values (8470:73039) - the Z badges rise 4px above the chips, so
+   anything less leaves them touching the pill. */
+.pdp_option:has(.pdp_ship_tag) {
+  gap: 12px;
+}
+
+/* The heading lines its name and value up on the text baseline; with the
+   pill beside it, everything centres instead (Figma: items-center). */
+.pdp_option_head:has(.pdp_ship_tag) {
+  align-items: center;
+}
+
+.pdp_ship_tag {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pdp_ship_tag_pill {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--ready,
+.pdp_ship_tag[data-state='made'] .pdp_ship_tag_pill--made {
+  display: inline-flex;
+}
+
+html.is-znow .pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--znow {
+  display: inline-flex;
+}
+
+html.is-znow .pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--ready {
+  display: none;
+}
+
+.pdp_ship_tag_pill--znow {
+  background: linear-gradient(to right, #4a162c, #712242);
+  color: #ecc0d2;
+}
+
+.pdp_ship_tag_now {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.pdp_ship_tag_now svg {
+  display: block;
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+.pdp_ship_tag_pill--ready {
+  background-color: #ac3465;
+  color: #fff;
+}
+
+.pdp_ship_tag_pill--made {
+  background-color: #ecc0d2;
+  color: var(--pdp-brand);
+}
+
+/* The Z badge on a last-option value in stock with the other picks: a 14px
+   pink disc on the chip's top-right edge, in the ZNow area only. */
+.pdp_option_values_value[data-znow-value] {
+  position: relative;
+}
+
+.pdp_option_values_value_znow {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  display: none;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background-color: #ecc0d2;
+  pointer-events: none;
+}
+
+.pdp_option--swatch .pdp_option_values_value_znow {
+  top: 0;
+  right: 2px;
+}
+
+html.is-znow .pdp_option_values_value.is-znow-stock .pdp_option_values_value_znow {
+  display: grid;
+}
+
+.pdp_option_values_value_znow svg {
+  width: 8px;
+  height: 8px;
+}
+
 /* Vermeil explainer link - Figma 7930:96109 */
 
 .pdp_explainer {
@@ -972,6 +1082,147 @@ button.pdp_trust_grid_item_inner {
 
 .pdp_delivery_result.is-invalid {
   color: #c62828;
+}
+
+.pdp_delivery_row[hidden],
+.pdp_delivery_known[hidden],
+.pdp_delivery_option[hidden] {
+  display: none;
+}
+
+/* "110017 | Saket ........ Change" (Figma 8470:83200). */
+.pdp_delivery_known {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+}
+
+.pdp_delivery_known_place {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pdp_delivery_known_pincode {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--pdp-text);
+}
+
+.pdp_delivery_known_area {
+  overflow: hidden;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--pdp-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pdp_delivery_known_area:empty {
+  display: none;
+}
+
+.pdp_delivery_known_change {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 12px/1 var(--font-secondary--family);
+  color: var(--pdp-brand);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Delivery rows: ZNow (Figma 8470:83209) and Standard (8470:73167). */
+.pdp_delivery_option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--pdp-border);
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.pdp_delivery_option--znow {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-surface-subtle);
+}
+
+.pdp_delivery_option_icon,
+.pdp_delivery_option_icon > span {
+  display: flex;
+  flex: none;
+}
+
+.pdp_delivery_option_icon_mobile {
+  display: none !important;
+}
+
+.pdp_delivery_option_text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pdp_delivery_option:not(.pdp_delivery_option--znow) .pdp_delivery_option_text {
+  gap: 2px;
+}
+
+.pdp_delivery_option_znow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #4a162c, #712242);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: #ecc0d2;
+}
+
+.pdp_delivery_option_znow_now {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 16px;
+}
+
+.pdp_delivery_option_znow_now svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pdp_delivery_option_title {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--pdp-text);
+}
+
+.pdp_delivery_option_line {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_delivery_option:not(.pdp_delivery_option--znow) .pdp_delivery_option_line {
+  font-size: 12px;
+  line-height: 20px;
 }
 
 /* Gift sleeve - Figma 7930:96141 */
@@ -4237,3 +4488,213 @@ button.pdp_trust_grid_item_inner {
   }
 }
 
+
+/* ZNow shipping tag, mobile (Figma 8488:70168): 10px on an 18px line. */
+@media screen and (max-width: 749px) {
+  .pdp_ship_tag_pill {
+    padding: 4px 8px;
+    font-size: 10px;
+    line-height: 18px;
+  }
+
+  .pdp_ship_tag_now svg {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Delivery estimate, mobile (Figma 8488:70168): 16px truck, 12px lines. */
+@media screen and (max-width: 749px) {
+  .pdp_delivery_option_icon_desktop {
+    display: none !important;
+  }
+
+  .pdp_delivery_option_icon_mobile {
+    display: flex !important;
+  }
+
+  .pdp_delivery_option_text {
+    gap: 2px;
+  }
+
+  .pdp_delivery_option_line {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .pdp_delivery_known_area {
+    font-size: 12px;
+    line-height: 20px;
+  }
+}
+
+/* ------------------------------------------------- ZNow back prompt */
+
+/* Figma 8488:70185 (desktop card, 457px) / 8488:70191 (mobile sheet). */
+.pdp_znow_back {
+  width: 457px;
+  max-width: calc(100vw - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: linear-gradient(210.9deg, #712242 9.65%, #371120 49.9%);
+  color: #fff;
+  font-family: var(--font-secondary--family);
+}
+
+/* It takes focus itself on opening (autofocus), not the close button. */
+.pdp_znow_back:focus {
+  outline: none;
+}
+
+.pdp_znow_back::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.pdp_znow_back[open] {
+  animation: pdp-znow-back-in 0.25s ease-out;
+}
+
+@keyframes pdp-znow-back-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+
+.pdp_znow_back_panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 16px;
+}
+
+.pdp_znow_back_close {
+  align-self: flex-end;
+  display: flex;
+  margin-bottom: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.pdp_znow_back_logo {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 24px;
+  color: #ecc0d2;
+}
+
+.pdp_znow_back_logo > span {
+  display: flex;
+}
+
+.pdp_znow_back_copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-inline: 24px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.pdp_znow_back_title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: #fff;
+}
+
+.pdp_znow_back_note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: #ecc0d2;
+}
+
+.pdp_znow_back_actions {
+  display: flex;
+  gap: 16px;
+}
+
+.pdp_znow_back_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid;
+  border-radius: 8px;
+  font: 500 18px/1 var(--font-secondary--family);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pdp_znow_back_button_icon {
+  display: flex;
+}
+
+.pdp_znow_back_button--light {
+  border-color: var(--pdp-border);
+  background-color: #fff;
+  color: var(--pdp-text-secondary);
+}
+
+.pdp_znow_back_button--brand {
+  border-color: var(--pdp-brand);
+  background-color: var(--pdp-brand);
+  color: #fff;
+}
+
+.pdp_znow_back[data-picked='true'] .pdp_znow_back_button--unpicked,
+.pdp_znow_back[data-picked='false'] .pdp_znow_back_button--picked {
+  display: none;
+}
+
+@media screen and (max-width: 749px) {
+  .pdp_znow_back {
+    width: 100%;
+    max-width: 100%;
+    margin: auto 0 0;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .pdp_znow_back[open] {
+    animation-name: pdp-znow-back-up;
+  }
+
+  @keyframes pdp-znow-back-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  .pdp_znow_back_panel {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pdp_znow_back_actions {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .pdp_znow_back_button {
+    height: auto;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .pdp_znow_back_button_icon svg {
+    width: 20px;
+    height: 20px;
+  }
+}

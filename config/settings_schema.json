@@ -24,6 +24,12 @@
         "unit": "px",
         "label": "t:labels.logo_width",
         "default": 82
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Square, at least 48 x 48px. Empty: the Z from the logo on white."
       }
     ]
   },
@@ -386,6 +392,61 @@
         "id": "whatsapp_floater_message",
         "label": "Opening message",
         "default": "Hi"
+      }
+    ]
+  },
+  {
+    "name": "Location & ZNow",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Asks each shopper once, with the browser's own location prompt on their first page, for the delivery pincode used by ZNow and delivery estimates. Never asked again after any answer; refreshed quietly on later visits where the browser already allows it."
+      },
+      {
+        "type": "checkbox",
+        "id": "location_prompt_enabled",
+        "label": "Ask for location on first visit",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "znow_standard_delivery_days",
+        "label": "Standard delivery (days)",
+        "min": 1,
+        "max": 15,
+        "step": 1,
+        "default": 3,
+        "info": "For the date shown when same-day isn't available at a pincode."
+      },
+      {
+        "type": "text",
+        "id": "znow_collection_handle",
+        "label": "ZNow collection handle",
+        "default": "znow",
+        "info": "The collection that plays the ZNow animation on arrival, e.g. znow for /collections/znow."
+      },
+      {
+        "type": "range",
+        "id": "znow_cutoff_hour",
+        "label": "Same-day cut-off (India time)",
+        "min": 8,
+        "max": 22,
+        "step": 1,
+        "unit": "h",
+        "default": 14,
+        "info": "Orders before this hour arrive today; after it, tomorrow. 14 = 2 PM."
+      },
+      {
+        "type": "text",
+        "id": "znow_today_by",
+        "label": "Arrives today by",
+        "default": "9 PM"
+      },
+      {
+        "type": "text",
+        "id": "znow_tomorrow_by",
+        "label": "Arrives tomorrow by",
+        "default": "1 PM"
       }
     ]
   }

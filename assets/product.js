@@ -169,6 +169,8 @@
       this.initUgc();
       this.initCoupons();
       this.initPincode();
+      this.syncShipTag();
+      this.initZnowBack();
       this.initTabs();
       this.initCart();
       this.initReviewForm();
@@ -426,8 +428,12 @@
       this.optionInputs = Array.from(this.querySelectorAll('[data-option-input]'));
       if (this.optionInputs.length === 0) return;
 
+      const groups = this.querySelectorAll('[data-option-group]');
+      const lastGroup = groups[groups.length - 1];
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => {
+          // The back prompt offers "Add to cart · Size 12" only once a size was chosen.
+          if (input.closest('[data-option-group]') === lastGroup) this.lastOptionPicked = true;
           this.onOptionChange();
           this.trackVariantSelect(input);
         });
@@ -492,6 +498,9 @@
       if (addButton) addButton.disabled = !match.available;
       if (buyButton) buyButton.disabled = !match.available;
       if (label) label.textContent = match.available ? label.dataset.labelAdd || 'Add to cart' : label.dataset.labelSold || 'Sold out';
+
+      this.syncShipTag();
+      this.renderDelivery?.();
     }
 
     /* "Ships in 24 hours" while the picked variant has stock on hand; no pill
@@ -584,7 +593,8 @@
     updateUrl(variant) {
       const url = new URL(window.location.href);
       url.searchParams.set('variant', variant.id);
-      window.history.replaceState({}, '', url);
+      // Keeps the entry's state - wiping it would forget the ZNow back marker (initZnowBack).
+      window.history.replaceState(window.history.state, '', url);
     }
 
     /* --------------------------------------------------------- lightbox */
@@ -890,28 +900,90 @@
     /* --------------------------------------------------------- pincode */
 
     /**
-     * Pincode check: assets/pincodes.json lists the served pincodes, one
-     * list for every product. The list is half a megabyte, so it is
-     * fetched on first use, not with the page.
-     * A served pincode gets an expected delivery date, as on the live theme:
-     * today plus the block's in-stock days (3) when the picked variant has
-     * stock, else its out-of-stock days (21 + 3 = 24).
+     * Delivery estimate (snippets/pdp-delivery). With no pincode yet: a field
+     * and Check - assets/pincodes.json lists the served pincodes, half a
+     * megabyte, so it is fetched on first use. Once the pincode is known
+     * (typed here or from assets/location.js) the block shows it with Change
+     * (the ZNow location dialog) over one delivery row: ZNow while the
+     * pincode is in the same-day area and the picked variant has stock, else
+     * Standard - today plus the in-stock days (3), or the made-to-order days
+     * (24) for a variant without stock. Re-drawn on every variant change and
+     * whenever the shopper's location changes.
      */
     initPincode() {
+      const block = this.querySelector('[data-pdp-delivery]');
       const button = this.querySelector('[data-pincode-check]');
       const input = this.querySelector('[data-pincode]');
       const result = this.querySelector('[data-pincode-result]');
-      if (!button || !input || !result) return;
+      if (!block || !button || !input || !result) return;
+
+      const ask = block.querySelector('[data-delivery-ask]');
+      const known = block.querySelector('[data-delivery-known]');
+      const znowRow = block.querySelector('[data-delivery-option="znow"]');
+      const standardRow = block.querySelector('[data-delivery-option="standard"]');
+      const location = () => window.zinaraLocation?.get() || {};
 
       const show = (text, invalid) => {
-        result.textContent = text;
-        result.classList.toggle('is-invalid', invalid);
-        result.hidden = false;
+        result.textContent = text || '';
+        result.classList.toggle('is-invalid', Boolean(invalid));
+        result.hidden = !text;
+      };
+
+      // Cut-off wording from Theme settings (snippets/location).
+      const time = window.zinaraZnowTime;
+      if (time) {
+        block.querySelectorAll('[data-znow-cutoff]').forEach((node) => (node.textContent = time.cutoffLabel));
+        block.querySelectorAll('[data-znow-today-by]').forEach((node) => (node.textContent = time.todayBy));
+        block.querySelectorAll('[data-znow-tomorrow-by]').forEach((node) => (node.textContent = time.tomorrowBy));
+      }
+
+      this.renderDelivery = () => {
+        const state = location();
+        const pincode = state.pincode || '';
+        const located = state.source === 'gps' && state.status === 'granted';
+        const isKnown = Boolean(pincode) || (located && state.znow);
+        ask.hidden = isKnown;
+        known.hidden = !isKnown;
+        if (isKnown) {
+          block.querySelector('[data-delivery-pincode]').textContent = pincode || 'Your location';
+          block.querySelector('[data-delivery-area]').textContent = state.city ? `| ${state.city}` : '';
+          show('');
+        }
+
+        const variant = this.currentVariant();
+        const buyable = Boolean(variant?.available);
+        const zNow = isKnown && state.znow && variant?.inStock;
+        znowRow.hidden = !zNow;
+        standardRow.hidden = true;
+        if (!isKnown || zNow || !buyable) return;
+
+        // Standard only where it is delivered at all (a pincode saved from the
+        // ZNow dialog was never checked against the list); a late answer for
+        // a pincode since changed is dropped.
+        const token = (this.deliveryToken = (this.deliveryToken || 0) + 1);
+        const check = pincode ? this.pincodeServes(pincode) : Promise.resolve(true);
+        check
+          .then((served) => {
+            if (token !== this.deliveryToken) return;
+            if (!served) {
+              show(`Sorry, we don't deliver to ${pincode} yet. Try another pincode.`, true);
+              return;
+            }
+            const days = variant.inStock
+              ? Number(block.dataset.deliveryDaysInStock) || 3
+              : Number(block.dataset.deliveryDaysMadeToOrder) || 24;
+            block.querySelector('[data-delivery-standard-date]').textContent = this.shipDate(days, 'weekday');
+            standardRow.hidden = false;
+          })
+          .catch(() => {
+            if (token === this.deliveryToken) show('Could not check this pincode right now. Please try again.', true);
+          });
       };
 
       // Digits only, as the shopper types; start the download meanwhile.
       input.addEventListener('input', () => {
         input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
+        if (result.classList.contains('is-invalid')) show('');
       });
       input.addEventListener('focus', () => this.pincodeServes('').catch(() => {}), { once: true });
       input.addEventListener('keydown', (event) => {
@@ -928,36 +1000,191 @@
           return;
         }
 
-        let served;
-        try {
-          served = await this.pincodeServes(value);
-        } catch (error) {
-          show('Could not check this pincode right now. Please try again.', true);
-          return;
+        // Same-day pincodes are all served; anything else asks the list.
+        let served = window.zinaraLocation?.isZnow(value);
+        if (!served) {
+          try {
+            served = await this.pincodeServes(value);
+          } catch (error) {
+            show('Could not check this pincode right now. Please try again.', true);
+            return;
+          }
         }
 
+        window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: served });
         if (!served) {
           show(`Sorry, we don't deliver to ${value} yet.`, true);
-          window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: false });
           return;
         }
+        window.zinaraLocation?.set(value, { source: 'pdp' }); // re-draws through 'zinara:location'
+      });
 
-        const variant = this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
-        const block = button.closest('.pdp_delivery');
-        const days = variant?.inStock
-          ? Number(block?.dataset.deliveryDaysInStock) || 3
-          : Number(block?.dataset.deliveryDaysMadeToOrder) || 24;
-        const date = new Date();
-        date.setDate(date.getDate() + days);
-        const dateText = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-        show(`We deliver to ${value}. Expected delivery by ${dateText}.`, false);
-        window.zinaraTrack?.('pincode_check', { pincode: value, serviceable: true });
+      block.querySelector('[data-delivery-change]').addEventListener('click', () => {
+        if (window.zinaraZnow?.change) window.zinaraZnow.change();
+        else {
+          ask.hidden = false;
+          known.hidden = true;
+          input.focus();
+        }
+      });
+
+      document.addEventListener('zinara:location', () => this.renderDelivery());
+      this.renderDelivery();
+    }
+
+    /* The variant the picks point at right now. */
+    currentVariant() {
+      return this.data.variants.find((entry) => entry.id === Number(this.variantInput?.value));
+    }
+
+    /* A date `days` from today in India: "2nd Nov", or "Thu, 23 Oct". */
+    shipDate(days, style = 'ordinal') {
+      const date = new Date(Date.now() + days * 86400000);
+      const zone = { timeZone: 'Asia/Kolkata' };
+      if (style === 'weekday') {
+        const part = (options) => date.toLocaleDateString('en-GB', { ...zone, ...options });
+        return `${part({ weekday: 'short' })}, ${part({ day: 'numeric' })} ${part({ month: 'short' })}`;
+      }
+      const day = Number(date.toLocaleDateString('en-GB', { ...zone, day: 'numeric' }));
+      const suffix = day > 10 && day < 14 ? 'th' : { 1: 'st', 2: 'nd', 3: 'rd' }[day % 10] || 'th';
+      return `${day}${suffix} ${date.toLocaleDateString('en-GB', { ...zone, month: 'short' })}`;
+    }
+
+    /* ------------------------------------------------- ZNow back prompt */
+
+    /**
+     * A shopper in the ZNow area pressing Back on a product with stock gets
+     * one last nudge (snippets/pdp-znow-back): it can still arrive today.
+     * Back is caught with one extra history entry, pushed on the shopper's
+     * first tap or key press - Chrome skips entries pushed before any
+     * interaction, so pushing on load would not hold. Shown once; after it
+     * (or when it no longer applies) Back simply goes back.
+     */
+    initZnowBack() {
+      const dialog = this.querySelector('[data-znow-back]');
+      if (!dialog || !this.data.variants.some((entry) => entry.inStock)) return;
+
+      const time = window.zinaraZnowTime;
+      if (time) {
+        dialog.querySelectorAll('[data-znow-cutoff]').forEach((node) => (node.textContent = time.cutoffLabel));
+        dialog.querySelectorAll('[data-znow-today-by]').forEach((node) => (node.textContent = time.todayBy));
+        dialog.querySelectorAll('[data-znow-tomorrow-by]').forEach((node) => (node.textContent = time.tomorrowBy));
+      }
+
+      const eligible = () => document.documentElement.classList.contains('is-znow');
+      const isMarker = (state) => Boolean(state?.zinaraZnowBack);
+      let shown = false;
+      // Whether the entry we're on is our marker. It's checked on load too: a
+      // shopper who left by a link and came back with Back lands on it, and
+      // must not have to press Back twice to leave.
+      let onMarker = isMarker(window.history.state);
+
+      const arm = () => {
+        if (onMarker || shown || !eligible()) return;
+        onMarker = true;
+        window.history.pushState({ ...(window.history.state || {}), zinaraZnowBack: true }, '', window.location.href);
+      };
+      ['pointerdown', 'keydown'].forEach((type) => document.addEventListener(type, arm, { once: true, capture: true }));
+
+      // Back from the marker: the prompt, once; any other time (shown already,
+      // or no longer in the area) carry the Back on, so the press is never
+      // spent on the marker alone.
+      window.addEventListener('popstate', (event) => {
+        const wasMarker = onMarker;
+        onMarker = isMarker(event.state);
+        if (!wasMarker || onMarker) return; // not leaving the marker (e.g. Forward onto it)
+        if (dialog.open) return;
+        if (shown || !eligible()) {
+          window.history.back();
+          return;
+        }
+        shown = true;
+        this.openZnowBack(dialog);
+      });
+
+      // Restored from the back/forward cache: re-read where we are.
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) onMarker = isMarker(window.history.state);
+      });
+
+      const close = () => dialog.close();
+      dialog.querySelector('[data-znow-back-close]').addEventListener('click', close);
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) close();
+      });
+      dialog.querySelector('[data-znow-back-leave]').addEventListener('click', () => {
+        close();
+        window.history.back();
+      });
+      dialog.querySelector('[data-znow-back-add]').addEventListener('click', () => {
+        close();
+        const button = this.querySelector('[data-add-to-cart]');
+        if (this.form && button) this.form.requestSubmit(button);
+        else button?.click();
+      });
+      dialog.querySelector('[data-znow-back-choose]').addEventListener('click', () => {
+        close();
+        const groups = this.querySelectorAll('[data-option-group]');
+        const group = groups[groups.length - 1];
+        group?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        group?.querySelector('[data-option-input]:not(:disabled)')?.focus({ preventScroll: true });
       });
     }
 
-    /* Whether a pincode is served. The list is fetched once, on first use;
-       a failed fetch is retried. */
+    /* "Add to cart · Size 12" once a value of the last option has been picked
+       and that variant has stock; "Choose a size" until then. A product
+       without options has nothing to pick. */
+    openZnowBack(dialog) {
+      const variant = this.currentVariant();
+      const groups = Array.from(this.querySelectorAll('[data-option-group]'));
+      const lastGroup = groups[groups.length - 1];
+      // Nothing to choose between (no options, or one value) counts as picked.
+      const choices = lastGroup ? lastGroup.querySelectorAll('[data-option-input]').length : 0;
+      const picked = Boolean(variant?.inStock) && (choices < 2 || this.lastOptionPicked);
+      dialog.dataset.picked = String(picked);
+      const choice = dialog.querySelector('[data-znow-back-choice]');
+      const checked = lastGroup?.querySelector('[data-option-input]:checked');
+      const name = lastGroup?.querySelector('.pdp_option_head_name')?.textContent.replace(':', '').trim();
+      choice.textContent = picked && checked ? ` · ${name} ${checked.value}` : '';
+      dialog.showModal();
+      window.zinaraTrack?.('znow_back_prompt', { product_id: this.dataset.productHandle, size_selected: picked });
+    }
+
+    /* --------------------------------------------------------- ZNow tag */
+
+    /* The shipping tag on the last option's heading follows the picked
+       variant, and the Z badge marks the last option's values in stock
+       alongside the other picks (snippets/pdp-variant-picker). */
+    syncShipTag() {
+      const tag = this.querySelector('[data-ship-tag]');
+      const variant = this.currentVariant();
+      if (tag) {
+        tag.dataset.state = !variant?.available ? 'none' : variant.inStock ? 'stock' : 'made';
+        const inStockDays = Number(this.dataset.shipDaysInStock) || 3;
+        const madeDays = Number(this.dataset.shipDaysMade) || 24;
+        tag.querySelector('[data-ship-date="in-stock"]').textContent = this.shipDate(inStockDays);
+        tag.querySelector('[data-ship-date="made"]').textContent = this.shipDate(madeDays);
+      }
+
+      const selected = this.selectedOptions();
+      const last = selected.length - 1;
+      this.querySelectorAll('[data-znow-value]').forEach((label) => {
+        const value = label.querySelector('[data-option-input]')?.value;
+        const inStock = this.data.variants.some(
+          (entry) =>
+            entry.inStock &&
+            entry.options[last] === value &&
+            entry.options.every((option, i) => i === last || selected[i] === null || option === selected[i]),
+        );
+        label.classList.toggle('is-znow-stock', inStock);
+      });
+    }
+
+    /* Whether a pincode is served - the one list for the whole page, in
+       assets/location.js, when it's there. The list is fetched once, on
+       first use; a failed fetch is retried. */
     pincodeServes(pincode) {
+      if (window.zinaraLocation?.serves) return window.zinaraLocation.serves(pincode);
       if (!this.pincodeList) {
         this.pincodeList = fetch(this.dataset.pincodesUrl)
           .then((response) => {

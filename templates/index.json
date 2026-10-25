@@ -73,6 +73,20 @@
     "shop-by-category": {
       "type": "shop-by-category",
       "blocks": {
+        "shop_all": {
+          "type": "shop_all",
+          "settings": {
+            "label": "Shop all",
+            "url": "shopify://collections/all"
+          }
+        },
+        "znow": {
+          "type": "znow",
+          "settings": {
+            "label": "Same day delivery",
+            "url": "shopify://collections/znow"
+          }
+        },
         "category-1": {
           "type": "category",
           "settings": {
@@ -107,10 +121,12 @@
         }
       },
       "block_order": [
+        "znow",
         "category-1",
         "category-2",
         "category-3",
-        "category-4"
+        "category-4",
+        "shop_all"
       ],
       "settings": {
         "heading": "Shop by category"
@@ -526,6 +542,15 @@
       ],
       "settings": {
         "heading": "Love At First Wear"
+      }
+    },
+    "znow-showcase": {
+      "type": "znow-showcase",
+      "settings": {
+        "collection": "znow",
+        "text": "Same-day delivery now in Delhi NCR.",
+        "button_label": "Check availability",
+        "product_limit": 12
       }
     },
     "occasion-showcase": {
@@ -1012,6 +1037,7 @@
     "zinara-collections",
     "testimonials",
     "occasion-showcase",
+    "znow-showcase",
     "gifting",
     "split-promo",
     "as-seen-on",

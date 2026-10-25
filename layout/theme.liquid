@@ -54,6 +54,21 @@
       }
     </script>
 
+    {%- comment -%}
+      Favicon: the Z from the logo on white (assets/favicon.*), unless one is
+      uploaded in Theme settings > Logo > Favicon. SVG for browsers that take
+      it, PNGs for the rest, and a square 180px one for iPhone home screens.
+    {%- endcomment -%}
+    {%- if settings.favicon -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 48, height: 48 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- else -%}
+      <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="48x48" href="{{ 'favicon-48.png' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32.png' | asset_url }}">
+      <link rel="apple-touch-icon" href="{{ 'apple-touch-icon.png' | asset_url }}">
+    {%- endif -%}
+
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
@@ -84,6 +99,15 @@
   </head>
 
   <body>
+    {%- comment -%}
+      First in the body so location.js (deferred) runs before any section
+      script that reads window.zinaraLocation.
+    {%- endcomment -%}
+    {% render 'location' %}
+
+    {% # The ZNow collection's arrival animation - before anything paints %}
+    {% render 'znow-loader' %}
+
     {% sections 'header-group' %}
 
     {{ content_for_layout }}
@@ -95,6 +119,9 @@
 
     {% # Variant picker: every add-to-cart for a product with options asks here first %}
     {% render 'variant-drawer' %}
+
+    {% # ZNow: location dialog + loader for every data-znow-link (Theme settings > Location & ZNow) %}
+    {% render 'znow-flow' %}
 
     {% # Floating WhatsApp button (Theme settings > WhatsApp button) %}
     {% render 'whatsapp-floater' %}
