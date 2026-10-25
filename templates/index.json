@@ -73,6 +73,13 @@
     "shop-by-category": {
       "type": "shop-by-category",
       "blocks": {
+        "shop_all": {
+          "type": "shop_all",
+          "settings": {
+            "label": "Shop all",
+            "url": "shopify://collections/all"
+          }
+        },
         "znow": {
           "type": "znow",
           "settings": {
@@ -118,7 +125,8 @@
         "category-1",
         "category-2",
         "category-3",
-        "category-4"
+        "category-4",
+        "shop_all"
       ],
       "settings": {
         "heading": "Shop by category"

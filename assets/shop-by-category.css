@@ -25,9 +25,9 @@
   color: var(--color-text-secondary, #494949);
 }
 
+/* Figma 8470:77908: every tile on one row, equal widths, 24px apart. */
 .shop-by-category_wrapper_grid {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   gap: 24px;
   width: 100%;
@@ -38,7 +38,8 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  flex: 1 1 200px;
+  flex: 1 1 0;
+  min-width: 0;
   max-width: 266px;
   text-decoration: none;
 }
@@ -64,7 +65,7 @@
 
 .shop-by-category_wrapper_grid_item_label {
   font-family: var(--font-secondary--family);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 16px;
   line-height: 1.219;
   color: var(--color-text-secondary, #494949);
@@ -99,8 +100,25 @@
   flex: none;
 }
 
-/* Figma Mobile 7930:106706: all four tiles share one row with no scroller - 24/16
-   padding, a 20px heading, 12px gutters, 14px labels on a 22px line. */
+/* Shop all: an arrow on the pale brand ground. */
+.shop-by-category_wrapper_grid_item--shop_all .shop-by-category_wrapper_grid_item_image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #efe6ea;
+}
+
+.shop-by-category_shop-all,
+.shop-by-category_shop-all_desktop {
+  display: flex;
+}
+
+.shop-by-category_shop-all_mobile {
+  display: none;
+}
+
+/* Figma Mobile 8470:67969: four to a row, 8px across and 16px down, 24/16
+   padding, a 20px heading and 12px Medium labels on a 16px line. */
 @media screen and (max-width: 749px) {
   .shop-by-category_wrapper {
     gap: 16px;
@@ -113,33 +131,37 @@
   }
 
   .shop-by-category_wrapper_grid {
-    flex-wrap: nowrap;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px 8px;
   }
 
   .shop-by-category_wrapper_grid_item {
-    flex: 1 1 0;
-    min-width: 0;
     max-width: none;
   }
 
   .shop-by-category_wrapper_grid_item_label {
-    font-size: 14px;
-    line-height: 22px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .shop-by-category_znow svg {
+    margin-top: 2px;
+  }
+
+  .shop-by-category_shop-all_desktop {
+    display: none;
+  }
+
+  .shop-by-category_shop-all_mobile {
+    display: flex;
   }
 }
 
-/* Tablet: the four tiles share one row, as on phones - wrapped at this width
-   they broke 3 + 1, leaving the last tile alone on its own row. */
+/* Tablet: still one row, closer together. */
 @media screen and (min-width: 750px) and (max-width: 989px) {
   .shop-by-category_wrapper_grid {
-    flex-wrap: nowrap;
     gap: 16px;
-  }
-
-  .shop-by-category_wrapper_grid_item {
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: none;
   }
 }
