@@ -197,6 +197,17 @@
     deliverLine(sr, state);
     if (!list) return;
 
+    // GoKwik pads its list; the headers and notices run edge to edge across
+    // it (Figma's full-width bands), so they borrow its padding as negative
+    // margins - read live, whatever GoKwik sets.
+    const pad = getComputedStyle(list);
+    const set = (name, value) => {
+      if (list.style.getPropertyValue(name) !== value) list.style.setProperty(name, value);
+    };
+    set('--zk-pad-left', pad.paddingLeft);
+    set('--zk-pad-right', pad.paddingRight);
+    set('--zk-pad-top', pad.paddingTop);
+
     const tiles = readTiles(list);
     const known = tiles.every((entry) => entry.line); // every tile matched to a line
     const stocked = tiles.filter((entry) => entry.line?.inStock && !entry.free);

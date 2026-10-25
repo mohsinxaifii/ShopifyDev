@@ -84,17 +84,36 @@
   flex-direction: column;
 }
 
-/* "☐ Delivery 1 of 2 · 2 items ........ [Now · Today by 9 PM]" */
+/* "Delivery 1 of 2 · 2 items ........ [Now · Today by 9 PM]" - a band
+   across the whole list, ruled above and below (Figma 8470:85465). The
+   list's own padding (--zk-pad-*, measured by znow-cart.js) is taken back
+   with negative margins so it meets both edges. */
+.zk-group,
+.zk-notice {
+  margin-left: calc(-1 * var(--zk-pad-left, 0px));
+  margin-right: calc(-1 * var(--zk-pad-right, 0px));
+  border-radius: 0;
+}
+
 .zk-group {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin: 10px 10px 0;
+  margin-top: 0;
+  margin-bottom: 0;
   padding: 10px 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
   background-color: #f7f3f5;
+}
+
+/* The first band starts the list: flush with its top, no rule above. */
+.zk-group[data-zk-group='znow'],
+.zk-group:only-of-type {
+  margin-top: calc(-1 * var(--zk-pad-top, 0px));
+  border-top: 0;
 }
 
 .zk-group--znow {
@@ -153,16 +172,22 @@
   height: 12px;
 }
 
-/* Cut-off and not-available notices: the pale yellow strip. */
+/* Cut-off and not-available notices: the pale yellow band (8470:86184). */
 .zk-notice {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin: 10px 10px 0;
+  margin-top: 0;
+  margin-bottom: 0;
   padding: 12px 16px;
-  border: 1px solid #f5dcb0;
-  border-radius: 12px;
+  border: 0;
+  border-bottom: 1px solid #e0e0e0;
   background-color: #fef4e2;
+}
+
+/* "Not available" leads the list when there are no bands above it. */
+.zk-notice[data-zk-notice='unavailable'] {
+  margin-top: calc(-1 * var(--zk-pad-top, 0px));
 }
 
 .zk-notice_icon {
