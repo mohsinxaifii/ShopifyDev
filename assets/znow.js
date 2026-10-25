@@ -306,5 +306,9 @@
     document.querySelectorAll('[data-delivery-location-place]').forEach((place) => (place.textContent = text));
   });
 
-  window.zinaraZnow = { open: (url) => ((target = url), openDialog(window.zinaraLocation?.get() || {})) };
+  window.zinaraZnow = {
+    open: (url) => ((target = url), openDialog(window.zinaraLocation?.get() || {})),
+    // "Change delivery pincode" - no link to follow (the PDP's Change, the header's Deliver to).
+    change: () => ((target = null), openDialog(window.zinaraLocation?.get() || {})),
+  };
 })();

@@ -428,8 +428,12 @@
       this.optionInputs = Array.from(this.querySelectorAll('[data-option-input]'));
       if (this.optionInputs.length === 0) return;
 
+      const groups = this.querySelectorAll('[data-option-group]');
+      const lastGroup = groups[groups.length - 1];
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => {
+          // The back prompt offers "Add to cart · Size 12" only once a size was chosen.
+          if (input.closest('[data-option-group]') === lastGroup) this.lastOptionPicked = true;
           this.onOptionChange();
           this.trackVariantSelect(input);
         });
@@ -1026,6 +1030,92 @@
       const day = Number(date.toLocaleDateString('en-GB', { ...zone, day: 'numeric' }));
       const suffix = day > 10 && day < 14 ? 'th' : { 1: 'st', 2: 'nd', 3: 'rd' }[day % 10] || 'th';
       return `${day}${suffix} ${date.toLocaleDateString('en-GB', { ...zone, month: 'short' })}`;
+    }
+
+    /* ------------------------------------------------- ZNow back prompt */
+
+    /**
+     * A shopper in the ZNow area pressing Back on a product with stock gets
+     * one last nudge (snippets/pdp-znow-back): it can still arrive today.
+     * Back is caught with one extra history entry, pushed on the shopper's
+     * first tap or key press - Chrome skips entries pushed before any
+     * interaction, so pushing on load would not hold. Shown once; after it
+     * (or when it no longer applies) Back simply goes back.
+     */
+    initZnowBack() {
+      const dialog = this.querySelector('[data-znow-back]');
+      if (!dialog || !this.data.variants.some((entry) => entry.inStock)) return;
+
+      const time = window.zinaraZnowTime;
+      if (time) {
+        dialog.querySelectorAll('[data-znow-cutoff]').forEach((node) => (node.textContent = time.cutoffLabel));
+        dialog.querySelectorAll('[data-znow-today-by]').forEach((node) => (node.textContent = time.todayBy));
+        dialog.querySelectorAll('[data-znow-tomorrow-by]').forEach((node) => (node.textContent = time.tomorrowBy));
+      }
+
+      const eligible = () => document.documentElement.classList.contains('is-znow');
+      let armed = false;
+      let shown = false;
+
+      const arm = () => {
+        if (armed || shown || !eligible()) return;
+        armed = true;
+        window.history.pushState({ zinaraZnowBack: true }, '', window.location.href);
+      };
+      ['pointerdown', 'keydown'].forEach((type) => document.addEventListener(type, arm, { once: true, capture: true }));
+
+      window.addEventListener('popstate', () => {
+        if (!armed || shown) return;
+        armed = false;
+        if (!eligible()) {
+          window.history.back(); // no longer applies - finish the Back
+          return;
+        }
+        shown = true;
+        this.openZnowBack(dialog);
+      });
+
+      const close = () => dialog.close();
+      dialog.querySelector('[data-znow-back-close]').addEventListener('click', close);
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) close();
+      });
+      dialog.querySelector('[data-znow-back-leave]').addEventListener('click', () => {
+        close();
+        window.history.back();
+      });
+      dialog.querySelector('[data-znow-back-add]').addEventListener('click', () => {
+        close();
+        const button = this.querySelector('[data-add-to-cart]');
+        if (this.form && button) this.form.requestSubmit(button);
+        else button?.click();
+      });
+      dialog.querySelector('[data-znow-back-choose]').addEventListener('click', () => {
+        close();
+        const groups = this.querySelectorAll('[data-option-group]');
+        const group = groups[groups.length - 1];
+        group?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        group?.querySelector('[data-option-input]:not(:disabled)')?.focus({ preventScroll: true });
+      });
+    }
+
+    /* "Add to cart · Size 12" once a value of the last option has been picked
+       and that variant has stock; "Choose a size" until then. A product
+       without options has nothing to pick. */
+    openZnowBack(dialog) {
+      const variant = this.currentVariant();
+      const groups = Array.from(this.querySelectorAll('[data-option-group]'));
+      const lastGroup = groups[groups.length - 1];
+      // Nothing to choose between (no options, or one value) counts as picked.
+      const choices = lastGroup ? lastGroup.querySelectorAll('[data-option-input]').length : 0;
+      const picked = Boolean(variant?.inStock) && (choices < 2 || this.lastOptionPicked);
+      dialog.dataset.picked = String(picked);
+      const choice = dialog.querySelector('[data-znow-back-choice]');
+      const checked = lastGroup?.querySelector('[data-option-input]:checked');
+      const name = lastGroup?.querySelector('.pdp_option_head_name')?.textContent.replace(':', '').trim();
+      choice.textContent = picked && checked ? ` · ${name} ${checked.value}` : '';
+      dialog.showModal();
+      window.zinaraTrack?.('znow_back_prompt', { product_id: this.dataset.productHandle, size_selected: picked });
     }
 
     /* --------------------------------------------------------- ZNow tag */
