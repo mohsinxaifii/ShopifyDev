@@ -1,0 +1,119 @@
+{%- doc -%}
+  ZNow entry flow, one per page (assets/znow.js, assets/znow.css). Any link
+  marked `data-znow-link` goes through it:
+
+  - shopper already in the same-day area (zinaraLocation.get().znow) - the
+    loader plays once (Zinara-now-loader prototype), then the link opens;
+  - otherwise the location dialog (Figma 8479:70166 desktop, 8479:70167
+    mobile) asks for a pincode or "Use my location", checks it, and either
+    plays the loader or says same-day isn't available there.
+{%- enddoc -%}
+
+{{ 'znow.css' | asset_url | stylesheet_tag }}
+
+<dialog
+  class="znow-dialog"
+  aria-labelledby="ZnowDialogTitle"
+  data-znow-dialog
+  data-view="ask"
+  data-standard-days="{{ settings.znow_standard_delivery_days | default: 3 }}"
+  scroll-lock
+>
+  <div class="znow-dialog_panel">
+    <div class="znow-dialog_head">
+      <p class="znow-dialog_head_title" aria-hidden="true">Select delivery location</p>
+      <button type="button" class="znow-dialog_close" aria-label="Close" data-znow-close>
+        <span class="znow-dialog_close_desktop">{{- 'icon-x-24.svg' | inline_asset_content -}}</span>
+        <span class="znow-dialog_close_mobile">{{- 'icon-close-circle.svg' | inline_asset_content -}}</span>
+      </button>
+    </div>
+
+    <div class="znow-dialog_body">
+      <div class="znow-dialog_intro">
+        <span class="znow-dialog_intro_icon" aria-hidden="true">{{- 'icon-map-pin-line.svg' | inline_asset_content -}}</span>
+        <div class="znow-dialog_intro_text">
+          <h2 class="znow-dialog_intro_title" id="ZnowDialogTitle" data-znow-title>Location permission</h2>
+          <p class="znow-dialog_intro_subtitle" data-znow-subtitle>
+            Search for your location to see delivery options in your area.
+          </p>
+        </div>
+      </div>
+
+      <div class="znow-dialog_check">
+        <div class="znow-dialog_check_field">
+          <form class="znow-dialog_form" data-znow-form novalidate>
+            <label class="znow-dialog_input">
+              <span class="znow-dialog_input_icon" aria-hidden="true">{{- 'icon-search.svg' | inline_asset_content -}}</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                autocomplete="postal-code"
+                maxlength="6"
+                placeholder="Search for a pincode"
+                aria-label="Pincode"
+                aria-describedby="ZnowDialogStatus"
+                data-znow-input
+              >
+            </label>
+            <button type="submit" class="znow-dialog_button znow-dialog_button--primary">Check</button>
+          </form>
+
+          <div class="znow-dialog_pending">
+            <span class="znow-dialog_pending_spinner" aria-hidden="true">
+              {{- 'icon-circle-notch.svg' | inline_asset_content -}}
+            </span>
+            <span class="znow-dialog_pending_pincode" data-znow-pending-pincode></span>
+            <span class="znow-dialog_pending_area" data-znow-pending-area></span>
+            <button type="button" class="znow-dialog_pending_change" data-znow-change>Change</button>
+          </div>
+
+          <p class="znow-dialog_status" id="ZnowDialogStatus" role="status" data-znow-status></p>
+        </div>
+
+        <div class="znow-dialog_alt">
+          <p class="znow-dialog_alt_or">OR</p>
+          <button type="button" class="znow-dialog_locate" data-znow-locate>
+            <span aria-hidden="true">{{- 'icon-crosshair.svg' | inline_asset_content -}}</span>
+            Use my location
+          </button>
+        </div>
+      </div>
+
+      <div class="znow-dialog_actions">
+        <button type="button" class="znow-dialog_button znow-dialog_button--primary" data-znow-retry>
+          Try another pincode
+        </button>
+        <button type="button" class="znow-dialog_button znow-dialog_button--secondary" data-znow-close>
+          Continue browsing
+        </button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+{%- comment -%}
+  The loader (https://arundhuti00.github.io/Zinara-now-loader/): the wine
+  ground rises from the bottom, blurred blobs drift, the ZNow route draws
+  once and the message pops in word by word - then the link opens.
+{%- endcomment -%}
+<div class="znow-loader" data-znow-loader hidden>
+  <div class="znow-loader_ground" data-znow-loader-ground aria-hidden="true">
+    <span class="znow-loader_blob znow-loader_blob--1"></span>
+    <span class="znow-loader_blob znow-loader_blob--2"></span>
+    <span class="znow-loader_blob znow-loader_blob--3"></span>
+    <span class="znow-loader_blob znow-loader_blob--4"></span>
+    <span class="znow-loader_blob znow-loader_blob--5"></span>
+  </div>
+  <div class="znow-loader_content">
+    <div class="znow-loader_icon" data-znow-loader-icon aria-hidden="true">
+      <svg viewBox="54 30 42 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ECC0D2">
+        <rect class="znow-loader_icon_drop" x="63.2856" y="32.1992" width="3.42857" height="3.42857" fill="#ECC0D2" stroke="none"/>
+        <path class="znow-loader_icon_line" pathLength="100" d="M68.4289 34H91.8571L58 61H86" stroke-width="3.5" stroke-linejoin="round"/>
+        <path class="znow-loader_icon_head" d="M80 55L86 61L80 67" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <p class="znow-loader_message" role="status" data-znow-loader-message></p>
+  </div>
+</div>
+
+<script src="{{ 'znow.js' | asset_url }}" defer="defer"></script>
