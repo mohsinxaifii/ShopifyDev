@@ -113,6 +113,9 @@ html.is-znow .product-card_delivery[data-znow-hide] {
 }
 
 .product-card_delivery--znow {
+  /* At least this much clear space before the sizes; the list is cut short
+     with "…" rather than closing it up. */
+  gap: 24px;
   background: linear-gradient(to right, #4a162c, #712242);
   color: #ecc0d2;
 }
@@ -489,6 +492,10 @@ html.is-znow .product-card_delivery[data-znow-hide] {
   .product-card_delivery_znow svg {
     width: 8px;
     height: 8px;
+  }
+
+  .product-card_delivery--znow {
+    gap: 16px;
   }
 
   .product-card_media_soldout {
