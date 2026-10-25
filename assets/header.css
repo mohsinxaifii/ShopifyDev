@@ -193,12 +193,12 @@ html.is-znow .delivery-location_znow {
   cursor: pointer;
   transition:
     color 0.2s ease,
-    transform 0.2s ease;
+    scale 0.2s ease;
 }
 
 .header_wrapper_brand_menu-toggle:hover {
   color: var(--color-brand, #712242);
-  transform: scale(1.05);
+  scale: 1.05;
 }
 
 .header_wrapper_brand_menu-toggle svg {
@@ -296,12 +296,12 @@ html.is-znow .delivery-location_znow {
   text-decoration: none;
   transition:
     color 0.2s ease,
-    transform 0.2s ease;
+    scale 0.2s ease;
 }
 
 .header_wrapper_actions_link:hover {
   color: var(--color-brand, #712242);
-  transform: scale(1.08);
+  scale: 1.08;
 }
 
 .header_wrapper_actions_link svg {

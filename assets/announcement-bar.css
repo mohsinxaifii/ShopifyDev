@@ -33,7 +33,7 @@
   transition:
     color 0.35s ease,
     opacity 0.2s ease,
-    transform 0.2s ease;
+    scale 0.2s ease;
 }
 
 .announcement-bar_wrapper_prev svg,
@@ -45,7 +45,7 @@
 .announcement-bar_wrapper_prev:hover,
 .announcement-bar_wrapper_next:hover {
   opacity: 1;
-  transform: scale(1.1);
+  scale: 1.1;
 }
 
 .announcement-bar_wrapper_prev:focus-visible,

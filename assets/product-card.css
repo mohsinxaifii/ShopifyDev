@@ -217,7 +217,7 @@ html.is-znow .product-card_delivery[data-znow-hide] {
   cursor: pointer;
   transition:
     background-color 0.2s ease,
-    transform 0.2s ease;
+    scale 0.2s ease;
 }
 
 .product-card_media_top_wishlist svg {
@@ -226,7 +226,7 @@ html.is-znow .product-card_delivery[data-znow-hide] {
 }
 
 .product-card_media_top_wishlist:hover {
-  transform: scale(1.08);
+  scale: 1.08;
 }
 
 /* .product-card_media_top_wishlist.is-active {
@@ -359,7 +359,7 @@ html.is-znow .product-card_delivery[data-znow-hide] {
   color: var(--color-brand, #712242);
   cursor: pointer;
   transform: translateY(-50%);
-  transition: transform 0.2s ease;
+  transition: scale 0.2s ease;
 }
 
 .product-card--grid .product-card_info_price_wishlist svg {
@@ -368,7 +368,7 @@ html.is-znow .product-card_delivery[data-znow-hide] {
 }
 
 .product-card--grid .product-card_info_price_wishlist:hover {
-  transform: translateY(-50%) scale(1.08);
+  scale: 1.08; /* composes with the translateY above - see motion.css, button:active */
 }
 
 .product-card--grid .product-card_info_title {
