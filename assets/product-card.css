@@ -97,8 +97,9 @@
    the shopper's area - html.is-znow, set by snippets/location before paint. */
 .product-card_delivery {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 0 8px;
   padding: 4px calc(var(--product-card-pad) - 2px);
   font-family: var(--font-secondary--family);
   font-weight: 600;
@@ -119,7 +120,7 @@ html.is-znow .product-card_delivery[data-znow-hide] {
 
 .product-card_delivery_znow {
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   align-items: center;
   gap: 2px;
   min-width: 0;
@@ -131,12 +132,14 @@ html.is-znow .product-card_delivery[data-znow-hide] {
   height: 12px;
 }
 
-/* Many sizes in stock: the list gives way before "Get it today" does. */
+/* Sizes sit at the right of "Get it today"; too many for one line and they
+   drop to a second row (wrapping again if they must) - never cut off. */
 .product-card_delivery_sizes {
   flex: 0 1 auto;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-left: auto;
+  white-space: normal;
+  text-align: right;
 }
 
 .product-card_delivery--ready {
