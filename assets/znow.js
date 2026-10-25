@@ -3,9 +3,9 @@
  * (Shop by category's ZNow tile, the announcement bar's ZNow message) opens
  * through here:
  *
- * - in the same-day area already (zinaraLocation.get().znow): the loader
- *   plays once, start to finish, then the link opens - the page is
- *   prefetched meanwhile so it follows straight on;
+ * - in the same-day area already (zinaraLocation.get().znow): the link
+ *   opens straight away - the ZNow collection plays the loader itself on
+ *   arrival (intro, below), however the shopper got there;
  * - located outside the area: the dialog opens on "not available";
  * - anything else (location blocked, never asked, typed pincode outside):
  *   the dialog asks for a pincode or "Use my location".
@@ -21,8 +21,7 @@
  */
 (() => {
   const dialog = document.querySelector('[data-znow-dialog]');
-  const loader = document.querySelector('[data-znow-loader]');
-  if (!dialog || !loader) return;
+  if (!dialog) return;
 
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -106,7 +105,7 @@
 
   async function proceed() {
     await closeDialog();
-    if (target) play(target);
+    if (target) window.location.assign(target);
   }
 
   input.addEventListener('input', () => {
@@ -189,73 +188,41 @@
 
   /* -------------------------------------------------------------- loader */
 
-  const ground = loader.querySelector('[data-znow-loader-ground]');
-  const icon = loader.querySelector('[data-znow-loader-icon]');
-  const message = loader.querySelector('[data-znow-loader-message]');
-  const drop = loader.querySelector('.znow-loader_icon_drop');
-  const line = loader.querySelector('.znow-loader_icon_line');
-  const head = loader.querySelector('.znow-loader_icon_head');
-  let running = [];
+  /* On the ZNow collection only (snippets/znow-loader, first in the body so
+     it already covers the page): one full pass, then it lifts off the
+     collection. Whichever way the shopper arrived - a ZNow link, any other
+     link, the address typed in. */
+  async function intro() {
+    const loader = document.querySelector('[data-znow-loader]');
+    if (!loader) return;
 
-  const animate = (element, keyframes, options) => {
-    const animation = element.animate(keyframes, { fill: 'forwards', ...options });
-    running.push(animation);
-    return animation.finished.catch(() => {});
-  };
+    const ground = loader.querySelector('[data-znow-loader-ground]');
+    const icon = loader.querySelector('[data-znow-loader-icon]');
+    const message = loader.querySelector('[data-znow-loader-message]');
+    const drop = loader.querySelector('.znow-loader_icon_drop');
+    const line = loader.querySelector('.znow-loader_icon_line');
+    const head = loader.querySelector('.znow-loader_icon_head');
+    const animate = (element, keyframes, options) =>
+      element.animate(keyframes, { fill: 'forwards', ...options }).finished.catch(() => {});
 
-  function resetLoader() {
-    running.forEach((animation) => animation.cancel());
-    running = [];
-    loader.hidden = true;
-    message.textContent = '';
-    [icon, message, drop, head, line, ground].forEach((element) => element.removeAttribute('style'));
-    document.documentElement.classList.remove('is-scroll-locked');
-  }
-
-  // One full pass of the route: drop, line, arrow head, hold, then wipe away.
-  async function drawRoute() {
-    animate(drop, [
-      { transform: 'scale(0)', opacity: 1 },
-      { transform: 'scale(1.25)', opacity: 1, offset: 0.6 },
-      { transform: 'scale(1)', opacity: 1 },
-    ], { duration: 150, easing: 'ease-out' });
-    await sleep(150);
-    animate(line, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { duration: 900, easing: 'ease-in-out' });
-    await sleep(900);
-    animate(head, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], {
-      duration: 200,
-      easing: 'ease-out',
-    });
-    await sleep(600);
-    animate(line, [{ strokeDashoffset: 0 }, { strokeDashoffset: -100 }], { duration: 600, easing: 'ease-in-out' });
-    animate(drop, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 });
-    animate(head, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, delay: 350 });
-    await sleep(750);
-  }
-
-  function writeMessage() {
+    // In the area: "Yay, Z-Now delivers to Saket!"; elsewhere it still plays,
+    // without promising delivery to where the shopper is.
     const state = window.zinaraLocation?.get() || {};
-    const place = state.city || state.pincode || 'you';
-    message.textContent = '';
-    `Yay, Z-Now delivers to ${place}!`.split(' ').forEach((word, index) => {
+    const text = state.znow
+      ? `Yay, Z-Now delivers to ${state.city || state.pincode || 'you'}!`
+      : 'Same-day delivery with Z-Now';
+    text.split(' ').forEach((word, index) => {
       if (index) message.append(' ');
       const span = document.createElement('span');
       span.textContent = word;
       message.append(span);
     });
-  }
-
-  async function play(url) {
-    resetLoader();
-    prefetch(url);
-    writeMessage();
-    loader.hidden = false;
-    document.documentElement.classList.add('is-scroll-locked');
-    track('znow_loader_view', { destination_url: url });
-
     const words = Array.from(message.querySelectorAll('span'));
+
+    loader.classList.add('is-playing');
+    track('znow_loader_view', { destination_url: window.location.pathname });
+
     if (reducedMotion()) {
-      animate(ground, [{ opacity: 0 }, { opacity: 1 }], { duration: 400 });
       ground.style.setProperty('--znow-reveal', '145%');
       icon.style.opacity = 1;
       [drop, head].forEach((part) => (part.style.opacity = 1));
@@ -275,30 +242,38 @@
       }, 900);
       await sleep(600);
       icon.style.opacity = 1;
-      await drawRoute();
+
+      // One full pass of the route: drop, line, arrow head, hold, then wipe away.
+      animate(drop, [
+        { transform: 'scale(0)', opacity: 1 },
+        { transform: 'scale(1.25)', opacity: 1, offset: 0.6 },
+        { transform: 'scale(1)', opacity: 1 },
+      ], { duration: 150, easing: 'ease-out' });
+      await sleep(150);
+      animate(line, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { duration: 900, easing: 'ease-in-out' });
+      await sleep(900);
+      animate(head, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], {
+        duration: 200,
+        easing: 'ease-out',
+      });
+      await sleep(600);
+      animate(line, [{ strokeDashoffset: 0 }, { strokeDashoffset: -100 }], { duration: 600, easing: 'ease-in-out' });
+      animate(drop, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 });
+      animate(head, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, delay: 350 });
+      await sleep(750);
       await Promise.all([
         animate(icon, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 }),
         animate(message, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 }),
       ]);
     }
-    window.location.assign(url);
+
+    // Lift it off the collection.
+    await animate(loader, [{ opacity: 1 }, { opacity: 0 }], { duration: reducedMotion() ? 150 : 350, easing: 'ease-out' });
+    loader.remove();
   }
 
-  function prefetch(url) {
-    try {
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = url;
-      document.head.append(link);
-    } catch (error) {
-      /* the page simply loads after the loader */
-    }
-  }
-
-  // Back from the collection (page restored from the back/forward cache): no loader left over.
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) resetLoader();
-  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', intro);
+  else intro();
 
   /* --------------------------------------------------------------- links */
 
@@ -312,7 +287,7 @@
 
     target = link.href;
     const state = window.zinaraLocation?.get() || {};
-    if (state.znow) play(target);
+    if (state.znow) window.location.assign(target);
     else openDialog(state);
   });
 
@@ -331,5 +306,5 @@
     document.querySelectorAll('[data-delivery-location-place]').forEach((place) => (place.textContent = text));
   });
 
-  window.zinaraZnow = { open: (url) => ((target = url), openDialog(window.zinaraLocation?.get() || {})), play };
+  window.zinaraZnow = { open: (url) => ((target = url), openDialog(window.zinaraLocation?.get() || {})) };
 })();
