@@ -4,10 +4,14 @@
   first visit) to get the delivery pincode ZNow and the delivery estimates
   read. Theme settings > Location & ZNow.
 
+  ZNow area: assets/znow-area.json (the outline a location fix is tested
+  against) and snippets/znow-pincodes (the pincodes a typed pincode is
+  tested against).
+
   Rendered first in the body: the inline script below marks <html> with
-  "is-znow" when the saved pincode is in the same-day area, before the header
-  is parsed, so ZNow pieces never flash in or out. Anything ZNow-only hides
-  with `html:not(.is-znow) ...`; location.js keeps the class in step.
+  "is-znow" from what was saved on an earlier page, before the header is
+  parsed, so ZNow pieces never flash in or out. Anything ZNow-only hides with
+  `html:not(.is-znow) ...`; location.js keeps the class in step.
 {%- enddoc -%}
 
 {%- capture znow_pincodes -%}{% render 'znow-pincodes' %}{%- endcapture -%}
@@ -18,19 +22,28 @@
     enabled: {{ settings.location_prompt_enabled | json }},
     pageType: {{ request.page_type | json }},
     znowPincodes: {{ znow_pincodes | json }},
+    znowAreaUrl: {{ 'znow-area.json' | asset_url | json }},
     {%- comment -%} The theme editor always shows the ZNow pieces, to edit them. {%- endcomment -%}
     znowPreview: {{ request.design_mode | json }},
   };
   (function () {
     var config = window.zinaraLocationConfig;
-    var pincode = '';
+    var saved = null;
     try {
-      pincode = (JSON.parse(localStorage.getItem('zinara_location')) || {}).pincode || '';
-    } catch (error) {
-      var match = document.cookie.match(/(?:^|; )zinara_location=([^;]*)/);
-      try { pincode = match ? JSON.parse(decodeURIComponent(match[1])).pincode || '' : ''; } catch (e) {}
+      saved = JSON.parse(localStorage.getItem('zinara_location'));
+    } catch (error) {}
+    if (!saved) {
+      try {
+        var match = document.cookie.match(/(?:^|; )zinara_location=([^;]*)/);
+        saved = match && JSON.parse(decodeURIComponent(match[1]));
+      } catch (error) {}
     }
-    if (config.znowPreview || config.znowPincodes.indexOf(pincode) !== -1) {
+    saved = saved || {};
+    // As znowNow() in location.js: a location fix decides by the area, a typed pincode by the list.
+    var znow = saved.source === 'gps' && typeof saved.inZnowArea === 'boolean'
+      ? saved.inZnowArea
+      : config.znowPincodes.indexOf(saved.pincode || '') !== -1;
+    if (config.znowPreview || znow) {
       document.documentElement.classList.add('is-znow');
     }
   })();
