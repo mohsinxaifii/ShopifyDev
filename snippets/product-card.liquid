@@ -160,7 +160,8 @@
       <span class="product-card_delivery product-card_delivery--znow" data-znow-only>
         <span class="product-card_delivery_znow">
           {{- 'icon-znow.svg' | inline_asset_content -}}
-          <span>Get it today</span>
+          <span data-znow-when="today">Get it today</span>
+          <span data-znow-when="tomorrow">Get it tomorrow</span>
         </span>
         {%- if znow_sizes != blank -%}
           <span class="product-card_delivery_sizes">{{ znow_sizes }}</span>

@@ -424,6 +424,29 @@
         "label": "ZNow collection handle",
         "default": "znow",
         "info": "The collection that plays the ZNow animation on arrival, e.g. znow for /collections/znow."
+      },
+      {
+        "type": "range",
+        "id": "znow_cutoff_hour",
+        "label": "Same-day cut-off (India time)",
+        "min": 8,
+        "max": 22,
+        "step": 1,
+        "unit": "h",
+        "default": 14,
+        "info": "Orders before this hour arrive today; after it, tomorrow. 14 = 2 PM."
+      },
+      {
+        "type": "text",
+        "id": "znow_today_by",
+        "label": "Arrives today by",
+        "default": "9 PM"
+      },
+      {
+        "type": "text",
+        "id": "znow_tomorrow_by",
+        "label": "Arrives tomorrow by",
+        "default": "1 PM"
       }
     ]
   }
