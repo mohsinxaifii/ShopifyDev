@@ -4528,6 +4528,11 @@ button.pdp_trust_grid_item_inner {
   font-family: var(--font-primary--family);
 }
 
+/* It takes focus itself on opening (autofocus), not the close button. */
+.pdp_znow_back:focus {
+  outline: none;
+}
+
 .pdp_znow_back::backdrop {
   background-color: rgba(0, 0, 0, 0.6);
 }

@@ -12,7 +12,7 @@
 {%- enddoc -%}
 
 {%- assign back_option_name = product.options.last | default: 'size' | downcase -%}
-<dialog class="pdp_znow_back" aria-labelledby="PdpZnowBackTitle" data-znow-back data-picked="false" scroll-lock>
+<dialog class="pdp_znow_back" aria-labelledby="PdpZnowBackTitle" data-znow-back data-picked="false" tabindex="-1" autofocus scroll-lock>
   <div class="pdp_znow_back_panel">
     <button type="button" class="pdp_znow_back_close" aria-label="Close" data-znow-back-close>
       {{- 'icon-x-white-24.svg' | inline_asset_content -}}
