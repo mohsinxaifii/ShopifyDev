@@ -1,0 +1,50 @@
+{%- doc -%}
+  "Deliver to <place> <pincode> ▾" with the ZNow chip - Figma 8470:82045
+  (desktop, in the navbar between the logo and the search) and 8470:71160
+  (mobile, a strip under the navbar). Opens the ZNow location dialog to change
+  the pincode (assets/znow.js). The chip shows only while the shopper is in
+  the same-day area (html.is-znow), so it never flashes in or out.
+
+  @param {string} variant - 'desktop' or 'mobile'
+{%- enddoc -%}
+
+{%- liquid
+  assign is_mobile = false
+  if variant == 'mobile'
+    assign is_mobile = true
+  endif
+-%}
+
+<div class="delivery-location delivery-location--{{ variant }}">
+  <button
+    type="button"
+    class="delivery-location_button"
+    aria-haspopup="dialog"
+    data-delivery-location
+    data-analytics="nav_icon_click"
+    data-analytics-icon-name="delivery_location"
+  >
+    <span class="delivery-location_pin" aria-hidden="true">
+      {%- if is_mobile -%}
+        {{- 'icon-map-pin-16.svg' | inline_asset_content -}}
+      {%- else -%}
+        {{- 'icon-map-pin-20.svg' | inline_asset_content -}}
+      {%- endif -%}
+    </span>
+    <span class="delivery-location_label">Deliver to</span>
+    <span class="delivery-location_place" data-delivery-location-place>Select pincode</span>
+    <span class="delivery-location_caret" aria-hidden="true">{{- 'icon-caret-down-14.svg' | inline_asset_content -}}</span>
+  </button>
+  <span class="delivery-location_znow" aria-label="Same-day delivery with ZNow">
+    <span aria-hidden="true">{{- 'icon-znow-8.svg' | inline_asset_content -}}</span>
+    <span aria-hidden="true">Now</span>
+  </span>
+</div>
+{%- comment -%} Fill the place now, from what an earlier page saved. {%- endcomment -%}
+<script>
+  (function (root) {
+    var saved = window.zinaraSavedLocation || {};
+    var text = [saved.city, saved.pincode].filter(Boolean).join(' ');
+    if (text) root.querySelector('[data-delivery-location-place]').textContent = text;
+  })(document.currentScript.previousElementSibling);
+</script>

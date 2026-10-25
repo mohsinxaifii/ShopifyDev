@@ -39,6 +39,8 @@
       } catch (error) {}
     }
     saved = saved || {};
+    // Read by snippets/delivery-location to fill its text before first paint.
+    window.zinaraSavedLocation = saved;
     // As znowNow() in location.js: a location fix decides by the area, a typed pincode by the list.
     var znow = saved.source === 'gps' && typeof saved.inZnowArea === 'boolean'
       ? saved.inZnowArea
