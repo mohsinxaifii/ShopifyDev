@@ -140,6 +140,7 @@ html.is-znow .product-card_delivery[data-znow-hide] {
 .product-card_delivery_sizes {
   flex: 0 1 auto;
   min-width: 0;
+  max-width: 50%;
   margin-left: auto;
   overflow: hidden;
   text-overflow: ellipsis;
