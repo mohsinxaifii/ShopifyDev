@@ -90,6 +90,9 @@
     {%- endcomment -%}
     {% render 'location' %}
 
+    {% # The ZNow collection's arrival animation - before anything paints %}
+    {% render 'znow-loader' %}
+
     {% sections 'header-group' %}
 
     {{ content_for_layout }}

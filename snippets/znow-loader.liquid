@@ -1,0 +1,57 @@
+{%- doc -%}
+  The ZNow loader (https://arundhuti00.github.io/Zinara-now-loader/), played
+  by assets/znow.js once on arriving at the ZNow collection - from a ZNow
+  link, any other link, or typed in - then lifted off the page.
+
+  Rendered first in the body (layout/theme.liquid) so it covers the page from
+  the first paint. Not replayed for sort / filter / pagination on the same
+  collection, nor for a page restored by Back. If the script never runs, a
+  CSS fallback lifts it after a few seconds, so the page can't stay hidden.
+
+  Theme settings > Location & ZNow > ZNow collection.
+{%- enddoc -%}
+
+{%- liquid
+  assign znow_handle = settings.znow_collection_handle | default: 'znow' | strip
+  assign is_intro = false
+  if request.page_type == 'collection' and collection.handle == znow_handle and request.design_mode == false
+    assign is_intro = true
+  endif
+-%}
+
+{%- if is_intro -%}
+  {{ 'znow.css' | asset_url | stylesheet_tag }}
+
+  <div class="znow-loader znow-loader--intro" data-znow-loader>
+    <div class="znow-loader_ground" data-znow-loader-ground aria-hidden="true">
+      <span class="znow-loader_blob znow-loader_blob--1"></span>
+      <span class="znow-loader_blob znow-loader_blob--2"></span>
+      <span class="znow-loader_blob znow-loader_blob--3"></span>
+      <span class="znow-loader_blob znow-loader_blob--4"></span>
+      <span class="znow-loader_blob znow-loader_blob--5"></span>
+    </div>
+    <div class="znow-loader_content">
+      <div class="znow-loader_icon" data-znow-loader-icon aria-hidden="true">
+        <svg viewBox="54 30 42 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ECC0D2">
+          <rect class="znow-loader_icon_drop" x="63.2856" y="32.1992" width="3.42857" height="3.42857" fill="#ECC0D2" stroke="none"/>
+          <path class="znow-loader_icon_line" pathLength="100" d="M68.4289 34H91.8571L58 61H86" stroke-width="3.5" stroke-linejoin="round"/>
+          <path class="znow-loader_icon_head" d="M80 55L86 61L80 67" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="znow-loader_message" role="status" data-znow-loader-message></p>
+    </div>
+  </div>
+  {%- comment -%}
+    Decided before the first paint: moving around inside the same collection
+    (sort, filters, pages - same path) doesn't replay it.
+  {%- endcomment -%}
+  <script>
+    (function (loader) {
+      var from = '';
+      try {
+        from = document.referrer ? new URL(document.referrer).pathname : '';
+      } catch (error) {}
+      if (from && from === window.location.pathname) loader.remove();
+    })(document.currentScript.previousElementSibling);
+  </script>
+{%- endif -%}

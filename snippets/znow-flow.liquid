@@ -3,10 +3,11 @@
   marked `data-znow-link` goes through it:
 
   - shopper already in the same-day area (zinaraLocation.get().znow) - the
-    loader plays once (Zinara-now-loader prototype), then the link opens;
+    link opens, and the ZNow collection plays its loader on arrival
+    (snippets/znow-loader);
   - otherwise the location dialog (Figma 8479:70166 desktop, 8479:70167
     mobile) asks for a pincode or "Use my location", checks it, and either
-    plays the loader or says same-day isn't available there.
+    opens the link or says same-day isn't available there.
 {%- enddoc -%}
 
 {{ 'znow.css' | asset_url | stylesheet_tag }}
@@ -90,30 +91,5 @@
     </div>
   </div>
 </dialog>
-
-{%- comment -%}
-  The loader (https://arundhuti00.github.io/Zinara-now-loader/): the wine
-  ground rises from the bottom, blurred blobs drift, the ZNow route draws
-  once and the message pops in word by word - then the link opens.
-{%- endcomment -%}
-<div class="znow-loader" data-znow-loader hidden>
-  <div class="znow-loader_ground" data-znow-loader-ground aria-hidden="true">
-    <span class="znow-loader_blob znow-loader_blob--1"></span>
-    <span class="znow-loader_blob znow-loader_blob--2"></span>
-    <span class="znow-loader_blob znow-loader_blob--3"></span>
-    <span class="znow-loader_blob znow-loader_blob--4"></span>
-    <span class="znow-loader_blob znow-loader_blob--5"></span>
-  </div>
-  <div class="znow-loader_content">
-    <div class="znow-loader_icon" data-znow-loader-icon aria-hidden="true">
-      <svg viewBox="54 30 42 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ECC0D2">
-        <rect class="znow-loader_icon_drop" x="63.2856" y="32.1992" width="3.42857" height="3.42857" fill="#ECC0D2" stroke="none"/>
-        <path class="znow-loader_icon_line" pathLength="100" d="M68.4289 34H91.8571L58 61H86" stroke-width="3.5" stroke-linejoin="round"/>
-        <path class="znow-loader_icon_head" d="M80 55L86 61L80 67" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <p class="znow-loader_message" role="status" data-znow-loader-message></p>
-  </div>
-</div>
 
 <script src="{{ 'znow.js' | asset_url }}" defer="defer"></script>
