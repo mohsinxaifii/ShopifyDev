@@ -115,7 +115,7 @@
 .shop-by-category_znow {
   display: flex;
   align-items: center;
-  font-family: var(--font-primary--family);
+  font-family: var(--font-secondary--family);
   font-weight: 600;
   font-style: italic;
   font-size: 16px;

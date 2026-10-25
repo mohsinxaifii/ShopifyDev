@@ -24,7 +24,7 @@
   border-radius: 24px;
   background: #fff;
   color: #000;
-  font-family: var(--font-primary--family);
+  font-family: var(--font-secondary--family);
   overflow: auto;
 }
 
@@ -206,7 +206,7 @@
   border: 0;
   outline: 0;
   background: none;
-  font: 500 16px/24px var(--font-primary--family);
+  font: 500 16px/24px var(--font-secondary--family);
   color: #000;
 }
 
@@ -223,7 +223,7 @@
   padding: 12px 16px;
   border: 1px solid var(--znow-brand);
   border-radius: 8px;
-  font: 500 18px/1 var(--font-primary--family);
+  font: 500 18px/1 var(--font-secondary--family);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -285,7 +285,7 @@
   padding: 0;
   border: 0;
   background: none;
-  font: 600 12px/1 var(--font-primary--family);
+  font: 600 12px/1 var(--font-secondary--family);
   color: var(--znow-brand);
   text-decoration: underline;
   cursor: pointer;
@@ -329,7 +329,7 @@
   padding: 0;
   border: 0;
   background: none;
-  font: 600 16px/1 var(--font-primary--family);
+  font: 600 16px/1 var(--font-secondary--family);
   color: var(--znow-brand);
   text-decoration: underline;
   cursor: pointer;

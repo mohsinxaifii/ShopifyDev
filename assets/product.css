@@ -1128,7 +1128,7 @@ button.pdp_trust_grid_item_inner {
   padding: 0;
   border: 0;
   background: none;
-  font: 600 12px/1 var(--font-primary--family);
+  font: 600 12px/1 var(--font-secondary--family);
   color: var(--pdp-brand);
   text-decoration: underline;
   cursor: pointer;
@@ -4533,7 +4533,7 @@ button.pdp_trust_grid_item_inner {
   border-radius: 24px;
   background: linear-gradient(210.9deg, #712242 9.65%, #371120 49.9%);
   color: #fff;
-  font-family: var(--font-primary--family);
+  font-family: var(--font-secondary--family);
 }
 
 /* It takes focus itself on opening (autofocus), not the close button. */
@@ -4626,7 +4626,7 @@ button.pdp_trust_grid_item_inner {
   padding: 12px 16px;
   border: 1px solid;
   border-radius: 8px;
-  font: 500 18px/1 var(--font-primary--family);
+  font: 500 18px/1 var(--font-secondary--family);
   white-space: nowrap;
   cursor: pointer;
 }
