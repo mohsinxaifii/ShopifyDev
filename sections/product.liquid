@@ -620,6 +620,7 @@
     labels: section.settings
   -%}
   {%- render 'pdp-sgl-modal', certificate: section.settings.certificate_image, labels: section.settings -%}
+  {%- render 'pdp-znow-back', product: product -%}
   {%- if help_block.settings.video_call_endpoint != blank -%}
     {%- render 'pdp-video-call', product: product, endpoint: help_block.settings.video_call_endpoint, labels: help_block.settings -%}
   {%- endif -%}
