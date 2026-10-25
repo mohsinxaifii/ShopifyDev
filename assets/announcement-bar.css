@@ -158,15 +158,17 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
   color: #fff;
 }
 
-/* Desktop: 8px apart, and no arrow - the carets either side do that job. */
+/* Desktop: 8px apart, and no arrow - the carets either side do that job.
+   Type as the other messages' (.announcement-bar_wrapper_track_slide_text),
+   so the ZNow one reads as one of them. */
 .announcement-bar_znow {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 0;
   font-family: var(--font-primary--family);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 1.21;
   color: #ecc0d2;
   text-decoration: none;
   white-space: nowrap;
@@ -181,8 +183,8 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
 
 .announcement-bar_znow_logo svg {
   flex: none;
-  width: 12px;
-  height: 12px;
+  width: 1em;
+  height: 1em;
 }
 
 /* The design's 15px rule, drawn across and turned upright. */
@@ -200,7 +202,7 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
 }
 
 .announcement-bar_znow_text {
-  font-weight: 400;
+  font-weight: inherit;
 }
 
 .announcement-bar_znow_arrow {
@@ -247,9 +249,13 @@ a.announcement-bar_znow:focus-visible {
     font-weight: 600;
   }
 
-  /* Mobile: 6px apart, with the arrow (Figma 8470:67951). */
+  /* Mobile: 6px apart, with the arrow (Figma 8470:67951), in the other
+     messages' 12px Medium. */
   .announcement-bar_znow {
     gap: 6px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 22px;
   }
 
   .announcement-bar_znow_arrow {
