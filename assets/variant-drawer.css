@@ -148,6 +148,24 @@
   object-fit: cover;
 }
 
+/* The product card's delivery bar (product-card.css), for the picked variant:
+   only the bars for its state show (data-delivery-state, variant-drawer.js),
+   and of the in-stock pair html.is-znow picks one as on the card. */
+.variant-drawer_panel_body_card {
+  --product-card-pad: 8px;
+}
+
+.variant-drawer_panel_body_card_delivery {
+  display: flex;
+  flex-direction: column;
+}
+
+.variant-drawer_panel_body_card_delivery:not([data-delivery-state='in-stock']) [data-delivery-for='in-stock'],
+.variant-drawer_panel_body_card_delivery:not([data-delivery-state='made-to-order']) [data-delivery-for='made-to-order'],
+.variant-drawer_panel_body_card_delivery:not([data-delivery-state='coming-soon']) [data-delivery-for='coming-soon'] {
+  display: none;
+}
+
 .variant-drawer_panel_body_card_media_top {
   position: relative;
   z-index: 1;
@@ -631,11 +649,27 @@
   gap: 12px;
 }
 
-.variant-drawer.is-list .variant-drawer_panel_body_card_media {
+.variant-drawer.is-list .variant-drawer_panel_body_card .product-card_visual {
   flex: 0 0 96px;
+  width: 96px;
+}
+
+.variant-drawer.is-list .variant-drawer_panel_body_card_media {
   width: 96px;
   height: 96px;
   aspect-ratio: auto;
+}
+
+/* 96px is too narrow for the full bar: the S size (8px), whatever the screen. */
+.variant-drawer.is-list .product-card_delivery {
+  padding-block: 2px;
+  font-size: 8px;
+  line-height: 16px;
+}
+
+.variant-drawer.is-list .product-card_delivery_znow svg {
+  width: 8px;
+  height: 8px;
 }
 
 .variant-drawer.is-list .variant-drawer_panel_body_card_info {
