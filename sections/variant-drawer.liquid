@@ -21,12 +21,17 @@
   assign feature_badge = product.metafields.custom.card_top_badge.value.first
   assign current = product.selected_or_first_available_variant
   comment
-    "Ready to ship" follows the picked variant (variant-drawer.js swaps it), so
-    it starts from the one the drawer opens on, as the product card does.
+    The delivery bar under the photo is the product card's (snippets/product-card),
+    but for the picked variant rather than the whole product: in stock, made to
+    order or coming soon. It starts from the one the drawer opens on;
+    variant-drawer.js moves it with each pick.
   endcomment
-  assign is_ready_to_ship = false
-  if current.available and current.inventory_quantity > 0
-    assign is_ready_to_ship = true
+  assign delivery_state = 'coming-soon'
+  if current.available
+    assign delivery_state = 'made-to-order'
+    if current.inventory_quantity > 0
+      assign delivery_state = 'in-stock'
+    endif
   endif
 -%}
 
@@ -38,6 +43,7 @@
   {%- endcomment -%}
   {%- assign pdp_url = product.url | split: '?' | first -%}
   <div class="variant-drawer_panel_body_card" data-pdp-url="{{ pdp_url }}">
+    <span class="product-card_visual">
     <a
       href="{{ product.url }}"
       class="variant-drawer_panel_body_card_media"
@@ -53,23 +59,8 @@
       {%- endif -%}
 
       <span class="variant-drawer_panel_body_card_media_top">
-        <span
-          class="product-card_media_top_badge product-card_media_top_badge--ready"
-          data-ready-badge
-          {% unless is_ready_to_ship %}
-            hidden
-          {% endunless %}
-        >
-          Ready to ship
-        </span>
         {%- if feature_badge != blank -%}
-          <span
-            class="product-card_media_top_badge product-card_media_top_badge--feature"
-            data-feature-badge
-            {% if is_ready_to_ship %}
-              hidden
-            {% endif %}
-          >
+          <span class="product-card_media_top_badge product-card_media_top_badge--feature">
             {{- feature_badge -}}
           </span>
         {%- endif -%}
@@ -83,6 +74,23 @@
         </span>
       </judgeme-rating>
     </a>
+
+    {%- comment -%} One per state; data-delivery-state on the wrapper shows the picked variant's. {%- endcomment -%}
+    <span class="variant-drawer_panel_body_card_delivery" data-delivery data-delivery-state="{{ delivery_state }}">
+      <span class="product-card_delivery product-card_delivery--znow" data-delivery-for="in-stock" data-znow-only>
+        <span class="product-card_delivery_znow">
+          {{- 'icon-znow.svg' | inline_asset_content -}}
+          <span data-znow-when="today">Get it today</span>
+          <span data-znow-when="tomorrow">Get it tomorrow</span>
+        </span>
+      </span>
+      <span class="product-card_delivery product-card_delivery--ready" data-delivery-for="in-stock" data-znow-hide>
+        Ready to ship
+      </span>
+      <span class="product-card_delivery product-card_delivery--made" data-delivery-for="made-to-order">Made to order</span>
+      <span class="product-card_delivery product-card_delivery--soon" data-delivery-for="coming-soon">Coming soon</span>
+    </span>
+    </span>
 
     <span class="variant-drawer_panel_body_card_info">
       <span class="variant-drawer_panel_body_card_info_price">
