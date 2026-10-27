@@ -8,6 +8,8 @@
  * - On the first page of every later visit it is refreshed silently, but only
  *   when the browser already reports the permission as granted, so no browser
  *   ever re-asks (Safari would, if asked without that check).
+ * - Phones get the ZNow sheet (pincode or "Use my location") on that first
+ *   page instead of the prompt - see start().
  *
  * ZNow is decided from the coordinates themselves, with no service in between:
  * assets/znow-area.json holds the area's outline (Delhi, Gurugram, Faridabad,
