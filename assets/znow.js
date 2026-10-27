@@ -53,7 +53,6 @@
   const defaults = { title: title.textContent, subtitle: subtitle.textContent.trim() };
 
   let target = null; // the link's URL, opened once the shopper is in the area; null when changing the pincode
-  let welcome = false; // opened by itself on a phone's first visit (below) rather than from a click
   let busy = false;
 
   function say(text, isError = false) {
@@ -78,9 +77,6 @@
         subtitle.textContent = `Standard delivery: ${standardDate()}`;
       }
       say('');
-    } else if (welcome) {
-      title.textContent = 'Check delivery options';
-      subtitle.textContent = 'See what you can get today with Z-Now, and delivery dates for everything else.';
     } else {
       title.textContent = target ? defaults.title : 'Change delivery pincode';
       subtitle.textContent = defaults.subtitle;
@@ -103,7 +99,6 @@
 
   function openDialog(state, options = {}) {
     busy = false;
-    welcome = Boolean(options.welcome);
     input.value = state.pincode || '';
     say('');
     // Following a ZNow link from outside the area: say so straight away
@@ -359,17 +354,6 @@
       replay(place);
     });
   });
-
-  /* Phone, first visit (assets/location.js): the sheet asks for a pincode or
-     "Use my location" instead of a location prompt raised by itself. Nothing
-     to follow afterwards - a same-day answer just closes it. */
-  const welcomeSheet = () => {
-    if (dialog.open || window.Shopify?.designMode) return;
-    target = null;
-    openDialog(window.zinaraLocation?.get() || {}, { welcome: true });
-  };
-  if (window.zinaraLocation?.askPending) welcomeSheet();
-  document.addEventListener('zinara:location-ask', welcomeSheet);
 
   window.zinaraZnow = {
     open: (url) => ((target = url), openDialog(window.zinaraLocation?.get() || {})),

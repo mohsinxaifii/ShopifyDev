@@ -8,8 +8,8 @@
  * - On the first page of every later visit it is refreshed silently, but only
  *   when the browser already reports the permission as granted, so no browser
  *   ever re-asks (Safari would, if asked without that check).
- * - Phones get the ZNow sheet (pincode or "Use my location") on that first
- *   page instead of the prompt - see start().
+ * - Except on phones, where a prompt left unanswered is raised again on each
+ *   later visit until it is answered - see start().
  *
  * ZNow is decided from the coordinates themselves, with no service in between:
  * assets/znow-area.json holds the area's outline (Delhi, Gurugram, Faridabad,
@@ -28,8 +28,6 @@
  *   set(pincode, extra)   -> saves a pincode the shopper typed (source 'manual' by default)
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
- *   askPending            -> true once a phone's first visit wants the ZNow sheet
- *                            (also the 'zinara:location-ask' event)
  *   isZnow(pincode)       -> whether a pincode gets same-day ZNow delivery
  *   serves(pincode)       -> Promise: whether it is delivered to at all
  *                            (ZNow pincodes at once, others by assets/pincodes.json)
@@ -355,29 +353,27 @@
     const firstPageOfVisit = !sessionStarted();
     const browser = await permission();
 
-    // Phones: the ZNow sheet asks instead (snippets/znow-flow, opened by
-    // assets/znow.js). A prompt raised by itself is often hidden there -
-    // Chrome's quiet address-bar chip, iOS, in-app browsers - while one raised
-    // from the sheet's "Use my location" tap is not. Once per browser, for a
-    // shopper we know nothing about; not over the ZNow collection's loader.
-    if (
-      !state.source &&
-      !state.sheetAsked &&
-      browser !== 'granted' &&
-      window.matchMedia('(max-width: 749px)').matches &&
-      !document.querySelector('[data-znow-loader]')
-    ) {
-      save({ sheetAsked: Date.now(), asked: state.asked || Date.now() });
-      api.askPending = true;
-      document.dispatchEvent(new CustomEvent('zinara:location-ask'));
-      return;
-    }
-
     if (!state.asked) {
       // First visit ever: the one time the browser is asked. Marked before
       // asking, so a shopper who leaves without answering is not asked again.
       save({ asked: Date.now(), status: browser === 'denied' ? 'denied' : '' });
       if (browser === 'denied') return;
+      detect()
+        .then((result) => track(result.znow ? 'success_znow' : 'success'))
+        .catch((error) => track(error.code));
+      return;
+    }
+
+    // Phones: a prompt that went unanswered - dismissed, or hidden as Chrome's
+    // quiet address-bar chip - leaves the browser on 'prompt', so it is raised
+    // again on the first page of each later visit until the shopper answers.
+    // Never once blocked ('denied'), and not over a pincode they typed.
+    if (
+      firstPageOfVisit &&
+      browser === 'prompt' &&
+      !state.source &&
+      window.matchMedia('(max-width: 749px)').matches
+    ) {
       detect()
         .then((result) => track(result.znow ? 'success_znow' : 'success'))
         .catch((error) => track(error.code));
