@@ -26,6 +26,8 @@
  *   set(pincode, extra)   -> saves a pincode the shopper typed (source 'manual' by default)
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
+ *   askPending            -> true once a phone's first visit wants the ZNow sheet
+ *                            (also the 'zinara:location-ask' event)
  *   isZnow(pincode)       -> whether a pincode gets same-day ZNow delivery
  *   serves(pincode)       -> Promise: whether it is delivered to at all
  *                            (ZNow pincodes at once, others by assets/pincodes.json)
@@ -350,6 +352,24 @@
 
     const firstPageOfVisit = !sessionStarted();
     const browser = await permission();
+
+    // Phones: the ZNow sheet asks instead (snippets/znow-flow, opened by
+    // assets/znow.js). A prompt raised by itself is often hidden there -
+    // Chrome's quiet address-bar chip, iOS, in-app browsers - while one raised
+    // from the sheet's "Use my location" tap is not. Once per browser, for a
+    // shopper we know nothing about; not over the ZNow collection's loader.
+    if (
+      !state.source &&
+      !state.sheetAsked &&
+      browser !== 'granted' &&
+      window.matchMedia('(max-width: 749px)').matches &&
+      !document.querySelector('[data-znow-loader]')
+    ) {
+      save({ sheetAsked: Date.now(), asked: state.asked || Date.now() });
+      api.askPending = true;
+      document.dispatchEvent(new CustomEvent('zinara:location-ask'));
+      return;
+    }
 
     if (!state.asked) {
       // First visit ever: the one time the browser is asked. Marked before
