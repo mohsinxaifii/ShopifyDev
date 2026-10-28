@@ -125,6 +125,7 @@
     state = { ...state, ...changes, updated: Date.now() };
     write(state);
     setZnow(znowNow());
+    document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode));
     document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
     return api.get();
   }

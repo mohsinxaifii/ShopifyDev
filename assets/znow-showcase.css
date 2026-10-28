@@ -83,11 +83,12 @@
   display: flex;
 }
 
-/* In the area or not (html.is-znow, set before first paint): "Check
-   availability" outside it; the pincode, the arrival line (phones) and
-   "View all" inside it (Figma 8470:75130 / 8470:78801). */
-html.is-znow .znow-showcase_head_button:not(.znow-showcase_head_button--pincode),
-html:not(.is-znow) .znow-showcase_head_button--pincode,
+/* Set before first paint (snippets/location): the shopper's pincode in place
+   of "Check availability" once one is chosen (html.has-pincode), or once a
+   location fix puts them in the area (html.is-znow); the arrival line
+   (phones) and "View all" only in the area (Figma 8470:75130 / 8470:78801). */
+html:is(.is-znow, .has-pincode) .znow-showcase_head_button:not(.znow-showcase_head_button--pincode),
+html:not(.is-znow):not(.has-pincode) .znow-showcase_head_button--pincode,
 html:not(.is-znow) .znow-showcase_view-all,
 .znow-showcase_head_tagline--arrives {
   display: none;

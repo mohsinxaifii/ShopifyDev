@@ -6,14 +6,15 @@
   ZNow showcase - Figma 8470:78220 (desktop) / 8470:68162 (mobile). Shown to
   everyone, in the ZNow area or not: the ZNow collection in the theme's
   product carousel (product-carousel.js, the same cards as everywhere), on
-  the ZNow gradient. Two states, picked by html.is-znow before first paint:
-  - outside the area / not known: "Check availability", which opens the ZNow
+  the ZNow gradient. Picked before first paint (html.has-pincode / is-znow):
+  - no pincode chosen yet: "Check availability", which opens the ZNow
     location dialog (snippets/znow-flow, data-znow-check); a same-day
     pincode then goes on to the collection;
-  - in the area ("After", Figma 8470:75130 / 8470:78801): the shopper's
-    pincode in its place, opening the same dialog to change it, "Arrives
-    today by 9 PM at 110017." under the mark on phones, and "View all" under
-    the cards. The pincode is filled in by assets/znow.js.
+  - a pincode chosen (any - the one the whole site uses): that pincode in
+    its place, opening the same dialog to change it;
+  - and in the area ("After", Figma 8470:75130 / 8470:78801): "Arrives today
+    by 9 PM at 110017." under the mark on phones, and "View all" under the
+    cards. The pincode is filled in by assets/znow.js.
 {%- endcomment -%}
 {%- liquid
   assign znow_collection = section.settings.collection
@@ -117,7 +118,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Shown to every shopper. Outside the same-day area: Check availability opens the ZNow pincode check. Inside it: the shopper's pincode (to change it), the arrival time on phones, and View all."
+      "content": "Shown to every shopper. Check availability until a pincode is chosen, then the shopper's pincode (to change it). In the same-day area: the arrival time on phones, and View all."
     },
     {
       "type": "collection",
