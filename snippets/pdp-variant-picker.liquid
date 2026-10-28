@@ -66,6 +66,11 @@
   {%- unless product.has_only_default_variant -%}
   {%- for option in product.options_with_values -%}
     {%- liquid
+      comment
+        Picks come from current_variant (sections/product), not
+        option.selected_value - it may start on a different variant.
+      endcomment
+      assign option_index = forloop.index0
       assign is_swatch = false
       if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
         assign is_swatch = true
@@ -103,7 +108,7 @@
             {%- if is_swatch %}:{% endif -%}
           </span>
           {%- if is_swatch -%}
-            <span class="pdp_option_head_value" data-option-readout>{{ option.selected_value }}</span>
+            <span class="pdp_option_head_value" data-option-readout>{{ current_variant.options[option_index] }}</span>
           {%- endif -%}
           {%- if forloop.last -%}
             <span class="pdp_ship_tag" data-ship-tag data-state="{{ ship_state }}">
@@ -159,7 +164,7 @@
                 name="option-{{ option.position }}"
                 value="{{ value | escape }}"
                 data-option-input
-                {% if value == option.selected_value %}
+                {% if value == current_variant.options[option_index] %}
                   checked
                 {% endif %}
               >

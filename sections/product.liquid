@@ -16,6 +16,19 @@
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
+  comment
+    Opened without ?variant=: start on the first variant with stock on hand
+    (ready to ship / ZNow) rather than Shopify's first buyable one, which may
+    be a made-to-order size - client, 26 Oct.
+  endcomment
+  if product.selected_variant == blank
+    for start_variant in product.variants
+      if start_variant.available and start_variant.inventory_quantity > 0
+        assign current_variant = start_variant
+        break
+      endif
+    endfor
+  endif
 
   assign has_compare = false
   if current_variant.compare_at_price > current_variant.price
