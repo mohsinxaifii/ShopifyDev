@@ -10,7 +10,7 @@
  * - anything else (location blocked, never asked, typed pincode outside):
  *   the dialog asks for a pincode or "Use my location".
  *
- * The "Deliver to" control on collection pages (snippets/delivery-location)
+ * The "Deliver to" control in the header (snippets/delivery-location)
  * opens the same dialog to change the pincode: no link to follow, so a
  * served pincode just closes it, and the label updates from the
  * 'zinara:location' event.
