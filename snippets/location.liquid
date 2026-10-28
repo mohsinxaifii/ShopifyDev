@@ -11,7 +11,8 @@
   Rendered first in the body: the inline script below marks <html> with
   "is-znow" from what was saved on an earlier page, before the header is
   parsed, so ZNow pieces never flash in or out. Anything ZNow-only hides with
-  `html:not(.is-znow) ...`; location.js keeps the class in step.
+  `html:not(.is-znow) ...`; location.js keeps the class in step. Likewise
+  "has-pincode" while any pincode is saved.
 {%- enddoc -%}
 
 {%- capture znow_pincodes -%}{% render 'znow-pincodes' %}{%- endcapture -%}
@@ -52,6 +53,9 @@
     if (config.znowPreview || znow) {
       document.documentElement.classList.add('is-znow');
     }
+    // Any pincode chosen, same-day or not: pincode controls show it rather
+    // than ask for one (e.g. the ZNow showcase's button).
+    if (saved.pincode) document.documentElement.classList.add('has-pincode');
   })();
 </script>
 {%- comment -%}

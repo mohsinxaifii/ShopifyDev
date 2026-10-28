@@ -8,6 +8,8 @@
  * - On the first page of every later visit it is refreshed silently, but only
  *   when the browser already reports the permission as granted, so no browser
  *   ever re-asks (Safari would, if asked without that check).
+ * - Except on phones, where a prompt left unanswered is raised again on each
+ *   later visit until it is answered - see start().
  *
  * ZNow is decided from the coordinates themselves, with no service in between:
  * assets/znow-area.json holds the area's outline (Delhi, Gurugram, Faridabad,
@@ -123,6 +125,7 @@
     state = { ...state, ...changes, updated: Date.now() };
     write(state);
     setZnow(znowNow());
+    document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode));
     document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
     return api.get();
   }
@@ -356,6 +359,22 @@
       // asking, so a shopper who leaves without answering is not asked again.
       save({ asked: Date.now(), status: browser === 'denied' ? 'denied' : '' });
       if (browser === 'denied') return;
+      detect()
+        .then((result) => track(result.znow ? 'success_znow' : 'success'))
+        .catch((error) => track(error.code));
+      return;
+    }
+
+    // Phones: a prompt that went unanswered - dismissed, or hidden as Chrome's
+    // quiet address-bar chip - leaves the browser on 'prompt', so it is raised
+    // again on the first page of each later visit until the shopper answers.
+    // Never once blocked ('denied'), and not over a pincode they typed.
+    if (
+      firstPageOfVisit &&
+      browser === 'prompt' &&
+      !state.source &&
+      window.matchMedia('(max-width: 749px)').matches
+    ) {
       detect()
         .then((result) => track(result.znow ? 'success_znow' : 'success'))
         .catch((error) => track(error.code));

@@ -130,9 +130,6 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
 }
 
 .product-card_delivery--znow {
-  /* At least this much clear space before the sizes; the list is cut short
-     with "…" rather than closing it up. */
-  gap: 24px;
   background: linear-gradient(to right, #4a162c, #712242);
   color: #ecc0d2;
 }
@@ -149,18 +146,6 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
   flex: none;
   width: 12px;
   height: 12px;
-}
-
-/* One line always, so every card keeps the same height: the sizes sit at
-   the right, and a list too long for it ends in "…" before "Get it today"
-   gives way. */
-.product-card_delivery_sizes {
-  flex: 0 1 auto;
-  min-width: 0;
-  max-width: 40%;
-  margin-left: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .product-card_delivery--ready {
@@ -393,6 +378,8 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
   line-height: 1.429;
 }
 
+/* Figma 8470:89104 / 8470:75406: an outlined (secondary) button - maroon
+   on white - that fills maroon only once the line is in the cart. */
 .product-card--grid .product-card_info_add {
   display: flex;
   align-items: center;
@@ -402,18 +389,23 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
   padding: 12px;
   border: 1px solid var(--color-brand, #712242);
   border-radius: 8px;
-  background-color: var(--color-brand, #712242);
+  background-color: #fff;
   font-family: var(--font-secondary--family);
   font-weight: 500;
   font-size: 16px;
   line-height: 1;
-  color: #fff;
+  color: var(--color-brand, #712242);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .product-card--grid .product-card_info_add:hover {
-  background-color: #5a1b34;
+  background-color: #f7f3f5;
+}
+
+.product-card--grid .product-card_info_add.is-added {
+  background-color: var(--color-brand, #712242);
+  color: #fff;
 }
 
 .product-card--grid .product-card_info_add--disabled {
@@ -500,20 +492,17 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
     line-height: 20px;
   }
 
-  /* Delivery bar, size S (Figma 8470:33828): 8px on a 16px line, 2px/6px. */
+  /* Delivery bar, size S (Figma 8470:33828), at 10px rather than the
+     component's 8px (client, 26 Oct): a 16px line, 2px/6px, still 20px tall. */
   .product-card_delivery {
     padding-block: 2px;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 16px;
   }
 
   .product-card_delivery_znow svg {
-    width: 8px;
-    height: 8px;
-  }
-
-  .product-card_delivery--znow {
-    gap: 16px;
+    width: 10px;
+    height: 10px;
   }
 
   .product-card_media_soldout {

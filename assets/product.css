@@ -4532,7 +4532,7 @@ button.pdp_trust_grid_item_inner {
 
 /* Figma 8488:70185 (desktop card, 457px) / 8488:70191 (mobile sheet). */
 .pdp_znow_back {
-  width: 457px;
+  width: 520px;
   max-width: calc(100vw - 32px);
   margin: auto;
   padding: 0;
@@ -4619,27 +4619,41 @@ button.pdp_trust_grid_item_inner {
   color: #ecc0d2;
 }
 
+/* Both buttons share the panel's width, inside its padding - side by side
+   they were wider than the 457px panel and ran past its edges. */
 .pdp_znow_back_actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  width: 100%;
 }
 
 .pdp_znow_back_button {
   display: inline-flex;
+  flex: 1 1 0;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 48px;
-  padding: 12px 16px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
   border: 1px solid;
   border-radius: 8px;
-  font: 500 18px/1 var(--font-secondary--family);
-  white-space: nowrap;
+  font: 500 16px/1.25 var(--font-secondary--family);
+  text-align: center;
   cursor: pointer;
 }
 
 .pdp_znow_back_button_icon {
+  flex: none;
+}
+
+.pdp_znow_back_button_icon {
   display: flex;
+}
+
+.pdp_znow_back_button_icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .pdp_znow_back_button--light {

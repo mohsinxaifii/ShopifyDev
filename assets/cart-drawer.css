@@ -360,6 +360,9 @@
     .variant-drawer_panel_footer_done
   ).is-loading::after {
   content: '';
+  /* A flex item in most of these buttons: kept from shrinking out of round. */
+  flex: none;
+  box-sizing: border-box;
   width: 14px;
   height: 14px;
   margin-left: 8px;

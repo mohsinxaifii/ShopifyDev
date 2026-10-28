@@ -184,6 +184,13 @@
     } else if (!show && chip) {
       chip.remove();
     }
+    // It takes the place of GoKwik's "FREE shipping included" (Figma 8470:74438 /
+    // 74586). Found by its words, not a class - GoKwik's class names change.
+    Array.from(chips.children).forEach((node) => {
+      if (node === chip) return;
+      const freeShipping = /free shipping/i.test(node.textContent);
+      node.toggleAttribute('data-zk-hidden', Boolean(show && freeShipping));
+    });
   }
 
   /* ---------------------------------------------------------------- apply */
@@ -278,7 +285,7 @@
         1,
         config.icons.clock,
         '',
-        `It’s past ${time?.cutoffLabel || '2 PM'}, Z-Now items now arrive tomorrow by ${time?.tomorrowBy || '1 PM'}. Change pincode to check Z-Now availability.`,
+        `It’s past ${time?.cutoffLabel || '2 PM'}, so Z-Now items now arrive tomorrow by ${time?.tomorrowBy || '1 PM'}.`,
       );
     } else {
       removeAll(list, ':scope > .zk-notice[data-zk-notice="cutoff"]');

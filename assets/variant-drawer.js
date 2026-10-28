@@ -285,13 +285,14 @@
       const variant = this.matchingVariant(body);
       body.variant = variant;
 
-      // "Ready to ship" only while the picked variant has stock on hand; the
-      // feature badge takes its place otherwise, as on the product card.
-      const ready = Boolean(variant?.readyToShip);
-      const readyBadge = body.querySelector('[data-ready-badge]');
-      const featureBadge = body.querySelector('[data-feature-badge]');
-      if (readyBadge) readyBadge.hidden = !ready;
-      if (featureBadge) featureBadge.hidden = ready;
+      // The delivery bar speaks for the picked variant: in stock (ZNow or
+      // "Ready to ship"), made to order, or coming soon.
+      const delivery = body.querySelector('[data-delivery]');
+      if (delivery) {
+        let state = 'coming-soon';
+        if (variant?.available) state = variant.readyToShip ? 'in-stock' : 'made-to-order';
+        delivery.dataset.deliveryState = state;
+      }
 
       // The product links open the page on the variant being picked here.
       const card = body.querySelector('[data-pdp-url]');

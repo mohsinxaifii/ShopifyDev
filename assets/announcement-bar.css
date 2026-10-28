@@ -186,18 +186,17 @@ html:not(.is-znow) .announcement-bar_wrapper_track_slide[data-znow-only] {
   height: 1em;
 }
 
-/* The design's 15px rule, drawn across and turned upright. */
+/* The design's 15px rule (Figma "Line 37", #ac3465), drawn as the box itself:
+   the turned SVG it came as was squeezed to nothing inside a 1px box. */
 .announcement-bar_znow_divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex: none;
   width: 1px;
   height: 15px;
+  background-color: #ac3465;
 }
 
 .announcement-bar_znow_divider svg {
-  flex: none;
-  transform: rotate(90deg);
+  display: none;
 }
 
 .announcement-bar_znow_text {
