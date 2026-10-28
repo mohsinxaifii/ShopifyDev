@@ -53,6 +53,7 @@
   const defaults = { title: title.textContent, subtitle: subtitle.textContent.trim() };
 
   let target = null; // the link's URL, opened once the shopper is in the area; null when changing the pincode
+  let checking = false; // "Check availability": asks like a link, but only saves the pincode
   let busy = false;
 
   function say(text, isError = false) {
@@ -78,7 +79,7 @@
       }
       say('');
     } else {
-      title.textContent = target ? defaults.title : 'Change delivery pincode';
+      title.textContent = target || checking ? defaults.title : 'Change delivery pincode';
       subtitle.textContent = defaults.subtitle;
     }
     if (name === 'checking') {
@@ -99,6 +100,7 @@
 
   function openDialog(state, options = {}) {
     busy = false;
+    checking = Boolean(options.check);
     input.value = state.pincode || '';
     say('');
     // Following a ZNow link from outside the area: say so straight away
@@ -325,15 +327,17 @@
 
   /* "Check availability" (data-znow-check, the ZNow showcase): the dialog
      every time, even for a shopper already known to be in the area - it asks
-     rather than assumes. A same-day answer then opens the link. */
+     rather than assumes. The page stays put (client, 26 Oct): a same-day
+     answer just closes it, and the saved pincode updates the header's
+     "Deliver to" and the showcase itself through 'zinara:location'. */
   document.addEventListener('click', (event) => {
     const link = event.target.closest('a[data-znow-check]');
     if (!link || event.defaultPrevented) return;
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     if (window.Shopify?.designMode) return;
     event.preventDefault();
-    target = link.href;
-    openDialog(window.zinaraLocation?.get() || {}, { ask: true });
+    target = null;
+    openDialog(window.zinaraLocation?.get() || {}, { ask: true, check: true });
   });
 
   /* ---------------------------------------------------- deliver to (PLP) */
