@@ -10,6 +10,7 @@
 {
   "current": {
     "wishlist_endpoint": "https://67r.6d1.mytemp.website/zinara-wishlist/wishlist.php",
+    "edd_api_url": "https://67r.6d1.mytemp.website/edd/",
     "judgeme_public_token": "MLM6m6e4p0ejSY6Px9N1ThQFw1g",
     "mid": "4y6fima17b5l2",
     "envType": "production",
