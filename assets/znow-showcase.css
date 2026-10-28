@@ -114,6 +114,7 @@ html:not(.is-znow) .znow-showcase_view-all,
 
 .znow-showcase_view-all {
   display: inline-flex;
+  align-self: center;
   align-items: center;
   gap: 4px;
   font-family: var(--font-secondary--family);
