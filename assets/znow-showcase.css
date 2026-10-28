@@ -46,12 +46,15 @@
   display: none !important;
 }
 
+/* The serif italic, as on phones - Libre Baskerville 20 medium italic on
+   desktop (client, 26 Oct). */
 .znow-showcase_head_tagline {
   margin: 0;
-  font-family: var(--font-secondary--family);
+  font-family: var(--font-tertiary--family);
   font-weight: 500;
+  font-style: italic;
   font-size: 20px;
-  line-height: 24px;
+  line-height: 28px;
   color: #ecc0d2;
 }
 
