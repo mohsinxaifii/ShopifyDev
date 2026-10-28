@@ -9,8 +9,11 @@
  *   - "Delivering to 110017, Saket · Change" under the title;
  *   - for a shopper in the ZNow area: "Delivery 1 of 2 · Now · Today by
  *     9 PM" over the lines with stock (free gifts ride along), "Delivery 2 of
- *     2 · By 12 Nov" over the rest, the cut-off notice past 2 PM, and
- *     "Z-Now · Free" in place of "FREE shipping included";
+ *     2 · Made to order · By 12 Nov" over the rest, the cut-off notice past
+ *     2 PM, and "Z-Now · Free" in place of "FREE shipping included";
+ *   - anywhere else, or with no pincode: "Ready to ship · By 1 Nov" and
+ *     "Made to order · By 12 Nov" bands the same way, by each line's stock
+ *     (a cart of one kind gets "Delivery 1 of 1");
  *   - outside it, with a pincode known and stock in the cart: "Z-Now isn't
  *     available at 122018 yet".
  * Re-applied whenever KwikCart redraws, the cart changes, the pincode
@@ -275,7 +278,9 @@
         ? `<span class="zk-group_pill">${config.icons.znow}<span>·</span><span>${
             afterCutoff ? `Tomorrow by ${escape(time?.tomorrowBy || '1 PM')}` : `Today by ${escape(time?.todayBy || '9 PM')}`
           }</span></span>`
-        : `<span class="zk-group_when">By ${dayMonth(isStock ? config.standardDays : config.madeDays)}</span>`;
+        : `<span class="zk-group_when">${isStock ? 'Ready to ship' : 'Made to order'} · By ${dayMonth(
+            isStock ? config.standardDays : config.madeDays,
+          )}</span>`;
       setHTML(
         header,
         `<span class="zk-group_label"><span class="zk-group_check" aria-hidden="true">${config.icons.checkOn}</span><span class="zk-group_title">Delivery ${index + 1} of ${total}</span><span class="zk-group_count">· ${items(quantity(group))}</span></span>${by}`,
