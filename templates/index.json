@@ -73,13 +73,6 @@
     "shop-by-category": {
       "type": "shop-by-category",
       "blocks": {
-        "shop_all": {
-          "type": "shop_all",
-          "settings": {
-            "label": "Shop all",
-            "url": "shopify://collections/all"
-          }
-        },
         "znow": {
           "type": "znow",
           "settings": {
@@ -118,6 +111,27 @@
             "label": "Bracelets",
             "url": "shopify://collections/bracelet"
           }
+        },
+        "category_BpUrFg": {
+          "type": "category",
+          "settings": {
+            "label": "Mangalsutra",
+            "url": ""
+          }
+        },
+        "category_QUHfQ7": {
+          "type": "category",
+          "settings": {
+            "label": "Nosepin",
+            "url": ""
+          }
+        },
+        "shop_all": {
+          "type": "shop_all",
+          "settings": {
+            "label": "Shop all",
+            "url": "shopify://collections/all"
+          }
         }
       },
       "block_order": [
@@ -126,6 +140,8 @@
         "category-2",
         "category-3",
         "category-4",
+        "category_BpUrFg",
+        "category_QUHfQ7",
         "shop_all"
       ],
       "settings": {
@@ -544,15 +560,6 @@
         "heading": "Love At First Wear"
       }
     },
-    "znow-showcase": {
-      "type": "znow-showcase",
-      "settings": {
-        "collection": "znow",
-        "text": "Same-day delivery now in Delhi NCR.",
-        "button_label": "Check availability",
-        "product_limit": 12
-      }
-    },
     "occasion-showcase": {
       "type": "occasion-showcase",
       "blocks": {
@@ -615,6 +622,15 @@
       ],
       "settings": {
         "heading": "For every occasion"
+      }
+    },
+    "znow-showcase": {
+      "type": "znow-showcase",
+      "settings": {
+        "collection": "znow",
+        "text": "Same-day delivery now in Delhi NCR.",
+        "button_label": "Check availability",
+        "product_limit": 12
       }
     },
     "gifting": {
