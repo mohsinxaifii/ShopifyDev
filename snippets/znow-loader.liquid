@@ -5,8 +5,10 @@
 
   Rendered first in the body (layout/theme.liquid) so it covers the page from
   the first paint. Not replayed for sort / filter / pagination on the same
-  collection, nor for a page restored by Back. If the script never runs, a
-  CSS fallback lifts it after a few seconds, so the page can't stay hidden.
+  collection, nor for a page restored by Back. Once per shopper per pincode
+  (client, 26 Oct): the pincodes it has played for are kept in localStorage
+  (zinara_znow_loader). If the script never runs, a CSS fallback lifts it
+  after a few seconds, so the page can't stay hidden.
 
   Theme settings > Location & ZNow > ZNow collection.
 {%- enddoc -%}
@@ -43,7 +45,8 @@
   </div>
   {%- comment -%}
     Decided before the first paint: moving around inside the same collection
-    (sort, filters, pages - same path) doesn't replay it.
+    (sort, filters, pages - same path) doesn't replay it, and nor does a
+    pincode it has already played for ('' for a shopper with none yet).
   {%- endcomment -%}
   <script>
     (function (loader) {
@@ -51,7 +54,24 @@
       try {
         from = document.referrer ? new URL(document.referrer).pathname : '';
       } catch (error) {}
-      if (from && from === window.location.pathname) loader.remove();
+      if (from && from === window.location.pathname) {
+        loader.remove();
+        return;
+      }
+      var KEY = 'zinara_znow_loader';
+      var pincode = (window.zinaraSavedLocation || {}).pincode || '';
+      var seen = [];
+      try {
+        seen = JSON.parse(localStorage.getItem(KEY)) || [];
+      } catch (error) {}
+      if (seen.indexOf(pincode) !== -1) {
+        loader.remove();
+        return;
+      }
+      seen.push(pincode);
+      try {
+        localStorage.setItem(KEY, JSON.stringify(seen.slice(-20)));
+      } catch (error) {}
     })(document.currentScript.previousElementSibling);
   </script>
 {%- endif -%}
