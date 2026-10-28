@@ -19,9 +19,10 @@
  * snippets/znow-pincodes. <html> carries "is-znow" while either says yes - set
  * before first paint by snippets/location, kept in step here.
  *
- * The pincode for a location is a best-effort extra from OpenStreetMap, for
- * prefilling pincode boxes; ZNow never waits on it, and a failed lookup only
- * leaves it blank.
+ * The pincode for a location is a best-effort extra from Mappls (MapmyIndia),
+ * or OpenStreetMap without a Mappls key, for the header and prefilling
+ * pincode boxes; ZNow never waits on it, and a failed lookup only leaves it
+ * blank.
  *
  * Other scripts read it through window.zinaraLocation:
  *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow } (a copy;
@@ -182,27 +183,64 @@
 
   /* -------------------------------------------------------------- pincode */
 
-  // OpenStreetMap's free service: no key, open to browsers, ~1 request a
-  // second for the whole site - which once a visit per shopper stays inside.
-  async function lookupPincode(lat, lng) {
+  async function fetchJson(url) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 6000);
     try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&accept-language=en&lat=${lat}&lon=${lng}`,
-        { signal: controller.signal, credentials: 'omit' }
-      );
+      const response = await fetch(url, { signal: controller.signal, credentials: 'omit' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const address = (await response.json()).address || {};
-      const pincode = String(address.postcode || '').replace(/\s+/g, '');
-      return {
-        pincode: address.country_code === 'in' && PINCODE.test(pincode) ? pincode : '',
-        city: address.city || address.town || address.village || address.state_district || '',
-        state: address.state || '',
-      };
+      return await response.json();
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  // Mappls (MapmyIndia): Indian address data, pincode-accurate. Its key
+  // (Theme settings > Location & ZNow) is restricted to the store's domains
+  // in the Mappls console, so it is safe in the page.
+  async function lookupMappls(lat, lng) {
+    const data = await fetchJson(
+      `https://search.mappls.com/search/address/rev-geocode?lat=${lat}&lng=${lng}&access_token=${encodeURIComponent(config.mapplsKey)}`
+    );
+    const place = data.results?.[0];
+    if (!place) throw new Error(`Mappls ${data.responseCode}`);
+    const pincode = String(place.pincode || '').replace(/\s+/g, '');
+    return {
+      pincode: PINCODE.test(pincode) ? pincode : '',
+      city: place.city || place.subDistrict || String(place.district || '').replace(/\s+District$/i, ''),
+      state: place.state || '',
+    };
+  }
+
+  // OpenStreetMap's free service: no key, open to browsers, ~1 request a
+  // second for the whole site - which once a visit per shopper stays inside.
+  async function lookupOsm(lat, lng) {
+    const address =
+      (
+        await fetchJson(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&accept-language=en&lat=${lat}&lon=${lng}`
+        )
+      ).address || {};
+    const pincode = String(address.postcode || '').replace(/\s+/g, '');
+    return {
+      pincode: address.country_code === 'in' && PINCODE.test(pincode) ? pincode : '',
+      city: address.city || address.town || address.village || address.state_district || '',
+      state: address.state || '',
+    };
+  }
+
+  // Mappls when a key is set; OpenStreetMap without one, or when Mappls fails
+  // (a limit reached, a domain not yet allowed, an outage).
+  async function lookupPincode(lat, lng) {
+    if (config.mapplsKey) {
+      try {
+        const place = await lookupMappls(lat, lng);
+        if (place.pincode) return place;
+      } catch (error) {
+        /* fall through to OpenStreetMap */
+      }
+    }
+    return lookupOsm(lat, lng);
   }
 
   /* ---------------------------------------------------------- geolocation */
