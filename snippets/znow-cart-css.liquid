@@ -255,9 +255,13 @@
   background-color: #fef4e2;
 }
 
-/* "Not available" leads the list when there are no bands above it. */
+/* "Not available" leads the list, above the delivery bands. */
 .sidecart .zk-notice[data-zk-notice='unavailable'] {
   margin-top: calc(-1 * var(--zk-pad-top, 0px));
+}
+
+.sidecart .item-list-wrapper:has(> .zk-notice[data-zk-notice='unavailable']) > .zk-group[data-zk-group='znow'] {
+  margin-top: 0;
 }
 
 .sidecart .zk-notice_icon {

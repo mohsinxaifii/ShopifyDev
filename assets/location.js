@@ -24,7 +24,8 @@
  * leaves it blank.
  *
  * Other scripts read it through window.zinaraLocation:
- *   get()                 -> { pincode, city, state, source, status, updated, znow } (a copy)
+ *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow } (a copy;
+ *                            leftZnow: moved from a ZNow pincode to one outside the area)
  *   set(pincode, extra)   -> saves a pincode the shopper typed (source 'manual' by default)
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
@@ -122,7 +123,12 @@
   }
 
   function save(changes) {
+    const wasZnow = znowNow();
     state = { ...state, ...changes, updated: Date.now() };
+    // A shopper moved out of the area (ZNow pincode -> one outside it) is
+    // remembered, for the cart's "Z-Now isn't available" notice; moving back
+    // in clears it. Never in the area to begin with, it stays unset.
+    if (wasZnow !== znowNow()) state.leftZnow = wasZnow;
     write(state);
     setZnow(znowNow());
     document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode));
@@ -325,7 +331,8 @@
   const api = {
     get() {
       const { pincode = '', city = '', state: region = '', source = '', status = '', updated = 0 } = state;
-      return { pincode, city, state: region, source, status, updated, znow: znowNow() };
+      const znow = znowNow();
+      return { pincode, city, state: region, source, status, updated, znow, leftZnow: !znow && Boolean(state.leftZnow) };
     },
     set(pincode, extra = {}) {
       const value = cleanPincode(pincode);
