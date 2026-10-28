@@ -4532,7 +4532,7 @@ button.pdp_trust_grid_item_inner {
 
 /* Figma 8488:70185 (desktop card, 457px) / 8488:70191 (mobile sheet). */
 .pdp_znow_back {
-  width: 457px;
+  width: 520px;
   max-width: calc(100vw - 32px);
   margin: auto;
   padding: 0;
