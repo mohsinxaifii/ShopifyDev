@@ -17,11 +17,14 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   comment
-    Opened without ?variant=: start on the first variant with stock on hand
-    (ready to ship / ZNow) rather than Shopify's first buyable one, which may
-    be a made-to-order size - client, 26 Oct.
+    ZNow products only (in the ZNow collection - Theme settings > Location &
+    ZNow), opened without ?variant=: start on the first variant with stock on
+    hand rather than Shopify's first buyable one, which may be a
+    made-to-order size - client, 26 Oct. Every other product is unchanged.
   endcomment
-  if product.selected_variant == blank
+  assign znow_handle = settings.znow_collection_handle | default: 'znow' | strip
+  assign product_collection_handles = product.collections | map: 'handle'
+  if product.selected_variant == blank and product_collection_handles contains znow_handle
     for start_variant in product.variants
       if start_variant.available and start_variant.inventory_quantity > 0
         assign current_variant = start_variant

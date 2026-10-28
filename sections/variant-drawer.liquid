@@ -21,10 +21,13 @@
   assign feature_badge = product.metafields.custom.card_top_badge.value.first
   assign current = product.selected_or_first_available_variant
   comment
-    As the product page (sections/product): the first variant with stock on
-    hand, not a made-to-order size, unless a variant was asked for.
+    As the product page (sections/product), for ZNow products only: the first
+    variant with stock on hand, not a made-to-order size, unless a variant
+    was asked for.
   endcomment
-  if product.selected_variant == blank
+  assign znow_handle = settings.znow_collection_handle | default: 'znow' | strip
+  assign product_collection_handles = product.collections | map: 'handle'
+  if product.selected_variant == blank and product_collection_handles contains znow_handle
     for start_variant in product.variants
       if start_variant.available and start_variant.inventory_quantity > 0
         assign current = start_variant
