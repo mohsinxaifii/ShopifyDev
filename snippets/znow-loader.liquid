@@ -1,7 +1,8 @@
 {%- doc -%}
   The ZNow loader (https://arundhuti00.github.io/Zinara-now-loader/), played
   by assets/znow.js once on arriving at the ZNow collection - from a ZNow
-  link, any other link, or typed in - then lifted off the page.
+  link, any other link, or typed in - then lifted off the page. Only for a
+  shopper in the same-day area.
 
   Rendered first in the body (layout/theme.liquid) so it covers the page from
   the first paint. Not replayed for sort / filter / pagination on the same
@@ -54,7 +55,10 @@
       try {
         from = document.referrer ? new URL(document.referrer).pathname : '';
       } catch (error) {}
-      if (from && from === window.location.pathname) {
+      // Only for a shopper in the same-day area (<html class="is-znow">, set by
+      // snippets/location just before): everyone else lands straight on the
+      // collection, its "Ready to ship" / "Made to order" cards (client, 29 Oct).
+      if ((from && from === window.location.pathname) || !document.documentElement.classList.contains('is-znow')) {
         loader.remove();
         return;
       }

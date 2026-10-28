@@ -5,15 +5,19 @@
  *
  * - in the same-day area already (zinaraLocation.get().znow): the link
  *   opens straight away - the ZNow collection plays the loader itself on
- *   arrival (intro, below), however the shopper got there;
- * - located outside the area: the dialog opens on "not available";
+ *   arrival (intro, below), for same-day shoppers only;
+ * - located outside the area: the link opens straight away too - the
+ *   collection's cards show "Ready to ship" / "Made to order" (client, 29 Oct);
  * - anything else (location blocked, never asked, typed pincode outside):
- *   the dialog asks for a pincode or "Use my location".
+ *   the dialog asks for a pincode or "Use my location", and any delivered
+ *   answer opens the link; only a pincode not delivered to at all stops
+ *   at "We don't deliver to … yet".
  *
  * The "Deliver to" control in the header (snippets/delivery-location)
  * opens the same dialog to change the pincode: no link to follow, so a
  * served pincode just closes it, and the label updates from the
- * 'zinara:location' event.
+ * 'zinara:location' event. "Check availability" (the ZNow showcase) is the
+ * one place that answers outside the area with "Z-Now coming soon!".
  *
  * A pincode is checked against snippets/znow-pincodes (zinaraLocation.isZnow)
  * and saved as the shopper's pincode either way; a location fix is checked
@@ -68,14 +72,13 @@
     dialog.dataset.view = name;
     locate.disabled = name === 'checking';
     if (name === 'unavailable') {
-      const where = options.pincode ? `at ${options.pincode}` : 'in your area';
       if (options.served === false) {
         // Not on the delivery list at all: no standard date to promise.
         title.textContent = `We don’t deliver to ${options.pincode} yet`;
         subtitle.textContent = 'Please try another pincode.';
       } else {
-        title.textContent = `Same-day isn’t available ${where} yet`;
-        subtitle.textContent = `Standard delivery: ${standardDate()}`;
+        title.textContent = 'Z-Now coming soon!';
+        subtitle.textContent = `Get your favourite products by ${standardDate()}`;
       }
       say('');
     } else {
@@ -103,13 +106,7 @@
     checking = Boolean(options.check);
     input.value = state.pincode || '';
     say('');
-    // Following a ZNow link from outside the area: say so straight away
-    // (not when the shopper asked to check - they get the question).
-    if (!options.ask && target && state.source === 'gps' && state.status === 'granted' && !state.znow) {
-      view('unavailable', { pincode: state.pincode });
-    } else {
-      view('ask');
-    }
+    view('ask');
     if (!dialog.open) {
       dialog.classList.remove('is-closing');
       dialog.showModal();
@@ -167,7 +164,11 @@
     }
     track('pincode_check', { pincode, serviceable: delivered, page_type: 'znow' });
     busy = false;
-    if (sameDay) proceed();
+    // A delivered pincode outside the area moves on as a same-day one does
+    // (client, 29 Oct): a ZNow link opens its collection, whose cards say
+    // "Ready to ship" / "Made to order"; the header's control just closes.
+    // Only "Check availability" answers with "coming soon".
+    if (sameDay || (delivered && !checking)) proceed();
     else view('unavailable', { pincode, served: delivered });
   });
 
@@ -180,7 +181,7 @@
       const result = await window.zinaraLocation.detect();
       if (!busy) return;
       busy = false;
-      if (result.znow) proceed();
+      if (result.znow || !checking) proceed();
       else view('unavailable', { pincode: result.pincode });
     } catch (error) {
       if (!busy) return;
@@ -321,7 +322,10 @@
 
     target = link.href;
     const state = window.zinaraLocation?.get() || {};
-    if (state.znow) window.location.assign(target);
+    // Where the shopper is already known - in the area, or located outside
+    // it - the collection opens straight away; only an unknown place asks.
+    const located = state.source === 'gps' && state.status === 'granted';
+    if (state.znow || located) window.location.assign(target);
     else openDialog(state);
   });
 
@@ -337,7 +341,7 @@
     if (window.Shopify?.designMode) return;
     event.preventDefault();
     target = null;
-    openDialog(window.zinaraLocation?.get() || {}, { ask: true, check: true });
+    openDialog(window.zinaraLocation?.get() || {}, { check: true });
   });
 
   /* ---------------------------------------------------- deliver to (PLP) */
