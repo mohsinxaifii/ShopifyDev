@@ -482,7 +482,6 @@
       });
 
       this.syncAvailability();
-      this.updateShipTime(match);
       if (!match) return;
 
       this.variantInput.value = match.id;
@@ -501,16 +500,6 @@
 
       this.syncShipTag();
       this.renderDelivery?.();
-    }
-
-    /* "Ships in 24 hours" while the picked variant has stock on hand; no pill
-       otherwise, or when the picks match no variant. */
-    updateShipTime(variant) {
-      const pill = this.querySelector('[data-ship-time]');
-      if (!pill) return;
-      const text = variant?.inStock ? pill.dataset.shipFast : '';
-      pill.textContent = text;
-      pill.hidden = !text;
     }
 
     /* Grey out values that no variant can reach alongside the current picks. */

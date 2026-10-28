@@ -68,17 +68,6 @@
   assign material_tags = product.metafields.custom.material_tags.value
 
   comment
-    Ship time (Figma 8106:57906): "Ships in 24 hours" only while the selected
-    variant has stock on hand; otherwise nothing about shipping is shown.
-    product.js re-checks it as the variant changes, so the pill is always
-    rendered and hidden when empty.
-  endcomment
-  assign ship_fast_label = section.settings.ship_fast_label | default: 'Ships in 24 hours'
-  assign ship_label = ''
-  if current_variant.available and current_variant.inventory_quantity > 0
-    assign ship_label = ship_fast_label
-  endif
-  comment
     Add-ons come only from the product's add-on set (custom.addon_set, a
     pdp_addon_set entry): the products on offer, the default hero and a hero
     per combination of ticked add-ons. Without a set there are no add-ons; the
@@ -249,16 +238,6 @@
           </div>
 
           <div class="pdp_gallery_stage_bottom">
-            <span
-              class="pdp_gallery_stage_bottom_pill"
-              data-ship-time
-              data-ship-fast="{{ ship_fast_label | escape }}"
-              {% if ship_label == blank %}
-                hidden
-              {% endif %}
-            >
-              {{- ship_label -}}
-            </span>
             {%- render 'photo-badges', product: product, class: 'pdp_gallery_stage_bottom_pill' -%}
           </div>
 
@@ -710,17 +689,6 @@
     {
       "type": "paragraph",
       "content": "Each part of the product details is a block - click it in the preview or pick it in the sidebar. Drag blocks to reorder; remove one to hide that part. The buy box (Title & price, Offers, Variant picker, Material link, Buy buttons) always sits at the top, in its own order."
-    },
-    {
-      "type": "header",
-      "content": "Gallery"
-    },
-    {
-      "type": "text",
-      "id": "ship_fast_label",
-      "label": "In-stock ship time",
-      "default": "Ships in 24 hours",
-      "info": "Shown on the gallery and with the pincode check when the selected variant has stock. Nothing about shipping is shown otherwise."
     },
     {
       "type": "header",
