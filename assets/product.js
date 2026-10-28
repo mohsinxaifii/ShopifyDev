@@ -170,6 +170,8 @@
       this.initCoupons();
       this.initPincode();
       this.syncShipTag();
+      // A new pincode moves the tag's dates (Shiprocket's days are per pincode).
+      document.addEventListener('zinara:location', () => this.syncShipTag());
       this.initZnowBack();
       this.initTabs();
       this.initCart();

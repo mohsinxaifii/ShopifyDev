@@ -79,6 +79,18 @@
       } else {
         title.textContent = 'Z-Now coming soon!';
         subtitle.textContent = `Get your favourite products by ${standardDate()}`;
+        // Shiprocket's ready-to-ship date for this pincode, once known (the
+        // fixed days meanwhile); dropped if the dialog has moved on.
+        window.zinaraLocation
+          ?.deliveryDays?.(options.pincode)
+          .then((edd) => {
+            if (!edd || dialog.dataset.view !== 'unavailable') return;
+            const text = `Get your favourite products by ${standardDate(edd.ready)}`;
+            if (subtitle.textContent === text) return;
+            subtitle.textContent = text;
+            if (dialog.open) replay(subtitle);
+          })
+          .catch(() => {});
       }
       say('');
     } else {
@@ -95,9 +107,9 @@
     }
   }
 
-  function standardDate() {
+  function standardDate(days = Number(dialog.dataset.standardDays) || 3) {
     const date = new Date();
-    date.setDate(date.getDate() + (Number(dialog.dataset.standardDays) || 3));
+    date.setDate(date.getDate() + days);
     return date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
   }
 
