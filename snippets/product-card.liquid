@@ -26,40 +26,25 @@
   assign feature_badge = product.metafields.custom.card_top_badge.value.first
 
   comment
-    Delivery bar, one of four:
-    - in stock (any variant with units on hand): "Get it today" + the sizes
-      in stock while the shopper is in the ZNow area, "Ready to ship" outside
-      it - both are rendered and html.is-znow picks one, so the card is right
+    Delivery bar, one of four - the words only; which sizes are in stock is
+    for the add-to-cart drawer (client, 26 Oct):
+    - in stock (any variant with units on hand): "Get it today / tomorrow"
+      while the shopper is in the ZNow area, "Ready to ship" outside it -
+      both are rendered and html.is-znow picks one, so the card is right
       from the first paint;
     - buyable with nothing on hand: "Made to order";
     - not buyable: "Coming soon", the photo veiled with "Out of stock".
-    The sizes are the in-stock values of the LAST option (silver 4, silver 5
-    -> "4, 5"), in the product's own option order; none for a product without
-    options.
   endcomment
   assign stock_state = 'coming-soon'
   if product.available
     assign stock_state = 'made-to-order'
   endif
-  assign in_stock_values = ''
   for card_stock_variant in product.variants
     if card_stock_variant.available and card_stock_variant.inventory_quantity > 0
       assign stock_state = 'in-stock'
-      assign in_stock_values = in_stock_values | append: '|' | append: card_stock_variant.options.last | append: '|'
+      break
     endif
   endfor
-  assign znow_sizes = ''
-  if stock_state == 'in-stock' and product.has_only_default_variant == false
-    for card_option_value in product.options_with_values.last.values
-      assign card_option_key = card_option_value | prepend: '|' | append: '|'
-      if in_stock_values contains card_option_key
-        if znow_sizes != blank
-          assign znow_sizes = znow_sizes | append: ', '
-        endif
-        assign znow_sizes = znow_sizes | append: card_option_value
-      endif
-    endfor
-  endif
 
   assign card_image_alt = product.featured_image.alt | default: product.title
 
@@ -163,9 +148,6 @@
           <span data-znow-when="today">Get it today</span>
           <span data-znow-when="tomorrow">Get it tomorrow</span>
         </span>
-        {%- if znow_sizes != blank -%}
-          <span class="product-card_delivery_sizes">{{ znow_sizes }}</span>
-        {%- endif -%}
       </span>
       <span class="product-card_delivery product-card_delivery--ready" data-znow-hide>Ready to ship</span>
     {%- when 'made-to-order' -%}
