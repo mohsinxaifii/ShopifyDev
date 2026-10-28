@@ -123,10 +123,19 @@
           <span data-znow-when="tomorrow">Get it tomorrow</span>
         </span>
       </span>
+      {%- liquid
+        comment
+          Dates by the cart's timelines (Theme settings > Location & ZNow).
+        endcomment
+        assign ship_days_in_stock = settings.znow_standard_delivery_days | default: 3
+        assign ship_days_made = settings.znow_made_to_order_days | default: 24
+      -%}
       <span class="product-card_delivery product-card_delivery--ready" data-delivery-for="in-stock" data-znow-hide>
-        Ready to ship
+        Ready to ship · Get it by {% render 'ship-date', days: ship_days_in_stock %}
       </span>
-      <span class="product-card_delivery product-card_delivery--made" data-delivery-for="made-to-order">Made to order</span>
+      <span class="product-card_delivery product-card_delivery--made" data-delivery-for="made-to-order">
+        Made to order · Get it by {% render 'ship-date', days: ship_days_made %}
+      </span>
       <span class="product-card_delivery product-card_delivery--soon" data-delivery-for="coming-soon">Coming soon</span>
     </span>
     </span>
