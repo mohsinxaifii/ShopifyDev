@@ -960,15 +960,19 @@
         const token = (this.deliveryToken = (this.deliveryToken || 0) + 1);
         const check = pincode ? this.pincodeServes(pincode) : Promise.resolve(true);
         check
-          .then((served) => {
+          .then(async (served) => {
             if (token !== this.deliveryToken) return;
             if (!served) {
               show(`Sorry, we don't deliver to ${pincode} yet. Try another pincode.`, true);
               return;
             }
+            // Shiprocket's earliest courier there plus the extra days, when
+            // known (assets/location.js); the block's fixed days otherwise.
+            const edd = await this.deliveryDays(pincode);
+            if (token !== this.deliveryToken) return;
             const days = variant.inStock
-              ? Number(block.dataset.deliveryDaysInStock) || 3
-              : Number(block.dataset.deliveryDaysMadeToOrder) || 24;
+              ? edd?.ready ?? (Number(block.dataset.deliveryDaysInStock) || 3)
+              : edd?.made ?? (Number(block.dataset.deliveryDaysMadeToOrder) || 24);
             block.querySelector('[data-delivery-standard-date]').textContent = this.shipDate(days, 'weekday');
             standardRow.hidden = false;
           })
@@ -1027,6 +1031,13 @@
 
       document.addEventListener('zinara:location', () => this.renderDelivery());
       this.renderDelivery();
+    }
+
+    /* { ready, made } days to the saved pincode by Shiprocket, or null -
+       never rejects, so a slow or failed service only keeps fixed days. */
+    deliveryDays(pincode = window.zinaraLocation?.get().pincode) {
+      if (!pincode || !window.zinaraLocation?.deliveryDays) return Promise.resolve(null);
+      return window.zinaraLocation.deliveryDays(pincode).catch(() => null);
     }
 
     /* The variant the picks point at right now. */
@@ -1176,10 +1187,20 @@
         if (this.shipTagSynced) tag.classList.add('is-changing');
         this.shipTagSynced = true;
         tag.dataset.state = !variant?.available ? 'none' : variant.inStock ? 'stock' : 'made';
-        const inStockDays = Number(this.dataset.shipDaysInStock) || 3;
-        const madeDays = Number(this.dataset.shipDaysMade) || 24;
-        tag.querySelector('[data-ship-date="in-stock"]').textContent = this.shipDate(inStockDays);
-        tag.querySelector('[data-ship-date="made"]').textContent = this.shipDate(madeDays);
+        // Fixed days at once; Shiprocket's for the saved pincode when they
+        // come (cached after the first ask, so near-instant on changes).
+        const setDates = (inStockDays, madeDays) => {
+          tag.querySelector('[data-ship-date="in-stock"]').textContent = this.shipDate(inStockDays);
+          tag.querySelector('[data-ship-date="made"]').textContent = this.shipDate(madeDays);
+        };
+        if (!this.shipTagDays) setDates(Number(this.dataset.shipDaysInStock) || 3, Number(this.dataset.shipDaysMade) || 24);
+        const pincode = window.zinaraLocation?.get().pincode || '';
+        this.deliveryDays(pincode).then((edd) => {
+          if ((window.zinaraLocation?.get().pincode || '') !== pincode) return;
+          this.shipTagDays = edd;
+          if (edd) setDates(edd.ready, edd.made);
+          else setDates(Number(this.dataset.shipDaysInStock) || 3, Number(this.dataset.shipDaysMade) || 24);
+        });
       }
 
       const selected = this.selectedOptions();
