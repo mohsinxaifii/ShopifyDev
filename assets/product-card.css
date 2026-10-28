@@ -507,16 +507,17 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
     line-height: 20px;
   }
 
-  /* Delivery bar, size S (Figma 8470:33828): 8px on a 16px line, 2px/6px. */
+  /* Delivery bar, size S (Figma 8470:33828), at 10px rather than the
+     component's 8px (client, 26 Oct): a 16px line, 2px/6px, still 20px tall. */
   .product-card_delivery {
     padding-block: 2px;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 16px;
   }
 
   .product-card_delivery_znow svg {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 
   .product-card_delivery--znow {
