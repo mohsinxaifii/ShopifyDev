@@ -68,14 +68,13 @@
     dialog.dataset.view = name;
     locate.disabled = name === 'checking';
     if (name === 'unavailable') {
-      const where = options.pincode ? `at ${options.pincode}` : 'in your area';
       if (options.served === false) {
         // Not on the delivery list at all: no standard date to promise.
         title.textContent = `We don’t deliver to ${options.pincode} yet`;
         subtitle.textContent = 'Please try another pincode.';
       } else {
-        title.textContent = `Same-day isn’t available ${where} yet`;
-        subtitle.textContent = `Standard delivery: ${standardDate()}`;
+        title.textContent = 'Z-Now coming soon!';
+        subtitle.textContent = `Get your favourite products by ${standardDate()}`;
       }
       say('');
     } else {
