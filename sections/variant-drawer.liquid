@@ -21,6 +21,18 @@
   assign feature_badge = product.metafields.custom.card_top_badge.value.first
   assign current = product.selected_or_first_available_variant
   comment
+    As the product page (sections/product): the first variant with stock on
+    hand, not a made-to-order size, unless a variant was asked for.
+  endcomment
+  if product.selected_variant == blank
+    for start_variant in product.variants
+      if start_variant.available and start_variant.inventory_quantity > 0
+        assign current = start_variant
+        break
+      endif
+    endfor
+  endif
+  comment
     The delivery bar under the photo is the product card's (snippets/product-card),
     but for the picked variant rather than the whole product: in stock, made to
     order or coming soon. It starts from the one the drawer opens on;
@@ -109,6 +121,7 @@
     {%- for option in product.options_with_values -%}
       {%- if product.has_only_default_variant -%}{%- break -%}{%- endif -%}
       {%- liquid
+        assign option_index = forloop.index0
         assign is_swatch_option = false
         if option.name contains 'Color' or option.name contains 'Colour' or option.name contains 'Metal'
           assign is_swatch_option = true
@@ -127,7 +140,7 @@
           </span>
           {%- if is_swatch_option -%}
             <span class="variant-drawer_panel_body_options_group_head_value" data-option-readout>
-              {{- option.selected_value -}}
+              {{- current.options[option_index] -}}
             </span>
           {%- endif -%}
         </legend>
@@ -160,7 +173,7 @@
                 name="option-{{ option.position }}"
                 value="{{ value | escape }}"
                 data-option-input
-                {% if value == option.selected_value %}
+                {% if value == current.options[option_index] %}
                   checked
                 {% endif %}
               >
