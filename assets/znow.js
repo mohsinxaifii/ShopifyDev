@@ -355,6 +355,21 @@
     });
   });
 
+  /* The ZNow showcase's in-area state (sections/znow-showcase): the pincode
+     on its button, and "… at 110017." - the city, or "you", for a location
+     fix whose pincode isn't known. */
+  const fillPincode = () => {
+    const { pincode, city } = window.zinaraLocation?.get() || {};
+    document.querySelectorAll('[data-znow-pincode]').forEach((node) => {
+      node.textContent = pincode || city || 'Your location';
+    });
+    document.querySelectorAll('[data-znow-place]').forEach((node) => {
+      node.textContent = pincode || city || 'you';
+    });
+  };
+  fillPincode();
+  document.addEventListener('zinara:location', fillPincode);
+
   window.zinaraZnow = {
     open: (url) => ((target = url), openDialog(window.zinaraLocation?.get() || {})),
     // "Change delivery pincode" - no link to follow (the PDP's Change, the header's Deliver to).

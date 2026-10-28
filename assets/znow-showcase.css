@@ -83,6 +83,54 @@
   display: flex;
 }
 
+/* In the area or not (html.is-znow, set before first paint): "Check
+   availability" outside it; the pincode, the arrival line (phones) and
+   "View all" inside it (Figma 8470:75130 / 8470:78801). */
+html.is-znow .znow-showcase_head_button:not(.znow-showcase_head_button--pincode),
+html:not(.is-znow) .znow-showcase_head_button--pincode,
+html:not(.is-znow) .znow-showcase_view-all,
+.znow-showcase_head_tagline--arrives {
+  display: none;
+}
+
+.znow-showcase_head_button--pincode {
+  cursor: pointer;
+}
+
+/* The caret only on phones; the icons drawn in brand colours go white. */
+.znow-showcase_head_button_caret {
+  display: none;
+}
+
+.znow-showcase_head_button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.znow-showcase_head_button_caret svg path,
+.znow-showcase_view-all_icon svg path {
+  fill: currentcolor;
+}
+
+.znow-showcase_view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-secondary--family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  color: #fff;
+  text-decoration: none;
+}
+
+.znow-showcase_view-all_icon,
+.znow-showcase_view-all_icon svg {
+  display: flex;
+  width: 24px;
+  height: 24px;
+}
+
 /* Arrows: white with the brand edge, as drawn on the gradient. */
 .product-carousel--znow .product-carousel_wrapper_stage_prev,
 .product-carousel--znow .product-carousel_wrapper_stage_next {
@@ -130,6 +178,32 @@
     font-style: italic;
     font-size: 12px;
     line-height: 16px;
+  }
+
+  /* In the area, the arrival line takes the tagline's place - in the sans
+     italic, 12/16 (8470:75137). */
+  html.is-znow .znow-showcase_head_tagline:not(.znow-showcase_head_tagline--arrives) {
+    display: none;
+  }
+
+  html.is-znow .znow-showcase_head_tagline--arrives {
+    display: block;
+    font-family: var(--font-secondary--family);
+    font-weight: 500;
+  }
+
+  .znow-showcase_head_button_caret {
+    display: flex;
+  }
+
+  .znow-showcase_view-all {
+    font-size: 12px;
+  }
+
+  .znow-showcase_view-all_icon,
+  .znow-showcase_view-all_icon svg {
+    width: 16px;
+    height: 16px;
   }
 }
 

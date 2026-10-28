@@ -6,9 +6,14 @@
   ZNow showcase - Figma 8470:78220 (desktop) / 8470:68162 (mobile). Shown to
   everyone, in the ZNow area or not: the ZNow collection in the theme's
   product carousel (product-carousel.js, the same cards as everywhere), on
-  the ZNow gradient. "Check availability" always opens the ZNow location
-  dialog (snippets/znow-flow, data-znow-check) - even for a shopper already
-  in the area - and a served pincode then goes on to the collection.
+  the ZNow gradient. Two states, picked by html.is-znow before first paint:
+  - outside the area / not known: "Check availability", which opens the ZNow
+    location dialog (snippets/znow-flow, data-znow-check); a same-day
+    pincode then goes on to the collection;
+  - in the area ("After", Figma 8470:75130 / 8470:78801): the shopper's
+    pincode in its place, opening the same dialog to change it, "Arrives
+    today by 9 PM at 110017." under the mark on phones, and "View all" under
+    the cards. The pincode is filled in by assets/znow.js.
 {%- endcomment -%}
 {%- liquid
   assign znow_collection = section.settings.collection
@@ -35,6 +40,12 @@
           {%- if section.settings.text != blank -%}
             <p class="znow-showcase_head_tagline">{{ section.settings.text }}</p>
           {%- endif -%}
+          <p class="znow-showcase_head_tagline znow-showcase_head_tagline--arrives">
+            Arrives
+            <span data-znow-when="today">today by {{ settings.znow_today_by | default: '9 PM' }}</span>
+            <span data-znow-when="tomorrow">tomorrow by {{ settings.znow_tomorrow_by | default: '1 PM' }}</span>
+            at <span data-znow-place>you</span>.
+          </p>
         </div>
 
         <a
@@ -49,6 +60,21 @@
           </span>
           {{ section.settings.button_label | default: 'Check availability' }}
         </a>
+
+        <button
+          type="button"
+          class="znow-showcase_head_button znow-showcase_head_button--pincode"
+          data-delivery-location
+          aria-label="Change delivery pincode"
+        >
+          <span class="znow-showcase_head_button_icon" aria-hidden="true">
+            {{- 'icon-map-pin-white-16.svg' | inline_asset_content -}}
+          </span>
+          <span data-znow-pincode></span>
+          <span class="znow-showcase_head_button_icon znow-showcase_head_button_caret" aria-hidden="true">
+            {{- 'icon-caret-down.svg' | inline_asset_content -}}
+          </span>
+        </button>
       </div>
 
       <div class="product-carousel_wrapper_stage">
@@ -69,6 +95,13 @@
       </div>
 
       <div class="product-carousel_wrapper_dots" data-dots></div>
+
+      <a href="{{ znow_collection.url }}" class="znow-showcase_view-all">
+        View all
+        <span class="znow-showcase_view-all_icon" aria-hidden="true">
+          {{- 'icon-arrow-right-24.svg' | inline_asset_content -}}
+        </span>
+      </a>
     </div>
   </product-carousel>
 
@@ -84,7 +117,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Shown to every shopper. Check availability always opens the ZNow pincode check; a same-day pincode then opens the collection."
+      "content": "Shown to every shopper. Outside the same-day area: Check availability opens the ZNow pincode check. Inside it: the shopper's pincode (to change it), the arrival time on phones, and View all."
     },
     {
       "type": "collection",
