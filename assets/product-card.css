@@ -130,9 +130,6 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
 }
 
 .product-card_delivery--znow {
-  /* At least this much clear space before the sizes; the list is cut short
-     with "…" rather than closing it up. */
-  gap: 24px;
   background: linear-gradient(to right, #4a162c, #712242);
   color: #ecc0d2;
 }
@@ -149,18 +146,6 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
   flex: none;
   width: 12px;
   height: 12px;
-}
-
-/* One line always, so every card keeps the same height: the sizes sit at
-   the right, and a list too long for it ends in "…" before "Get it today"
-   gives way. */
-.product-card_delivery_sizes {
-  flex: 0 1 auto;
-  min-width: 0;
-  max-width: 40%;
-  margin-left: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .product-card_delivery--ready {
@@ -518,10 +503,6 @@ html.znow-switching .product-card_delivery[data-znow-hide] {
   .product-card_delivery_znow svg {
     width: 10px;
     height: 10px;
-  }
-
-  .product-card_delivery--znow {
-    gap: 16px;
   }
 
   .product-card_media_soldout {
