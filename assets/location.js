@@ -19,10 +19,10 @@
  * snippets/znow-pincodes. <html> carries "is-znow" while either says yes - set
  * before first paint by snippets/location, kept in step here.
  *
- * The pincode for a location is a best-effort extra from Mappls (MapmyIndia),
- * or OpenStreetMap without a Mappls key, for the header and prefilling
- * pincode boxes; ZNow never waits on it, and a failed lookup only leaves it
- * blank.
+ * The pincode for a location comes from NCR's pincode outlines
+ * (assets/ncr-pincodes.json), tested here like the area, or from
+ * OpenStreetMap outside them - for the header and prefilling pincode boxes;
+ * ZNow never waits on it, and a failed lookup only leaves it blank.
  *
  * Other scripts read it through window.zinaraLocation:
  *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow } (a copy;
@@ -195,21 +195,27 @@
     }
   }
 
-  // Mappls (MapmyIndia): Indian address data, pincode-accurate. Its key
-  // (Theme settings > Location & ZNow) is restricted to the store's domains
-  // in the Mappls console, so it is safe in the page.
-  async function lookupMappls(lat, lng) {
-    const data = await fetchJson(
-      `https://search.mappls.com/search/address/rev-geocode?lat=${lat}&lng=${lng}&access_token=${encodeURIComponent(config.mapplsKey)}`
-    );
-    const place = data.results?.[0];
-    if (!place) throw new Error(`Mappls ${data.responseCode}`);
-    const pincode = String(place.pincode || '').replace(/\s+/g, '');
-    return {
-      pincode: PINCODE.test(pincode) ? pincode : '',
-      city: place.city || place.subDistrict || String(place.district || '').replace(/\s+District$/i, ''),
-      state: place.state || '',
-    };
+  // NCR's pincode boundaries (assets/ncr-pincodes.json - Department of Posts
+  // data, simplified): the pincode whose outline holds the point, with no
+  // service in between, so it is exact where ZNow is decided and never rate
+  // limited. Fetched once, on the first fix; a failure is retried next time.
+  let pincodeAreas = null;
+  function loadPincodeAreas() {
+    if (!pincodeAreas) {
+      pincodeAreas = fetchJson(config.ncrPincodesUrl).catch((error) => {
+        pincodeAreas = null;
+        throw error;
+      });
+    }
+    return pincodeAreas;
+  }
+
+  async function lookupNcr(lat, lng) {
+    const { features = [] } = await loadPincodeAreas();
+    const match = features.find((feature) => inArea(lng, lat, { features: [feature] }));
+    if (!match) return null;
+    const { pincode, city, state: region } = match.properties;
+    return { pincode, city, state: region };
   }
 
   // OpenStreetMap's free service: no key, open to browsers, ~1 request a
@@ -229,16 +235,14 @@
     };
   }
 
-  // Mappls when a key is set; OpenStreetMap without one, or when Mappls fails
-  // (a limit reached, a domain not yet allowed, an outage).
+  // NCR's own boundaries first; OpenStreetMap outside them, or if the file
+  // fails to load.
   async function lookupPincode(lat, lng) {
-    if (config.mapplsKey) {
-      try {
-        const place = await lookupMappls(lat, lng);
-        if (place.pincode) return place;
-      } catch (error) {
-        /* fall through to OpenStreetMap */
-      }
+    try {
+      const place = await lookupNcr(lat, lng);
+      if (place) return place;
+    } catch (error) {
+      /* fall through to OpenStreetMap */
     }
     return lookupOsm(lat, lng);
   }

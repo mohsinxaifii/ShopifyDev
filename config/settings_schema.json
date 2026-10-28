@@ -409,12 +409,6 @@
         "default": true
       },
       {
-        "type": "text",
-        "id": "mappls_key",
-        "label": "Mappls (MapmyIndia) key",
-        "info": "Finds the pincode for a shopper's location. A REST key from the Mappls console, restricted to this store's domains. Left blank, OpenStreetMap is used instead (free, less accurate for Indian pincodes)."
-      },
-      {
         "type": "range",
         "id": "znow_standard_delivery_days",
         "label": "Standard delivery (days)",
