@@ -361,6 +361,18 @@
     const firstPageOfVisit = !sessionStarted();
     const browser = await permission();
 
+    // Access granted mid-visit - from the address bar's location icon or site
+    // settings rather than our prompt - is picked up at once, not next visit.
+    // (Our own prompt's answer lands here too; detect() runs only once.)
+    navigator.permissions
+      ?.query({ name: 'geolocation' })
+      .then((status) => {
+        status.addEventListener('change', () => {
+          if (status.state === 'granted' && (!state.source || state.source === 'gps')) detect().catch(() => {});
+        });
+      })
+      .catch(() => {});
+
     if (!state.asked) {
       // First visit ever: the one time the browser is asked. Marked before
       // asking, so a shopper who leaves without answering is not asked again.
@@ -389,8 +401,15 @@
     }
 
     // A pincode the shopper typed (e.g. on a product page) is kept - it may
-    // be where they want delivery, not where they are.
-    if (firstPageOfVisit && browser === 'granted' && (!state.source || state.source === 'gps')) {
+    // be where they want delivery, not where they are. Refreshed on the first
+    // page of a visit, and on any page while the fix still has no pincode (its
+    // lookup failed or never ran) - the same place is not tested again, only
+    // looked up.
+    if (
+      browser === 'granted' &&
+      (!state.source || state.source === 'gps') &&
+      (firstPageOfVisit || !state.pincode)
+    ) {
       detect().catch(() => {});
     }
   }
