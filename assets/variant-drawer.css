@@ -358,6 +358,50 @@
   background: var(--variant-swatch, #ddd) center / cover no-repeat;
 }
 
+/* The Z badge on a last-option value in stock with the other picks, as on
+   the product page: a 14px pink disc on the chip's top-right edge, in the
+   ZNow area only. It pops in as a value comes into stock. */
+.variant-drawer_panel_body_options_group_values_value[data-znow-value] {
+  position: relative;
+}
+
+.variant-drawer_panel_body_options_group_values_value_znow {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  display: none;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background-color: #ecc0d2;
+  pointer-events: none;
+  animation: variant-drawer-znow-badge-in 0.3s ease-out;
+}
+
+.variant-drawer_panel_body_options_group--swatch .variant-drawer_panel_body_options_group_values_value_znow {
+  top: 0;
+  right: 2px;
+}
+
+html.is-znow
+  .variant-drawer_panel_body_options_group_values_value.is-znow-stock
+  .variant-drawer_panel_body_options_group_values_value_znow {
+  display: grid;
+}
+
+.variant-drawer_panel_body_options_group_values_value_znow svg {
+  width: 8px;
+  height: 8px;
+}
+
+@keyframes variant-drawer-znow-badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
 /* --------------------------------------------------------------- skeleton
    The same geometry as the card and options above, in skeleton.css tiles.
    Scoped under the wrapper because skeleton.css loads after this file and

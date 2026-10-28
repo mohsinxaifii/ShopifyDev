@@ -41,6 +41,30 @@
     order or coming soon. It starts from the one the drawer opens on;
     variant-drawer.js moves it with each pick.
   endcomment
+  comment
+    As the product page (snippets/pdp-variant-picker): last-option values with
+    stock alongside the current picks of the other options wear the Z badge
+    (ZNow area only) - "|value|" keys, matched below. variant-drawer.js keeps
+    them in step as options change.
+  endcomment
+  assign znow_stock_keys = ''
+  assign other_count = product.options.size | minus: 1
+  for stock_variant in product.variants
+    if stock_variant.available and stock_variant.inventory_quantity > 0
+      assign same_others = true
+      for i in (0..other_count)
+        if forloop.last
+          break
+        endif
+        if stock_variant.options[i] != current.options[i]
+          assign same_others = false
+        endif
+      endfor
+      if same_others
+        assign znow_stock_keys = znow_stock_keys | append: '|' | append: stock_variant.options.last | append: '|'
+      endif
+    endif
+  endfor
   assign delivery_state = 'coming-soon'
   if current.available
     assign delivery_state = 'made-to-order'
@@ -169,8 +193,15 @@
         {%- endunless -%}
 
         <div class="variant-drawer_panel_body_options_group_values">
+          {%- assign option_is_last = forloop.last -%}
           {%- for value in option.values -%}
-            <label class="variant-drawer_panel_body_options_group_values_value">
+            {%- assign value_key = value | prepend: '|' | append: '|' -%}
+            <label
+              class="variant-drawer_panel_body_options_group_values_value{% if option_is_last and znow_stock_keys contains value_key %} is-znow-stock{% endif %}"
+              {% if option_is_last %}
+                data-znow-value
+              {% endif %}
+            >
               <input
                 type="radio"
                 name="option-{{ option.position }}"
@@ -193,6 +224,11 @@
                 </span>
               {%- else -%}
                 <span class="variant-drawer_panel_body_options_group_values_value_chip">{{ value }}</span>
+              {%- endif -%}
+              {%- if option_is_last -%}
+                <span class="variant-drawer_panel_body_options_group_values_value_znow" aria-hidden="true">
+                  {{- 'icon-znow-badge-8.svg' | inline_asset_content -}}
+                </span>
               {%- endif -%}
             </label>
           {%- endfor -%}
