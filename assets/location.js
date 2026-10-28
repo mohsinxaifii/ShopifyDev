@@ -33,6 +33,8 @@
  *   isZnow(pincode)       -> whether a pincode gets same-day ZNow delivery
  *   serves(pincode)       -> Promise: whether it is delivered to at all
  *                            (ZNow pincodes at once, others by assets/pincodes.json)
+ *   deliveryDays(pincode) -> Promise: { ready, made } days to delivery there, by
+ *                            Shiprocket's earliest courier, or null (use fixed days)
  *   and listen for the 'zinara:location' event on document (detail = get()).
  */
 (() => {
@@ -366,6 +368,46 @@
     return served.then((list) => list.has(value));
   }
 
+  /* ------------------------------------------------------- delivery dates */
+
+  // Days to delivery at a pincode from Shiprocket's earliest courier (the
+  // zinara-edd service): { ready, made } - courier days plus the theme's
+  // extra days - or null with no service, no courier, or no answer, where
+  // callers keep their fixed days. One request per pincode per tab.
+  const EDD_KEY = 'zinara_edd';
+  const eddAnswers = new Map();
+  function deliveryDays(pincode) {
+    const value = cleanPincode(pincode);
+    if (!config.eddUrl || !PINCODE.test(value)) return Promise.resolve(null);
+    if (!eddAnswers.has(value)) {
+      let saved = null;
+      try {
+        saved = JSON.parse(window.sessionStorage.getItem(EDD_KEY) || '{}')[value];
+      } catch (error) {
+        /* storage blocked - ask */
+      }
+      const answer =
+        saved !== undefined && saved !== null
+          ? Promise.resolve(saved)
+          : fetchJson(`${config.eddUrl}${config.eddUrl.includes('?') ? '&' : '?'}pincode=${value}`).then((body) => {
+              const days = body.serviceable && body.days > 0 ? Number(body.days) : 0;
+              try {
+                const all = JSON.parse(window.sessionStorage.getItem(EDD_KEY) || '{}');
+                all[value] = days;
+                window.sessionStorage.setItem(EDD_KEY, JSON.stringify(all));
+              } catch (error) {
+                /* storage blocked - asked again next page */
+              }
+              return days;
+            });
+      // A failed request is forgotten, so the next caller asks again.
+      eddAnswers.set(value, answer.catch(() => (eddAnswers.delete(value), 0)));
+    }
+    return eddAnswers.get(value).then((days) =>
+      days > 0 ? { ready: days + Number(config.eddReadyExtra ?? 1), made: days + Number(config.eddMadeExtra ?? 21) } : null
+    );
+  }
+
   /* ------------------------------------------------------------------ api */
 
   const cleanPincode = (value) => String(value || '').replace(/\s+/g, '');
@@ -387,6 +429,7 @@
     isValid: (pincode) => PINCODE.test(cleanPincode(pincode)),
     isZnow: (pincode) => pincodeIsZnow(cleanPincode(pincode)),
     serves,
+    deliveryDays,
   };
   window.zinaraLocation = api;
   document.documentElement.classList.toggle('is-znow', znowNow());

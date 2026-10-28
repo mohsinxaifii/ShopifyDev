@@ -409,6 +409,34 @@
         "default": true
       },
       {
+        "type": "header",
+        "content": "Delivery dates (Shiprocket)"
+      },
+      {
+        "type": "text",
+        "id": "edd_api_url",
+        "label": "Delivery date service URL",
+        "info": "The cPanel service (zinara-edd), e.g. https://example.com/edd/. It gives the earliest courier delivery from Shiprocket for the shopper's pincode. Blank, or while it can't be reached, the fixed days below are used."
+      },
+      {
+        "type": "range",
+        "id": "edd_ready_extra_days",
+        "label": "Ready to ship: courier days +",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "edd_made_extra_days",
+        "label": "Made to order: courier days +",
+        "min": 0,
+        "max": 45,
+        "step": 1,
+        "default": 21
+      },
+      {
         "type": "range",
         "id": "znow_standard_delivery_days",
         "label": "Standard delivery (days)",

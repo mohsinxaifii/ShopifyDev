@@ -28,6 +28,11 @@
     pincodesUrl: {{ 'pincodes.json' | asset_url | json }},
     // NCR's pincode outlines, for the pincode of a location fix (fetched only then).
     ncrPincodesUrl: {{ 'ncr-pincodes.json' | asset_url | json }},
+    // Shiprocket's earliest delivery for a pincode (the cPanel zinara-edd
+    // service), plus the extra days for ready to ship / made to order.
+    eddUrl: {{ settings.edd_api_url | strip | json }},
+    eddReadyExtra: {{ settings.edd_ready_extra_days | default: 1 | json }},
+    eddMadeExtra: {{ settings.edd_made_extra_days | default: 21 | json }},
     {%- comment -%} The theme editor always shows the ZNow pieces, to edit them. {%- endcomment -%}
     znowPreview: {{ request.design_mode | json }},
   };
