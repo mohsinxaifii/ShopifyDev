@@ -115,6 +115,7 @@
         "category_BpUrFg": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/mangalsutra_collection.png",
             "label": "Mangalsutra",
             "url": ""
           }
@@ -122,6 +123,7 @@
         "category_QUHfQ7": {
           "type": "category",
           "settings": {
+            "image": "shopify://shop_images/nosepin_collection.png",
             "label": "Nosepin",
             "url": ""
           }
