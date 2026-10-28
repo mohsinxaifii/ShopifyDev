@@ -44,7 +44,8 @@
 <script>
   (function (root) {
     var saved = window.zinaraSavedLocation || {};
-    var text = [saved.city, saved.pincode].filter(Boolean).join(' ');
+    // A location fix whose place isn't known yet still reads as located.
+    var text = [saved.city, saved.pincode].filter(Boolean).join(' ') || (saved.source === 'gps' ? 'Current location' : '');
     if (text) root.querySelector('[data-delivery-location-place]').textContent = text;
   })(document.currentScript.previousElementSibling);
 </script>

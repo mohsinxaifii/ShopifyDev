@@ -41,6 +41,30 @@
     order or coming soon. It starts from the one the drawer opens on;
     variant-drawer.js moves it with each pick.
   endcomment
+  comment
+    As the product page (snippets/pdp-variant-picker): last-option values with
+    stock alongside the current picks of the other options wear the Z badge
+    (ZNow area only) - "|value|" keys, matched below. variant-drawer.js keeps
+    them in step as options change.
+  endcomment
+  assign znow_stock_keys = ''
+  assign other_count = product.options.size | minus: 1
+  for stock_variant in product.variants
+    if stock_variant.available and stock_variant.inventory_quantity > 0
+      assign same_others = true
+      for i in (0..other_count)
+        if forloop.last
+          break
+        endif
+        if stock_variant.options[i] != current.options[i]
+          assign same_others = false
+        endif
+      endfor
+      if same_others
+        assign znow_stock_keys = znow_stock_keys | append: '|' | append: stock_variant.options.last | append: '|'
+      endif
+    endif
+  endfor
   assign delivery_state = 'coming-soon'
   if current.available
     assign delivery_state = 'made-to-order'
@@ -99,10 +123,19 @@
           <span data-znow-when="tomorrow">Get it tomorrow</span>
         </span>
       </span>
+      {%- liquid
+        comment
+          Dates by the cart's timelines (Theme settings > Location & ZNow).
+        endcomment
+        assign ship_days_in_stock = settings.znow_standard_delivery_days | default: 3
+        assign ship_days_made = settings.znow_made_to_order_days | default: 24
+      -%}
       <span class="product-card_delivery product-card_delivery--ready" data-delivery-for="in-stock" data-znow-hide>
-        Ready to ship
+        Ready to ship · Get it by {% render 'ship-date', days: ship_days_in_stock %}
       </span>
-      <span class="product-card_delivery product-card_delivery--made" data-delivery-for="made-to-order">Made to order</span>
+      <span class="product-card_delivery product-card_delivery--made" data-delivery-for="made-to-order">
+        Made to order · Get it by {% render 'ship-date', days: ship_days_made %}
+      </span>
       <span class="product-card_delivery product-card_delivery--soon" data-delivery-for="coming-soon">Coming soon</span>
     </span>
     </span>
@@ -169,8 +202,15 @@
         {%- endunless -%}
 
         <div class="variant-drawer_panel_body_options_group_values">
+          {%- assign option_is_last = forloop.last -%}
           {%- for value in option.values -%}
-            <label class="variant-drawer_panel_body_options_group_values_value">
+            {%- assign value_key = value | prepend: '|' | append: '|' -%}
+            <label
+              class="variant-drawer_panel_body_options_group_values_value{% if option_is_last and znow_stock_keys contains value_key %} is-znow-stock{% endif %}"
+              {% if option_is_last %}
+                data-znow-value
+              {% endif %}
+            >
               <input
                 type="radio"
                 name="option-{{ option.position }}"
@@ -193,6 +233,11 @@
                 </span>
               {%- else -%}
                 <span class="variant-drawer_panel_body_options_group_values_value_chip">{{ value }}</span>
+              {%- endif -%}
+              {%- if option_is_last -%}
+                <span class="variant-drawer_panel_body_options_group_values_value_znow" aria-hidden="true">
+                  {{- 'icon-znow-badge-8.svg' | inline_asset_content -}}
+                </span>
               {%- endif -%}
             </label>
           {%- endfor -%}

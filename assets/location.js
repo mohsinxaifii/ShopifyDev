@@ -19,12 +19,14 @@
  * snippets/znow-pincodes. <html> carries "is-znow" while either says yes - set
  * before first paint by snippets/location, kept in step here.
  *
- * The pincode for a location is a best-effort extra from OpenStreetMap, for
- * prefilling pincode boxes; ZNow never waits on it, and a failed lookup only
- * leaves it blank.
+ * The pincode for a location comes from NCR's pincode outlines
+ * (assets/ncr-pincodes.json), tested here like the area, or from
+ * OpenStreetMap outside them - for the header and prefilling pincode boxes;
+ * ZNow never waits on it, and a failed lookup only leaves it blank.
  *
  * Other scripts read it through window.zinaraLocation:
- *   get()                 -> { pincode, city, state, source, status, updated, znow } (a copy)
+ *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow } (a copy;
+ *                            leftZnow: moved from a ZNow pincode to one outside the area)
  *   set(pincode, extra)   -> saves a pincode the shopper typed (source 'manual' by default)
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
@@ -122,7 +124,12 @@
   }
 
   function save(changes) {
+    const wasZnow = znowNow();
     state = { ...state, ...changes, updated: Date.now() };
+    // A shopper moved out of the area (ZNow pincode -> one outside it) is
+    // remembered, for the cart's "Z-Now isn't available" notice; moving back
+    // in clears it. Never in the area to begin with, it stays unset.
+    if (wasZnow !== znowNow()) state.leftZnow = wasZnow;
     write(state);
     setZnow(znowNow());
     document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode));
@@ -176,27 +183,68 @@
 
   /* -------------------------------------------------------------- pincode */
 
-  // OpenStreetMap's free service: no key, open to browsers, ~1 request a
-  // second for the whole site - which once a visit per shopper stays inside.
-  async function lookupPincode(lat, lng) {
+  async function fetchJson(url) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 6000);
     try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&accept-language=en&lat=${lat}&lon=${lng}`,
-        { signal: controller.signal, credentials: 'omit' }
-      );
+      const response = await fetch(url, { signal: controller.signal, credentials: 'omit' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const address = (await response.json()).address || {};
-      const pincode = String(address.postcode || '').replace(/\s+/g, '');
-      return {
-        pincode: address.country_code === 'in' && PINCODE.test(pincode) ? pincode : '',
-        city: address.city || address.town || address.village || address.state_district || '',
-        state: address.state || '',
-      };
+      return await response.json();
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  // NCR's pincode boundaries (assets/ncr-pincodes.json - Department of Posts
+  // data, simplified): the pincode whose outline holds the point, with no
+  // service in between, so it is exact where ZNow is decided and never rate
+  // limited. Fetched once, on the first fix; a failure is retried next time.
+  let pincodeAreas = null;
+  function loadPincodeAreas() {
+    if (!pincodeAreas) {
+      pincodeAreas = fetchJson(config.ncrPincodesUrl).catch((error) => {
+        pincodeAreas = null;
+        throw error;
+      });
+    }
+    return pincodeAreas;
+  }
+
+  async function lookupNcr(lat, lng) {
+    const { features = [] } = await loadPincodeAreas();
+    const match = features.find((feature) => inArea(lng, lat, { features: [feature] }));
+    if (!match) return null;
+    const { pincode, city, state: region } = match.properties;
+    return { pincode, city, state: region };
+  }
+
+  // OpenStreetMap's free service: no key, open to browsers, ~1 request a
+  // second for the whole site - which once a visit per shopper stays inside.
+  async function lookupOsm(lat, lng) {
+    const address =
+      (
+        await fetchJson(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&accept-language=en&lat=${lat}&lon=${lng}`
+        )
+      ).address || {};
+    const pincode = String(address.postcode || '').replace(/\s+/g, '');
+    return {
+      pincode: address.country_code === 'in' && PINCODE.test(pincode) ? pincode : '',
+      city: address.city || address.town || address.village || address.state_district || '',
+      state: address.state || '',
+    };
+  }
+
+  // NCR's own boundaries first; OpenStreetMap outside them, or if the file
+  // fails to load.
+  async function lookupPincode(lat, lng) {
+    try {
+      const place = await lookupNcr(lat, lng);
+      if (place) return place;
+    } catch (error) {
+      /* fall through to OpenStreetMap */
+    }
+    return lookupOsm(lat, lng);
   }
 
   /* ---------------------------------------------------------- geolocation */
@@ -325,7 +373,8 @@
   const api = {
     get() {
       const { pincode = '', city = '', state: region = '', source = '', status = '', updated = 0 } = state;
-      return { pincode, city, state: region, source, status, updated, znow: znowNow() };
+      const znow = znowNow();
+      return { pincode, city, state: region, source, status, updated, znow, leftZnow: !znow && Boolean(state.leftZnow) };
     },
     set(pincode, extra = {}) {
       const value = cleanPincode(pincode);
@@ -353,6 +402,18 @@
 
     const firstPageOfVisit = !sessionStarted();
     const browser = await permission();
+
+    // Access granted mid-visit - from the address bar's location icon or site
+    // settings rather than our prompt - is picked up at once, not next visit.
+    // (Our own prompt's answer lands here too; detect() runs only once.)
+    navigator.permissions
+      ?.query({ name: 'geolocation' })
+      .then((status) => {
+        status.addEventListener('change', () => {
+          if (status.state === 'granted' && (!state.source || state.source === 'gps')) detect().catch(() => {});
+        });
+      })
+      .catch(() => {});
 
     if (!state.asked) {
       // First visit ever: the one time the browser is asked. Marked before
@@ -382,8 +443,15 @@
     }
 
     // A pincode the shopper typed (e.g. on a product page) is kept - it may
-    // be where they want delivery, not where they are.
-    if (firstPageOfVisit && browser === 'granted' && (!state.source || state.source === 'gps')) {
+    // be where they want delivery, not where they are. Refreshed on the first
+    // page of a visit, and on any page while the fix still has no pincode (its
+    // lookup failed or never ran) - the same place is not tested again, only
+    // looked up.
+    if (
+      browser === 'granted' &&
+      (!state.source || state.source === 'gps') &&
+      (firstPageOfVisit || !state.pincode)
+    ) {
       detect().catch(() => {});
     }
   }

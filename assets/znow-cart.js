@@ -9,8 +9,11 @@
  *   - "Delivering to 110017, Saket · Change" under the title;
  *   - for a shopper in the ZNow area: "Delivery 1 of 2 · Now · Today by
  *     9 PM" over the lines with stock (free gifts ride along), "Delivery 2 of
- *     2 · By 12 Nov" over the rest, the cut-off notice past 2 PM, and
- *     "Z-Now · Free" in place of "FREE shipping included";
+ *     2 · Made to order · By 12 Nov" over the rest, the cut-off notice past
+ *     2 PM, and "Z-Now · Free" in place of "FREE shipping included";
+ *   - anywhere else, or with no pincode: "Ready to ship · By 1 Nov" and
+ *     "Made to order · By 12 Nov" bands the same way, by each line's stock
+ *     (a cart of one kind gets "Delivery 1 of 1");
  *   - outside it, with a pincode known and stock in the cart: "Z-Now isn't
  *     available at 122018 yet".
  * Re-applied whenever KwikCart redraws, the cart changes, the pincode
@@ -225,16 +228,26 @@
     const quantity = (group) => group.reduce((sum, entry) => sum + (entry.line?.quantity || 1), 0);
     const items = (n) => `${n} item${n === 1 ? '' : 's'}`;
 
-    const grouped = state.znow && known && stocked.length > 0;
+    // In the area: ZNow lines (with any free gifts) first, the rest after.
+    // Outside it, or with no pincode yet: ready-to-ship lines (with the gifts)
+    // first, made-to-order after, each by its standard date.
+    const znowGrouped = state.znow && known && stocked.length > 0;
+    const groups = [];
+    if (known && tiles.length) {
+      if (znowGrouped || stocked.length) groups.push([...stocked, ...gifts]);
+      if (others.length) groups.push(groups.length ? others : [...others, ...gifts]);
+    }
+    const grouped = groups.length > 0;
 
     if (!grouped) {
       removeAll(list, ':scope > .zk-group');
-      removeAll(list, ':scope > .zk-notice[data-zk-notice="cutoff"]');
       tiles.forEach(({ tile }) => tile.style.removeProperty('order'));
     }
+    if (!znowGrouped) removeAll(list, ':scope > .zk-notice[data-zk-notice="cutoff"]');
 
-    // Outside the area, with a pincode and stock in the cart: say so once.
-    const unavailable = !state.znow && state.pincode && known && stocked.length > 0;
+    // Moved out of the area (a ZNow pincode changed to one outside it), with
+    // stock in the cart: say so once. Never in the area, nothing to say.
+    const unavailable = state.leftZnow && state.pincode && known && stocked.length > 0;
     if (unavailable) {
       const n = quantity(stocked);
       notice(
@@ -249,24 +262,25 @@
       removeAll(list, ':scope > .zk-notice[data-zk-notice="unavailable"]');
     }
 
-    footerChip(sr, grouped);
+    footerChip(sr, znowGrouped);
     if (!grouped) return;
 
-    // Delivery 1: ZNow lines, with any free gifts; delivery 2: the rest.
-    const groups = [[...stocked, ...gifts]];
-    if (others.length) groups.push(others);
     const total = groups.length;
 
     groups.forEach((group, index) => {
       const base = index * 1000;
-      const isZnow = index === 0;
-      const header = groupHeader(list, isZnow ? 'znow' : 'standard', base);
+      const isZnow = znowGrouped && index === 0;
+      const isStock = index === 0 && stocked.length > 0;
+      // Ids by place, not kind: the first band ('znow') starts the list (CSS).
+      const header = groupHeader(list, index === 0 ? 'znow' : 'standard', base);
       header.classList.toggle('zk-group--znow', isZnow);
       const by = isZnow
         ? `<span class="zk-group_pill">${config.icons.znow}<span>·</span><span>${
             afterCutoff ? `Tomorrow by ${escape(time?.tomorrowBy || '1 PM')}` : `Today by ${escape(time?.todayBy || '9 PM')}`
           }</span></span>`
-        : `<span class="zk-group_when">By ${dayMonth(config.madeDays)}</span>`;
+        : `<span class="zk-group_when">${isStock ? 'Ready to ship' : 'Made to order'} · By ${dayMonth(
+            isStock ? config.standardDays : config.madeDays,
+          )}</span>`;
       setHTML(
         header,
         `<span class="zk-group_label"><span class="zk-group_check" aria-hidden="true">${config.icons.checkOn}</span><span class="zk-group_title">Delivery ${index + 1} of ${total}</span><span class="zk-group_count">· ${items(quantity(group))}</span></span>${by}`,
@@ -278,7 +292,7 @@
     if (total === 1) removeAll(list, ':scope > .zk-group[data-zk-group="standard"]');
 
     // Past the cut-off: the notice under the ZNow header.
-    if (afterCutoff) {
+    if (znowGrouped && afterCutoff) {
       notice(
         list,
         'cutoff',

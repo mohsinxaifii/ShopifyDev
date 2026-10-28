@@ -152,11 +152,14 @@
   border-radius: 0;
 }
 
+/* On a narrow cart the "Made to order · By 21 Nov" side drops under the
+   label rather than running off the edge. */
 .sidecart .zk-group {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 2px 8px;
   margin-top: 0;
   margin-bottom: 0;
   padding: 10px 16px;
@@ -255,9 +258,13 @@
   background-color: #fef4e2;
 }
 
-/* "Not available" leads the list when there are no bands above it. */
+/* "Not available" leads the list, above the delivery bands. */
 .sidecart .zk-notice[data-zk-notice='unavailable'] {
   margin-top: calc(-1 * var(--zk-pad-top, 0px));
+}
+
+.sidecart .item-list-wrapper:has(> .zk-notice[data-zk-notice='unavailable']) > .zk-group[data-zk-group='znow'] {
+  margin-top: 0;
 }
 
 .sidecart .zk-notice_icon {

@@ -294,6 +294,20 @@
         delivery.dataset.deliveryState = state;
       }
 
+      // The Z badge: last-option values in stock alongside the other picks.
+      const chosen = this.selectedOptions(body);
+      const last = chosen.length - 1;
+      body.querySelectorAll('[data-znow-value]').forEach((label) => {
+        const value = label.querySelector('[data-option-input]')?.value;
+        const inStock = (body.variantData?.variants || []).some(
+          (entry) =>
+            entry.readyToShip &&
+            entry.options[last] === value &&
+            entry.options.every((option, i) => i === last || chosen[i] === null || option === chosen[i]),
+        );
+        label.classList.toggle('is-znow-stock', inStock);
+      });
+
       // The product links open the page on the variant being picked here.
       const card = body.querySelector('[data-pdp-url]');
       if (card) {

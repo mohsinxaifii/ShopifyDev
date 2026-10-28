@@ -349,8 +349,9 @@
   });
 
   document.addEventListener('zinara:location', (event) => {
-    const { city, pincode } = event.detail;
-    const text = [city, pincode].filter(Boolean).join(' ');
+    const { city, pincode, source } = event.detail;
+    // A location fix whose place isn't known yet still reads as located.
+    const text = [city, pincode].filter(Boolean).join(' ') || (source === 'gps' ? 'Current location' : '');
     if (!text) return;
     document.querySelectorAll('[data-delivery-location-place]').forEach((place) => {
       if (place.textContent === text) return;
