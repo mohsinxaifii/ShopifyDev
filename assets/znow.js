@@ -94,7 +94,9 @@
       }
       say('');
     } else {
-      title.textContent = target || checking ? defaults.title : 'Change delivery pincode';
+      // "Change" only once there is a pincode to change; "Select Location" before.
+      const hasPincode = Boolean(window.zinaraLocation?.get().pincode);
+      title.textContent = target || checking || !hasPincode ? defaults.title : 'Change delivery pincode';
       subtitle.textContent = defaults.subtitle;
     }
     if (name === 'checking') {
