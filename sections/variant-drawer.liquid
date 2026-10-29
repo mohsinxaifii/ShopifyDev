@@ -65,6 +65,12 @@
       endif
     endif
   endfor
+  comment
+    Dates by the cart's timelines (Theme settings > Location & ZNow);
+    variant-drawer.js moves them to Shiprocket's for the saved pincode.
+  endcomment
+  assign ship_days_in_stock = settings.znow_standard_delivery_days | default: 3
+  assign ship_days_made = settings.znow_made_to_order_days | default: 24
   assign delivery_state = 'coming-soon'
   if current.available
     assign delivery_state = 'made-to-order'
@@ -114,30 +120,30 @@
       </judgeme-rating>
     </a>
 
-    {%- comment -%} One per state; data-delivery-state on the wrapper shows the picked variant's. {%- endcomment -%}
-    <span class="variant-drawer_panel_body_card_delivery" data-delivery data-delivery-state="{{ delivery_state }}">
-      <span class="product-card_delivery product-card_delivery--znow" data-delivery-for="in-stock" data-znow-only>
-        <span class="product-card_delivery_znow">
-          {{- 'icon-znow.svg' | inline_asset_content -}}
-          <span data-znow-when="today">Get it today</span>
-          <span data-znow-when="tomorrow">Get it tomorrow</span>
+    {%- comment -%}
+      A product with options carries its delivery tag on the last option's
+      heading, as the product page does (client, 29 Oct); only one without
+      options keeps the bar on the photo. One per state; data-delivery-state
+      on the wrapper shows the picked variant's.
+    {%- endcomment -%}
+    {%- if product.has_only_default_variant -%}
+      <span class="variant-drawer_panel_body_card_delivery" data-delivery data-delivery-state="{{ delivery_state }}">
+        <span class="product-card_delivery product-card_delivery--znow" data-delivery-for="in-stock" data-znow-only>
+          <span class="product-card_delivery_znow">
+            {{- 'icon-znow.svg' | inline_asset_content -}}
+            <span data-znow-when="today">Get it today</span>
+            <span data-znow-when="tomorrow">Get it tomorrow</span>
+          </span>
         </span>
+        <span class="product-card_delivery product-card_delivery--ready" data-delivery-for="in-stock" data-znow-hide>
+          Ready to ship · Get it by <span data-ship-date="in-stock">{% render 'ship-date', days: ship_days_in_stock %}</span>
+        </span>
+        <span class="product-card_delivery product-card_delivery--made" data-delivery-for="made-to-order">
+          Made to order · Get it by <span data-ship-date="made">{% render 'ship-date', days: ship_days_made %}</span>
+        </span>
+        <span class="product-card_delivery product-card_delivery--soon" data-delivery-for="coming-soon">Coming soon</span>
       </span>
-      {%- liquid
-        comment
-          Dates by the cart's timelines (Theme settings > Location & ZNow).
-        endcomment
-        assign ship_days_in_stock = settings.znow_standard_delivery_days | default: 3
-        assign ship_days_made = settings.znow_made_to_order_days | default: 24
-      -%}
-      <span class="product-card_delivery product-card_delivery--ready" data-delivery-for="in-stock" data-znow-hide>
-        Ready to ship · Get it by {% render 'ship-date', days: ship_days_in_stock %}
-      </span>
-      <span class="product-card_delivery product-card_delivery--made" data-delivery-for="made-to-order">
-        Made to order · Get it by {% render 'ship-date', days: ship_days_made %}
-      </span>
-      <span class="product-card_delivery product-card_delivery--soon" data-delivery-for="coming-soon">Coming soon</span>
-    </span>
+    {%- endif -%}
     </span>
 
     <span class="variant-drawer_panel_body_card_info">
@@ -177,6 +183,28 @@
           {%- if is_swatch_option -%}
             <span class="variant-drawer_panel_body_options_group_head_value" data-option-readout>
               {{- current.options[option_index] -}}
+            </span>
+          {%- endif -%}
+          {%- if forloop.last -%}
+            {%- comment -%} The product page's tag (snippets/pdp-variant-picker), for the picked variant. {%- endcomment -%}
+            <span class="variant-drawer_tag" data-delivery data-delivery-state="{{ delivery_state }}">
+              <span class="variant-drawer_tag_pill variant-drawer_tag_pill--znow" data-delivery-for="in-stock" data-znow-only>
+                <span class="variant-drawer_tag_now">
+                  {{- 'icon-znow-8.svg' | inline_asset_content -}}
+                  <span>Now</span>
+                </span>
+                <span aria-hidden="true">·</span>
+                <span data-znow-when="today">Get today</span>
+                <span data-znow-when="tomorrow">Get tomorrow</span>
+              </span>
+              <span class="variant-drawer_tag_pill variant-drawer_tag_pill--ready" data-delivery-for="in-stock" data-znow-hide>
+                Ready to ship <span aria-hidden="true">·</span> Get by
+                <span data-ship-date="in-stock">{% render 'ship-date', days: ship_days_in_stock %}</span>
+              </span>
+              <span class="variant-drawer_tag_pill variant-drawer_tag_pill--made" data-delivery-for="made-to-order">
+                Made to order <span aria-hidden="true">·</span> Get by
+                <span data-ship-date="made">{% render 'ship-date', days: ship_days_made %}</span>
+              </span>
             </span>
           {%- endif -%}
         </legend>
