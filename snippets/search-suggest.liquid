@@ -55,4 +55,42 @@
     data-suggest-panel
     hidden
   ></div>
+
+  {%- comment -%}
+    Z-Now (Figma 8470:74266): the catalogue categories the ZNow collection
+    has products in, each with its ZNow page (the collection narrowed by the
+    category's tag, as its chips do - snippets/catalog-chips). search-suggest.js
+    adds "Rings · Now · Get today" when the term names one, in the ZNow area.
+  {%- endcomment -%}
+  {%- liquid
+    assign znow_handle = settings.znow_collection_handle | default: 'znow' | strip
+    assign znow_collection = collections[znow_handle]
+    assign znow_tags = '|'
+    for znow_tag in znow_collection.all_tags
+      assign znow_tag_handle = znow_tag | handleize
+      assign znow_tags = znow_tags | append: znow_tag_handle | append: '|'
+    endfor
+  -%}
+  {%- if znow_collection.products_count > 0 -%}
+    <script type="application/json" data-suggest-znow>
+      {
+        "icon": {{ 'icon-znow-8.svg' | inline_asset_content | json }},
+        "categories": [
+          {%- assign first = true -%}
+          {%- for category in metaobjects.catalog_category.values -%}
+            {%- liquid
+              assign category_tag = category.tag.value | default: category.name.value | handleize
+              assign needle = '|' | append: category_tag | append: '|'
+              unless znow_tags contains needle
+                continue
+              endunless
+            -%}
+            {%- unless first %},{% endunless -%}
+            {"name": {{ category.name.value | json }}, "url": {{ znow_collection.url | append: '/' | append: category_tag | json }}}
+            {%- assign first = false -%}
+          {%- endfor -%}
+        ]
+      }
+    </script>
+  {%- endif -%}
 </search-suggest>

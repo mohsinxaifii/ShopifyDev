@@ -512,6 +512,34 @@ html.is-znow .delivery-location_znow {
   letter-spacing: 0.04em;
 }
 
+/* "Z Now" (Figma 8470:72375): the ZNow gradient pill, its mark and an
+   italic "Now" in pink. */
+.header_drawer_nav_list_item_badge--znow {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #4a162c, #712242);
+  box-shadow: none;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 10px;
+  line-height: 18px;
+  letter-spacing: 0;
+  color: #ecc0d2;
+}
+
+.header_drawer_nav_list_item_badge_icon {
+  display: flex;
+  padding-top: 2px;
+}
+
+.header_drawer_nav_list_item_badge_icon svg {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+
 /* One chevron for both states: it points right when shut, down when open. */
 .header_drawer_nav_list_item_caret {
   display: flex;

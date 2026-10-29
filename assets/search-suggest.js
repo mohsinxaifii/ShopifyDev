@@ -19,6 +19,11 @@
       if (!this.form || !this.input || !this.panel) return;
 
       this.header = this.closest('.header') || document.querySelector('.header');
+      try {
+        this.znow = JSON.parse(this.querySelector('[data-suggest-znow]')?.textContent || 'null');
+      } catch {
+        this.znow = null;
+      }
       this.timer = null;
       this.controller = null;
 
@@ -136,21 +141,20 @@
       const products = (results.products || []).slice(0, LIMIT);
       this.panel.replaceChildren();
 
-      if (queries.length) {
-        this.panel.appendChild(
-          this.section(
-            'Suggestions',
-            queries.map((query, index) => {
-              const row = document.createElement('a');
-              row.className = 'search-suggest_panel_row search-suggest_panel_row--query';
-              row.href = query.url;
-              row.setAttribute('role', 'option');
-              row.textContent = query.text;
-              this.tagRow(row, term, query.text, 'query', index + 1);
-              return row;
-            }),
-          ),
-        );
+      const suggestions = queries.map((query, index) => {
+        const row = document.createElement('a');
+        row.className = 'search-suggest_panel_row search-suggest_panel_row--query';
+        row.href = query.url;
+        row.setAttribute('role', 'option');
+        row.textContent = query.text;
+        this.tagRow(row, term, query.text, 'query', index + 1);
+        return row;
+      });
+      const znowRow = this.znowRow(term, suggestions.length + 1);
+      if (znowRow) suggestions.push(znowRow);
+
+      if (suggestions.length) {
+        this.panel.appendChild(this.section('Suggestions', suggestions));
       }
 
       if (products.length) {
@@ -189,6 +193,43 @@
       this.panel.appendChild(this.footer(term));
       this.panel.hidden = false;
       this.input.setAttribute('aria-expanded', 'true');
+    }
+
+    /* Z-Now (Figma 8470:74266): "Rings · Now · Get today" under the
+       suggestions when the term names a category with same-day stock -
+       "ring", "rings", "earr" - for a shopper in the ZNow area; it opens
+       that category in the ZNow collection. "Get today" turns "Get tomorrow"
+       past the cut-off ([data-znow-when], snippets/location). */
+    znowRow(term, position) {
+      if (!this.znow?.categories?.length || !document.documentElement.classList.contains('is-znow')) return null;
+      const stem = (word) => word.replace(/s$/, '');
+      const words = term.toLowerCase().split(/[^a-z]+/).filter((word) => word.length >= 3).map(stem);
+      if (!words.length) return null;
+      const category = this.znow.categories.find((entry) =>
+        entry.name
+          .toLowerCase()
+          .split(/[^a-z]+/)
+          .filter((word) => word && word !== 'and')
+          .map(stem)
+          .some((name) => words.some((word) => name.startsWith(word))),
+      );
+      if (!category) return null;
+
+      const row = document.createElement('a');
+      row.className = 'search-suggest_panel_row search-suggest_panel_row--query search-suggest_panel_row--znow';
+      row.href = category.url;
+      row.setAttribute('role', 'option');
+      const label = document.createElement('span');
+      label.textContent = category.name;
+      const pill = document.createElement('span');
+      pill.className = 'search-suggest_znow';
+      pill.innerHTML =
+        `<span class="search-suggest_znow_now">${this.znow.icon}<span>Now</span></span>` +
+        `<span aria-hidden="true">·</span>` +
+        `<span data-znow-when="today">Get today</span><span data-znow-when="tomorrow">Get tomorrow</span>`;
+      row.append(label, pill);
+      this.tagRow(row, term, `${category.name} (Z-Now)`, 'znow', position);
+      return row;
     }
 
     section(label, rows) {

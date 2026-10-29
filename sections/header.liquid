@@ -131,12 +131,43 @@
     <div class="header_drawer_body">
       <nav class="header_drawer_nav">
         <ul class="header_drawer_nav_list">
-          {%- assign badge_titles = section.settings.new_badge_items | downcase | split: ',' -%}
+          {%- liquid
+            assign badge_titles = section.settings.new_badge_items | downcase | split: ','
+
+            comment
+              Z-Now (Figma 8470:72373): a link to the ZNow collection wears the
+              "Z Now" pill; with none in the menu, the drawer adds "Same day
+              delivery" third, as drawn (after Home and the next item).
+            endcomment
+            assign znow_handle = settings.znow_collection_handle | default: 'znow' | strip
+            assign znow_url = collections[znow_handle].url
+            assign menu_has_znow = false
+            if znow_url != blank
+              for link in section.settings.menu.links
+                if link.url == znow_url
+                  assign menu_has_znow = true
+                endif
+              endfor
+            endif
+          -%}
+          {%- capture znow_badge -%}
+            <span class="header_drawer_nav_list_item_badge header_drawer_nav_list_item_badge--znow">
+              <span class="header_drawer_nav_list_item_badge_icon" aria-hidden="true">
+                {{- 'icon-znow-8.svg' | inline_asset_content -}}
+              </span>
+              <span>Now</span>
+            </span>
+          {%- endcapture -%}
           {%- for link in section.settings.menu.links -%}
             {%- liquid
               assign has_children = false
               if link.links != blank
                 assign has_children = true
+              endif
+
+              assign is_znow = false
+              if znow_url != blank and link.url == znow_url
+                assign is_znow = true
               endif
 
               assign is_new = false
@@ -166,6 +197,7 @@
                     {%- if is_new -%}
                       <span class="header_drawer_nav_list_item_badge">{{ section.settings.new_badge_label }}</span>
                     {%- endif -%}
+                    {%- if is_znow -%}{{ znow_badge }}{%- endif -%}
                   </span>
                   <span class="header_drawer_nav_list_item_caret" aria-hidden="true">
                     {{- 'icon-caret-right.svg' | inline_asset_content -}}
@@ -204,10 +236,29 @@
                     {%- if is_new -%}
                       <span class="header_drawer_nav_list_item_badge">{{ section.settings.new_badge_label }}</span>
                     {%- endif -%}
+                    {%- if is_znow -%}{{ znow_badge }}{%- endif -%}
                   </span>
                 </a>
               {%- endif -%}
             </li>
+            {%- if forloop.index == 2 and znow_url != blank and menu_has_znow == false -%}
+              <li class="header_drawer_nav_list_item">
+                <a
+                  href="{{ znow_url }}"
+                  class="header_drawer_nav_list_item_link{% if collection.handle == znow_handle %} is-current{% endif %}"
+                  data-analytics="sidenav_item_click"
+                  data-analytics-item-name="Same day delivery"
+                  data-analytics-item-group="featured"
+                  data-analytics-position="3"
+                  data-analytics-click-location="sidenav"
+                >
+                  <span class="header_drawer_nav_list_item_label">
+                    Same day delivery
+                    {{- znow_badge -}}
+                  </span>
+                </a>
+              </li>
+            {%- endif -%}
           {%- endfor -%}
         </ul>
       </nav>
