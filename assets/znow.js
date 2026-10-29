@@ -9,15 +9,16 @@
  * - already known to be outside it (a pincode saved anywhere, or located):
  *   the dialog opens on "Z-Now coming soon!" (client, 29 Oct);
  * - unknown (location blocked, never asked): the dialog asks for a pincode
- *   or "Use my location", and any delivered answer opens the link - the
- *   collection's cards show "Ready to ship" / "Made to order"; only a
- *   pincode not delivered to at all stops at "We don't deliver to … yet".
+ *   or "Use my location"; a same-day answer opens the link, one outside the
+ *   area gets "Z-Now coming soon!" (client, 30 Oct), and a pincode not
+ *   delivered to at all "We don't deliver to … yet". "Check availability"
+ *   (the ZNow showcase) answers the same way, but stays on the page.
  *
  * The "Deliver to" control in the header (snippets/delivery-location)
- * opens the same dialog to change the pincode: no link to follow, so a
- * served pincode just closes it, and the label updates from the
- * 'zinara:location' event. "Check availability" (the ZNow showcase) is the
- * one place that answers outside the area with "Z-Now coming soon!".
+ * opens the same dialog to change the pincode: no link to follow, so any
+ * served pincode just closes it - on a PLP its cards then show "Ready to
+ * ship" / "Made to order" - and the label updates from the
+ * 'zinara:location' event.
  *
  * A pincode is checked against snippets/znow-pincodes (zinaraLocation.isZnow)
  * and saved as the shopper's pincode either way; a location fix is checked
@@ -179,11 +180,12 @@
     }
     track('pincode_check', { pincode, serviceable: delivered, page_type: 'znow' });
     busy = false;
-    // A delivered pincode outside the area moves on as a same-day one does
-    // (client, 29 Oct): a ZNow link opens its collection, whose cards say
-    // "Ready to ship" / "Made to order"; the header's control just closes.
-    // Only "Check availability" answers with "coming soon".
-    if (sameDay || (delivered && !checking)) proceed();
+    // Outside the area (client, 30 Oct): the ZNow flow - a ZNow link from the
+    // homepage, or "Check availability" - answers "Z-Now coming soon!"; only
+    // the header's "Deliver to" (a PLP, no link to follow) just closes, its
+    // cards then saying "Ready to ship" / "Made to order".
+    const zNowFlow = Boolean(target) || checking;
+    if (sameDay || (delivered && !zNowFlow)) proceed();
     else view('unavailable', { pincode, served: delivered });
   });
 
@@ -196,7 +198,7 @@
       const result = await window.zinaraLocation.detect();
       if (!busy) return;
       busy = false;
-      if (result.znow || !checking) proceed();
+      if (result.znow || !(target || checking)) proceed();
       else view('unavailable', { pincode: result.pincode });
     } catch (error) {
       if (!busy) return;
