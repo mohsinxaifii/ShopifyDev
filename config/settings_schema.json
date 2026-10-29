@@ -434,7 +434,7 @@
         "min": 0,
         "max": 45,
         "step": 1,
-        "default": 21
+        "default": 22
       },
       {
         "type": "range",
