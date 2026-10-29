@@ -237,6 +237,22 @@
     };
   }
 
+  // The pincode and city for the saved location fix, when it has none yet -
+  // from its coordinates, so the browser is never asked again. Run after each
+  // fix, and on every page while one is missing: a lookup cut short (the
+  // shopper moved on mid-way) or failed is finished on the next page, rather
+  // than leaving the header on "Current location" (client, 29 Oct). A fix
+  // replaced meanwhile drops the answer.
+  function fillPlace() {
+    const { lat, lng } = state;
+    if (state.source !== 'gps' || state.pincode || typeof lat !== 'number' || typeof lng !== 'number') return;
+    lookupPincode(lat, lng)
+      .then((place) => {
+        if (state.lat === lat && state.lng === lng && state.source === 'gps' && place.pincode) save(place);
+      })
+      .catch(() => {});
+  }
+
   // NCR's own boundaries first; OpenStreetMap outside them, or if the file
   // fails to load.
   async function lookupPincode(lat, lng) {
@@ -329,11 +345,7 @@
         ...(samePlace ? {} : { pincode: '', city: '', state: '' }),
       });
 
-      lookupPincode(lat, lng)
-        .then((place) => {
-          if (state.lat === lat && state.lng === lng && state.source === 'gps') save(place);
-        })
-        .catch(() => {});
+      fillPlace();
       return result;
     })();
     detecting
@@ -443,6 +455,7 @@
     // browsers (Lighthouse, bots): the API still works, nothing runs by itself.
     if (config.enabled === false || window.Shopify?.designMode || navigator.webdriver) return;
 
+    fillPlace();
     const firstPageOfVisit = !sessionStarted();
     const browser = await permission();
 
