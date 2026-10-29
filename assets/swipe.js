@@ -6,7 +6,10 @@
  *   zinaraSwipe(element, { onSwipe })
  *     One slide shown at a time (hero banner, announcement strip, product
  *     gallery, lightbox). A horizontal drag - mouse or finger - past a
- *     threshold calls onSwipe(1) for next or onSwipe(-1) for previous. The
+ *     threshold calls onSwipe(1) for next or onSwipe(-1) for previous; a
+ *     quick flick counts from a shorter distance. Optionally onDrag(dx) follows
+ *     the drag as it happens and onCancel() reports one that fell short, so a
+ *     carousel can move with the finger. The
  *     element gets `touch-action: pan-y pinch-zoom`, so a finger moving up or
  *     down still scrolls the page and two fingers still zoom, and a gesture
  *     that starts mostly vertical is left to the page altogether.
@@ -46,7 +49,7 @@
     };
   }
 
-  window.zinaraSwipe = function zinaraSwipe(element, { onSwipe, threshold = 40, ignore } = {}) {
+  window.zinaraSwipe = function zinaraSwipe(element, { onSwipe, onDrag, onCancel, threshold = 40, ignore } = {}) {
     if (!element || element.dataset.swipeBound) return;
     element.dataset.swipeBound = 'true';
     element.style.touchAction = 'pan-y pinch-zoom';
@@ -55,6 +58,7 @@
     let pointerId = null;
     let startX = 0;
     let startY = 0;
+    let startTime = 0;
     let swiping = false;
 
     element.addEventListener('pointerdown', (event) => {
@@ -63,11 +67,16 @@
       pointerId = event.pointerId;
       startX = event.clientX;
       startY = event.clientY;
+      startTime = event.timeStamp;
       swiping = false;
     });
 
     element.addEventListener('pointermove', (event) => {
-      if (event.pointerId !== pointerId || swiping) return;
+      if (event.pointerId !== pointerId) return;
+      if (swiping) {
+        onDrag?.(event.clientX - startX);
+        return;
+      }
       const dx = event.clientX - startX;
       const dy = event.clientY - startY;
       if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
@@ -79,6 +88,7 @@
       swiping = true;
       element.setPointerCapture?.(pointerId);
       element.style.userSelect = 'none';
+      onDrag?.(dx);
     });
 
     const end = (event, cancelled) => {
@@ -89,7 +99,10 @@
       swiping = false;
       swallowClick();
       const dx = event.clientX - startX;
-      if (!cancelled && Math.abs(dx) >= threshold) onSwipe(dx < 0 ? 1 : -1);
+      // Far enough, or a quick flick (under 250ms) that went at least 15px.
+      const flick = event.timeStamp - startTime < 250 && Math.abs(dx) >= 15;
+      if (!cancelled && (Math.abs(dx) >= threshold || flick)) onSwipe(dx < 0 ? 1 : -1);
+      else onCancel?.();
     };
     element.addEventListener('pointerup', (event) => end(event, false));
     element.addEventListener('pointercancel', (event) => end(event, true));
