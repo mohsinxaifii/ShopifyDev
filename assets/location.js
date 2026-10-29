@@ -485,7 +485,7 @@
       eddAnswers.set(value, answer.catch(() => (eddAnswers.delete(value), 0)));
     }
     return eddAnswers.get(value).then((days) =>
-      days > 0 ? { ready: days + Number(config.eddReadyExtra ?? 1), made: days + Number(config.eddMadeExtra ?? 21) } : null
+      days > 0 ? { ready: days + Number(config.eddReadyExtra ?? 1), made: days + Number(config.eddMadeExtra ?? 22) } : null
     );
   }
 
