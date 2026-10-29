@@ -63,6 +63,26 @@
     const date = inDays(days);
     return `${date.toLocaleDateString('en-GB', { ...IST, day: 'numeric' })} ${date.toLocaleDateString('en-GB', { ...IST, month: 'short' })}`;
   };
+  /* Days to delivery at the saved pincode, as the product page and checkout
+     count them: Shiprocket's earliest courier +1 in stock / +22 made to order
+     (zinaraLocation.deliveryDays, cached per pincode); the theme's fixed days
+     until it answers, or without it. A new answer redraws the bands. */
+  let edd = { pincode: null, days: null };
+  const deliveryDays = (pincode) => {
+    if (edd.pincode !== pincode) {
+      edd = { pincode, days: null };
+      window.zinaraLocation
+        ?.deliveryDays?.(pincode)
+        .then((days) => {
+          if (edd.pincode !== pincode || !days) return;
+          edd.days = days;
+          schedule();
+        })
+        .catch(() => {});
+    }
+    return { ready: edd.days?.ready ?? config.standardDays, made: edd.days?.made ?? config.madeDays };
+  };
+
   const weekdayDate = (days) => {
     const date = inDays(days);
     const part = (options) => date.toLocaleDateString('en-GB', { ...IST, ...options });
@@ -208,6 +228,7 @@
     const state = window.zinaraLocation?.get() || {};
     const time = window.zinaraZnowTime;
     const afterCutoff = html.classList.contains('znow-after-cutoff');
+    const days = deliveryDays(state.pincode || '');
 
     deliverLine(sr, state);
     if (!list) return;
@@ -259,7 +280,7 @@
         -1,
         config.icons.info,
         `Z-Now isn’t available at ${state.pincode} yet`,
-        `We’ve moved ${items(n)} to standard delivery. ${n === 1 ? 'It' : 'They'} now arrive${n === 1 ? 's' : ''} ${weekdayDate(config.standardDays)}. Change pincode to check Z-Now availability.`,
+        `We’ve moved ${items(n)} to standard delivery. ${n === 1 ? 'It' : 'They'} now arrive${n === 1 ? 's' : ''} ${weekdayDate(days.ready)}. Change pincode to check Z-Now availability.`,
       );
     } else {
       removeAll(list, ':scope > .zk-notice[data-zk-notice="unavailable"]');
@@ -282,7 +303,7 @@
             afterCutoff ? `Tomorrow by ${escape(time?.tomorrowBy || '1 PM')}` : `Today by ${escape(time?.todayBy || '9 PM')}`
           }</span></span>`
         : `<span class="zk-group_when">${isStock ? 'Ready to ship' : 'Made to order'} · By ${dayMonth(
-            isStock ? config.standardDays : config.madeDays,
+            isStock ? days.ready : days.made,
           )}</span>`;
       setHTML(
         header,
