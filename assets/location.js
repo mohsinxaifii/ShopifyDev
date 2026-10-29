@@ -135,7 +135,8 @@
     if (wasZnow !== znowNow()) state.leftZnow = wasZnow;
     write(state);
     setZnow(znowNow());
-    document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode));
+    // A pincode, or outside India the place found for a location fix.
+    document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode || state.city));
     document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
     return api.get();
   }

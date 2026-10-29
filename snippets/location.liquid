@@ -12,7 +12,7 @@
   "is-znow" from what was saved on an earlier page, before the header is
   parsed, so ZNow pieces never flash in or out. Anything ZNow-only hides with
   `html:not(.is-znow) ...`; location.js keeps the class in step. Likewise
-  "has-pincode" while any pincode is saved.
+  "has-pincode" while any pincode is saved (or, outside India, a place found).
 {%- enddoc -%}
 
 {%- capture znow_pincodes -%}{% render 'znow-pincodes' %}{%- endcapture -%}
@@ -62,7 +62,7 @@
     }
     // Any pincode chosen, same-day or not: pincode controls show it rather
     // than ask for one (e.g. the ZNow showcase's button).
-    if (saved.pincode) document.documentElement.classList.add('has-pincode');
+    if (saved.pincode || saved.city) document.documentElement.classList.add('has-pincode');
   })();
 </script>
 {%- comment -%}
