@@ -385,12 +385,14 @@
      on its button, and "… at 110017." - the city, or "you", for a location
      fix whose pincode isn't known. */
   const fillPincode = () => {
-    const { pincode, city } = window.zinaraLocation?.get() || {};
+    const { pincode, city, locating } = window.zinaraLocation?.get() || {};
     document.querySelectorAll('[data-znow-pincode]').forEach((node) => {
-      node.textContent = pincode || city || 'Your location';
+      node.textContent = pincode || city || (locating ? 'Locating…' : 'Your location');
+      node.classList.toggle('zinara-locating', Boolean(locating));
     });
     document.querySelectorAll('[data-znow-place]').forEach((node) => {
-      node.textContent = pincode || city || 'you';
+      node.textContent = pincode || city || (locating ? 'Locating…' : 'you');
+      node.classList.toggle('zinara-locating', Boolean(locating));
     });
   };
   fillPincode();

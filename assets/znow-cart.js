@@ -137,7 +137,9 @@
       });
       sub.append(line);
     }
-    const place = [state.pincode, state.city].filter(Boolean).join(', ');
+    // Being located: the place shimmers (zinara-locating, snippets/znow-cart-css).
+    const locating = !state.pincode && Boolean(state.locating);
+    const place = locating ? 'Locating…' : [state.pincode, state.city].filter(Boolean).join(', ');
     const label = line.querySelector('.zk-deliver_label');
     const value = line.querySelector('.zk-deliver_place');
     const button = line.querySelector('.zk-deliver_change');
@@ -145,6 +147,7 @@
       label.textContent = place ? 'Delivering to' : 'Check same-day delivery';
     }
     if (value.textContent !== place) value.textContent = place;
+    value.classList.toggle('zinara-locating', locating);
     if (button.textContent !== (place ? 'Change' : 'Add pincode')) button.textContent = place ? 'Change' : 'Add pincode';
   }
 
