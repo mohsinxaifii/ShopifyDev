@@ -83,7 +83,7 @@
 .pdp_gallery {
   position: sticky;
   top: calc(24px + var(--header-sticky-offset, 0px));
-  transition: top var(--motion-base, 0.3s) var(--motion-ease, ease);
+  transition: top var(--header-slide, 0.3s ease);
 }
 
 .pdp_gallery_inner {

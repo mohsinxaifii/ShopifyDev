@@ -50,8 +50,8 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     transition:
-      top var(--motion-base, 0.3s) var(--motion-ease, ease),
-      max-height var(--motion-base, 0.3s) var(--motion-ease, ease);
+      top var(--header-slide, 0.3s ease),
+      max-height var(--header-slide, 0.3s ease);
   }
 
   /* Its scrollbar: a 4px brand pill on no track, faint until the rail is

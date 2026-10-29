@@ -20,9 +20,17 @@
    other in the page - an app inserting something between them would
    otherwise quietly leave one behind. Hiding uses the `translate` property,
    not `transform`, so it cannot clash with a transform another script sets. */
+/* --header-slide: the block's slide, a gentle ease-out (client, 29 Oct: it
+   moved too abruptly); the PDP gallery and the PLP filter rail, which follow
+   it (--header-sticky-offset), move on the same curve. */
+:root {
+  --header-slide: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .shopify-section[data-sticky-part] {
   position: sticky;
-  transition: translate var(--motion-base, 0.3s) var(--motion-ease, ease);
+  transition: translate var(--header-slide);
+  will-change: translate;
 }
 
 .shopify-section[data-sticky-part='bar'] {
@@ -42,6 +50,12 @@
 
 .shopify-section[data-sticky-part].is-header-hidden {
   translate: 0 calc(-1 * var(--header-group-height, 100%));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shopify-section[data-sticky-part] {
+    transition: none;
+  }
 }
 
 .header {

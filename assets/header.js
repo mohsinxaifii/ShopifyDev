@@ -47,9 +47,15 @@ class HeaderComponent extends HTMLElement {
     this.section.dataset.stickyPart = 'header';
     if (nav) nav.dataset.stickyPart = 'nav';
 
-    // Ignore jitter (trackpads, iOS bounce) so the block does not flicker.
+    // Ignore jitter (trackpads, iOS bounce) so the block does not flicker, and
+    // move only on a deliberate scroll: hidden after 40px of scrolling down,
+    // back after 24px up (client, 29 Oct: it flipped away too abruptly). The
+    // distance adds up while the direction holds and restarts when it turns.
     const THRESHOLD = 6;
+    const HIDE_AFTER = 40;
+    const SHOW_AFTER = 24;
     let lastY = Math.max(0, window.scrollY);
+    let travel = 0;
     let ticking = false;
 
     const isBusy = () =>
@@ -79,15 +85,21 @@ class HeaderComponent extends HTMLElement {
       const top = naturalTop(y);
       const stuck = y > top;
 
+      const step = y - lastY;
+      if (Math.abs(step) > THRESHOLD || !stuck) {
+        travel = Math.sign(step) === Math.sign(travel) ? travel + step : step;
+        lastY = y;
+      }
+
       let hidden = this.section.classList.contains('is-header-hidden');
       if (mode === 'always' || !stuck || isBusy()) {
         hidden = false;
-      } else if (y - lastY > THRESHOLD && y > top + total) {
+        travel = 0;
+      } else if (travel > HIDE_AFTER && y > top + total) {
         hidden = true;
-      } else if (lastY - y > THRESHOLD) {
+      } else if (travel < -SHOW_AFTER) {
         hidden = false;
       }
-      if (Math.abs(y - lastY) > THRESHOLD || !stuck) lastY = y;
 
       group.forEach((section) => section.classList.toggle('is-header-hidden', hidden));
       root.style.setProperty('--announcement-height', `${barHeight}px`);
