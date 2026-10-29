@@ -252,10 +252,14 @@
    (product.css .pdp_ship_tag), for the picked variant: one pill per state
    (data-delivery-state, variant-drawer.js); of the in-stock pair html.is-znow
    picks "Now · Get today" over "Ready to ship". Nothing while not buyable. */
+/* The fieldset's gap never reaches its legend, so the tag's row spaces itself:
+   12px, as the product page (product.css .pdp_option:has(.pdp_ship_tag)) -
+   the Z badges rise 4px above the chips, so anything less meets the pill. */
 .variant-drawer_panel_body_options_group_head:has(.variant-drawer_tag) {
   flex-wrap: wrap;
   align-items: center;
   row-gap: 6px;
+  margin-bottom: 12px;
 }
 
 .variant-drawer_tag {
