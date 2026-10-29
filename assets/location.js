@@ -135,9 +135,7 @@
     if (wasZnow !== znowNow()) state.leftZnow = wasZnow;
     write(state);
     setZnow(znowNow());
-    // A pincode, or outside India the place found for a location fix.
-    document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode || state.city));
-    document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
+    announce();
     return api.get();
   }
 
@@ -261,7 +259,15 @@
     !state.pincode &&
     !state.city &&
     (detectingNow || (state.source === 'gps' && typeof state.lat === 'number' && placeFailedFor !== fixKey()));
-  const announce = () => document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
+  // <html> classes for pieces picked by CSS (the ZNow showcase): has-pincode
+  // - a pincode, or outside India the place found for a location fix - and
+  // is-locating; then the event everything else listens to.
+  const announce = () => {
+    const root = document.documentElement;
+    root.classList.toggle('has-pincode', Boolean(state.pincode || state.city));
+    root.classList.toggle('is-locating', isLocating());
+    document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
+  };
 
   function fillPlace() {
     const { lat, lng } = state;

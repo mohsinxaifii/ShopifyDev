@@ -63,6 +63,8 @@
     // Any pincode chosen, same-day or not: pincode controls show it rather
     // than ask for one (e.g. the ZNow showcase's button).
     if (saved.pincode || saved.city) document.documentElement.classList.add('has-pincode');
+    // A location fix whose place is still being found (location.js finishes it).
+    else if (saved.source === 'gps' && typeof saved.lat === 'number') document.documentElement.classList.add('is-locating');
   })();
 </script>
 {%- comment -%}
