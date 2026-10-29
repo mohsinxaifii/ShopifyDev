@@ -22,6 +22,15 @@
  * live in Liquid and are absent from the /products/x.js payload.
  */
 (() => {
+  /* A date `days` from today in India, as snippets/ship-date writes it: "2nd Nov". */
+  const shipDate = (days) => {
+    const date = new Date(Date.now() + days * 86400000);
+    const zone = { timeZone: 'Asia/Kolkata' };
+    const day = Number(date.toLocaleDateString('en-GB', { ...zone, day: 'numeric' }));
+    const suffix = day > 10 && day < 14 ? 'th' : { 1: 'st', 2: 'nd', 3: 'rd' }[day % 10] || 'th';
+    return `${day}${suffix} ${date.toLocaleDateString('en-GB', { ...zone, month: 'short' })}`;
+  };
+
   class VariantDrawer extends HTMLElement {
     connectedCallback() {
       this.panel = this.querySelector('.variant-drawer_panel');
