@@ -852,7 +852,8 @@ html.is-znow .pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--ready {
 }
 
 /* The Z badge on a last-option value in stock with the other picks: a 14px
-   pink disc on the chip's top-right edge, in the ZNow area only. */
+   pink disc on the chip's top-right edge, for every pincode - it marks ready
+   to ship (client, 29 Oct). */
 .pdp_option_values_value[data-znow-value] {
   position: relative;
 }
@@ -875,7 +876,7 @@ html.is-znow .pdp_ship_tag[data-state='stock'] .pdp_ship_tag_pill--ready {
   right: 2px;
 }
 
-html.is-znow .pdp_option_values_value.is-znow-stock .pdp_option_values_value_znow {
+.pdp_option_values_value.is-znow-stock .pdp_option_values_value_znow {
   display: grid;
 }
 
