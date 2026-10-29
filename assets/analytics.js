@@ -412,6 +412,20 @@
   document.addEventListener('cart:updated', refreshCart);
   if (cart.count > 0) refreshCart();
 
+  /* The shopper's delivery location (assets/location.js): their pincode -
+     masked to its first three digits by clean(), as every pincode sent - and
+     whether Z-Now same-day delivery is available to them: "unknown" until a
+     pincode or a location fix is known. */
+  function deliveryLocation() {
+    const state = window.zinaraLocation?.get?.();
+    if (!state) return { znow_status: 'unknown' };
+    const known = Boolean(state.pincode || state.city || (state.source === 'gps' && state.status === 'granted'));
+    return {
+      ...(state.pincode ? { pincode: state.pincode } : {}),
+      znow_status: state.znow ? 'available' : known ? 'not_available' : 'unknown',
+    };
+  }
+
   function globals() {
     return {
       page_type: config.pageType || 'other',
@@ -424,6 +438,7 @@
       wishlist_count: wishlistCount(),
       platform: isPhone() ? 'mobile_web' : 'desktop_web',
       ...sessionUtms(),
+      ...deliveryLocation(),
       ...(config.userId ? { user_id: config.userId } : {}),
     };
   }
@@ -475,7 +490,8 @@
 
     const base = {};
     Object.entries(globals()).forEach(([key, value]) => {
-      base[key] = clean(value, key);
+      const cleaned = clean(value, key);
+      if (cleaned !== undefined) base[key] = cleaned;
     });
     const params = {};
     plan.params.forEach((key) => {
