@@ -25,8 +25,9 @@
  * ZNow never waits on it, and a failed lookup only leaves it blank.
  *
  * Other scripts read it through window.zinaraLocation:
- *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow } (a copy;
- *                            leftZnow: moved from a ZNow pincode to one outside the area)
+ *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow, locating }
+ *                            (a copy; leftZnow: moved from a ZNow pincode to one outside the
+ *                            area; locating: a location fix whose pincode is still being found)
  *   set(pincode, extra)   -> saves a pincode the shopper typed (source 'manual' by default)
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
@@ -134,8 +135,7 @@
     if (wasZnow !== znowNow()) state.leftZnow = wasZnow;
     write(state);
     setZnow(znowNow());
-    document.documentElement.classList.toggle('has-pincode', Boolean(state.pincode));
-    document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
+    announce();
     return api.get();
   }
 
@@ -230,11 +230,65 @@
         )
       ).address || {};
     const pincode = String(address.postcode || '').replace(/\s+/g, '');
-    return {
-      pincode: address.country_code === 'in' && PINCODE.test(pincode) ? pincode : '',
-      city: address.city || address.town || address.village || address.state_district || '',
-      state: address.state || '',
-    };
+    const city = address.city || address.town || address.village || address.state_district || '';
+    if (address.country_code !== 'in') {
+      // Outside India there is no pincode to show: the area and city instead,
+      // e.g. "Deira, Dubai" (client, 29 Oct).
+      const area = address.suburb || address.neighbourhood || address.quarter || address.city_district || '';
+      const place = [area, city || address.state].filter(Boolean).filter((part, i, all) => all.indexOf(part) === i);
+      return { pincode: '', city: place.join(', '), state: address.state || '' };
+    }
+    return { pincode: PINCODE.test(pincode) ? pincode : '', city, state: address.state || '' };
+  }
+
+  // The pincode and city for the saved location fix, when it has none yet -
+  // from its coordinates, so the browser is never asked again. Run after each
+  // fix, and on every page while one is missing: a lookup cut short (the
+  // shopper moved on mid-way) or failed is finished on the next page, rather
+  // than leaving the header on "Current location" (client, 29 Oct). A fix
+  // replaced meanwhile drops the answer.
+  // "Locating" - every pincode on the page shimmers (zinara-locating, in
+  // snippets/location) - while no place is known yet but one is on its way:
+  // the browser is finding the shopper (detect), or a fix's place is being
+  // looked up. A lookup that came back empty ends it, so nothing loads
+  // forever: the pincode fields offer themselves instead.
+  let placeFailedFor = '';
+  let detectingNow = false;
+  const fixKey = () => `${state.lat},${state.lng}`;
+  const isLocating = () =>
+    !state.pincode &&
+    !state.city &&
+    (detectingNow || (state.source === 'gps' && typeof state.lat === 'number' && placeFailedFor !== fixKey()));
+  // <html> classes for pieces picked by CSS (the ZNow showcase): has-pincode
+  // - a pincode, or outside India the place found for a location fix - and
+  // is-locating; then the event everything else listens to.
+  const announce = () => {
+    const root = document.documentElement;
+    root.classList.toggle('has-pincode', Boolean(state.pincode || state.city));
+    root.classList.toggle('is-locating', isLocating());
+    document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
+  };
+
+  function fillPlace() {
+    const { lat, lng } = state;
+    if (state.source !== 'gps' || typeof lat !== 'number' || !isLocating()) return;
+    const key = fixKey();
+    const current = () => state.lat === lat && state.lng === lng && state.source === 'gps';
+    lookupPincode(lat, lng)
+      .then((place) => {
+        if (!current()) return;
+        // A pincode, or outside India the place's name ("Deira, Dubai").
+        if (place.pincode || place.city) {
+          save(place);
+          return;
+        }
+        throw new Error('no place');
+      })
+      .catch(() => {
+        if (!current()) return;
+        placeFailedFor = key;
+        announce();
+      });
   }
 
   // NCR's own boundaries first; OpenStreetMap outside them, or if the file
@@ -255,13 +309,40 @@
 
   // High accuracy: network-only fixes are often a few km out, enough to be on
   // the wrong side of the area's edge.
+  //
+  // Some scripts on the store wrap the browser's geolocation and answer
+  // "denied" first, then pass on the real position a moment later (seen
+  // 29 Oct: ERR 1 then OK from one call). So an error on a site that is
+  // allowed location waits a little for a real answer before it counts.
+  const LATE_ANSWER_MS = 8000;
   function position() {
     return new Promise((resolve, reject) => {
       if (!canLocate()) {
         reject({ code: 2, message: 'Geolocation unavailable' });
         return;
       }
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
+      let settled = false;
+      let pending = null;
+      const succeed = (result) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(pending);
+        resolve(result);
+      };
+      const fail = (error) => {
+        if (settled || pending) return;
+        permission().then((state) => {
+          if (settled) return;
+          const finish = () => {
+            if (settled) return;
+            settled = true;
+            reject(error);
+          };
+          if (state === 'granted') pending = setTimeout(finish, LATE_ANSWER_MS);
+          else finish();
+        });
+      };
+      navigator.geolocation.getCurrentPosition(succeed, fail, {
         enableHighAccuracy: true,
         timeout: 20000,
         maximumAge: 10 * 60 * 1000,
@@ -287,6 +368,8 @@
       off), 'unavailable', 'timeout' or 'area' (the outline could not load). */
   function detect() {
     if (detecting) return detecting;
+    detectingNow = true;
+    if (isLocating()) announce();
     detecting = (async () => {
       let coords;
       try {
@@ -329,16 +412,14 @@
         ...(samePlace ? {} : { pincode: '', city: '', state: '' }),
       });
 
-      lookupPincode(lat, lng)
-        .then((place) => {
-          if (state.lat === lat && state.lng === lng && state.source === 'gps') save(place);
-        })
-        .catch(() => {});
+      fillPlace();
       return result;
     })();
     detecting
       .finally(() => {
         detecting = null;
+        detectingNow = false;
+        announce();
       })
       .catch(() => {});
     return detecting;
@@ -416,7 +497,17 @@
     get() {
       const { pincode = '', city = '', state: region = '', source = '', status = '', updated = 0 } = state;
       const znow = znowNow();
-      return { pincode, city, state: region, source, status, updated, znow, leftZnow: !znow && Boolean(state.leftZnow) };
+      return {
+        pincode,
+        city,
+        state: region,
+        source,
+        status,
+        updated,
+        znow,
+        leftZnow: !znow && Boolean(state.leftZnow),
+        locating: isLocating(),
+      };
     },
     set(pincode, extra = {}) {
       const value = cleanPincode(pincode);
@@ -441,8 +532,17 @@
   async function start() {
     // Switched off in theme settings, in the theme editor, or for automated
     // browsers (Lighthouse, bots): the API still works, nothing runs by itself.
-    if (config.enabled === false || window.Shopify?.designMode || navigator.webdriver) return;
+    if (config.enabled === false || window.Shopify?.designMode || navigator.webdriver) {
+      // Nothing will finish a place lookup here: drop the first paint's
+      // shimmer (snippets/location, delivery-location) rather than leave it.
+      if (isLocating()) {
+        placeFailedFor = fixKey();
+        announce();
+      }
+      return;
+    }
 
+    fillPlace();
     const firstPageOfVisit = !sessionStarted();
     const browser = await permission();
 
@@ -487,13 +587,13 @@
 
     // A pincode the shopper typed (e.g. on a product page) is kept - it may
     // be where they want delivery, not where they are. Refreshed on the first
-    // page of a visit, and on any page while the fix still has no pincode (its
+    // page of a visit, and on any page while the fix still has no place (its
     // lookup failed or never ran) - the same place is not tested again, only
     // looked up.
     if (
       browser === 'granted' &&
       (!state.source || state.source === 'gps') &&
-      (firstPageOfVisit || !state.pincode)
+      (firstPageOfVisit || (!state.pincode && !state.city))
     ) {
       detect().catch(() => {});
     }

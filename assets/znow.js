@@ -6,12 +6,12 @@
  * - in the same-day area already (zinaraLocation.get().znow): the link
  *   opens straight away - the ZNow collection plays the loader itself on
  *   arrival (intro, below), for same-day shoppers only;
- * - located outside the area: the link opens straight away too - the
- *   collection's cards show "Ready to ship" / "Made to order" (client, 29 Oct);
- * - anything else (location blocked, never asked, typed pincode outside):
- *   the dialog asks for a pincode or "Use my location", and any delivered
- *   answer opens the link; only a pincode not delivered to at all stops
- *   at "We don't deliver to … yet".
+ * - already known to be outside it (a pincode saved anywhere, or located):
+ *   the dialog opens on "Z-Now coming soon!" (client, 29 Oct);
+ * - unknown (location blocked, never asked): the dialog asks for a pincode
+ *   or "Use my location", and any delivered answer opens the link - the
+ *   collection's cards show "Ready to ship" / "Made to order"; only a
+ *   pincode not delivered to at all stops at "We don't deliver to … yet".
  *
  * The "Deliver to" control in the header (snippets/delivery-location)
  * opens the same dialog to change the pincode: no link to follow, so a
@@ -94,7 +94,9 @@
       }
       say('');
     } else {
-      title.textContent = target || checking ? defaults.title : 'Change delivery pincode';
+      // "Change" only once there is a pincode to change; "Select Location" before.
+      const hasPincode = Boolean(window.zinaraLocation?.get().pincode);
+      title.textContent = target || checking || !hasPincode ? defaults.title : 'Change delivery pincode';
       subtitle.textContent = defaults.subtitle;
     }
     if (name === 'checking') {
@@ -118,7 +120,8 @@
     checking = Boolean(options.check);
     input.value = state.pincode || '';
     say('');
-    view('ask');
+    if (options.unavailable) view('unavailable', { pincode: state.pincode });
+    else view('ask');
     if (!dialog.open) {
       dialog.classList.remove('is-closing');
       dialog.showModal();
@@ -201,13 +204,30 @@
       view('ask');
       const messages = {
         denied: 'Location is blocked for this site in your browser. Enter your pincode instead.',
-        system: 'Location is turned off on this device. Turn it on in your device settings, or enter your pincode.',
+        system: systemLocationOff(),
         timeout: "Finding your location took too long. Try again, or enter your pincode.",
       };
       say(messages[error.code] || "We couldn't find your location. Enter your pincode instead.", true);
       input.focus();
     }
   });
+
+  /* The site is allowed but the device won't share its location (Windows /
+     macOS location services off, or off for the browser): name the exact
+     setting, since "device settings" sent shoppers looking in the browser. */
+  function systemLocationOff() {
+    const platform = `${navigator.userAgentData?.platform || ''} ${navigator.userAgent}`;
+    const where = /Windows/i.test(platform)
+      ? 'Windows Settings → Privacy & security → Location (Location services, and "Let desktop apps access your location")'
+      : /Android/i.test(platform)
+        ? 'your phone’s Settings → Location'
+        : /iPhone|iPad|iPod/i.test(platform)
+          ? 'Settings → Privacy & Security → Location Services (and for your browser)'
+          : /Mac/i.test(platform)
+            ? 'System Settings → Privacy & Security → Location Services (and for your browser)'
+            : 'your device settings';
+    return `Your device’s location is off. Turn it on in ${where}, or enter your pincode.`;
+  }
 
   // Change / Try another pincode: back to the field, ready to type.
   const retry = () => {
@@ -334,11 +354,12 @@
 
     target = link.href;
     const state = window.zinaraLocation?.get() || {};
-    // Where the shopper is already known - in the area, or located outside
-    // it - the collection opens straight away; only an unknown place asks.
+    // In the area: straight to the collection. Already known to be outside it
+    // (a pincode saved anywhere, or located): "Z-Now coming soon!" (client,
+    // 29 Oct). Unknown: the dialog asks.
     const located = state.source === 'gps' && state.status === 'granted';
-    if (state.znow || located) window.location.assign(target);
-    else openDialog(state);
+    if (state.znow) window.location.assign(target);
+    else openDialog(state, { unavailable: Boolean(state.pincode) || located });
   });
 
   /* "Check availability" (data-znow-check, the ZNow showcase): the dialog
@@ -365,11 +386,12 @@
   });
 
   document.addEventListener('zinara:location', (event) => {
-    const { city, pincode, source } = event.detail;
-    // A location fix whose place isn't known yet still reads as located.
-    const text = [city, pincode].filter(Boolean).join(' ') || (source === 'gps' ? 'Current location' : '');
-    if (!text) return;
+    const { city, pincode, locating } = event.detail;
+    // A location fix whose pincode is still being found shimmers (header.css)
+    // rather than naming no place; a lookup that failed offers the field.
+    const text = [city, pincode].filter(Boolean).join(' ') || (locating ? 'Locating…' : 'Select pincode');
     document.querySelectorAll('[data-delivery-location-place]').forEach((place) => {
+      place.classList.toggle('zinara-locating', Boolean(locating));
       if (place.textContent === text) return;
       place.textContent = text;
       replay(place);
@@ -380,12 +402,14 @@
      on its button, and "… at 110017." - the city, or "you", for a location
      fix whose pincode isn't known. */
   const fillPincode = () => {
-    const { pincode, city } = window.zinaraLocation?.get() || {};
+    const { pincode, city, locating } = window.zinaraLocation?.get() || {};
     document.querySelectorAll('[data-znow-pincode]').forEach((node) => {
-      node.textContent = pincode || city || 'Your location';
+      node.textContent = pincode || city || (locating ? 'Locating…' : 'Your location');
+      node.classList.toggle('zinara-locating', Boolean(locating));
     });
     document.querySelectorAll('[data-znow-place]').forEach((node) => {
-      node.textContent = pincode || city || 'you';
+      node.textContent = pincode || city || (locating ? 'Locating…' : 'you');
+      node.classList.toggle('zinara-locating', Boolean(locating));
     });
   };
   fillPincode();

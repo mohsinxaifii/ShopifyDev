@@ -44,8 +44,12 @@
 <script>
   (function (root) {
     var saved = window.zinaraSavedLocation || {};
-    // A location fix whose place isn't known yet still reads as located.
-    var text = [saved.city, saved.pincode].filter(Boolean).join(' ') || (saved.source === 'gps' ? 'Current location' : '');
-    if (text) root.querySelector('[data-delivery-location-place]').textContent = text;
+    // A location fix whose pincode is still being found (assets/location.js
+    // finishes it on this page) shimmers rather than naming no place.
+    var place = root.querySelector('[data-delivery-location-place]');
+    var locating = saved.source === 'gps' && !saved.pincode && !saved.city && typeof saved.lat === 'number';
+    var text = [saved.city, saved.pincode].filter(Boolean).join(' ') || (locating ? 'Locating…' : '');
+    if (text) place.textContent = text;
+    if (locating) place.classList.add('zinara-locating');
   })(document.currentScript.previousElementSibling);
 </script>

@@ -933,11 +933,22 @@
         const pincode = state.pincode || '';
         const located = state.source === 'gps' && state.status === 'granted';
         const isKnown = Boolean(pincode) || (located && state.znow);
-        ask.hidden = isKnown;
-        known.hidden = !isKnown;
+        // Being located: the pincode row shimmers where the pincode will be
+        // (zinara-locating, snippets/location) rather than asking for one.
+        const locating = !pincode && Boolean(state.locating);
+        ask.hidden = isKnown || locating;
+        known.hidden = !isKnown && !locating;
+        block.querySelector('[data-delivery-pincode]').classList.toggle('zinara-locating', locating);
+        if (locating) {
+          block.querySelector('[data-delivery-pincode]').textContent = 'Locating…';
+          block.querySelector('[data-delivery-area]').textContent = '';
+          znowRow.hidden = true;
+          standardRow.hidden = true;
+          return;
+        }
         if (isKnown) {
           const label = block.querySelector('[data-delivery-pincode]');
-          const next = pincode || 'Your location';
+          const next = pincode || state.city || 'Your location';
           // A new pincode in the field re-fades it rather than snapping.
           if (label.textContent && label.textContent !== next) {
             known.style.animation = 'none';

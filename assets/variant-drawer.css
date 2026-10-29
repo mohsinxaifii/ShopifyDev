@@ -248,6 +248,73 @@
   line-height: 1.571;
 }
 
+/* The delivery tag on the last option's heading - the product page's
+   (product.css .pdp_ship_tag), for the picked variant: one pill per state
+   (data-delivery-state, variant-drawer.js); of the in-stock pair html.is-znow
+   picks "Now · Get today" over "Ready to ship". Nothing while not buyable. */
+.variant-drawer_panel_body_options_group_head:has(.variant-drawer_tag) {
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 6px;
+}
+
+.variant-drawer_tag {
+  display: inline-flex;
+  align-items: center;
+}
+
+.variant-drawer_tag_pill {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.variant-drawer_tag[data-delivery-state='in-stock'] .variant-drawer_tag_pill--ready,
+.variant-drawer_tag[data-delivery-state='made-to-order'] .variant-drawer_tag_pill--made,
+html.is-znow .variant-drawer_tag[data-delivery-state='in-stock'] .variant-drawer_tag_pill--znow {
+  display: inline-flex;
+}
+
+html.is-znow .variant-drawer_tag[data-delivery-state='in-stock'] .variant-drawer_tag_pill--ready {
+  display: none;
+}
+
+.variant-drawer_tag_pill--znow {
+  background: linear-gradient(to right, #4a162c, #712242);
+  color: #ecc0d2;
+}
+
+.variant-drawer_tag_now {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.variant-drawer_tag_now svg {
+  display: block;
+  flex: none;
+  width: 8px;
+  height: 8px;
+}
+
+.variant-drawer_tag_pill--ready {
+  background-color: #ac3465;
+  color: #fff;
+}
+
+.variant-drawer_tag_pill--made {
+  background-color: #ecc0d2;
+  color: var(--color-brand, #712242);
+}
+
 .variant-drawer_panel_body_options_group_guide {
   display: inline-flex;
   align-items: center;
@@ -359,8 +426,9 @@
 }
 
 /* The Z badge on a last-option value in stock with the other picks, as on
-   the product page: a 14px pink disc on the chip's top-right edge, in the
-   ZNow area only. It pops in as a value comes into stock. */
+   the product page: a 14px pink disc on the chip's top-right edge, for every
+   pincode - it marks ready to ship (client, 29 Oct). It pops in as a value
+   comes into stock. */
 .variant-drawer_panel_body_options_group_values_value[data-znow-value] {
   position: relative;
 }
@@ -384,8 +452,7 @@
   right: 2px;
 }
 
-html.is-znow
-  .variant-drawer_panel_body_options_group_values_value.is-znow-stock
+.variant-drawer_panel_body_options_group_values_value.is-znow-stock
   .variant-drawer_panel_body_options_group_values_value_znow {
   display: grid;
 }
