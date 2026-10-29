@@ -246,6 +246,16 @@
   });
 
   dialog.querySelectorAll('[data-znow-close]').forEach((button) => button.addEventListener('click', closeDialog));
+  // "Continue browsing" (on "coming soon"): always the ZNow collection - the
+  // link being followed, else the collection itself (client, 30 Oct: it only
+  // closed when opened from "Check availability"); just closes if already there.
+  $('[data-znow-continue]')?.addEventListener('click', async () => {
+    const url = target || dialog.dataset.znowUrl;
+    await closeDialog();
+    if (url && new URL(url, window.location.href).pathname !== window.location.pathname) {
+      window.location.assign(url);
+    }
+  });
   dialog.addEventListener('cancel', (event) => {
     event.preventDefault();
     closeDialog();

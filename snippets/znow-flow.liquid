@@ -18,6 +18,8 @@
   data-znow-dialog
   data-view="ask"
   data-standard-days="{{ settings.znow_standard_delivery_days | default: 3 }}"
+  {%- assign znow_flow_handle = settings.znow_collection_handle | default: 'znow' | strip %}
+  data-znow-url="{{ collections[znow_flow_handle].url }}"
   scroll-lock
 >
   <div class="znow-dialog_panel">
@@ -84,7 +86,11 @@
         <button type="button" class="znow-dialog_button znow-dialog_button--primary" data-znow-retry>
           Try another pincode
         </button>
-        <button type="button" class="znow-dialog_button znow-dialog_button--secondary" data-znow-close>
+        {%- comment -%}
+          Opens the ZNow collection - its cards say "Ready to ship" / "Made
+          to order" for the pincode (client, 30 Oct); assets/znow.js.
+        {%- endcomment -%}
+        <button type="button" class="znow-dialog_button znow-dialog_button--secondary" data-znow-continue>
           Continue browsing
         </button>
       </div>
