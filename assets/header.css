@@ -683,3 +683,26 @@ html.znow-switching .delivery-location_znow {
 .delivery-location_place.is-refreshed {
   animation: znow-appear 0.3s ease-out;
 }
+
+/* While a location fix's pincode is being found (assets/location.js): a
+   shimmering placeholder where the place will be, its "Locating…" kept for
+   screen readers. */
+.delivery-location_place.is-loading {
+  min-width: 72px;
+  border-radius: 4px;
+  color: transparent;
+  background: linear-gradient(90deg, #efe6ea 0%, #f9f4f6 50%, #efe6ea 100%) 0 0 / 200% 100%;
+  animation: delivery-location-shimmer 1.2s linear infinite;
+}
+
+@keyframes delivery-location-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delivery-location_place.is-loading {
+    animation: none;
+  }
+}

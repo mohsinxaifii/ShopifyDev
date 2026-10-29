@@ -369,11 +369,12 @@
   });
 
   document.addEventListener('zinara:location', (event) => {
-    const { city, pincode, source } = event.detail;
-    // A location fix whose place isn't known yet still reads as located.
-    const text = [city, pincode].filter(Boolean).join(' ') || (source === 'gps' ? 'Current location' : '');
-    if (!text) return;
+    const { city, pincode, locating } = event.detail;
+    // A location fix whose pincode is still being found shimmers (header.css)
+    // rather than naming no place; a lookup that failed offers the field.
+    const text = [city, pincode].filter(Boolean).join(' ') || (locating ? 'Locating…' : 'Select pincode');
     document.querySelectorAll('[data-delivery-location-place]').forEach((place) => {
+      place.classList.toggle('is-loading', !pincode && Boolean(locating));
       if (place.textContent === text) return;
       place.textContent = text;
       replay(place);

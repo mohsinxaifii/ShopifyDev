@@ -25,8 +25,9 @@
  * ZNow never waits on it, and a failed lookup only leaves it blank.
  *
  * Other scripts read it through window.zinaraLocation:
- *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow } (a copy;
- *                            leftZnow: moved from a ZNow pincode to one outside the area)
+ *   get()                 -> { pincode, city, state, source, status, updated, znow, leftZnow, locating }
+ *                            (a copy; leftZnow: moved from a ZNow pincode to one outside the
+ *                            area; locating: a location fix whose pincode is still being found)
  *   set(pincode, extra)   -> saves a pincode the shopper typed (source 'manual' by default)
  *   detect()              -> asks the browser now (from a click, e.g. "Use my location")
  *   permission()          -> 'granted' | 'denied' | 'prompt' | 'unknown', never asks
@@ -243,14 +244,32 @@
   // shopper moved on mid-way) or failed is finished on the next page, rather
   // than leaving the header on "Current location" (client, 29 Oct). A fix
   // replaced meanwhile drops the answer.
+  // A fix whose lookup came back empty on this page: no longer "locating" -
+  // the header offers "Select pincode" instead of loading forever.
+  let placeFailedFor = '';
+  const fixKey = () => `${state.lat},${state.lng}`;
+  const isLocating = () =>
+    state.source === 'gps' && !state.pincode && typeof state.lat === 'number' && placeFailedFor !== fixKey();
+
   function fillPlace() {
     const { lat, lng } = state;
-    if (state.source !== 'gps' || state.pincode || typeof lat !== 'number' || typeof lng !== 'number') return;
+    if (!isLocating()) return;
+    const key = fixKey();
+    const current = () => state.lat === lat && state.lng === lng && state.source === 'gps';
     lookupPincode(lat, lng)
       .then((place) => {
-        if (state.lat === lat && state.lng === lng && state.source === 'gps' && place.pincode) save(place);
+        if (!current()) return;
+        if (place.pincode) {
+          save(place);
+          return;
+        }
+        throw new Error('no pincode');
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!current()) return;
+        placeFailedFor = key;
+        document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
+      });
   }
 
   // NCR's own boundaries first; OpenStreetMap outside them, or if the file
@@ -428,7 +447,17 @@
     get() {
       const { pincode = '', city = '', state: region = '', source = '', status = '', updated = 0 } = state;
       const znow = znowNow();
-      return { pincode, city, state: region, source, status, updated, znow, leftZnow: !znow && Boolean(state.leftZnow) };
+      return {
+        pincode,
+        city,
+        state: region,
+        source,
+        status,
+        updated,
+        znow,
+        leftZnow: !znow && Boolean(state.leftZnow),
+        locating: isLocating(),
+      };
     },
     set(pincode, extra = {}) {
       const value = cleanPincode(pincode);
