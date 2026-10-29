@@ -204,13 +204,30 @@
       view('ask');
       const messages = {
         denied: 'Location is blocked for this site in your browser. Enter your pincode instead.',
-        system: 'Location is turned off on this device. Turn it on in your device settings, or enter your pincode.',
+        system: systemLocationOff(),
         timeout: "Finding your location took too long. Try again, or enter your pincode.",
       };
       say(messages[error.code] || "We couldn't find your location. Enter your pincode instead.", true);
       input.focus();
     }
   });
+
+  /* The site is allowed but the device won't share its location (Windows /
+     macOS location services off, or off for the browser): name the exact
+     setting, since "device settings" sent shoppers looking in the browser. */
+  function systemLocationOff() {
+    const platform = `${navigator.userAgentData?.platform || ''} ${navigator.userAgent}`;
+    const where = /Windows/i.test(platform)
+      ? 'Windows Settings → Privacy & security → Location (Location services, and "Let desktop apps access your location")'
+      : /Android/i.test(platform)
+        ? 'your phone’s Settings → Location'
+        : /iPhone|iPad|iPod/i.test(platform)
+          ? 'Settings → Privacy & Security → Location Services (and for your browser)'
+          : /Mac/i.test(platform)
+            ? 'System Settings → Privacy & Security → Location Services (and for your browser)'
+            : 'your device settings';
+    return `Your device’s location is off. Turn it on in ${where}, or enter your pincode.`;
+  }
 
   // Change / Try another pincode: back to the field, ready to type.
   const retry = () => {
