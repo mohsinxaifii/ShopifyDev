@@ -532,7 +532,15 @@
   async function start() {
     // Switched off in theme settings, in the theme editor, or for automated
     // browsers (Lighthouse, bots): the API still works, nothing runs by itself.
-    if (config.enabled === false || window.Shopify?.designMode || navigator.webdriver) return;
+    if (config.enabled === false || window.Shopify?.designMode || navigator.webdriver) {
+      // Nothing will finish a place lookup here: drop the first paint's
+      // shimmer (snippets/location, delivery-location) rather than leave it.
+      if (isLocating()) {
+        placeFailedFor = fixKey();
+        announce();
+      }
+      return;
+    }
 
     fillPlace();
     const firstPageOfVisit = !sessionStarted();
