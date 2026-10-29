@@ -285,13 +285,28 @@
       const variant = this.matchingVariant(body);
       body.variant = variant;
 
-      // The delivery bar speaks for the picked variant: in stock (ZNow or
-      // "Ready to ship"), made to order, or coming soon.
+      // The delivery tag (or, without options, the photo's bar) speaks for the
+      // picked variant: in stock (ZNow or "Ready to ship"), made to order, or
+      // coming soon.
       const delivery = body.querySelector('[data-delivery]');
       if (delivery) {
         let state = 'coming-soon';
         if (variant?.available) state = variant.readyToShip ? 'in-stock' : 'made-to-order';
         delivery.dataset.deliveryState = state;
+      }
+
+      // Its dates by Shiprocket for the saved pincode, as on the product page
+      // (assets/location.js caches them); Liquid's fixed days otherwise.
+      if (!body.shipDatesAsked) {
+        body.shipDatesAsked = true;
+        window.zinaraLocation
+          ?.deliveryDays?.(window.zinaraLocation.get().pincode)
+          .then((edd) => {
+            if (!edd) return;
+            body.querySelectorAll('[data-ship-date="in-stock"]').forEach((node) => (node.textContent = shipDate(edd.ready)));
+            body.querySelectorAll('[data-ship-date="made"]').forEach((node) => (node.textContent = shipDate(edd.made)));
+          })
+          .catch(() => {});
       }
 
       // The Z badge: last-option values in stock alongside the other picks.
