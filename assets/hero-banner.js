@@ -16,23 +16,34 @@ class HeroBannerSlideshow extends HTMLElement {
     this.dots.forEach((dot, index) => {
       dot.addEventListener('click', () => this.goTo(index, true));
     });
-    // Drag with a mouse or swipe with a finger to change slide (assets/swipe.js).
+    // Drag with a mouse or swipe with a finger to change slide (assets/swipe.js):
+    // the slide and its neighbour follow the finger, then finish or snap back.
     window.zinaraSwipe?.(this, {
-      onSwipe: (direction) => this.goTo(this.currentIndex + direction, true, direction),
+      onDrag: (dx) => this.drag(dx),
+      onSwipe: (direction) => this.release(direction),
+      onCancel: () => this.release(0),
     });
-    // A slide that has finished leaving drops out of sight (hero-banner.css).
+    // A slide that has finished moving drops its inline motion; one that is
+    // not showing goes back out of sight, parked without animating, so it can
+    // never sweep across the band on its way back (hero-banner.css).
     this.slides.forEach((slide) => {
       slide.addEventListener('transitionend', (event) => {
-        if (event.target === slide && event.propertyName === 'transform' && !slide.classList.contains('is-active')) {
-          slide.classList.remove('is-leaving');
+        if (event.target !== slide || event.propertyName !== 'transform') return;
+        if (slide.classList.contains('is-active')) {
+          slide.style.transition = '';
+          return;
         }
+        this.park(slide);
       });
     });
     // Later slides are lazy and now wait off to the side, so fetch them once
     // the page has loaded rather than letting one slide in still blank.
+    // Decoded ahead too, so the first time each one slides in it doesn't
+    // stall mid-move while the phone unpacks a large image.
     const loadAll = () =>
       this.querySelectorAll('img[loading="lazy"]').forEach((img) => {
         img.loading = 'eager';
+        img.decode?.().catch(() => {});
       });
     if (document.readyState === 'complete') loadAll();
     else window.addEventListener('load', loadAll, { once: true });
@@ -46,6 +57,63 @@ class HeroBannerSlideshow extends HTMLElement {
 
   disconnectedCallback() {
     this.stopAutoplay();
+  }
+
+  /** Out of sight on the right, without animating (hero-banner.css). */
+  park(slide) {
+    slide.classList.remove('is-leaving', 'is-dragging');
+    slide.style.transition = 'none';
+    slide.style.transform = '';
+    void slide.offsetWidth;
+    slide.style.transition = '';
+  }
+
+  /** Mid-drag: the slide and the neighbour it reveals move with the finger. */
+  drag(dx) {
+    this.stopAutoplay();
+    const count = this.slides.length;
+    const dir = dx < 0 ? 1 : -1;
+    const current = this.slides[this.currentIndex];
+    const neighbour = this.slides[(this.currentIndex + dir + count) % count];
+    // Changed direction mid-drag: the other neighbour goes back out of sight.
+    if (this.dragNeighbour && this.dragNeighbour !== neighbour) this.park(this.dragNeighbour);
+    this.dragNeighbour = neighbour;
+    this.dragDir = dir;
+    neighbour.classList.remove('is-leaving');
+    neighbour.classList.add('is-dragging');
+    current.style.transition = 'none';
+    neighbour.style.transition = 'none';
+    current.style.transform = `translateX(${dx}px)`;
+    neighbour.style.transform = `translateX(calc(${dir * 100}% + ${dx}px))`;
+  }
+
+  /**
+   * End of a drag: `direction` 1 / -1 finishes the move from where the finger
+   * left it, 0 (too short) snaps back. A quick ease-out from there, not a
+   * fresh full slide, so it carries on the finger's motion.
+   */
+  release(direction) {
+    const neighbour = this.dragNeighbour;
+    this.dragNeighbour = null;
+    if (!neighbour) {
+      if (direction) this.goTo(this.currentIndex + direction, true, direction);
+      return;
+    }
+    const current = this.slides[this.currentIndex];
+    const settle = 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    current.style.transition = settle;
+    neighbour.style.transition = settle;
+    if (direction && direction === this.dragDir) {
+      neighbour.classList.remove('is-dragging');
+      current.classList.add('is-leaving');
+      this.setActive(this.slides.indexOf(neighbour));
+      neighbour.style.transform = '';
+      current.style.transform = `translateX(${direction * -100}%)`;
+    } else {
+      current.style.transform = '';
+      neighbour.style.transform = `translateX(${this.dragDir * 100}%)`;
+    }
+    if (this.autoplay && !this.reducedMotion) this.startAutoplay();
   }
 
   /**
@@ -71,7 +139,17 @@ class HeroBannerSlideshow extends HTMLElement {
       outgoing.classList.add('is-leaving');
       outgoing.style.transform = `translateX(${dir * -100}%)`;
     }
-    this.currentIndex = nextIndex;
+    this.setActive(nextIndex);
+
+    if (isManual) {
+      this.stopAutoplay();
+      if (this.autoplay && !this.reducedMotion) this.startAutoplay();
+    }
+  }
+
+  /** Marks slide `index` as the one showing: classes, links, dots. */
+  setActive(index) {
+    this.currentIndex = index;
     this.slides.forEach((slide, i) => {
       slide.classList.toggle('is-active', i === this.currentIndex);
       // The slide link and the button: only the visible slide's are tabbable.
@@ -83,11 +161,6 @@ class HeroBannerSlideshow extends HTMLElement {
       dot.classList.toggle('is-active', i === this.currentIndex);
       dot.setAttribute('aria-selected', String(i === this.currentIndex));
     });
-
-    if (isManual) {
-      this.stopAutoplay();
-      if (this.autoplay && !this.reducedMotion) this.startAutoplay();
-    }
   }
 
   startAutoplay() {

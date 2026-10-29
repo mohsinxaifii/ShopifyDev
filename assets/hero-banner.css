@@ -37,10 +37,15 @@
     visibility 0s linear 0.7s;
 }
 
+/* is-dragging: the neighbour a finger is pulling in (hero-banner.js drag).
+   Slides on the move get their own layer, so phones slide them without
+   repainting. */
 .hero-banner_wrapper_track_slide.is-active,
-.hero-banner_wrapper_track_slide.is-leaving {
+.hero-banner_wrapper_track_slide.is-leaving,
+.hero-banner_wrapper_track_slide.is-dragging {
   visibility: visible;
   transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
 }
 
 .hero-banner_wrapper_track_slide.is-active {
