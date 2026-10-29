@@ -13,6 +13,7 @@
  */
 class CollectionPage extends HTMLElement {
   connectedCallback() {
+    this.bindChips();
     this.form = this.querySelector('[data-filter-form]');
     if (!this.form) return;
 
@@ -438,6 +439,27 @@ class CollectionPage extends HTMLElement {
     } finally {
       this.setBusy(false);
     }
+  }
+
+  /* The chips (snippets/catalog-chips) are plain links to another page, which
+     on a phone can take a moment to arrive: the tapped chip shows as chosen at
+     once and the grid fades (collection.css), so the tap never seems to do
+     nothing - which read as "the chips need a double tap" (client, 30 Oct).
+     A page brought back by Back is put as it was. */
+  bindChips() {
+    const chips = () => Array.from(this.querySelectorAll('.collection_wrapper_main_chips_chip'));
+    const current = chips().find((chip) => chip.classList.contains('is-active'));
+    this.addEventListener('click', (event) => {
+      const chip = event.target.closest('.collection_wrapper_main_chips_chip');
+      if (!chip || event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey) return;
+      chips().forEach((other) => other.classList.toggle('is-active', other === chip));
+      this.setAttribute('data-chip-loading', '');
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (!event.persisted) return;
+      this.removeAttribute('data-chip-loading');
+      chips().forEach((chip) => chip.classList.toggle('is-active', chip === current));
+    });
   }
 
   setBusy(busy) {
