@@ -231,11 +231,15 @@
         )
       ).address || {};
     const pincode = String(address.postcode || '').replace(/\s+/g, '');
-    return {
-      pincode: address.country_code === 'in' && PINCODE.test(pincode) ? pincode : '',
-      city: address.city || address.town || address.village || address.state_district || '',
-      state: address.state || '',
-    };
+    const city = address.city || address.town || address.village || address.state_district || '';
+    if (address.country_code !== 'in') {
+      // Outside India there is no pincode to show: the area and city instead,
+      // e.g. "Deira, Dubai" (client, 29 Oct).
+      const area = address.suburb || address.neighbourhood || address.quarter || address.city_district || '';
+      const place = [area, city || address.state].filter(Boolean).filter((part, i, all) => all.indexOf(part) === i);
+      return { pincode: '', city: place.join(', '), state: address.state || '' };
+    }
+    return { pincode: PINCODE.test(pincode) ? pincode : '', city, state: address.state || '' };
   }
 
   // The pincode and city for the saved location fix, when it has none yet -
@@ -244,31 +248,39 @@
   // shopper moved on mid-way) or failed is finished on the next page, rather
   // than leaving the header on "Current location" (client, 29 Oct). A fix
   // replaced meanwhile drops the answer.
-  // A fix whose lookup came back empty on this page: no longer "locating" -
-  // the header offers "Select pincode" instead of loading forever.
+  // "Locating" - every pincode on the page shimmers (zinara-locating, in
+  // snippets/location) - while no place is known yet but one is on its way:
+  // the browser is finding the shopper (detect), or a fix's place is being
+  // looked up. A lookup that came back empty ends it, so nothing loads
+  // forever: the pincode fields offer themselves instead.
   let placeFailedFor = '';
+  let detectingNow = false;
   const fixKey = () => `${state.lat},${state.lng}`;
   const isLocating = () =>
-    state.source === 'gps' && !state.pincode && typeof state.lat === 'number' && placeFailedFor !== fixKey();
+    !state.pincode &&
+    !state.city &&
+    (detectingNow || (state.source === 'gps' && typeof state.lat === 'number' && placeFailedFor !== fixKey()));
+  const announce = () => document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
 
   function fillPlace() {
     const { lat, lng } = state;
-    if (!isLocating()) return;
+    if (state.source !== 'gps' || typeof lat !== 'number' || !isLocating()) return;
     const key = fixKey();
     const current = () => state.lat === lat && state.lng === lng && state.source === 'gps';
     lookupPincode(lat, lng)
       .then((place) => {
         if (!current()) return;
-        if (place.pincode) {
+        // A pincode, or outside India the place's name ("Deira, Dubai").
+        if (place.pincode || place.city) {
           save(place);
           return;
         }
-        throw new Error('no pincode');
+        throw new Error('no place');
       })
       .catch(() => {
         if (!current()) return;
         placeFailedFor = key;
-        document.dispatchEvent(new CustomEvent('zinara:location', { detail: api.get() }));
+        announce();
       });
   }
 
@@ -322,6 +334,8 @@
       off), 'unavailable', 'timeout' or 'area' (the outline could not load). */
   function detect() {
     if (detecting) return detecting;
+    detectingNow = true;
+    if (isLocating()) announce();
     detecting = (async () => {
       let coords;
       try {
@@ -370,6 +384,8 @@
     detecting
       .finally(() => {
         detecting = null;
+        detectingNow = false;
+        announce();
       })
       .catch(() => {});
     return detecting;
@@ -529,13 +545,13 @@
 
     // A pincode the shopper typed (e.g. on a product page) is kept - it may
     // be where they want delivery, not where they are. Refreshed on the first
-    // page of a visit, and on any page while the fix still has no pincode (its
+    // page of a visit, and on any page while the fix still has no place (its
     // lookup failed or never ran) - the same place is not tested again, only
     // looked up.
     if (
       browser === 'granted' &&
       (!state.source || state.source === 'gps') &&
-      (firstPageOfVisit || !state.pincode)
+      (firstPageOfVisit || (!state.pincode && !state.city))
     ) {
       detect().catch(() => {});
     }
