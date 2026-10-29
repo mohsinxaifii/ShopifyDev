@@ -555,10 +555,26 @@
     color 0.2s ease;
 }
 
-.collection_wrapper_main_chips_chip.is-active {
+.collection_wrapper_main_chips_chip.is-active,
+.collection_wrapper_main_chips_chip:active {
   border-color: var(--color-brand, #712242);
   background-color: #f7f3f5;
   color: var(--color-brand, #712242);
+}
+
+/* A touch shows as the chip turning chosen (above), not the grey flash. */
+.collection_wrapper_main_chips_chip {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A chip was tapped and its page is on the way (collection.js bindChips). */
+.collection_wrapper_main_grid {
+  transition: opacity 0.2s ease;
+}
+
+collection-page[data-chip-loading] .collection_wrapper_main_grid {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* --------------------------------------------------------------------- grid */
