@@ -137,5 +137,31 @@
   html.znow-switching :is([data-znow-when], [data-znow-only], [data-znow-hide]) {
     animation: znow-appear 0.3s ease-out;
   }
+
+  /* Any pincode / place on the page while the shopper is being located
+     (zinaraLocation.get().locating): a shimmering placeholder, its
+     "Locating…" kept for screen readers. The cart has its own copy
+     (snippets/znow-cart-css, inside GoKwik's shadow root). */
+  .zinara-locating {
+    display: inline-block;
+    min-width: 72px;
+    border-radius: 4px;
+    color: transparent !important;
+    text-decoration-color: transparent !important;
+    background: linear-gradient(90deg, #efe6ea 0%, #f9f4f6 50%, #efe6ea 100%) 0 0 / 200% 100%;
+    animation: zinara-locating 1.2s linear infinite;
+  }
+
+  @keyframes zinara-locating {
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zinara-locating {
+      animation: none;
+    }
+  }
 </style>
 <script src="{{ 'location.js' | asset_url }}" defer="defer"></script>

@@ -374,7 +374,7 @@
     // rather than naming no place; a lookup that failed offers the field.
     const text = [city, pincode].filter(Boolean).join(' ') || (locating ? 'Locating…' : 'Select pincode');
     document.querySelectorAll('[data-delivery-location-place]').forEach((place) => {
-      place.classList.toggle('is-loading', !pincode && Boolean(locating));
+      place.classList.toggle('zinara-locating', Boolean(locating));
       if (place.textContent === text) return;
       place.textContent = text;
       replay(place);

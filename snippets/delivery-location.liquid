@@ -47,9 +47,9 @@
     // A location fix whose pincode is still being found (assets/location.js
     // finishes it on this page) shimmers rather than naming no place.
     var place = root.querySelector('[data-delivery-location-place]');
-    var locating = saved.source === 'gps' && !saved.pincode && typeof saved.lat === 'number';
+    var locating = saved.source === 'gps' && !saved.pincode && !saved.city && typeof saved.lat === 'number';
     var text = [saved.city, saved.pincode].filter(Boolean).join(' ') || (locating ? 'Locating…' : '');
     if (text) place.textContent = text;
-    if (locating) place.classList.add('is-loading');
+    if (locating) place.classList.add('zinara-locating');
   })(document.currentScript.previousElementSibling);
 </script>
