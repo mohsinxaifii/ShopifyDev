@@ -302,13 +302,40 @@
 
   // High accuracy: network-only fixes are often a few km out, enough to be on
   // the wrong side of the area's edge.
+  //
+  // Some scripts on the store wrap the browser's geolocation and answer
+  // "denied" first, then pass on the real position a moment later (seen
+  // 29 Oct: ERR 1 then OK from one call). So an error on a site that is
+  // allowed location waits a little for a real answer before it counts.
+  const LATE_ANSWER_MS = 8000;
   function position() {
     return new Promise((resolve, reject) => {
       if (!canLocate()) {
         reject({ code: 2, message: 'Geolocation unavailable' });
         return;
       }
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
+      let settled = false;
+      let pending = null;
+      const succeed = (result) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(pending);
+        resolve(result);
+      };
+      const fail = (error) => {
+        if (settled || pending) return;
+        permission().then((state) => {
+          if (settled) return;
+          const finish = () => {
+            if (settled) return;
+            settled = true;
+            reject(error);
+          };
+          if (state === 'granted') pending = setTimeout(finish, LATE_ANSWER_MS);
+          else finish();
+        });
+      };
+      navigator.geolocation.getCurrentPosition(succeed, fail, {
         enableHighAccuracy: true,
         timeout: 20000,
         maximumAge: 10 * 60 * 1000,
