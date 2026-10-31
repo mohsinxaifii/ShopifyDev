@@ -188,3 +188,16 @@ judgeme-rating:not([hidden]) {
   color: inherit;
   background: none;
 }
+
+/* Text kept for screen readers only. Lives here rather than with the drawers
+   that also use it: their stylesheets load without blocking the first paint,
+   and until they land the hidden labels would show. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -180,8 +180,10 @@
                   tag's output, not to the argument.
                 endcomment
                 assign media_loading = 'lazy'
+                assign media_priority = 'auto'
                 if forloop.first
                   assign media_loading = 'eager'
+                  assign media_priority = 'high'
                 endif
                 assign media_alt = media.alt | default: product.title
               -%}
@@ -205,7 +207,12 @@
                   {{
                     media
                     | image_url: width: 1112
-                    | image_tag: loading: media_loading, widths: '556,834,1112', sizes: '556px', alt: media_alt
+                    | image_tag:
+                      loading: media_loading,
+                      fetchpriority: media_priority,
+                      widths: '556,834,1112',
+                      sizes: '556px',
+                      alt: media_alt
                   }}
                 {%- endif -%}
               </button>

@@ -122,7 +122,14 @@
       {%- paginate collection.products by section.settings.products_per_page -%}
         <div class="collection_wrapper_main_grid" data-grid data-animate-group data-animate-stagger="0.05">
           {%- for product in collection.products -%}
-            {%- render 'product-card', product: product, variant: 'grid' -%}
+            {%- liquid
+              # The first row on any screen size is on screen at arrival
+              assign card_loading = 'lazy'
+              if forloop.index <= 4
+                assign card_loading = 'eager'
+              endif
+            -%}
+            {%- render 'product-card', product: product, variant: 'grid', loading: card_loading -%}
           {%- else -%}
             <p class="collection_wrapper_main_grid_empty">{{ 'collection.empty' | t }}</p>
           {%- endfor -%}

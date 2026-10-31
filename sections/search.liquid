@@ -163,8 +163,15 @@
         {%- paginate search.results by section.settings.results_per_page -%}
           <div class="collection_wrapper_main_grid" data-grid data-animate-group data-animate-stagger="0.05">
             {%- for item in search.results -%}
+              {%- liquid
+                # The first row on any screen size is on screen at arrival
+                assign card_loading = 'lazy'
+                if forloop.index <= 4
+                  assign card_loading = 'eager'
+                endif
+              -%}
               {%- if item.object_type == 'product' -%}
-                {%- render 'product-card', product: item, variant: 'grid' -%}
+                {%- render 'product-card', product: item, variant: 'grid', loading: card_loading -%}
               {%- else -%}
                 {%- render 'search-result-card', item: item -%}
               {%- endif -%}

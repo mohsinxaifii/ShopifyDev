@@ -9,10 +9,13 @@
 
   @param {object} product - a Shopify product object
   @param {string} [variant] - 'carousel' (default) or 'grid'
+  @param {string} [loading] - 'lazy' (default) or 'eager' for cards on the
+    first screen, whose photo is the page's LCP
 {%- enddoc -%}
 
 {%- liquid
   assign card_variant = variant | default: 'carousel'
+  assign card_loading = loading | default: 'lazy'
   assign is_grid = false
   if card_variant == 'grid'
     assign is_grid = true
@@ -96,7 +99,7 @@
         product.featured_image
         | image_url: width: media_src_width
         | image_tag:
-          loading: 'lazy',
+          loading: card_loading,
           widths: media_widths,
           sizes: media_sizes,
           alt: card_image_alt,

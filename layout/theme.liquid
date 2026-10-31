@@ -38,9 +38,19 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'motion.css' | asset_url | stylesheet_tag }}
-    {{ 'cart-drawer.css' | asset_url | stylesheet_tag }}
-    {{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
     {{ 'skeleton.css' | asset_url | stylesheet_tag }}
+
+    {%- comment -%}
+      The drawers are closed on arrival (a closed <dialog>, a hidden popover),
+      so nothing on screen needs their styles for the first paint - they load
+      alongside it instead of in front of it.
+    {%- endcomment -%}
+    <link rel="stylesheet" href="{{ 'cart-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ 'variant-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+    <noscript>
+      {{ 'cart-drawer.css' | asset_url | stylesheet_tag }}
+      {{ 'variant-drawer.css' | asset_url | stylesheet_tag }}
+    </noscript>
 
     {% comment %}
       Set before first paint so the reveal's hidden state applies to the very
