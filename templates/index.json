@@ -12,6 +12,17 @@
     "hero-banner": {
       "type": "hero-banner",
       "blocks": {
+        "slide_dX9xyt": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/dhanteras_desktop.png",
+            "mobile_image": "shopify://shop_images/dhanteras_mobile.png",
+            "heading": "",
+            "subheading": "",
+            "button_label": "",
+            "button_url": "shopify://collections/znow"
+          }
+        },
         "slide-1": {
           "type": "slide",
           "settings": {
@@ -60,6 +71,7 @@
         }
       },
       "block_order": [
+        "slide_dX9xyt",
         "slide-1",
         "slide_mkRNm4",
         "slide_BEYVhA",
