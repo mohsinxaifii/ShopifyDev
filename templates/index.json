@@ -16,12 +16,12 @@
           "type": "slide",
           "disabled": true,
           "settings": {
-            "image": "shopify://shop_images/dhanteras_desktop.png",
-            "mobile_image": "shopify://shop_images/dhanteras_mobile.png",
+            "image": "shopify://shop_images/desktop_blackfriday.png",
+            "mobile_image": "shopify://shop_images/mobile_blackfriday.png",
             "heading": "",
             "subheading": "",
             "button_label": "",
-            "button_url": "shopify://collections/znow"
+            "button_url": "shopify://collections/black-friday-sale"
           }
         },
         "slide-1": {
