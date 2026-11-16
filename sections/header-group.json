@@ -61,7 +61,6 @@
     },
     "header": {
       "type": "header",
-      "disabled": true,
       "settings": {
         "menu": "main-menu",
         "wishlist_url": "/pages/wishlist",
