@@ -14,7 +14,6 @@
       "blocks": {
         "slide_dX9xyt": {
           "type": "slide",
-          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/desktop_blackfriday.png",
             "mobile_image": "shopify://shop_images/mobile_blackfriday.png",
@@ -26,6 +25,7 @@
         },
         "slide-1": {
           "type": "slide",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/festive_banner_desktop.png",
             "mobile_image": "shopify://shop_images/festive_banner_mobile.png",
@@ -37,6 +37,7 @@
         },
         "slide_mkRNm4": {
           "type": "slide",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/evileye_banner_desktop.png",
             "mobile_image": "shopify://shop_images/evileye_banner_mobile.png",
