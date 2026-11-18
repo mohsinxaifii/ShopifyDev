@@ -14,18 +14,18 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
-        "znow": {
-          "type": "znow",
-          "settings": {
-            "text": "Same day live in Delhi NCR",
-            "link": "shopify://collections/znow"
-          }
-        },
         "message_3Mt9UH": {
           "type": "message",
           "settings": {
-            "text": "Get <strong>Free Earrings worth INR 3499</strong> on orders above INR 9999",
-            "link": ""
+            "text": "Black Friday Sale Live | <strong>FLAT 40% OFF</strong>",
+            "link": "shopify://collections/black-friday-sale"
+          }
+        },
+        "znow": {
+          "type": "znow",
+          "settings": {
+            "text": "Same day delivery in Delhi NCR",
+            "link": "shopify://collections/znow"
           }
         },
         "message-1": {
@@ -45,8 +45,8 @@
         }
       },
       "block_order": [
-        "znow",
         "message_3Mt9UH",
+        "znow",
         "message-1",
         "message_RXiUML"
       ],
